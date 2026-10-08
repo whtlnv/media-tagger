@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-08 16:48 · `src/mediatagger/test_video.py::test_a_playing_video_restarts_from_the_beginning_when_it_reaches_the_end`
+- Behavior: A playing video restarts from the beginning when it reaches the end
+- Predicted: AssertionError — `engine.idle_active` is True because the player goes idle at end of file
+- Actual: AssertionError — `engine.path` is None; `idle_active` was still False when `time-pos` turned None
+- Type: right-reason mismatch
+- Resolution: libmpv unloads the file (path/time-pos go None) before idle-active flips, so reading idle-active right after end-of-file is racy; dropped that assertion and kept `path`/`time_pos` as the loop evidence.
+
 ## 2026-10-08 16:35 · `src/mediatagger/test_slideshow.py::test_stepping_from_an_opened_file_moves_relative_to_that_file`
 - Behavior: After opening `IMG_2.jpg` (of `IMG_1`–`IMG_3`), `Space` shows `IMG_3.jpg` and `←` twice from there shows `IMG_1.jpg`
 - Predicted: passes on first run — `press` locates `self.current` in the folder listing, so stepping is already relative to the opened file
