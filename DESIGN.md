@@ -81,6 +81,7 @@ Search history is remembered (`↑` in the search box).
 
 - Images: jpg, jpeg, png, webp, bmp, tif, tiff, heic.
 - Video (played by mpv): mp4, mov, avi, mpg, mpeg, mkv, m4v, wmv, 3gp, **gif**.
+- Ignore hidden files and macOS litter on exFAT (`._*` AppleDouble files, `.DS_Store`, `.Spotlight-V100`, `.fseventsd`, `.Trashes`).
 - Order: natural filename sort (`IMG_2` before `IMG_10`), folders first in the grid.
 - Slideshow covers the current folder only (non-recursive).
 
@@ -138,17 +139,33 @@ Any background work is announced and its completion shown, e.g. `⟳ Generating 
 
 Thumbnail generation: on demand for visible tiles (3 workers, newest request first), then background prefetch of the rest of the current folder.
 
-## Install
+## Install: runs from the USB drive
 
-The Pi has **no internet** (Bluetooth only). Install and updates are fully offline, carried on the USB drive:
+The Pi has **no internet** (Bluetooth only). The app **lives on a USB drive** and runs from it with the Pi's own Python 3.13. Development works the same way: the drive is passed through to the arm64 trixie VM (UTM USB passthrough), tested there, then unplugged and plugged into the Pi.
 
-- An **offline bundle** is built in the arm64 trixie VM: the app source, a `uv` arm64 binary, Python wheels for aarch64/cp313 (PySide6, python-mpv, Pillow…), and `.deb`s for any system packages (libmpv, ffmpeg) the Pi doesn't already have, dependencies included.
-- The bundle is copied to the drive (e.g. `<root>/.mediatagger/dist/`).
-- `install.sh` on the Pi installs the `.deb`s, creates the environment from the local wheels only (`uv --offline`), and adds a "MediaTagger" `.desktop` menu entry.
-- Updating = rebuild bundle, copy to drive, re-run `install.sh`.
-- Uses the Pi's system Python 3.13 (trixie default), so no Python download.
+Drive: **exFAT**, readable and writable by macOS, the VM and the Pi with no extra drivers. The dev drive is an 8 GB stick labelled `MEDIATAGGER`.
 
-Fallback if the bundle ever gets stuck: the Pi 4 has Wi-Fi, so a one-off phone hotspot can do an online install.
+exFAT has no symlinks and no Unix permissions, so **no virtualenv on the drive**:
+
+```
+<drive>/
+  mediatagger/
+    app/                     source (the mediatagger package)
+    lib-linux-aarch64-cp313/ third-party packages, installed with `--target` (PySide6-Essentials, python-mpv…)
+    debs/                    libmpv2 + the dependencies the Pi lacks
+    run.sh                   PYTHONPATH=app:lib-… python3 -m mediatagger  (started via `sh run.sh`, so no exec bit needed)
+    setup-pi.sh              ONE-TIME: install debs/, add the "MediaTagger" .desktop menu entry pointing at run.sh
+  .mediatagger/              library data for media on this drive (tags.db), as per "The library"
+  .metadata_never_index      stops Spotlight indexing the drive on the Mac
+```
+
+- The only thing installed on the Pi itself is **libmpv2**. It must be the Pi's own build so that it uses the Pi's ffmpeg (`+rpt1`, with HEVC hardware decode). The Pi already has ffmpeg, libxcb-cursor0 and python3-venv.
+- `lib-linux-aarch64-cp313/` and `debs/` are populated **in the VM** (same OS and architecture as the Pi). The Mac uses its own local `.venv` for development.
+- Updating the app = copy new `app/` onto the drive. No install step.
+- The menu entry depends on the drive mounting at the same path (`/media/<user>/MEDIATAGGER`), so the label must stay fixed.
+- The app may live on the same drive as the media or on a separate stick; the library is always found from the opened media's drive.
+
+Fallback: the Pi 4 has Wi-Fi, so a one-off phone hotspot can fetch packages if the drive's copies ever fall short.
 
 ## Deferred (not in this plan)
 
