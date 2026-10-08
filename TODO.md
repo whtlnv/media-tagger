@@ -2,7 +2,7 @@
 
 ## Phase 1 — Open a folder and step through it
 
-- [ ] Opening a folder lists its images in natural filename order (`IMG_2.jpg` before `IMG_10.jpg`)
+- [x] Opening a folder lists its images in natural filename order (`IMG_2.jpg` before `IMG_10.jpg`)
 - [ ] Opening a folder lists its videos (`.mp4`, `.mov`, `.avi`, `.mpg`, `.gif`, …) alongside its images, in the same natural order
 - [ ] A non-media file in the folder (`notes.txt`) is not in the slideshow
 - [ ] Media extensions are matched regardless of case (`IMG_1.JPG` is in the slideshow)
