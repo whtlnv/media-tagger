@@ -5,6 +5,8 @@ MEDIA_EXTENSIONS = {
     ".mp4", ".mov", ".avi", ".mpg", ".mpeg", ".mkv", ".m4v", ".wmv", ".3gp",
 }
 
+VIDEO_EXTENSIONS = {".gif", ".mp4", ".avi", ".mpg"}
+
 
 def _natural_key(path):
     return [int(part) if part.isdigit() else part for part in re.split(r"(\d+)", path.name)]
@@ -20,4 +22,4 @@ def media_files(folder):
 
 
 def is_video(path):
-    return path.suffix in {".gif", ".mp4", ".avi", ".mpg"}
+    return path.suffix in VIDEO_EXTENSIONS
