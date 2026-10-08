@@ -21,7 +21,7 @@
 - [x] An image wider than the screen's aspect ratio is shown scaled to the screen's width, keeping its aspect ratio
 - [x] An image taller than the screen's aspect ratio is shown scaled to the screen's height, keeping its aspect ratio
 - [x] Showing a video item starts it playing, unpaused and unmuted
-- [ ] A GIF item is played as a video, not shown as a still image
+- [x] A GIF item is played as a video, not shown as a still image
 - [ ] A playing video restarts from the beginning when it reaches the end
 - [ ] Pressing `p` on a playing video pauses it
 - [ ] Pressing `p` on a paused video resumes it

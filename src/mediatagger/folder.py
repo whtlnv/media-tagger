@@ -17,3 +17,7 @@ def _is_media(path):
 def media_files(folder):
     media = [path for path in folder.iterdir() if _is_media(path)]
     return sorted(media, key=_natural_key)
+
+
+def is_video(path):
+    return True

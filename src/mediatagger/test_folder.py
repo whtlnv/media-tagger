@@ -1,4 +1,4 @@
-from mediatagger.folder import media_files
+from mediatagger.folder import is_video, media_files
 
 
 def test_opening_a_folder_lists_its_images_in_natural_filename_order(tmp_path):
@@ -78,3 +78,7 @@ def test_every_image_and_video_extension_in_the_design_is_in_the_slideshow(tmp_p
         (tmp_path / name).touch()
 
     assert media_files(tmp_path) == [tmp_path / name for name in names]
+
+
+def test_a_gif_item_is_played_as_a_video_not_shown_as_a_still_image(tmp_path):
+    assert is_video(tmp_path / "dance.gif")
