@@ -46,7 +46,7 @@
 - [x] A viewer opened on a folder whose first item is an image shows no video surface and loads no clip into the player
 - [x] In the viewer, pressing `Space` on a video item followed by a red image hides the video surface and paints red at the centre
 - [x] In the viewer, pressing `Space` on a video item followed by an image leaves the player stopped, with no clip playing
-- [ ] The viewer's video player draws its frames into the viewer's video surface through libmpv's render API (`vo=libmpv`, as `spikes/mpv_qt_embed.py` does) and plays sound through the default audio output, rather than null video/audio outputs
+- [x] The viewer's video player draws its frames into the viewer's video surface through libmpv's render API (`vo=libmpv`, as `spikes/mpv_qt_embed.py` does) and plays sound through the default audio output, rather than null video/audio outputs
 - [ ] In the viewer, `p`, `↑`, `↓` and `m` on a video item reach the video player (e.g. `m` mutes it), and `Space`/`→`/`←` step the slideshow
 - [ ] In the viewer, pressing `→` on a red image followed by a blue image paints blue at the centre, and `←` from there paints red again
 - [ ] In the viewer, an image is drawn fitted to the window with its aspect ratio kept and black around it (a wide red image in a square window leaves black above and below it)

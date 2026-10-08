@@ -84,3 +84,12 @@ def test_pressing_space_in_the_viewer_on_a_video_followed_by_an_image_leaves_the
     qtbot.keyClick(viewer, Qt.Key.Key_Space)
 
     assert viewer.video_player.engine.path is None
+
+
+def test_the_viewers_video_player_renders_through_libmpv_into_the_surface_and_plays_sound_on_the_default_audio_output(qtbot, tmp_path):
+    make_clip(tmp_path / "IMG_1.mp4")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+
+    engine = viewer.video_player.engine
+    assert [output["name"] for output in engine.vo] == ["libmpv"]
+    assert "null" not in [output["name"] for output in engine.ao]
