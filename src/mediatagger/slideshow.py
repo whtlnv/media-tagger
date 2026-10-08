@@ -6,5 +6,7 @@ class Slideshow:
         self.current = current
 
     @classmethod
-    def open(cls, folder):
-        return cls(media_files(folder)[0])
+    def open(cls, path):
+        if path.is_file():
+            return cls(path)
+        return cls(media_files(path)[0])
