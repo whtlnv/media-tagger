@@ -1,4 +1,7 @@
 from PySide6.QtGui import QColor, QImage
+from PySide6.QtOpenGLWidgets import QOpenGLWidget
+
+from mediatagger.test_video import make_clip
 
 from mediatagger.viewer import Viewer
 
@@ -30,3 +33,18 @@ def test_a_viewer_opened_on_a_folder_whose_first_item_is_blue_paints_blue_at_its
     make_image(tmp_path / "IMG_1.png", "blue")
     make_image(tmp_path / "IMG_2.png", "red")
     assert centre_colour_of_viewer_on(qtbot, tmp_path) == QColor("blue")
+
+
+def test_a_viewer_opened_on_a_folder_whose_first_item_is_a_video_shows_a_video_surface_loaded_with_that_clip(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4")
+    make_image(tmp_path / "IMG_2.png", "red")
+    viewer = Viewer(tmp_path)
+    qtbot.addWidget(viewer)
+    viewer.resize(400, 300)
+    viewer.show()
+    qtbot.waitExposed(viewer)
+
+    surface = viewer.findChild(QOpenGLWidget)
+    assert surface is not None and surface.isVisible()
+    assert viewer.rect().contains(surface.geometry())
+    viewer.video_player.engine.wait_for_property("path", lambda path: path == str(clip), timeout=5)
