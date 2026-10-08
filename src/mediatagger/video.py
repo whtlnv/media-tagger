@@ -22,7 +22,8 @@ class VideoPlayer:
         if key == "m":
             self.engine.mute = not self.engine.mute
             return
-        self.engine.pause = not self.engine.pause
+        if key in ("p", "Enter"):
+            self.engine.pause = not self.engine.pause
 
     def _seek(self, seconds):
         with self.engine.prepare_and_wait_for_event("playback_restart"):

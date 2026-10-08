@@ -139,3 +139,14 @@ def test_pressing_m_on_a_muted_video_unmutes_it(playing_video):
     player.press("m")
 
     assert engine.mute is False
+
+
+def test_pressing_i_f_right_or_left_on_a_playing_video_does_not_pause_it(playing_video):
+    player, engine = playing_video
+
+    paused_after_each_press = []
+    for key in ["i", "f", "Right", "Left"]:
+        player.press(key)
+        paused_after_each_press.append(engine.pause)
+
+    assert paused_after_each_press == [False, False, False, False]
