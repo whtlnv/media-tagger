@@ -9,7 +9,7 @@
 - [x] A hidden file with a media extension (`.hidden.jpg`) is not in the slideshow
 - [x] macOS litter (`._IMG_1.jpg` AppleDouble files, `.DS_Store`) is not in the slideshow
 - [x] A subfolder of the opened folder is not in the slideshow, nor are the media inside it
-- [ ] Opening a folder path shows its first item
+- [x] Opening a folder path shows its first item
 - [ ] Opening a file path shows that file, positioned within its folder's slideshow
 - [ ] Pressing `Space` shows the next item
 - [ ] Pressing `→` shows the next item
