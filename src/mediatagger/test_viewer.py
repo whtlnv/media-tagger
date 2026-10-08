@@ -13,12 +13,17 @@ def make_image(path, color):
     return path
 
 
-def centre_colour_of_viewer_on(qtbot, folder):
+def shown_viewer_on(qtbot, folder):
     viewer = Viewer(folder)
     qtbot.addWidget(viewer)
     viewer.resize(400, 300)
     viewer.show()
     qtbot.waitExposed(viewer)
+    return viewer
+
+
+def centre_colour_of_viewer_on(qtbot, folder):
+    viewer = shown_viewer_on(qtbot, folder)
     frame = viewer.grab().toImage()
     return frame.pixelColor(frame.width() // 2, frame.height() // 2)
 
@@ -38,11 +43,7 @@ def test_a_viewer_opened_on_a_folder_whose_first_item_is_blue_paints_blue_at_its
 def test_a_viewer_opened_on_a_folder_whose_first_item_is_a_video_shows_a_video_surface_loaded_with_that_clip(qtbot, tmp_path):
     clip = make_clip(tmp_path / "IMG_1.mp4")
     make_image(tmp_path / "IMG_2.png", "red")
-    viewer = Viewer(tmp_path)
-    qtbot.addWidget(viewer)
-    viewer.resize(400, 300)
-    viewer.show()
-    qtbot.waitExposed(viewer)
+    viewer = shown_viewer_on(qtbot, tmp_path)
 
     surface = viewer.findChild(QOpenGLWidget)
     assert surface is not None and surface.isVisible()
