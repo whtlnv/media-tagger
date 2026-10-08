@@ -1,4 +1,5 @@
 import mpv
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QImage, QPainter
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QWidget
@@ -21,6 +22,9 @@ class Viewer(QWidget):
         QPainter(self).drawImage(self.rect(), QImage(str(self.slideshow.current)))
 
     def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_M:
+            self.video_player.press("m")
+            return
         self.slideshow.press("Space")
         self.video_player.press("Space")
         self.surface.hide()

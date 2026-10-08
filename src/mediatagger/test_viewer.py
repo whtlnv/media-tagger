@@ -93,3 +93,14 @@ def test_the_viewers_video_player_renders_through_libmpv_into_the_surface_and_pl
     engine = viewer.video_player.engine
     assert [output["name"] for output in engine.vo] == ["libmpv"]
     assert "null" not in [output["name"] for output in engine.ao]
+
+
+def test_pressing_m_in_the_viewer_on_a_video_mutes_the_video_player(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4")
+    make_image(tmp_path / "IMG_2.png", "red")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    viewer.video_player.engine.wait_for_property("path", lambda path: path == str(clip), timeout=5)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_M)
+
+    assert viewer.video_player.engine.mute is True
