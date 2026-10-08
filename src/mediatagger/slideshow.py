@@ -15,4 +15,4 @@ class Slideshow:
         items = media_files(self.current.parent)
         step = -1 if key == "Left" else 1
         last = len(items) - 1
-        self.current = items[min(items.index(self.current) + step, last)]
+        self.current = items[max(0, min(items.index(self.current) + step, last))]

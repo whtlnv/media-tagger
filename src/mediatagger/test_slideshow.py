@@ -66,3 +66,12 @@ def test_stepping_forward_on_the_last_item_keeps_showing_it(tmp_path):
 
     slideshow.press("Right")
     assert slideshow.current == tmp_path / "IMG_3.jpg"
+
+
+def test_stepping_back_on_the_first_item_keeps_showing_it(tmp_path):
+    touch(tmp_path, "IMG_1.jpg", "IMG_2.jpg", "IMG_3.jpg")
+    slideshow = Slideshow.open(tmp_path)
+
+    slideshow.press("Left")
+
+    assert slideshow.current == tmp_path / "IMG_1.jpg"
