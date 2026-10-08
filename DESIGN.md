@@ -165,6 +165,20 @@ exFAT has no symlinks and no Unix permissions, so **no virtualenv on the drive**
 - The menu entry depends on the drive mounting at the same path (`/media/<user>/MEDIATAGGER`), so the label must stay fixed.
 - The app may live on the same drive as the media or on a separate stick; the library is always found from the opened media's drive.
 
+### Spike results (2026-10-08)
+
+`spikes/mpv_qt_embed.py` (libmpv render API in a `QOpenGLWidget`) on AVI/Xvid, MPEG-2, HEVC 1080p and GIF:
+
+| Machine | Result |
+|---|---|
+| Mac (Apple GPU) | all formats play; HEVC hardware-decoded (`videotoolbox-copy`) |
+| Pi 4 (V3D GPU, Wayland), run from the drive | all formats play, picture confirmed by eye; **HEVC hardware-decoded (`drm`)** |
+| VM (UTM, `llvmpipe` software GL) | plays, but ~1 in 8 frames shows black or partly drawn |
+
+**The VM is for logic, startup and packaging checks only, never for judging picture quality.** It has no GPU.
+
+`setup-pi.sh` on the real Pi installed only `libmpv2` plus `libmujs3 libsixel1 libsndio7.0 libva-wayland2 libxpresent1`, offline, from the drive. The `_apt ... Permission denied` notices from apt are harmless (exFAT files aren't readable by apt's sandbox user, so it downloads as root).
+
 Fallback: the Pi 4 has Wi-Fi, so a one-off phone hotspot can fetch packages if the drive's copies ever fall short.
 
 ## Deferred (not in this plan)

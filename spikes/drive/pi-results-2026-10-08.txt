@@ -1,0 +1,77 @@
+rb@rbp4:~ $ cd /media/rb/MEDIATAGGER/mediatagger/
+rb@rbp4:/media/rb/MEDIATAGGER/mediatagger $ sh setup-pi.sh 
+[sudo] password for rb: 
+Ign:1 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ InRelease
+Ign:2 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ Release
+Get:3 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ Packages
+Ign:4 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ Translation-en_GB
+Ign:5 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ Translation-en
+Ign:4 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ Translation-en_GB
+Ign:5 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ Translation-en
+Ign:4 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ Translation-en_GB
+Ign:5 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ Translation-en
+Ign:4 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ Translation-en_GB
+Ign:5 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ Translation-en
+Ign:4 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ Translation-en_GB
+Ign:5 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ Translation-en
+Ign:4 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ Translation-en_GB
+Ign:5 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ Translation-en
+Ign:4 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ Translation-en_GB
+Ign:5 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ Translation-en
+Reading package lists... Done
+W: Download is performed unsandboxed as root as file '/tmp/tmp.l0WeIgMZTg/partial/_media_rb_MEDIATAGGER_mediatagger_debs_._InRelease' couldn't be accessed by user '_apt'. - pkgAcquire::Run (13: Permission denied)
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following additional packages will be installed:
+  libmujs3 libsixel1 libsndio7.0 libva-wayland2 libxpresent1
+Suggested packages:
+  sndiod
+Recommended packages:
+  yt-dlp
+The following NEW packages will be installed:
+  libmpv2 libmujs3 libsixel1 libsndio7.0 libva-wayland2 libxpresent1
+0 upgraded, 6 newly installed, 0 to remove and 89 not upgraded.
+Need to get 0 B/1,195 kB of archives.
+After this operation, 4,239 kB of additional disk space will be used.
+Get:1 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ libmujs3 1.3.6-1 [110 kB]
+Get:2 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ libsixel1 1.10.5-1 [102 kB]
+Get:3 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ libsndio7.0 1.10.0-0.1 [26.2 kB]
+Get:4 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ libva-wayland2 2.22.0-3 [21.9 kB]
+Get:5 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ libxpresent1 1.0.1-1+b2 [9,992 B]
+Get:6 file:/media/rb/MEDIATAGGER/mediatagger/debs ./ libmpv2 0.40.0-3+deb13u1 [925 kB]
+Selecting previously unselected package libmujs3:arm64.
+(Reading database ... 120502 files and directories currently installed.)
+Preparing to unpack .../0-libmujs3_1.3.6-1_arm64.deb ...
+Unpacking libmujs3:arm64 (1.3.6-1) ...
+Selecting previously unselected package libsixel1:arm64.
+Preparing to unpack .../1-libsixel1_1.10.5-1_arm64.deb ...
+Unpacking libsixel1:arm64 (1.10.5-1) ...
+Selecting previously unselected package libsndio7.0:arm64.
+Preparing to unpack .../2-libsndio7.0_1.10.0-0.1_arm64.deb ...
+Unpacking libsndio7.0:arm64 (1.10.0-0.1) ...
+Selecting previously unselected package libva-wayland2:arm64.
+Preparing to unpack .../3-libva-wayland2_2.22.0-3_arm64.deb ...
+Unpacking libva-wayland2:arm64 (2.22.0-3) ...
+Selecting previously unselected package libxpresent1:arm64.
+Preparing to unpack .../4-libxpresent1_1.0.1-1+b2_arm64.deb ...
+Unpacking libxpresent1:arm64 (1.0.1-1+b2) ...
+Selecting previously unselected package libmpv2:arm64.
+Preparing to unpack .../5-libmpv2_0.40.0-3+deb13u1_arm64.deb ...
+Unpacking libmpv2:arm64 (0.40.0-3+deb13u1) ...
+Setting up libmujs3:arm64 (1.3.6-1) ...
+Setting up libxpresent1:arm64 (1.0.1-1+b2) ...
+Setting up libsixel1:arm64 (1.10.5-1) ...
+Setting up libva-wayland2:arm64 (2.22.0-3) ...
+Setting up libsndio7.0:arm64 (1.10.0-0.1) ...
+Setting up libmpv2:arm64 (0.40.0-3+deb13u1) ...
+Processing triggers for libc-bin (2.41-12+rpt1+deb13u2) ...
+N: Download is performed unsandboxed as root as file '/media/rb/MEDIATAGGER/mediatagger/debs/./libmujs3_1.3.6-1_arm64.deb' couldn't be accessed by user '_apt'. - pkgAcquire::Run (13: Permission denied)
+libmpv2 installed.
+rb@rbp4:/media/rb/MEDIATAGGER/mediatagger $ sh run-spike.sh 
+Cannot load libcuda.so.1
+qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0xf9479b0 but 0x0 is focused
+PASS {'file': 'test_anim.gif', 'time_pos': 2.6, 'codec': 'CompuServe GIF (Graphics Interchange Format)', 'hwdec': 'no', 'non_black_samples': 971, 'centre': '#3900c8'}
+PASS {'file': 'test_hevc.mp4', 'time_pos': 2.67, 'codec': 'H.265 / HEVC (High Efficiency Video Coding)', 'hwdec': 'drm', 'non_black_samples': 1296, 'centre': '#5051fd'}
+PASS {'file': 'test_mpeg2.mpg', 'time_pos': 2.73, 'codec': 'MPEG-2 video', 'hwdec': 'no', 'non_black_samples': 891, 'centre': '#1b15f8'}
+PASS {'file': 'test_xvid.avi', 'time_pos': 2.8, 'codec': 'MPEG-4 part 2', 'hwdec': 'no', 'non_black_samples': 972, 'centre': '#1515fa'}
