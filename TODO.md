@@ -41,7 +41,7 @@
 - [x] Positions of a thousand or more are shown with a thousands separator (`233 / 1,204`)
 - [x] Pressing `i` while the overlay is shown hides it
 - [x] A viewer opened on a folder whose first item is a red image paints red at the centre of its window
-- [ ] A viewer opened on a folder whose first item is a blue image paints blue at the centre of its window
+- [x] A viewer opened on a folder whose first item is a blue image paints blue at the centre of its window
 - [ ] A viewer opened on a folder whose first item is a video shows a video surface inside the viewer window, with the player loaded with that clip
 - [ ] A viewer opened on a folder whose first item is an image shows no video surface and loads no clip into the player
 - [ ] In the viewer, pressing `Space` on a video item followed by a red image hides the video surface and paints red at the centre
