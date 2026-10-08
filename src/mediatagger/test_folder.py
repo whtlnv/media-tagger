@@ -68,3 +68,13 @@ def test_a_subfolder_and_the_media_inside_it_are_not_in_the_slideshow(tmp_path):
     (subfolder / "IMG_9.jpg").touch()
 
     assert media_files(tmp_path) == [tmp_path / "IMG_1.jpg"]
+
+
+def test_every_image_and_video_extension_in_the_design_is_in_the_slideshow(tmp_path):
+    extensions = ["jpg", "jpeg", "png", "webp", "bmp", "tif", "tiff", "heic",
+                  "mp4", "mov", "avi", "mpg", "mpeg", "mkv", "m4v", "wmv", "3gp", "gif"]
+    names = [f"item_{i}.{ext}" for i, ext in enumerate(extensions, start=1)]
+    for name in names:
+        (tmp_path / name).touch()
+
+    assert media_files(tmp_path) == [tmp_path / name for name in names]

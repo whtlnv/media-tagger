@@ -10,7 +10,7 @@
 - [x] macOS litter (`._IMG_1.jpg` AppleDouble files, `.DS_Store`) is not in the slideshow
 - [x] A subfolder of the opened folder is not in the slideshow, nor are the media inside it
 - [x] Opening a folder path shows its first item
-- [ ] Every image and video extension DESIGN.md lists (jpg, jpeg, png, webp, bmp, tif, tiff, heic, mp4, mov, avi, mpg, mpeg, mkv, m4v, wmv, 3gp, gif) is in the slideshow
+- [x] Every image and video extension DESIGN.md lists (jpg, jpeg, png, webp, bmp, tif, tiff, heic, mp4, mov, avi, mpg, mpeg, mkv, m4v, wmv, 3gp, gif) is in the slideshow
 - [ ] Opening a file path shows that file, positioned within its folder's slideshow
 - [ ] Pressing `Space` shows the next item
 - [ ] Pressing `→` shows the next item

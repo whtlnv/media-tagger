@@ -1,6 +1,9 @@
 import re
 
-MEDIA_EXTENSIONS = {".jpg", ".gif", ".mp4", ".mov", ".avi", ".mpg"}
+MEDIA_EXTENSIONS = {
+    ".jpg", ".jpeg", ".png", ".webp", ".bmp", ".tif", ".tiff", ".heic", ".gif",
+    ".mp4", ".mov", ".avi", ".mpg", ".mpeg", ".mkv", ".m4v", ".wmv", ".3gp",
+}
 
 
 def _natural_key(path):
