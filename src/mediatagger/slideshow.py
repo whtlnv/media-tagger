@@ -14,4 +14,5 @@ class Slideshow:
     def press(self, key):
         items = media_files(self.current.parent)
         step = -1 if key == "Left" else 1
-        self.current = items[min(items.index(self.current) + step, len(items) - 1)]
+        last = len(items) - 1
+        self.current = items[min(items.index(self.current) + step, last)]
