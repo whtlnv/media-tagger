@@ -27,4 +27,4 @@ class Slideshow:
 
 
 def _info(items, index):
-    return f"{items[index].name} {index + 1} / {len(items)}"
+    return f"{items[index].name} {index + 1:,} / {len(items):,}"

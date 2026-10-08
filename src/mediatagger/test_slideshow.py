@@ -102,3 +102,12 @@ def test_the_info_overlay_updates_its_filename_and_position_when_moving_to_anoth
 
     assert "IMG_4.jpg" in slideshow.overlay
     assert "4 / 5" in slideshow.overlay
+
+
+def test_info_overlay_positions_of_a_thousand_or_more_use_a_thousands_separator(tmp_path):
+    touch(tmp_path, *(f"IMG_{n}.jpg" for n in range(1, 1205)))
+    slideshow = Slideshow.open(tmp_path / "IMG_1100.jpg")
+
+    slideshow.press("i")
+
+    assert "1,100 / 1,204" in slideshow.overlay
