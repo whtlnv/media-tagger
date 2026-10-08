@@ -73,3 +73,14 @@ def test_pressing_space_in_the_viewer_on_a_video_followed_by_a_red_image_hides_t
     assert surface is None or not surface.isVisible()
     frame = viewer.grab().toImage()
     assert frame.pixelColor(frame.width() // 2, frame.height() // 2) == QColor("red")
+
+
+def test_pressing_space_in_the_viewer_on_a_video_followed_by_an_image_leaves_the_player_stopped(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4")
+    make_image(tmp_path / "IMG_2.png", "red")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    viewer.video_player.engine.wait_for_property("path", lambda path: path == str(clip), timeout=5)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Space)
+
+    assert viewer.video_player.engine.path is None

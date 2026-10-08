@@ -22,5 +22,6 @@ class Viewer(QWidget):
 
     def keyPressEvent(self, event):
         self.slideshow.press("Space")
+        self.video_player.press("Space")
         self.surface.hide()
         self.update()
