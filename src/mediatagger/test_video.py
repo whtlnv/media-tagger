@@ -75,3 +75,21 @@ def test_pressing_p_on_a_paused_video_resumes_it(tmp_path):
         assert engine.pause is False
     finally:
         engine.terminate()
+
+
+def test_pressing_enter_toggles_a_video_between_playing_and_paused(tmp_path):
+    clip = make_clip(tmp_path / "clip.mp4")
+    engine = mpv.MPV(vo="null", ao="null")
+    try:
+        player = VideoPlayer(engine)
+        player.show(clip)
+        wait_until_playing(engine)
+
+        player.press("Enter")
+        paused_after_first_press = engine.pause
+        player.press("Enter")
+
+        assert paused_after_first_press is True
+        assert engine.pause is False
+    finally:
+        engine.terminate()

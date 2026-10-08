@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-08 16:53 · `src/mediatagger/test_video.py::test_pressing_enter_toggles_a_video_between_playing_and_paused`
+- Behavior: Pressing `Enter` toggles a video between playing and paused
+- Predicted: passes on first run — `VideoPlayer.press` ignores the key and toggles pause on any key
+- Actual: passed (1 passed)
+- Type: passed unexpectedly
+- Resolution: the `p` green steps toggled pause on any key, so `Enter` already works; no rewrite can make it fail without asserting something false, so the test stays as a pin on `Enter` that will catch it if a later key-dispatch change (e.g. `Space` → next item) drops `Enter`
+
 ## 2026-10-08 16:48 · `src/mediatagger/test_video.py::test_a_playing_video_restarts_from_the_beginning_when_it_reaches_the_end`
 - Behavior: A playing video restarts from the beginning when it reaches the end
 - Predicted: AssertionError — `engine.idle_active` is True because the player goes idle at end of file
