@@ -4,6 +4,7 @@ from mediatagger.folder import media_files
 class Slideshow:
     def __init__(self, current):
         self.current = current
+        self.overlay = None
 
     @classmethod
     def open(cls, path):

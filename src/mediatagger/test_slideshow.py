@@ -75,3 +75,9 @@ def test_stepping_back_on_the_first_item_keeps_showing_it(tmp_path):
     slideshow.press("Left")
 
     assert slideshow.current == tmp_path / "IMG_1.jpg"
+
+
+def test_the_info_overlay_is_hidden_when_the_viewer_opens(tmp_path):
+    touch(tmp_path, "IMG_1.jpg", "IMG_2.jpg", "IMG_3.jpg")
+
+    assert Slideshow.open(tmp_path).overlay is None
