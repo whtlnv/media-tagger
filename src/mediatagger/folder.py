@@ -1,9 +1,12 @@
 import re
 
+MEDIA_EXTENSIONS = {".jpg", ".gif", ".mp4", ".mov", ".avi", ".mpg"}
+
 
 def _natural_key(path):
     return [int(part) if part.isdigit() else part for part in re.split(r"(\d+)", path.name)]
 
 
 def media_files(folder):
-    return sorted(folder.iterdir(), key=_natural_key)
+    media = [path for path in folder.iterdir() if path.suffix in MEDIA_EXTENSIONS]
+    return sorted(media, key=_natural_key)

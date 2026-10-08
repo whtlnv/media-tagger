@@ -25,3 +25,13 @@ def test_opening_a_folder_lists_its_videos_alongside_its_images_in_natural_order
         tmp_path / "old_5.avi",
         tmp_path / "old_7.mpg",
     ]
+
+
+def test_a_non_media_file_in_the_folder_is_not_in_the_slideshow(tmp_path):
+    for name in ["IMG_1.jpg", "notes.txt", "clip_2.mp4"]:
+        (tmp_path / name).touch()
+
+    assert media_files(tmp_path) == [
+        tmp_path / "IMG_1.jpg",
+        tmp_path / "clip_2.mp4",
+    ]
