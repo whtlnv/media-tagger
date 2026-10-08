@@ -6,10 +6,10 @@ import pytest
 from mediatagger.video import VideoPlayer
 
 
-def make_clip(path):
+def make_clip(path, duration=2):
     subprocess.run(
-        ["ffmpeg", "-loglevel", "error", "-f", "lavfi", "-i", "testsrc=duration=2:size=64x48:rate=10",
-         "-f", "lavfi", "-i", "sine=duration=2", "-shortest", str(path)],
+        ["ffmpeg", "-loglevel", "error", "-f", "lavfi", "-i", f"testsrc=duration={duration}:size=64x48:rate=10",
+         "-f", "lavfi", "-i", f"sine=duration={duration}", "-shortest", str(path)],
         check=True,
     )
     return path
@@ -102,3 +102,19 @@ def test_moving_from_a_video_with_space_stops_its_playback_and_sound(playing_vid
     player.press("Space")
 
     assert engine.path is None
+
+
+def test_pressing_up_on_a_video_seeks_10_seconds_forward(tmp_path):
+    clip = make_clip(tmp_path / "clip.mp4", duration=30)
+    engine = mpv.MPV(vo="null", ao="null")
+    try:
+        player = VideoPlayer(engine)
+        player.show(clip)
+        wait_until_playing(engine)
+        before = engine.time_pos
+
+        player.press("Up")
+
+        assert engine.time_pos == pytest.approx(before + 10, abs=1)
+    finally:
+        engine.terminate()
