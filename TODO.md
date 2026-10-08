@@ -48,6 +48,9 @@
 - [ ] In the viewer, pressing `Space` on a video item followed by an image leaves the player stopped, with no clip playing
 - [ ] The viewer's video player draws its frames into the viewer's video surface through libmpv's render API (`vo=libmpv`, as `spikes/mpv_qt_embed.py` does) and plays sound through the default audio output, rather than null video/audio outputs
 - [ ] In the viewer, `p`, `↑`, `↓` and `m` on a video item reach the video player (e.g. `m` mutes it), and `Space`/`→`/`←` step the slideshow
+- [ ] In the viewer, pressing `→` on a red image followed by a blue image paints blue at the centre, and `←` from there paints red again
+- [ ] In the viewer, an image is drawn fitted to the window with its aspect ratio kept and black around it (a wide red image in a square window leaves black above and below it)
+- [ ] In the viewer, pressing `i` draws the info overlay (filename and `1 / N`) on top of the shown item, and pressing `i` again removes it
 - [ ] The viewer opens fullscreen
 - [ ] Pressing `f` in fullscreen leaves fullscreen
 - [ ] Pressing `f` when not fullscreen enters fullscreen
