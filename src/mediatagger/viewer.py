@@ -14,6 +14,7 @@ class Viewer(QWidget):
         super().__init__()
         self.slideshow = Slideshow.open(folder)
         self.video_player = VideoPlayer(mpv.MPV(vo="libmpv"))
+        self.surface = None
         if is_video(self.slideshow.current):
             self.surface = QOpenGLWidget(self)
             self.video_player.show(self.slideshow.current)
@@ -25,7 +26,9 @@ class Viewer(QWidget):
         if event.key() == Qt.Key.Key_M:
             self.video_player.press("m")
             return
-        self.slideshow.press("Space")
-        self.video_player.press("Space")
-        self.surface.hide()
+        key = "Left" if event.key() == Qt.Key.Key_Left else "Space"
+        self.slideshow.press(key)
+        self.video_player.press(key)
+        if self.surface:
+            self.surface.hide()
         self.update()

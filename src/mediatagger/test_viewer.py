@@ -104,3 +104,17 @@ def test_pressing_m_in_the_viewer_on_a_video_mutes_the_video_player(qtbot, tmp_p
     qtbot.keyClick(viewer, Qt.Key.Key_M)
 
     assert viewer.video_player.engine.mute is True
+
+
+def test_pressing_right_in_the_viewer_on_a_red_image_followed_by_a_blue_image_paints_blue_and_left_paints_red_again(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    make_image(tmp_path / "IMG_2.png", "blue")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Right)
+    frame = viewer.grab().toImage()
+    assert frame.pixelColor(frame.width() // 2, frame.height() // 2) == QColor("blue")
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Left)
+    frame = viewer.grab().toImage()
+    assert frame.pixelColor(frame.width() // 2, frame.height() // 2) == QColor("red")
