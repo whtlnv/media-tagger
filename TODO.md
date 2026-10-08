@@ -27,7 +27,7 @@
 - [x] Pressing `p` on a playing video pauses it
 - [x] Pressing `p` on a paused video resumes it
 - [x] Pressing `Enter` toggles a video between playing and paused
-- [ ] Pressing `Space` on a playing video shows the next item rather than pausing
+- [x] Pressing `Space` on a playing video shows the next item rather than pausing
 - [ ] Moving from a video to another item stops the video's playback and sound
 - [ ] Pressing `↑` on a video seeks 10 seconds forward
 - [ ] Pressing `↓` on a video seeks 10 seconds back

@@ -86,3 +86,11 @@ def test_pressing_enter_toggles_a_video_between_playing_and_paused(playing_video
 
     assert paused_after_first_press is True
     assert engine.pause is False
+
+
+def test_pressing_space_on_a_playing_video_does_not_pause_it(playing_video):
+    player, engine = playing_video
+
+    player.press("Space")
+
+    assert engine.pause is False

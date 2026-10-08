@@ -9,4 +9,6 @@ class VideoPlayer:
         self.engine.mute = False
 
     def press(self, key):
+        if key == "Space":
+            return
         self.engine.pause = not self.engine.pause
