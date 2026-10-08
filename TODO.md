@@ -31,7 +31,7 @@
 - [x] Moving from a video to another item stops the video's playback and sound
 - [x] Pressing `↑` on a video seeks 10 seconds forward
 - [x] Pressing `↓` on a video seeks 10 seconds back
-- [ ] Pressing `m` on a video mutes it
+- [x] Pressing `m` on a video mutes it
 - [ ] Pressing `m` on a muted video unmutes it
 - [ ] The info overlay is hidden when the viewer opens
 - [ ] Pressing `i` shows an overlay with the current filename and position (`3 / 120`)

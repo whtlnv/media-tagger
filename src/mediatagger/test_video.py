@@ -122,3 +122,11 @@ def test_pressing_down_on_a_video_seeks_10_seconds_back(playing_video):
     player.press("Down")
 
     assert engine.time_pos == pytest.approx(before - 10, abs=1)
+
+
+def test_pressing_m_on_a_video_mutes_it(playing_video):
+    player, engine = playing_video
+
+    player.press("m")
+
+    assert engine.mute is True

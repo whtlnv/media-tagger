@@ -19,6 +19,9 @@ class VideoPlayer:
         if key == "Down":
             self._seek(-10)
             return
+        if key == "m":
+            self.engine.mute = True
+            return
         self.engine.pause = not self.engine.pause
 
     def _seek(self, seconds):
