@@ -12,9 +12,9 @@ class Viewer(QWidget):
     def __init__(self, folder):
         super().__init__()
         self.slideshow = Slideshow.open(folder)
+        self.video_player = VideoPlayer(mpv.MPV(vo="null", ao="null"))
         if is_video(self.slideshow.current):
             QOpenGLWidget(self)
-            self.video_player = VideoPlayer(mpv.MPV(vo="null", ao="null"))
             self.video_player.show(self.slideshow.current)
 
     def paintEvent(self, event):

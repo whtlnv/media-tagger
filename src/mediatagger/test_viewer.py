@@ -49,3 +49,13 @@ def test_a_viewer_opened_on_a_folder_whose_first_item_is_a_video_shows_a_video_s
     assert surface is not None and surface.isVisible()
     assert viewer.rect().contains(surface.geometry())
     viewer.video_player.engine.wait_for_property("path", lambda path: path == str(clip), timeout=5)
+
+
+def test_a_viewer_opened_on_a_folder_whose_first_item_is_an_image_shows_no_video_surface_and_loads_no_clip(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    make_clip(tmp_path / "IMG_2.mp4")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+
+    surface = viewer.findChild(QOpenGLWidget)
+    assert surface is None or not surface.isVisible()
+    assert viewer.video_player.engine.path is None
