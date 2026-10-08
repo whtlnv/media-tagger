@@ -14,10 +14,10 @@ class Slideshow:
 
     def press(self, key):
         items = media_files(self.current.parent)
+        index = items.index(self.current)
         if key == "i":
-            position = items.index(self.current) + 1
-            self.overlay = f"{self.current.name} {position} / {len(items)}"
+            self.overlay = f"{self.current.name} {index + 1} / {len(items)}"
             return
         step = -1 if key == "Left" else 1
         last = len(items) - 1
-        self.current = items[max(0, min(items.index(self.current) + step, last))]
+        self.current = items[max(0, min(index + step, last))]
