@@ -16,11 +16,15 @@ class Slideshow:
         items = media_files(self.current.parent)
         index = items.index(self.current)
         if key == "i":
-            self.overlay = f"{self.current.name} {index + 1} / {len(items)}"
+            self.overlay = _info(items, index)
             return
         step = -1 if key == "Left" else 1
         last = len(items) - 1
         index = max(0, min(index + step, last))
         self.current = items[index]
         if self.overlay:
-            self.overlay = f"{self.current.name} {index + 1} / {len(items)}"
+            self.overlay = _info(items, index)
+
+
+def _info(items, index):
+    return f"{items[index].name} {index + 1} / {len(items)}"
