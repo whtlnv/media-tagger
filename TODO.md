@@ -22,7 +22,7 @@
 - [x] An image taller than the screen's aspect ratio is shown scaled to the screen's height, keeping its aspect ratio
 - [x] Showing a video item starts it playing, unpaused and unmuted
 - [x] A GIF item is played as a video, not shown as a still image
-- [ ] A still image (`.jpg`, `.png`, `.heic`) is shown as an image, not played as a video, while `.mp4`/`.avi`/`.mpg` are played as video
+- [x] A still image (`.jpg`, `.png`, `.heic`) is shown as an image, not played as a video, while `.mp4`/`.avi`/`.mpg` are played as video
 - [ ] A playing video restarts from the beginning when it reaches the end
 - [ ] Pressing `p` on a playing video pauses it
 - [ ] Pressing `p` on a paused video resumes it

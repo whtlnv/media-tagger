@@ -20,4 +20,4 @@ def media_files(folder):
 
 
 def is_video(path):
-    return True
+    return path.suffix in {".gif", ".mp4", ".avi", ".mpg"}

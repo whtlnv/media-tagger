@@ -82,3 +82,16 @@ def test_every_image_and_video_extension_in_the_design_is_in_the_slideshow(tmp_p
 
 def test_a_gif_item_is_played_as_a_video_not_shown_as_a_still_image(tmp_path):
     assert is_video(tmp_path / "dance.gif")
+
+
+def test_a_still_image_is_shown_as_an_image_while_mp4_avi_mpg_are_played_as_video(tmp_path):
+    names = ["IMG_1.jpg", "IMG_2.png", "IMG_3.heic", "clip_4.mp4", "old_5.avi", "old_6.mpg"]
+
+    assert {name: is_video(tmp_path / name) for name in names} == {
+        "IMG_1.jpg": False,
+        "IMG_2.png": False,
+        "IMG_3.heic": False,
+        "clip_4.mp4": True,
+        "old_5.avi": True,
+        "old_6.mpg": True,
+    }
