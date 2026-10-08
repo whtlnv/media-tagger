@@ -1,0 +1,1 @@
+uv run pytest --collect-only -q 2>/dev/null | grep -c '::'
