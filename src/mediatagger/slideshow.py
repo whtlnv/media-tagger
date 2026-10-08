@@ -16,7 +16,7 @@ class Slideshow:
         items = media_files(self.current.parent)
         index = items.index(self.current)
         if key == "i":
-            self.overlay = _info(items, index)
+            self.overlay = None if self.overlay else _info(items, index)
             return
         step = -1 if key == "Left" else 1
         last = len(items) - 1

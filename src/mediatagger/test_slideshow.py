@@ -111,3 +111,13 @@ def test_info_overlay_positions_of_a_thousand_or_more_use_a_thousands_separator(
     slideshow.press("i")
 
     assert "1,100 / 1,204" in slideshow.overlay
+
+
+def test_pressing_i_while_the_info_overlay_is_shown_hides_it(tmp_path):
+    touch(tmp_path, "IMG_1.jpg", "IMG_2.jpg", "IMG_3.jpg")
+    slideshow = Slideshow.open(tmp_path)
+    slideshow.press("i")
+
+    slideshow.press("i")
+
+    assert slideshow.overlay is None
