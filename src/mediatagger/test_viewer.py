@@ -1,3 +1,4 @@
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QImage
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
@@ -59,3 +60,16 @@ def test_a_viewer_opened_on_a_folder_whose_first_item_is_an_image_shows_no_video
     surface = viewer.findChild(QOpenGLWidget)
     assert surface is None or not surface.isVisible()
     assert viewer.video_player.engine.path is None
+
+
+def test_pressing_space_in_the_viewer_on_a_video_followed_by_a_red_image_hides_the_video_surface_and_paints_red(qtbot, tmp_path):
+    make_clip(tmp_path / "IMG_1.mp4")
+    make_image(tmp_path / "IMG_2.png", "red")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Space)
+
+    surface = viewer.findChild(QOpenGLWidget)
+    assert surface is None or not surface.isVisible()
+    frame = viewer.grab().toImage()
+    assert frame.pixelColor(frame.width() // 2, frame.height() // 2) == QColor("red")

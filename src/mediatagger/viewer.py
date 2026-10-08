@@ -14,8 +14,13 @@ class Viewer(QWidget):
         self.slideshow = Slideshow.open(folder)
         self.video_player = VideoPlayer(mpv.MPV(vo="null", ao="null"))
         if is_video(self.slideshow.current):
-            QOpenGLWidget(self)
+            self.surface = QOpenGLWidget(self)
             self.video_player.show(self.slideshow.current)
 
     def paintEvent(self, event):
         QPainter(self).drawImage(self.rect(), QImage(str(self.slideshow.current)))
+
+    def keyPressEvent(self, event):
+        self.slideshow.press("Space")
+        self.surface.hide()
+        self.update()
