@@ -52,3 +52,10 @@ def test_a_hidden_file_with_a_media_extension_is_not_in_the_slideshow(tmp_path):
         (tmp_path / name).touch()
 
     assert media_files(tmp_path) == [tmp_path / "IMG_1.jpg"]
+
+
+def test_macos_litter_is_not_in_the_slideshow(tmp_path):
+    for name in ["IMG_1.jpg", "._IMG_1.jpg", ".DS_Store"]:
+        (tmp_path / name).touch()
+
+    assert media_files(tmp_path) == [tmp_path / "IMG_1.jpg"]
