@@ -43,3 +43,15 @@ def test_pressing_left_arrow_shows_the_previous_item(tmp_path):
     slideshow.press("Left")
 
     assert slideshow.current == tmp_path / "IMG_1.jpg"
+
+
+def test_stepping_from_an_opened_file_moves_relative_to_that_file(tmp_path):
+    touch(tmp_path, "IMG_1.jpg", "IMG_2.jpg", "IMG_3.jpg")
+    slideshow = Slideshow.open(tmp_path / "IMG_2.jpg")
+
+    slideshow.press("Space")
+    assert slideshow.current == tmp_path / "IMG_3.jpg"
+
+    slideshow.press("Left")
+    slideshow.press("Left")
+    assert slideshow.current == tmp_path / "IMG_1.jpg"
