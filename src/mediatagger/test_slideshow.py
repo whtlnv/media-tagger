@@ -23,3 +23,13 @@ def test_pressing_space_shows_the_next_item(tmp_path):
     slideshow.press("Space")
 
     assert slideshow.current == tmp_path / "IMG_2.jpg"
+
+
+def test_pressing_right_arrow_shows_the_next_item(tmp_path):
+    for name in ["IMG_1.jpg", "IMG_2.jpg", "IMG_3.jpg"]:
+        (tmp_path / name).touch()
+    slideshow = Slideshow.open(tmp_path)
+
+    slideshow.press("Right")
+
+    assert slideshow.current == tmp_path / "IMG_2.jpg"

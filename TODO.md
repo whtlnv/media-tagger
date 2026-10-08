@@ -13,7 +13,7 @@
 - [x] Every image and video extension DESIGN.md lists (jpg, jpeg, png, webp, bmp, tif, tiff, heic, mp4, mov, avi, mpg, mpeg, mkv, m4v, wmv, 3gp, gif) is in the slideshow
 - [x] Opening a file path shows that file, positioned within its folder's slideshow
 - [x] Pressing `Space` shows the next item
-- [ ] Pressing `→` shows the next item
+- [x] Pressing `→` shows the next item
 - [ ] Pressing `←` shows the previous item
 - [ ] After opening a file path (`IMG_2.jpg` in a folder of `IMG_1`, `IMG_2`, `IMG_3`), `Space` shows `IMG_3.jpg` and `←` from there twice shows `IMG_1.jpg`
 - [ ] Pressing `Space` or `→` on the last item keeps showing the last item
