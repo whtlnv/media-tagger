@@ -36,7 +36,7 @@
 - [x] Pressing `i`, `f`, `→` or `←` on a playing video does not pause it; only `p` and `Enter` toggle pause
 - [x] Pressing `→` or `←` on a video stops its playback and sound, like `Space` does
 - [x] The info overlay is hidden when the viewer opens
-- [ ] Pressing `i` shows an overlay with the current filename and position (`3 / 120`)
+- [x] Pressing `i` shows an overlay with the current filename and position (`3 / 120`)
 - [ ] The info overlay updates its filename and position when moving to another item
 - [ ] Positions of a thousand or more are shown with a thousands separator (`233 / 1,204`)
 - [ ] Pressing `i` while the overlay is shown hides it

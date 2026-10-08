@@ -81,3 +81,13 @@ def test_the_info_overlay_is_hidden_when_the_viewer_opens(tmp_path):
     touch(tmp_path, "IMG_1.jpg", "IMG_2.jpg", "IMG_3.jpg")
 
     assert Slideshow.open(tmp_path).overlay is None
+
+
+def test_pressing_i_shows_an_overlay_with_the_filename_and_position(tmp_path):
+    touch(tmp_path, "IMG_1.jpg", "IMG_2.jpg", "IMG_3.jpg", "IMG_4.jpg", "IMG_5.jpg")
+    slideshow = Slideshow.open(tmp_path / "IMG_3.jpg")
+
+    slideshow.press("i")
+
+    assert "IMG_3.jpg" in slideshow.overlay
+    assert "3 / 5" in slideshow.overlay
