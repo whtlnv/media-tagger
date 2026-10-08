@@ -20,4 +20,7 @@ class Slideshow:
             return
         step = -1 if key == "Left" else 1
         last = len(items) - 1
-        self.current = items[max(0, min(index + step, last))]
+        index = max(0, min(index + step, last))
+        self.current = items[index]
+        if self.overlay:
+            self.overlay = f"{self.current.name} {index + 1} / {len(items)}"

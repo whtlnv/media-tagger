@@ -91,3 +91,14 @@ def test_pressing_i_shows_an_overlay_with_the_filename_and_position(tmp_path):
 
     assert "IMG_3.jpg" in slideshow.overlay
     assert "3 / 5" in slideshow.overlay
+
+
+def test_the_info_overlay_updates_its_filename_and_position_when_moving_to_another_item(tmp_path):
+    touch(tmp_path, "IMG_1.jpg", "IMG_2.jpg", "IMG_3.jpg", "IMG_4.jpg", "IMG_5.jpg")
+    slideshow = Slideshow.open(tmp_path / "IMG_3.jpg")
+    slideshow.press("i")
+
+    slideshow.press("Right")
+
+    assert "IMG_4.jpg" in slideshow.overlay
+    assert "4 / 5" in slideshow.overlay
