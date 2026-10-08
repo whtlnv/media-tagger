@@ -55,3 +55,19 @@ def test_pressing_p_on_a_playing_video_pauses_it(tmp_path):
         assert engine.pause is True
     finally:
         engine.terminate()
+
+
+def test_pressing_p_on_a_paused_video_resumes_it(tmp_path):
+    clip = make_clip(tmp_path / "clip.mp4")
+    engine = mpv.MPV(vo="null", ao="null")
+    try:
+        player = VideoPlayer(engine)
+        player.show(clip)
+        engine.wait_for_property("time-pos", lambda pos: pos is not None and pos > 0, timeout=5)
+        player.press("p")
+
+        player.press("p")
+
+        assert engine.pause is False
+    finally:
+        engine.terminate()
