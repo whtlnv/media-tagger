@@ -17,4 +17,8 @@ class VideoPlayer:
             with self.engine.prepare_and_wait_for_event("playback_restart"):
                 self.engine.seek(10, precision="exact")
             return
+        if key == "Down":
+            with self.engine.prepare_and_wait_for_event("playback_restart"):
+                self.engine.seek(-10, precision="exact")
+            return
         self.engine.pause = not self.engine.pause

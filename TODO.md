@@ -30,7 +30,7 @@
 - [x] Pressing `Space` on a playing video shows the next item rather than pausing
 - [x] Moving from a video to another item stops the video's playback and sound
 - [x] Pressing `↑` on a video seeks 10 seconds forward
-- [ ] Pressing `↓` on a video seeks 10 seconds back
+- [x] Pressing `↓` on a video seeks 10 seconds back
 - [ ] Pressing `m` on a video mutes it
 - [ ] Pressing `m` on a muted video unmutes it
 - [ ] The info overlay is hidden when the viewer opens

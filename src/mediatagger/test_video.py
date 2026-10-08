@@ -111,3 +111,14 @@ def test_pressing_up_on_a_video_seeks_10_seconds_forward(playing_video):
     player.press("Up")
 
     assert engine.time_pos == pytest.approx(before + 10, abs=1)
+
+
+def test_pressing_down_on_a_video_seeks_10_seconds_back(playing_video):
+    player, engine = playing_video
+    with engine.prepare_and_wait_for_event("playback_restart"):
+        engine.seek(20, reference="absolute", precision="exact")
+    before = engine.time_pos
+
+    player.press("Down")
+
+    assert engine.time_pos == pytest.approx(before - 10, abs=1)
