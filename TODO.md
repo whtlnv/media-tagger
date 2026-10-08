@@ -6,7 +6,7 @@
 - [x] Opening a folder lists its videos (`.mp4`, `.mov`, `.avi`, `.mpg`, `.gif`, …) alongside its images, in the same natural order
 - [x] A non-media file in the folder (`notes.txt`) is not in the slideshow
 - [x] Media extensions are matched regardless of case (`IMG_1.JPG` is in the slideshow)
-- [ ] A hidden file with a media extension (`.hidden.jpg`) is not in the slideshow
+- [x] A hidden file with a media extension (`.hidden.jpg`) is not in the slideshow
 - [ ] macOS litter (`._IMG_1.jpg` AppleDouble files, `.DS_Store`) is not in the slideshow
 - [ ] A subfolder of the opened folder is not in the slideshow, nor are the media inside it
 - [ ] Opening a folder path shows its first item
