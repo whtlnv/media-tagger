@@ -94,3 +94,11 @@ def test_pressing_space_on_a_playing_video_does_not_pause_it(playing_video):
     player.press("Space")
 
     assert engine.pause is False
+
+
+def test_moving_from_a_video_with_space_stops_its_playback_and_sound(playing_video):
+    player, engine = playing_video
+
+    player.press("Space")
+
+    assert engine.path is None

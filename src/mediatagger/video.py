@@ -10,5 +10,7 @@ class VideoPlayer:
 
     def press(self, key):
         if key == "Space":
+            self.engine.stop()
+            self.engine.wait_for_property("path", lambda path: path is None)
             return
         self.engine.pause = not self.engine.pause
