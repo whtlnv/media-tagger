@@ -7,3 +7,6 @@ class VideoPlayer:
         self.engine.play(str(path))
         self.engine.pause = False
         self.engine.mute = False
+
+    def press(self, key):
+        self.engine.pause = True
