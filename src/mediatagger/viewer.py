@@ -29,6 +29,10 @@ class Viewer(QWidget):
         key = "Left" if event.key() == Qt.Key.Key_Left else "Space"
         self.slideshow.press(key)
         self.video_player.press(key)
-        if self.surface:
+        if is_video(self.slideshow.current):
+            self.surface = self.surface or QOpenGLWidget(self)
+            self.surface.show()
+            self.video_player.show(self.slideshow.current)
+        elif self.surface:
             self.surface.hide()
         self.update()

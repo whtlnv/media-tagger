@@ -118,3 +118,15 @@ def test_pressing_right_in_the_viewer_on_a_red_image_followed_by_a_blue_image_pa
     qtbot.keyClick(viewer, Qt.Key.Key_Left)
     frame = viewer.grab().toImage()
     assert frame.pixelColor(frame.width() // 2, frame.height() // 2) == QColor("red")
+
+
+def test_pressing_space_in_the_viewer_on_an_image_followed_by_a_video_shows_the_video_surface_and_plays_that_clip(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    clip = make_clip(tmp_path / "IMG_2.mp4")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Space)
+
+    surface = viewer.findChild(QOpenGLWidget)
+    assert surface is not None and surface.isVisible()
+    viewer.video_player.engine.wait_for_property("path", lambda path: path == str(clip), timeout=5)
