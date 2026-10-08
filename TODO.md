@@ -1,0 +1,46 @@
+# TODO
+
+## Phase 1 — Open a folder and step through it
+
+- [ ] Opening a folder lists its images in natural filename order (`IMG_2.jpg` before `IMG_10.jpg`)
+- [ ] Opening a folder lists its videos (`.mp4`, `.mov`, `.avi`, `.mpg`, `.gif`, …) alongside its images, in the same natural order
+- [ ] A non-media file in the folder (`notes.txt`) is not in the slideshow
+- [ ] Media extensions are matched regardless of case (`IMG_1.JPG` is in the slideshow)
+- [ ] A hidden file with a media extension (`.hidden.jpg`) is not in the slideshow
+- [ ] macOS litter (`._IMG_1.jpg` AppleDouble files, `.DS_Store`) is not in the slideshow
+- [ ] A subfolder of the opened folder is not in the slideshow, nor are the media inside it
+- [ ] Opening a folder path shows its first item
+- [ ] Opening a file path shows that file, positioned within its folder's slideshow
+- [ ] Pressing `Space` shows the next item
+- [ ] Pressing `→` shows the next item
+- [ ] Pressing `←` shows the previous item
+- [ ] Pressing `Space` or `→` on the last item keeps showing the last item
+- [ ] Pressing `←` on the first item keeps showing the first item
+- [ ] An image wider than the screen's aspect ratio is shown scaled to the screen's width, keeping its aspect ratio
+- [ ] An image taller than the screen's aspect ratio is shown scaled to the screen's height, keeping its aspect ratio
+- [ ] Showing a video item starts it playing, unpaused and unmuted
+- [ ] A GIF item is played as a video, not shown as a still image
+- [ ] A playing video restarts from the beginning when it reaches the end
+- [ ] Pressing `p` on a playing video pauses it
+- [ ] Pressing `p` on a paused video resumes it
+- [ ] Pressing `Enter` toggles a video between playing and paused
+- [ ] Pressing `Space` on a playing video shows the next item rather than pausing
+- [ ] Moving from a video to another item stops the video's playback and sound
+- [ ] Pressing `↑` on a video seeks 10 seconds forward
+- [ ] Pressing `↓` on a video seeks 10 seconds back
+- [ ] Pressing `m` on a video mutes it
+- [ ] Pressing `m` on a muted video unmutes it
+- [ ] The info overlay is hidden when the viewer opens
+- [ ] Pressing `i` shows an overlay with the current filename and position (`3 / 120`)
+- [ ] The info overlay updates its filename and position when moving to another item
+- [ ] Positions of a thousand or more are shown with a thousands separator (`233 / 1,204`)
+- [ ] Pressing `i` while the overlay is shown hides it
+- [ ] The viewer opens fullscreen
+- [ ] Pressing `f` in fullscreen leaves fullscreen
+- [ ] Pressing `f` when not fullscreen enters fullscreen
+- [ ] A media file that can't be decoded shows an "unsupported" placeholder instead of crashing
+- [ ] A decodable image shows the image, not the "unsupported" placeholder
+- [ ] Pressing `Space` on an "unsupported" placeholder shows the next item
+- [ ] Running the shipped `mediatagger <folder>` command opens the fullscreen viewer on that folder's first item
+- [ ] Running the shipped `mediatagger <file>` command opens the fullscreen viewer on that file
+- [ ] Acceptance: a screenshot of `mediatagger <folder>` on the Mac shows an image fitted to the screen with the `i` overlay reading `1 / N`
