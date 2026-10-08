@@ -14,13 +14,17 @@ def make_clip(path):
     return path
 
 
+def wait_until_playing(engine):
+    engine.wait_for_property("time-pos", lambda pos: pos is not None and pos > 0, timeout=5)
+
+
 def test_showing_a_video_starts_it_playing_unpaused_and_unmuted(tmp_path):
     clip = make_clip(tmp_path / "clip.mp4")
     engine = mpv.MPV(vo="null", ao="null", pause=True, mute=True)
     try:
         VideoPlayer(engine).show(clip)
 
-        engine.wait_for_property("time-pos", lambda pos: pos is not None and pos > 0, timeout=5)
+        wait_until_playing(engine)
         assert engine.path == str(clip)
         assert engine.pause is False
         assert engine.mute is False
@@ -48,7 +52,7 @@ def test_pressing_p_on_a_playing_video_pauses_it(tmp_path):
     try:
         player = VideoPlayer(engine)
         player.show(clip)
-        engine.wait_for_property("time-pos", lambda pos: pos is not None and pos > 0, timeout=5)
+        wait_until_playing(engine)
 
         player.press("p")
 
@@ -63,7 +67,7 @@ def test_pressing_p_on_a_paused_video_resumes_it(tmp_path):
     try:
         player = VideoPlayer(engine)
         player.show(clip)
-        engine.wait_for_property("time-pos", lambda pos: pos is not None and pos > 0, timeout=5)
+        wait_until_playing(engine)
         player.press("p")
 
         player.press("p")
