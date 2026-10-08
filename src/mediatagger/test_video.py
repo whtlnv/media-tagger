@@ -150,3 +150,17 @@ def test_pressing_i_f_right_or_left_on_a_playing_video_does_not_pause_it(playing
         paused_after_each_press.append(engine.pause)
 
     assert paused_after_each_press == [False, False, False, False]
+
+
+def test_moving_from_a_video_with_right_or_left_stops_its_playback_and_sound(playing_video):
+    player, engine = playing_video
+    clip = engine.path
+
+    path_after_each_press = []
+    for key in ["Right", "Left"]:
+        player.show(clip)
+        wait_until_playing(engine)
+        player.press(key)
+        path_after_each_press.append(engine.path)
+
+    assert path_after_each_press == [None, None]

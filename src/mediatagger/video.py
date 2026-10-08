@@ -9,7 +9,7 @@ class VideoPlayer:
         self.engine.mute = False
 
     def press(self, key):
-        if key == "Space":
+        if key in ("Space", "Right", "Left"):
             self.engine.stop()
             self.engine.wait_for_property("path", lambda path: path is None)
             return

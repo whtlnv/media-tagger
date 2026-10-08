@@ -34,7 +34,7 @@
 - [x] Pressing `m` on a video mutes it
 - [x] Pressing `m` on a muted video unmutes it
 - [x] Pressing `i`, `f`, `→` or `←` on a playing video does not pause it; only `p` and `Enter` toggle pause
-- [ ] Pressing `→` or `←` on a video stops its playback and sound, like `Space` does
+- [x] Pressing `→` or `←` on a video stops its playback and sound, like `Space` does
 - [ ] The info overlay is hidden when the viewer opens
 - [ ] Pressing `i` shows an overlay with the current filename and position (`3 / 120`)
 - [ ] The info overlay updates its filename and position when moving to another item
