@@ -8,5 +8,5 @@ def _natural_key(path):
 
 
 def media_files(folder):
-    media = [path for path in folder.iterdir() if path.suffix in MEDIA_EXTENSIONS]
+    media = [path for path in folder.iterdir() if path.suffix.lower() in MEDIA_EXTENSIONS]
     return sorted(media, key=_natural_key)

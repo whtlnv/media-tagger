@@ -35,3 +35,13 @@ def test_a_non_media_file_in_the_folder_is_not_in_the_slideshow(tmp_path):
         tmp_path / "IMG_1.jpg",
         tmp_path / "clip_2.mp4",
     ]
+
+
+def test_media_extensions_are_matched_regardless_of_case(tmp_path):
+    for name in ["IMG_1.JPG", "clip_2.Mp4"]:
+        (tmp_path / name).touch()
+
+    assert media_files(tmp_path) == [
+        tmp_path / "IMG_1.JPG",
+        tmp_path / "clip_2.Mp4",
+    ]
