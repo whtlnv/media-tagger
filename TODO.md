@@ -33,11 +33,15 @@
 - [x] Pressing `↓` on a video seeks 10 seconds back
 - [x] Pressing `m` on a video mutes it
 - [x] Pressing `m` on a muted video unmutes it
+- [ ] Pressing `i`, `f`, `→` or `←` on a playing video does not pause it; only `p` and `Enter` toggle pause
+- [ ] Pressing `→` or `←` on a video stops its playback and sound, like `Space` does
 - [ ] The info overlay is hidden when the viewer opens
 - [ ] Pressing `i` shows an overlay with the current filename and position (`3 / 120`)
 - [ ] The info overlay updates its filename and position when moving to another item
 - [ ] Positions of a thousand or more are shown with a thousands separator (`233 / 1,204`)
 - [ ] Pressing `i` while the overlay is shown hides it
+- [ ] In the viewer, a video item plays inside the viewer window, and pressing `Space` from it to an image shows the image with the video stopped
+- [ ] In the viewer, `p`, `↑`, `↓` and `m` on a video item reach the video player (e.g. `m` mutes it), and `Space`/`→`/`←` step the slideshow
 - [ ] The viewer opens fullscreen
 - [ ] Pressing `f` in fullscreen leaves fullscreen
 - [ ] Pressing `f` when not fullscreen enters fullscreen
