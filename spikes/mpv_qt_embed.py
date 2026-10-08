@@ -7,6 +7,7 @@ Self-check:   uv run python spikes/mpv_qt_embed.py --check FILE...
 """
 
 import locale
+import os
 import sys
 
 from PySide6.QtCore import QTimer, Qt, Signal
@@ -86,6 +87,8 @@ class Viewer(MpvWidget):
 
     def record_and_advance(self):
         image = self.grabFramebuffer()
+        if os.environ.get("SPIKE_SAVE_DIR"):
+            image.save(f"{os.environ['SPIKE_SAVE_DIR']}/{self.index:02d}.png")
         centre = image.pixelColor(image.width() // 2, image.height() // 2)
         non_black = sum(
             1
