@@ -20,7 +20,7 @@ class VideoPlayer:
             self._seek(-10)
             return
         if key == "m":
-            self.engine.mute = True
+            self.engine.mute = not self.engine.mute
             return
         self.engine.pause = not self.engine.pause
 

@@ -130,3 +130,12 @@ def test_pressing_m_on_a_video_mutes_it(playing_video):
     player.press("m")
 
     assert engine.mute is True
+
+
+def test_pressing_m_on_a_muted_video_unmutes_it(playing_video):
+    player, engine = playing_video
+    player.press("m")
+
+    player.press("m")
+
+    assert engine.mute is False
