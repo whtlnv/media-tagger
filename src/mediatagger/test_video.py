@@ -21,7 +21,7 @@ def wait_until_playing(engine):
 
 @pytest.fixture
 def playing_video(tmp_path):
-    clip = make_clip(tmp_path / "clip.mp4")
+    clip = make_clip(tmp_path / "clip.mp4", duration=30)
     engine = mpv.MPV(vo="null", ao="null")
     try:
         player = VideoPlayer(engine)
@@ -104,17 +104,10 @@ def test_moving_from_a_video_with_space_stops_its_playback_and_sound(playing_vid
     assert engine.path is None
 
 
-def test_pressing_up_on_a_video_seeks_10_seconds_forward(tmp_path):
-    clip = make_clip(tmp_path / "clip.mp4", duration=30)
-    engine = mpv.MPV(vo="null", ao="null")
-    try:
-        player = VideoPlayer(engine)
-        player.show(clip)
-        wait_until_playing(engine)
-        before = engine.time_pos
+def test_pressing_up_on_a_video_seeks_10_seconds_forward(playing_video):
+    player, engine = playing_video
+    before = engine.time_pos
 
-        player.press("Up")
+    player.press("Up")
 
-        assert engine.time_pos == pytest.approx(before + 10, abs=1)
-    finally:
-        engine.terminate()
+    assert engine.time_pos == pytest.approx(before + 10, abs=1)
