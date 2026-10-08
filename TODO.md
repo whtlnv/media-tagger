@@ -16,7 +16,7 @@
 - [x] Pressing `→` shows the next item
 - [x] Pressing `←` shows the previous item
 - [x] After opening a file path (`IMG_2.jpg` in a folder of `IMG_1`, `IMG_2`, `IMG_3`), `Space` shows `IMG_3.jpg` and `←` from there twice shows `IMG_1.jpg`
-- [ ] Pressing `Space` or `→` on the last item keeps showing the last item
+- [x] Pressing `Space` or `→` on the last item keeps showing the last item
 - [ ] Pressing `←` on the first item keeps showing the first item
 - [ ] An image wider than the screen's aspect ratio is shown scaled to the screen's width, keeping its aspect ratio
 - [ ] An image taller than the screen's aspect ratio is shown scaled to the screen's height, keeping its aspect ratio

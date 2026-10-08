@@ -55,3 +55,14 @@ def test_stepping_from_an_opened_file_moves_relative_to_that_file(tmp_path):
     slideshow.press("Left")
     slideshow.press("Left")
     assert slideshow.current == tmp_path / "IMG_1.jpg"
+
+
+def test_stepping_forward_on_the_last_item_keeps_showing_it(tmp_path):
+    touch(tmp_path, "IMG_1.jpg", "IMG_2.jpg", "IMG_3.jpg")
+    slideshow = Slideshow.open(tmp_path / "IMG_3.jpg")
+
+    slideshow.press("Space")
+    assert slideshow.current == tmp_path / "IMG_3.jpg"
+
+    slideshow.press("Right")
+    assert slideshow.current == tmp_path / "IMG_3.jpg"
