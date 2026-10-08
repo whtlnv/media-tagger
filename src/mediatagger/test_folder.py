@@ -59,3 +59,12 @@ def test_macos_litter_is_not_in_the_slideshow(tmp_path):
         (tmp_path / name).touch()
 
     assert media_files(tmp_path) == [tmp_path / "IMG_1.jpg"]
+
+
+def test_a_subfolder_and_the_media_inside_it_are_not_in_the_slideshow(tmp_path):
+    (tmp_path / "IMG_1.jpg").touch()
+    subfolder = tmp_path / "holiday.jpg"
+    subfolder.mkdir()
+    (subfolder / "IMG_9.jpg").touch()
+
+    assert media_files(tmp_path) == [tmp_path / "IMG_1.jpg"]

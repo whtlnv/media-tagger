@@ -8,7 +8,7 @@
 - [x] Media extensions are matched regardless of case (`IMG_1.JPG` is in the slideshow)
 - [x] A hidden file with a media extension (`.hidden.jpg`) is not in the slideshow
 - [x] macOS litter (`._IMG_1.jpg` AppleDouble files, `.DS_Store`) is not in the slideshow
-- [ ] A subfolder of the opened folder is not in the slideshow, nor are the media inside it
+- [x] A subfolder of the opened folder is not in the slideshow, nor are the media inside it
 - [ ] Opening a folder path shows its first item
 - [ ] Opening a file path shows that file, positioned within its folder's slideshow
 - [ ] Pressing `Space` shows the next item

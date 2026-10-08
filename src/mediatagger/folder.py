@@ -8,7 +8,7 @@ def _natural_key(path):
 
 
 def _is_media(path):
-    return path.suffix.lower() in MEDIA_EXTENSIONS and not path.name.startswith(".")
+    return path.is_file() and path.suffix.lower() in MEDIA_EXTENSIONS and not path.name.startswith(".")
 
 
 def media_files(folder):
