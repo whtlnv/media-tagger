@@ -561,3 +561,12 @@ def test_a_viewer_opened_with_no_path_shows_only_the_launch_text(qtbot):
     qtbot.waitExposed(viewer)
 
     assert [label.text() for label in shown_labels(viewer)] == ["Drop a folder or file here, or press `o` to open"]
+
+
+def test_a_viewer_opened_on_a_folder_shows_its_first_item_and_not_the_launch_text(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    make_image(tmp_path / "IMG_2.png", "blue")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+
+    assert shown_labels(viewer) == []
+    assert centre_colour(viewer) == QColor("red")
