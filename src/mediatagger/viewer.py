@@ -154,6 +154,7 @@ class Viewer(QWidget):
             self.showFullScreen()
 
     def _ask_to_create_library(self, question):
+        self.show()
         return QMessageBox(QMessageBox.Icon.Question, "", question, QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, self).exec() == QMessageBox.StandardButton.Yes
 
     def _pick_folder(self):

@@ -188,3 +188,33 @@ def test_running_the_mediatagger_command_on_a_drive_without_a_tag_library_asks_a
     assert result.returncode == 0, result.stderr
     no_library_status = [DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format(drive.name)]
     assert result.stdout.strip() == f"asked=[True] centre={QColor('red').name()} status={no_library_status}"
+
+NOTE_WHETHER_THE_VIEWER_IS_SHOWN_WHEN_ASKED_SCRIPT = (
+    "import os, sys\n"
+    "drive = sys.argv[1]\n"
+    "os.path.ismount = lambda path: os.fspath(path) == drive\n"
+    "from PySide6.QtCore import QTimer\n"
+    "from PySide6.QtWidgets import QApplication\n"
+    "from mediatagger.viewer import Viewer\n"
+    "app = QApplication([])\n"
+    "viewer_shown_when_asked = []\n"
+    "def decline():\n"
+    "    question = QApplication.activeModalWidget()\n"
+    "    if question is not None:\n"
+    "        viewer_shown_when_asked.append(any(isinstance(window, Viewer) and window.isVisible() for window in QApplication.topLevelWidgets()))\n"
+    "        question.reject()\n"
+    "def report():\n"
+    "    print(f'viewer_shown_when_asked={viewer_shown_when_asked}', flush=True)\n"
+    "    QApplication.closeAllWindows()\n"
+    "    QApplication.quit()\n"
+    "QTimer.singleShot(500, decline)\n"
+    "QTimer.singleShot(1500, report)\n"
+    "sys.argv = ['mediatagger', sys.argv[2]]\n"
+) + RUN_MEDIATAGGER_COMMAND
+
+
+def test_running_the_mediatagger_command_on_a_drive_without_a_tag_library_asks_to_create_one_over_the_already_shown_viewer(tmp_path):
+    drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
+    result = run_python_offscreen(NOTE_WHETHER_THE_VIEWER_IS_SHOWN_WHEN_ASKED_SCRIPT, str(drive), str(folder))
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "viewer_shown_when_asked=[True]"
