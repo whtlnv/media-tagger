@@ -3,7 +3,7 @@ import os
 import sqlite3
 from pathlib import Path
 
-from PySide6.QtCore import QEventLoop, QPoint, QRect, Qt, QTimer
+from PySide6.QtCore import QEvent, QEventLoop, QPoint, QRect, Qt, QTimer
 from PySide6.QtGui import QImageIOHandler, QImageReader, QPainter
 from PySide6.QtWidgets import QApplication, QCompleter, QFileDialog, QHBoxLayout, QLabel, QLineEdit, QMessageBox, QWidget
 
@@ -63,6 +63,11 @@ def _last_word(text):
 class LastWordCompleter(QCompleter):
     def splitPath(self, path):
         return [_last_word(path).removeprefix("-")]
+
+    def eventFilter(self, watched, event):
+        if event.type() == QEvent.Type.KeyPress and event.key() == Qt.Key.Key_Tab:
+            self.widget().setText(self.widget().text().rpartition(" ")[0] + " " + self.popup().currentIndex().data())
+        return super().eventFilter(watched, event)
 
 
 class TagInput(QLineEdit):

@@ -230,3 +230,18 @@ def test_in_the_suggestion_popup_down_twice_highlights_the_second_suggestion_and
     qtbot.keyClick(suggestions, Qt.Key.Key_Up)
 
     assert (highlighted_after_down_twice, suggestions.currentIndex().data()) == (second, first)
+
+
+def test_tab_accepts_the_highlighted_suggestion_replacing_only_the_word_being_typed_beach_fam_down_tab_leaves_beach_family_and_closes_the_popup(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    Library.open(drive).enter(folder / "IMG_2.png", "beach family")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    type_in_tag_prompt(qtbot, viewer, "beach fam")
+    [suggestions] = visible_suggestion_lists(viewer)
+
+    qtbot.keyClick(suggestions, Qt.Key.Key_Down)
+    qtbot.keyClick(suggestions, Qt.Key.Key_Tab)
+
+    [prompt] = visible_tag_prompts(viewer)
+    assert (prompt.text(), visible_suggestion_lists(viewer)) == ("beach family", [])

@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 16:07 · `src/mediatagger/test_viewer_tag_prompt.py::test_tab_accepts_the_highlighted_suggestion_replacing_only_the_word_being_typed_beach_fam_down_tab_leaves_beach_family_and_closes_the_popup`
+- Behavior: `Tab` accepts the highlighted suggestion, replacing only the word being typed: `beach fam`, `↓`, `Tab` leaves `beach family` in the prompt and closes the popup
+- Predicted: AssertionError — prompt text `'family'` (QCompleter replacing the whole line with the completion on highlight/accept), popup closed
+- Actual: AssertionError — `('beach fam', []) != ('beach family', [])`; text untouched, popup closed
+- Type: right-reason mismatch
+- Resolution: Probed: `↓` highlights `family` without changing the text, and `Tab` hides the popup (Qt's popup event filter) but inserts nothing — so the closing half is free and the missing behavior is purely inserting the highlighted suggestion into the last word. Test kept as is.
+
 ## 2026-10-09 16:02 · `src/mediatagger/test_viewer_tag_prompt.py::test_in_the_suggestion_popup_down_twice_highlights_the_second_suggestion_and_up_then_highlights_the_first`
 - Behavior: In the suggestion popup, `↓` twice highlights the second suggestion and `↑` then highlights the first
 - Predicted: passes on first run — QCompleter's popup event filter already moves the current row on ↓/↑ (↓ with nothing highlighted picks row 0)
