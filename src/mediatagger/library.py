@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS item_tags (item_id INTEGER, tag_id INTEGER);
 """
 
 
-def _tags_db(root):
+def tags_db_path(root):
     return root / LIBRARY_FOLDER / "tags.db"
 
 
@@ -61,7 +61,7 @@ class Library:
 
     @classmethod
     def create(cls, root):
-        tags_db = _tags_db(root)
+        tags_db = tags_db_path(root)
         tags_db.parent.mkdir(exist_ok=True)
         drive_id = str(uuid.uuid4())
         _init_tags_db(tags_db, drive_id=drive_id, schema_version=str(cls.schema_version))
@@ -69,7 +69,7 @@ class Library:
 
     @classmethod
     def open(cls, root):
-        tags_db = _tags_db(root)
+        tags_db = tags_db_path(root)
         connection = sqlite3.connect(tags_db)
         try:
             connection.execute("PRAGMA journal_mode = DELETE")
