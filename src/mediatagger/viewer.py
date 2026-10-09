@@ -177,11 +177,10 @@ class Viewer(QWidget):
 
     def _open_library(self, path):
         drive = next(folder for folder in (path, *path.parents) if self.is_mount_point(folder))
-        library_dir = drive / ".mediatagger"
         if drive == Path("/"):
             self.library_label.setText(NO_LIBRARY_VIEWING_ONLY_TEXT)
             return
-        if not library_dir.exists():
+        if not (drive / ".mediatagger").exists():
             if not self.ask_to_create_library(CREATE_LIBRARY_QUESTION.format(drive.name)):
                 self.library_label.setText(DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format(drive.name))
                 return
