@@ -71,22 +71,25 @@ class Viewer(QWidget):
         self.info.hide()
         self.placeholder = QLabel(UNSUPPORTED_TEXT, self)
         self.placeholder.setStyleSheet(LABEL_STYLE)
-        self.status_bar = QWidget(self)
-        self.library_label = QLabel(NO_LIBRARY_TEXT, self.status_bar)
+        self._build_status_bar()
         self.read_only_banner = QLabel(READ_ONLY_BANNER_TEXT, self)
         self.read_only_banner.hide()
-        self.read_only_status = QLabel(READ_ONLY_STATUS_TEXT, self.status_bar)
-        self.read_only_status.hide()
-        status_layout = QHBoxLayout(self.status_bar)
-        status_layout.setContentsMargins(CORNER_MARGIN, 0, CORNER_MARGIN, CORNER_MARGIN)
-        status_layout.addWidget(self.library_label)
-        status_layout.addWidget(self.read_only_status)
         self.setWindowState(Qt.WindowState.WindowFullScreen)
         self.setAcceptDrops(True)
         if path is None:
             self.placeholder.setText("Drop a folder or file here, or press o to open")
             return
         self._open(path)
+
+    def _build_status_bar(self):
+        self.status_bar = QWidget(self)
+        self.library_label = QLabel(NO_LIBRARY_TEXT, self.status_bar)
+        self.read_only_status = QLabel(READ_ONLY_STATUS_TEXT, self.status_bar)
+        self.read_only_status.hide()
+        status_layout = QHBoxLayout(self.status_bar)
+        status_layout.setContentsMargins(CORNER_MARGIN, 0, CORNER_MARGIN, CORNER_MARGIN)
+        status_layout.addWidget(self.library_label)
+        status_layout.addWidget(self.read_only_status)
 
     def closeEvent(self, event):
         if self.surface:
