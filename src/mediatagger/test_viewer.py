@@ -591,3 +591,25 @@ def test_pressing_o_on_the_launch_screen_opens_a_folder_picker(qtbot):
 
     assert isinstance(pickers[0], QFileDialog)
     assert pickers[0].fileMode() == QFileDialog.FileMode.Directory
+
+
+def test_pressing_a_key_other_than_o_on_the_launch_screen_opens_no_folder_picker_and_keeps_the_launch_text(qtbot):
+    viewer = Viewer(player_options=SILENT)
+    qtbot.addWidget(viewer)
+    viewer.show()
+    qtbot.waitExposed(viewer)
+    launch_text = [label.text() for label in shown_labels(viewer)]
+    modals = []
+
+    def close_whatever_is_open():
+        modal = QApplication.activeModalWidget()
+        modals.append(modal)
+        if modal is not None:
+            modal.reject()
+
+    QTimer.singleShot(200, close_whatever_is_open)
+    qtbot.keyClick(viewer, Qt.Key.Key_X)
+    qtbot.waitUntil(lambda: len(modals) == 1)
+
+    assert modals == [None]
+    assert [label.text() for label in shown_labels(viewer)] == launch_text

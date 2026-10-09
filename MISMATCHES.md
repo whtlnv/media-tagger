@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-08 20:03 · `src/mediatagger/test_viewer.py::test_pressing_a_key_other_than_o_on_the_launch_screen_opens_no_folder_picker_and_keeps_the_launch_text`
+- Behavior: a key other than `o` (e.g. `x`) on the launch screen opens no folder picker and leaves the launch text showing
+- Predicted: passes on first run — the launch-screen branch of `keyPressEvent` already guards `_pick_folder` behind `Key_O` and returns for every other key
+- Actual: passed on first run, as predicted
+- Type: passed unexpectedly
+- Resolution: the behavior was delivered as a side effect of the `o` picker cycle, so this item has nothing left to drive and cannot go red. I kept the test as a regression guard, not a rewrite, and checked it isn't vacuous: temporarily making every key open the picker made it fail (`[QFileDialog] != [None]`), then I restored `viewer.py`.
+
 ## 2026-10-08 20:05 · `src/mediatagger/test_viewer.py::test_pressing_o_on_the_launch_screen_opens_a_folder_picker`
 - Behavior: Pressing `o` on the launch screen opens a folder picker
 - Predicted: AssertionError, `pickers[0]` is None because nothing modal opens
