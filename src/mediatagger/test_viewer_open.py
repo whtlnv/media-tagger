@@ -120,6 +120,10 @@ def drive_with_a_tag_library_holding_one_image(tmp_path):
     return drive, folder
 
 
+def app_runs_from(drive, monkeypatch):
+    monkeypatch.setattr(mediatagger, "__file__", str(drive / "app" / "mediatagger" / "__init__.py"))
+
+
 def viewer_on_drive(qtbot, folder, drive, ask_to_create_library):
     viewer = Viewer(
         folder, player_options=SILENT, is_mount_point=lambda path: path == drive,
@@ -221,7 +225,7 @@ def test_opening_a_folder_on_the_system_disk_never_asks_to_create_a_library_and_
 
 def test_opening_a_folder_on_the_drive_the_app_runs_from_never_asks_to_create_a_library_writes_nothing_and_says_no_library_viewing_only(qtbot, tmp_path, monkeypatch):
     drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
-    monkeypatch.setattr(mediatagger, "__file__", str(drive / "app" / "mediatagger" / "__init__.py"))
+    app_runs_from(drive, monkeypatch)
     asked = []
 
     def decline(question):
@@ -237,7 +241,7 @@ def test_opening_a_folder_on_the_drive_the_app_runs_from_never_asks_to_create_a_
 
 def test_opening_a_folder_on_the_drive_the_app_runs_from_that_already_has_a_tag_library_does_not_open_it_and_says_no_library_viewing_only(qtbot, tmp_path, monkeypatch):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    monkeypatch.setattr(mediatagger, "__file__", str(drive / "app" / "mediatagger" / "__init__.py"))
+    app_runs_from(drive, monkeypatch)
 
     viewer = viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
