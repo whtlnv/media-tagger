@@ -437,3 +437,14 @@ def test_a_word_already_entered_in_upper_case_is_not_suggested_again_typing_uppe
 
     [suggestions] = visible_suggestion_lists(viewer)
     assert listed(suggestions) == ["bird"]
+
+
+def test_a_removal_already_entered_is_not_suggested_again_on_an_item_tagged_sunset_and_sky_typing_minus_sunset_minus_s_lists_sky_only(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "sunset sky")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    type_in_tag_prompt(qtbot, viewer, "-sunset -s")
+
+    [suggestions] = visible_suggestion_lists(viewer)
+    assert listed(suggestions) == ["sky"]
