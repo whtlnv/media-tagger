@@ -3,7 +3,7 @@ from pathlib import Path
 
 from PySide6.QtCore import QEventLoop, QPoint, QRect, Qt, QTimer
 from PySide6.QtGui import QImageIOHandler, QImageReader, QPainter
-from PySide6.QtWidgets import QFileDialog, QHBoxLayout, QLabel, QMessageBox, QWidget
+from PySide6.QtWidgets import QFileDialog, QHBoxLayout, QLabel, QLineEdit, QMessageBox, QWidget
 
 from mediatagger.folder import is_video
 from mediatagger.library import LIBRARY_FOLDER, Library
@@ -160,6 +160,9 @@ class Viewer(QWidget):
             self.slideshow.press("i")
             self._show_info()
             return
+        if event.key() == Qt.Key.Key_T:
+            self._open_tag_prompt()
+            return
         if event.key() in VIDEO_KEYS:
             self.video_player.press(VIDEO_KEYS[event.key()])
             return
@@ -169,6 +172,10 @@ class Viewer(QWidget):
         self.slideshow.press(key)
         self.video_player.press(key)
         self._refresh()
+
+    def _open_tag_prompt(self):
+        prompt = QLineEdit(" ".join(Library.open(self.library_drive).tags(self.slideshow.current)), self)
+        prompt.show()
 
     def _toggle_fullscreen(self):
         if self.isFullScreen():
@@ -229,6 +236,7 @@ class Viewer(QWidget):
                 self._show_library_status(DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format(drive.name), read_only=False)
                 return
             Library.create(drive)
+        self.library_drive = drive
         self._show_library_status(LIBRARY_TEXT.format(drive.name), read_only)
 
     def _show_library_status(self, text, read_only):

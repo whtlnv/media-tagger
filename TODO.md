@@ -25,7 +25,7 @@
 - [x] Opening a schema-version-1 library on a read-only drive does not fail: nothing is written and its files report no tags
 - [x] A tag change is visible to a separate connection to `tags.db` as soon as it is entered, while the library stays open (each change is committed at once)
 - [x] A library's `tags.db` uses SQLite's rollback journal, not WAL (it lives on removable exFAT media)
-- [ ] In the viewer on a writable drive with a tag library, pressing `t` opens a tag prompt that shows the current file's tags (e.g. `beach family`)
+- [x] In the viewer on a writable drive with a tag library, pressing `t` opens a tag prompt that shows the current file's tags (e.g. `beach family`)
 - [ ] In the viewer, pressing `t` on a file with no tags opens the tag prompt showing no tags
 - [ ] Opening a folder on a drive whose `.mediatagger` folder exists but holds no `tags.db` asks before creating the library (having a library means having `tags.db`)
 - [ ] Typing `beach family` in the tag prompt and pressing `Enter` closes the prompt and records both tags for the current file in the drive's `tags.db` (opening that library afterwards reports them)

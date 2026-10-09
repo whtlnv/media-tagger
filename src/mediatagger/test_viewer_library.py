@@ -2,9 +2,9 @@ import sqlite3
 from contextlib import contextmanager
 from pathlib import Path
 
-from PySide6.QtCore import QPoint, QRect
+from PySide6.QtCore import QPoint, QRect, Qt
 from PySide6.QtGui import QColor
-from PySide6.QtWidgets import QLabel
+from PySide6.QtWidgets import QLabel, QLineEdit
 
 from mediatagger.library import Library
 from mediatagger.test_video import make_clip
@@ -426,3 +426,15 @@ def test_after_viewing_a_drive_with_a_tag_library_opening_a_folder_on_a_read_onl
 
     assert READ_ONLY_STATUS_TEXT in status
     assert LIBRARY_TEXT.format("BACKUP") not in status
+
+
+def test_pressing_t_in_the_viewer_on_a_writable_drive_with_a_tag_library_opens_a_tag_prompt_showing_the_current_files_tags(qtbot, tmp_path):
+    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    Library.create(drive).enter(folder / "IMG_1.png", "family beach")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    assert [prompt.text() for prompt in viewer.findChildren(QLineEdit) if prompt.isVisible()] == ["beach family"]
