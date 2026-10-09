@@ -23,6 +23,18 @@ In the viewer, `t` opens a prompt showing the file's current tags. Entering `bea
 
 The tag prompt suggests existing tags as you type, most used first. Typing a namespace prefix (`people:`) lists every tag under it.
 
+- Suggestions come from the current drive's library, ordered by how many items carry the tag (ties alphabetical).
+- Completion works on the word being typed — the last space-separated token. In `beach fam` it completes `fam` → `family` and keeps `beach `; accepting replaces only that token.
+- A namespace prefix (`people:`) lists every tag under it, at any depth (`people:ana`, `people:luis`, …).
+- A token starting with `-` (removal) suggests from the current item's own tags and keeps the `-`.
+- Matching is case-insensitive. Tokens already entered, and tags the item already has (for additions), are not suggested again.
+- `↓`/`↑` move through the suggestions; `Tab` or `Enter` accepts the highlighted one. `Enter` with no popup saves as before.
+- The first `Esc` closes the popup; `Esc` with no popup cancels the prompt as before. `Esc` never quits the app while the prompt is open. While the prompt is open the slideshow and video ignore every key, including the arrows the popup uses.
+- The popup matches the overlays' style, is readable over black and bright images, and is never clipped off-screen (it opens upward from the prompt near the bottom).
+- On a drive with no tags yet, no popup appears.
+- Typing stays responsive with thousands of tags: one SQL query per keystroke, or a cache per prompt-open invalidated on save.
+- If saving fails because the drive has gone away (`sqlite3.Error` or `OSError` from the library), the prompt stays open with its text and the status bar says "Couldn't save tags — is the drive still connected?".
+
 ## Phase 6 — Database backups
 
 On start and on exit the library database is copied to `~/.local/share/mediatagger/backups/<drive_id>/`, keeping the 10 most recent. The status bar shows the backup running and finishing. If the drive's database is missing or corrupt, the app offers to restore from the latest backup.
