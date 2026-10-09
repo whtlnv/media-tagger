@@ -19,7 +19,7 @@
 - [x] Opening a folder on a read-only drive that has a tag library shows a banner saying tags can't be saved (the test makes the mount point read-only and restores it afterwards)
 - [x] Opening a folder on a writable drive that has a tag library shows no read-only banner
 - [x] A library's drive id survives the drive being mounted at a different path: a library created on one root, whose `.mediatagger` folder is then copied to another root, reports the same drive id there (so the id is stored in the drive's tags.db, not derived from the path)
-- [ ] `tags.db` of a newly created library is an SQLite database whose `meta` table holds the drive id and the schema version, readable with Python's `sqlite3` by another program
+- [x] `tags.db` of a newly created library is an SQLite database whose `meta` table holds the drive id and the schema version, readable with Python's `sqlite3` by another program
 - [ ] Accepting "Create a tag library on <drive>?" in the viewer creates a real library: its `tags.db` reports a drive id when opened as a library
 - [ ] Opening a folder on a read-only drive still shows its slideshow at the first item
 - [ ] On a read-only drive the status bar says tags can't be saved (e.g. `Read-only: tags can't be saved`)

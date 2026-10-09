@@ -1,4 +1,5 @@
 import shutil
+import sqlite3
 
 from mediatagger.library import Library
 
@@ -51,3 +52,17 @@ def test_a_library_reports_the_same_drive_id_when_its_drive_is_mounted_at_a_diff
     remounted = Library.open(new_mount)
 
     assert remounted.drive_id == drive_id
+
+
+def test_tags_db_of_a_newly_created_library_is_an_sqlite_database_whose_meta_table_holds_the_drive_id_and_schema_version(tmp_path):
+    created = Library.create(tmp_path)
+    created.close()
+
+    connection = sqlite3.connect(tmp_path / ".mediatagger" / "tags.db")
+    try:
+        meta = dict(connection.execute("SELECT key, value FROM meta"))
+    finally:
+        connection.close()
+
+    assert meta["drive_id"] == created.drive_id
+    assert int(meta["schema_version"]) == Library.schema_version

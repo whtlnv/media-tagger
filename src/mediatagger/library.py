@@ -1,3 +1,6 @@
+import sqlite3
+
+
 def _tags_db(root):
     return root / ".mediatagger" / "tags.db"
 
@@ -12,12 +15,25 @@ class Library:
     def create(cls, root):
         tags_db = _tags_db(root)
         tags_db.parent.mkdir()
-        tags_db.write_text(str(root))
-        return cls(str(root))
+        drive_id = str(root)
+        connection = sqlite3.connect(tags_db)
+        with connection:
+            connection.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
+            connection.executemany(
+                "INSERT INTO meta (key, value) VALUES (?, ?)",
+                [("drive_id", drive_id), ("schema_version", str(cls.schema_version))],
+            )
+        connection.close()
+        return cls(drive_id)
 
     @classmethod
     def open(cls, root):
-        return cls(_tags_db(root).read_text())
+        connection = sqlite3.connect(_tags_db(root))
+        (drive_id,) = connection.execute(
+            "SELECT value FROM meta WHERE key = 'drive_id'"
+        ).fetchone()
+        connection.close()
+        return cls(drive_id)
 
     def close(self):
         pass
