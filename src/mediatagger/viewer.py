@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from PySide6.QtCore import QPoint, QRect, Qt
-from PySide6.QtGui import QImageReader, QPainter
+from PySide6.QtGui import QImageIOHandler, QImageReader, QPainter
 from PySide6.QtWidgets import QFileDialog, QLabel, QWidget
 
 from mediatagger.folder import is_video
@@ -28,6 +28,8 @@ def decode_fitted(path, bounds):
     reader = QImageReader(str(path))
     reader.setAutoTransform(True)
     size = reader.size()
+    if reader.transformation() & QImageIOHandler.Transformation.TransformationRotate90:
+        bounds = bounds.transposed()
     if size.isValid() and (size.width() > bounds.width() or size.height() > bounds.height()):
         reader.setScaledSize(size.scaled(bounds, Qt.AspectRatioMode.KeepAspectRatio))
     return reader.read()

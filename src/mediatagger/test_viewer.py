@@ -617,6 +617,14 @@ def test_a_jpeg_smaller_than_the_window_tagged_rotate_90_is_drawn_upright_taller
     assert frame.pixelColor(middle_x - 80, middle_y) == QColor("black")
 
 
+def test_a_jpeg_larger_than_the_window_tagged_rotate_90_is_decoded_upright_fitted_to_the_window(tmp_path):
+    make_jpeg_tagged_rotate_90(tmp_path / "IMG_1.jpg", "red", width=800, height=400)
+
+    decoded = decode_fitted(tmp_path / "IMG_1.jpg", QSize(400, 300))
+
+    assert decoded.size() == QSize(150, 300)
+
+
 def test_the_viewer_decodes_the_shown_image_once_however_often_it_repaints(qtbot, tmp_path, monkeypatch):
     make_image(tmp_path / "IMG_1.png", "red")
     decodes = []
