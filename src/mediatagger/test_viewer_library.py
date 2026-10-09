@@ -577,10 +577,9 @@ def test_typing_space_i_p_f_m_in_the_open_tag_prompt_goes_into_it_and_leaves_the
 
 
 def test_typing_p_and_m_in_the_tag_prompt_open_over_a_playing_video_neither_pauses_nor_mutes_it(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
     [folder] = make_folders(drive, "Clips")
     make_clip(folder / "IMG_1.mp4", duration=30)
-    Library.create(drive)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     make_surface_ready(viewer)
     engine = viewer.video_player.engine
@@ -594,10 +593,9 @@ def test_typing_p_and_m_in_the_tag_prompt_open_over_a_playing_video_neither_paus
 
 
 def test_pressing_enter_in_the_tag_prompt_over_a_playing_video_saves_the_tags_without_pausing_it(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
     [folder] = make_folders(drive, "Clips")
     make_clip(folder / "IMG_1.mp4", duration=30)
-    Library.create(drive)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     make_surface_ready(viewer)
     engine = viewer.video_player.engine
@@ -610,11 +608,10 @@ def test_pressing_enter_in_the_tag_prompt_over_a_playing_video_saves_the_tags_wi
 
 
 def test_arrow_keys_in_the_tag_prompt_open_over_a_paused_video_neither_move_the_slideshow_nor_seek_it(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
     [folder] = make_folders(drive, "Clips")
     make_clip(folder / "IMG_1.mp4", duration=60)
     make_image(folder / "IMG_2.png", "red")
-    Library.create(drive)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     make_surface_ready(viewer)
     engine = viewer.video_player.engine
@@ -670,10 +667,10 @@ def test_pressing_esc_in_the_tag_prompt_also_hides_its_shown_tags(qtbot, tmp_pat
 
 
 def test_pressing_t_on_a_video_shows_the_tag_prompt_and_its_shown_tags_above_the_video_surface(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
     [folder] = make_folders(drive, "Clips")
     make_clip(folder / "IMG_1.mp4")
-    Library.create(drive).enter(folder / "IMG_1.mp4", "beach family")
+    Library.open(drive).enter(folder / "IMG_1.mp4", "beach family")
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     qtbot.waitUntil(lambda: shows_video_surface(viewer))
 
