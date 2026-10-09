@@ -70,6 +70,7 @@ class Viewer(QWidget):
         self.app_location = app_location
         self.ask_to_create_library = ask_to_create_library or self._ask_to_create_library
         self.declined_drives = set()
+        self.library_drive = None
         self.folder_picker = folder_picker or self._pick_folder
         self.slideshow = None
         self.video_player = VideoPlayer(new_engine(**{**PLAYER_OPTIONS, **(player_options or {})}))
@@ -199,6 +200,8 @@ class Viewer(QWidget):
         self.slideshow.press(key)
         self.video_player.press(key)
         self._refresh()
+        if self.library_drive:
+            self._show_tag_overlay(Library.open(self.library_drive), self.slideshow.current)
 
     def _tag_prompt_has_focus(self):
         return self.focusWidget() is self.tag_input and self.tag_input.isVisible()

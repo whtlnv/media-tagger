@@ -730,3 +730,19 @@ def test_after_esc_closes_the_tag_prompt_on_a_file_with_no_tags_the_tag_overlay_
 
     assert visible_tag_prompts(viewer) == []
     assert shown_texts(viewer) == []
+
+
+def test_moving_with_space_from_a_file_tagged_beach_family_to_an_untagged_one_hides_the_tag_overlay_and_left_back_shows_beach_family_again(qtbot, tmp_path):
+    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    make_image(folder / "IMG_2.png", "blue")
+    Library.create(drive)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    enter_in_tag_prompt(qtbot, viewer, "beach family")
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Space)
+    assert shown_texts(viewer) == []
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Left)
+    assert shown_texts(viewer) == ["beach family"]

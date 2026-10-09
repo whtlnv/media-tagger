@@ -47,7 +47,7 @@
 - [x] After typing `beach family` in the tag prompt and pressing `Enter`, a tag overlay — its own label in a corner of the viewer, not part of the tag prompt — shows `beach family` while the prompt is closed (opening the prompt again hides the overlay, so the tags still appear on screen only once while the prompt is open)
 - [x] After `Esc` closes the tag prompt on a file tagged `beach family`, the tag overlay shows `beach family` again
 - [x] The tag overlay is hidden on a file with no tags
-- [ ] Moving with `Space` from a tagged file to an untagged one hides the tag overlay, and `←` back shows that file's tags again
+- [x] Moving with `Space` from a tagged file to an untagged one hides the tag overlay, and `←` back shows that file's tags again
 - [ ] Opening a folder whose first file was tagged in an earlier session shows that file's tags in the tag overlay (a new viewer on the same drive)
 - [ ] The tag overlay sits in the top-right corner, `CORNER_MARGIN` from the top and right edges, with the same look as the info overlay, and does not overlap the info overlay or the read-only banner
 - [ ] The tag overlay stays visible on top of a video item
