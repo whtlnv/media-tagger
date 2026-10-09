@@ -176,7 +176,7 @@ class Viewer(QWidget):
     def _open_tag_prompt(self):
         library = Library.open(self.library_drive)
         path = self.slideshow.current
-        prompt = QLineEdit(" ".join(library.tags(path)), self)
+        prompt = QLineEdit(self)
         prompt.returnPressed.connect(lambda: self._record_tags(library, path, prompt))
         prompt.show()
 

@@ -30,7 +30,7 @@
 - [x] Opening a folder on a drive whose `.mediatagger` folder exists but holds no `tags.db` asks before creating the library (having a library means having `tags.db`)
 - [x] Agreeing to create a library on a drive whose `.mediatagger` folder exists but holds no `tags.db` creates the library there (the status bar names the drive)
 - [x] Typing `beach family` in the tag prompt and pressing `Enter` closes the prompt and records both tags for the current file in the drive's `tags.db` (opening that library afterwards reports them)
-- [ ] On a file tagged `beach family`, typing `-family` in the tag prompt and pressing `Enter` leaves the file tagged only `beach`: the prompt's input starts empty and the current tags are shown beside it as text, not as editable input
+- [x] On a file tagged `beach family`, typing `-family` in the tag prompt and pressing `Enter` leaves the file tagged only `beach`: the prompt's input starts empty and the current tags are shown beside it as text, not as editable input
   - predicted-contradiction: `src/mediatagger/test_viewer_library.py::test_pressing_t_in_the_viewer_on_a_writable_drive_with_a_tag_library_opens_a_tag_prompt_showing_the_current_files_tags` — asserts: on a file tagged `beach family`, the tag prompt's editable input holds `beach family` — retired-by: "the prompt's input starts empty and the current tags are shown beside it as text, not as editable input"
 - [ ] Pressing `t` again after closing the tag prompt leaves only one tag prompt in the viewer (prompts do not pile up)
 - [ ] The tag prompt is drawn inside the viewer window (not a separate dialog), centred near the bottom above the status bar, with the overlays' look (white text on a dark translucent background) and its input focused

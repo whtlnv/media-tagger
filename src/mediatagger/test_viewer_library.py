@@ -452,18 +452,6 @@ def test_after_viewing_a_drive_with_a_tag_library_opening_a_folder_on_a_read_onl
     assert LIBRARY_TEXT.format("BACKUP") not in status
 
 
-def test_pressing_t_in_the_viewer_on_a_writable_drive_with_a_tag_library_opens_a_tag_prompt_showing_the_current_files_tags(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
-    Library.create(drive).enter(folder / "IMG_1.png", "family beach")
-    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
-
-    qtbot.keyClick(viewer, Qt.Key.Key_T)
-
-    assert visible_tag_prompt_texts(viewer) == ["beach family"]
-
-
 def test_pressing_t_in_the_viewer_on_a_file_with_no_tags_opens_the_tag_prompt_showing_no_tags(qtbot, tmp_path):
     [drive] = make_folders(tmp_path, "MEDIATAGGER")
     [folder] = make_folders(drive, "Photos")
@@ -490,3 +478,18 @@ def test_typing_beach_family_in_the_tag_prompt_and_pressing_enter_closes_it_and_
 
     assert visible_tag_prompt_texts(viewer) == []
     assert Library.open(drive).tags(folder / "IMG_1.png") == ["beach", "family"]
+
+
+def test_on_a_file_tagged_beach_family_typing_minus_family_in_the_tag_prompt_and_pressing_enter_leaves_it_tagged_only_beach(qtbot, tmp_path):
+    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    Library.create(drive).enter(folder / "IMG_1.png", "beach family")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+    [prompt] = [prompt for prompt in viewer.findChildren(QLineEdit) if prompt.isVisible()]
+
+    qtbot.keyClicks(prompt, "-family")
+    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+
+    assert Library.open(drive).tags(folder / "IMG_1.png") == ["beach"]
