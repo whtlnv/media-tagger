@@ -1,9 +1,6 @@
 # TODO
 
-- [ ] While a slideshow is showing, a status bar is visible along the bottom edge of the window, with the current item still shown above it
-  - predicted-contradiction: `src/mediatagger/test_viewer.py::test_a_viewer_opened_on_a_folder_whose_first_item_is_a_video_fills_its_window_with_the_video_surface_and_shows_no_unsupported_placeholder` — asserts: the video surface's geometry equals the whole viewer rect — retired-by: "a status bar is visible along the bottom edge of the window, with the current item still shown above it"
-  - predicted-contradiction: `src/mediatagger/test_viewer.py::test_a_video_reached_from_an_image_fills_the_viewer_window` — asserts: the video surface's geometry equals the whole viewer rect — retired-by: "a status bar is visible along the bottom edge of the window, with the current item still shown above it"
-  - predicted-contradiction: `src/mediatagger/test_viewer.py::test_the_unsupported_placeholder_sits_at_the_centre_of_the_window_and_stays_there_on_resize` — asserts: the unsupported placeholder is centred on the whole window (within 2px) — retired-by: "with the current item still shown above it"
+- [ ] While a slideshow is showing, a status bar is visible along the bottom edge of the window, overlaid on the current item, which still fills the whole window (images, videos and the unsupported placeholder lay out as before)
 - [ ] On the launch screen (no path given), the status bar says no library is open
 - [ ] Opening a folder two levels below a drive's mount point, where the mount point has `.mediatagger/tags.db`, names that drive in the status bar as the open library (e.g. `Library: MEDIATAGGER`) (the test treats a temp folder as the drive's mount point; tests never consult real drives)
 - [ ] Opening a folder that is itself a drive's mount point, with `.mediatagger/tags.db`, names that folder in the status bar as the open library
