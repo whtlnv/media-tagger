@@ -5,6 +5,7 @@ from PySide6.QtCore import QPoint, QRect, Qt
 from PySide6.QtGui import QImageIOHandler, QImageReader, QPainter
 from PySide6.QtWidgets import QFileDialog, QLabel, QWidget
 
+import mediatagger
 from mediatagger.folder import is_video
 from mediatagger.library import Library
 from mediatagger.mpv_surface import MpvSurface
@@ -181,7 +182,7 @@ class Viewer(QWidget):
 
     def _open_library(self, path):
         drive = next(folder for folder in (path, *path.parents) if self.is_mount_point(folder))
-        if drive == Path("/"):
+        if drive == Path("/") or drive in Path(mediatagger.__file__).parents:
             self.library_label.setText(NO_LIBRARY_VIEWING_ONLY_TEXT)
             return
         read_only = not os.access(drive, os.W_OK)

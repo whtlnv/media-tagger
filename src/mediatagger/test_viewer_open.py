@@ -6,6 +6,7 @@ from PySide6.QtCore import QMimeData, QPointF, Qt, QTimer, QUrl
 from PySide6.QtGui import QColor, QDragEnterEvent, QDropEvent
 from PySide6.QtWidgets import QApplication, QFileDialog, QLabel
 
+import mediatagger
 from mediatagger.library import Library
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import (
@@ -215,6 +216,22 @@ def test_opening_a_folder_on_the_system_disk_never_asks_to_create_a_library_and_
     qtbot.addWidget(viewer)
 
     assert asked == []
+    assert status_bar_texts(viewer) == [NO_LIBRARY_VIEWING_ONLY_TEXT]
+
+
+def test_opening_a_folder_on_the_drive_the_app_runs_from_never_asks_to_create_a_library_writes_nothing_and_says_no_library_viewing_only(qtbot, tmp_path, monkeypatch):
+    drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
+    monkeypatch.setattr(mediatagger, "__file__", str(drive / "app" / "mediatagger" / "__init__.py"))
+    asked = []
+
+    def decline(question):
+        asked.append(question)
+        return False
+
+    viewer = viewer_on_drive(qtbot, folder, drive, decline)
+
+    assert asked == []
+    assert not (drive / ".mediatagger").exists()
     assert status_bar_texts(viewer) == [NO_LIBRARY_VIEWING_ONLY_TEXT]
 
 
