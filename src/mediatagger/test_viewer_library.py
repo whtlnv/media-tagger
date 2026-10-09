@@ -14,7 +14,7 @@ from mediatagger.test_viewer import centre_colour, make_image, make_surface_read
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger.viewer import (
     APP_PACKAGE, CORNER_MARGIN, CREATE_LIBRARY_QUESTION, DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT, LIBRARY_TEXT, NO_LIBRARY_TEXT, NO_LIBRARY_VIEWING_ONLY_TEXT,
-    READ_ONLY_BANNER_TEXT, READ_ONLY_STATUS_TEXT, Viewer,
+    READ_ONLY_BANNER_TEXT, READ_ONLY_STATUS_TEXT, TAGS_CANT_BE_SAVED_HERE_TEXT, Viewer,
 )
 
 
@@ -951,3 +951,13 @@ def test_pressing_t_on_a_drive_whose_tag_library_was_declined_says_tags_cant_be_
     qtbot.keyClick(viewer, Qt.Key.Key_T)
 
     assert "Tags can't be saved here" in status_bar_texts(viewer)
+
+
+def test_pressing_t_on_a_read_only_drive_with_a_tag_library_says_tags_cant_be_saved_here_in_the_status_bar(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    with made_read_only(drive):
+        viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+        qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+        assert TAGS_CANT_BE_SAVED_HERE_TEXT in status_bar_texts(viewer)

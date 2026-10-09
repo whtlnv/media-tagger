@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 11:43 · `src/mediatagger/test_viewer_library.py::test_pressing_t_on_a_read_only_drive_with_a_tag_library_says_tags_cant_be_saved_here_in_the_status_bar`
+- Behavior: On a read-only drive with a tag library, pressing `t` also makes the status bar say "Tags can't be saved here"
+- Predicted: pass — the general `else: self.cant_save_status.show()` branch from df162dc already covers read-only (`_tags_can_be_saved_here` is False when the read-only banner shows)
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: Not vacuous — with the `show()` call removed it fails (`"Tags can't be saved here" not in ['Library: MEDIATAGGER', "Read-only — tags can't be saved"]`); the behavior already shipped in the previous cycle, so the test is kept as a pin and needs no green step.
+
 ## 2026-10-09 11:33 · `src/mediatagger/test_viewer_library.py::test_pressing_t_on_the_drive_the_app_runs_from_opens_no_tag_prompt_and_writes_nothing_to_that_drive`
 - Behavior: On the drive the app itself runs from, pressing `t` opens no tag prompt and nothing is written to that drive
 - Predicted: passes (no right-reason failure available) — `_never_holds_a_library` already treats the app's own drive as viewing only, so `library` is None and `_tags_can_be_saved_here` blocks `t`
