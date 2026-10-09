@@ -30,6 +30,11 @@ def frame_in(viewer, widget):
     return QRect(widget.mapTo(viewer, QPoint()), widget.size())
 
 
+def resize_and_wait(qtbot, viewer, width, height):
+    viewer.resize(width, height)
+    qtbot.waitUntil(lambda: viewer.width() == width)
+
+
 def make_tag_library_drive(drive):
     drive.mkdir(parents=True)
     Library.create(drive)
@@ -410,8 +415,7 @@ def test_on_a_read_only_drive_with_a_tag_library_the_read_only_banner_sits_centr
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     with made_read_only(drive):
         viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
-    viewer.resize(1600, 900)
-    qtbot.waitUntil(lambda: viewer.width() == 1600)
+    resize_and_wait(qtbot, viewer, 1600, 900)
 
     [banner] = shown_labels(viewer)
     frame = frame_in(viewer, banner)
@@ -524,8 +528,7 @@ def test_pressing_t_again_after_closing_the_tag_prompt_shows_only_one_tag_prompt
 def test_the_tag_prompt_is_drawn_inside_the_viewer_window_centred_horizontally_near_the_bottom_just_above_the_status_bar(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
-    viewer.resize(1600, 900)
-    qtbot.waitUntil(lambda: viewer.width() == 1600)
+    resize_and_wait(qtbot, viewer, 1600, 900)
 
     qtbot.keyClick(viewer, Qt.Key.Key_T)
 
@@ -743,8 +746,7 @@ def test_the_tag_overlay_sits_in_the_top_right_corner_a_corner_margin_from_the_t
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     Library.open(drive).enter(folder / "IMG_1.png", "beach family")
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
-    viewer.resize(1600, 900)
-    qtbot.waitUntil(lambda: viewer.width() == 1600)
+    resize_and_wait(qtbot, viewer, 1600, 900)
 
     [tag_overlay] = shown_labels(viewer)
     frame = frame_in(viewer, tag_overlay)
@@ -759,8 +761,7 @@ def test_after_space_to_a_file_with_longer_tags_the_tag_overlay_still_ends_a_cor
     library.enter(folder / "IMG_1.png", "beach")
     library.enter(folder / "IMG_2.png", "beach family holiday grandparents sunset")
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
-    viewer.resize(1600, 900)
-    qtbot.waitUntil(lambda: viewer.width() == 1600)
+    resize_and_wait(qtbot, viewer, 1600, 900)
 
     qtbot.keyClick(viewer, Qt.Key.Key_Space)
 
@@ -783,11 +784,9 @@ def test_after_the_window_is_resized_the_tag_overlay_is_still_a_corner_margin_fr
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     Library.open(drive).enter(folder / "IMG_1.png", "beach family")
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
-    viewer.resize(1600, 900)
-    qtbot.waitUntil(lambda: viewer.width() == 1600)
+    resize_and_wait(qtbot, viewer, 1600, 900)
 
-    viewer.resize(1000, 700)
-    qtbot.waitUntil(lambda: viewer.width() == 1000)
+    resize_and_wait(qtbot, viewer, 1000, 700)
 
     [tag_overlay] = shown_labels(viewer)
     frame = frame_in(viewer, tag_overlay)
