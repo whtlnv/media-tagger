@@ -383,26 +383,13 @@ def test_with_5000_tags_in_the_library_each_keystroke_after_the_popup_opens_upda
     assert (max(keystroke_times) < 0.050, listed(suggestions)[:2]) == (True, ["tag1200", "tag1201"])
 
 
-def test_when_saving_the_prompt_fails_with_a_sqlite_error_the_prompt_stays_open_with_its_text_and_the_status_bar_says_it_couldnt_save_tags(qtbot, tmp_path, monkeypatch):
+@pytest.mark.parametrize("drive_error", [sqlite3.OperationalError("disk I/O error"), OSError(5, "Input/output error")], ids=["sqlite_error", "os_error"])
+def test_when_saving_the_prompt_fails_with_a_drive_error_the_prompt_stays_open_with_its_text_and_the_status_bar_says_it_couldnt_save_tags(qtbot, tmp_path, monkeypatch, drive_error):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
     def enter_on_an_unplugged_drive(self, path, text):
-        raise sqlite3.OperationalError("disk I/O error")
-
-    monkeypatch.setattr(Library, "enter", enter_on_an_unplugged_drive)
-
-    enter_in_tag_prompt(qtbot, viewer, "beach")
-
-    assert (visible_tag_prompt_texts(viewer), COULDNT_SAVE_TAGS_TEXT in status_bar_texts(viewer)) == (["beach"], True)
-
-
-def test_when_saving_the_prompt_fails_with_an_os_error_the_prompt_stays_open_with_its_text_and_the_status_bar_says_it_couldnt_save_tags(qtbot, tmp_path, monkeypatch):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
-
-    def enter_on_an_unplugged_drive(self, path, text):
-        raise OSError(5, "Input/output error")
+        raise drive_error
 
     monkeypatch.setattr(Library, "enter", enter_on_an_unplugged_drive)
 
