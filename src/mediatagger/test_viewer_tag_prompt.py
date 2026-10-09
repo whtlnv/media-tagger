@@ -100,3 +100,15 @@ def test_suggestions_with_the_same_item_count_are_listed_alphabetically_with_bir
 
     [suggestions] = visible_suggestion_lists(viewer)
     assert listed(suggestions) == ["beach", "bird"]
+
+
+def test_suggestion_matching_ignores_case_typing_upper_case_be_lists_beach(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    Library.open(drive).enter(folder / "IMG_2.png", "beach bird")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    type_in_tag_prompt(qtbot, viewer, "BE")
+
+    [suggestions] = visible_suggestion_lists(viewer)
+    assert listed(suggestions) == ["beach"]

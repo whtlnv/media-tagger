@@ -115,6 +115,7 @@ class Viewer(QWidget):
         self.tag_input.setStyleSheet(TAG_INPUT_STYLE)
         self.tag_input.returnPressed.connect(self._record_tags)
         self.tag_input.setCompleter(QCompleter([], self.tag_input))
+        self.tag_input.completer().setCaseSensitivity(Qt.CaseInsensitive)
         self.tag_input.hide()
         self.prompt_tags = overlay_label("", self)
         self.prompt_tags.hide()
