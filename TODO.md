@@ -65,4 +65,4 @@
 - [x] When pressing `t` opens no tag prompt (no library, declined, read-only, system disk, the app's own drive), the status bar briefly says "Tags can't be saved here"
 - [x] On a read-only drive with a tag library, pressing `t` also makes the status bar say "Tags can't be saved here"
 - [x] The "Tags can't be saved here" message leaves the status bar again a few seconds after it appears, while the library status stays
-- [ ] Running the shipped `mediatagger <folder>` command on a drive with a tag library, pressing `t`, typing `beach` and pressing `Enter` records `beach` for the first file in the drive's `tags.db`, and a second run of the command on that folder shows `beach` in the tag overlay (the test's driver script treats a temp folder as the mount point)
+- [x] Running the shipped `mediatagger <folder>` command on a drive with a tag library, pressing `t`, typing `beach` and pressing `Enter` records `beach` for the first file in the drive's `tags.db`, and a second run of the command on that folder shows `beach` in the tag overlay (the test's driver script treats a temp folder as the mount point)

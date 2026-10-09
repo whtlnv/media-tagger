@@ -5,7 +5,8 @@ from pathlib import Path
 from PySide6.QtGui import QColor
 
 from mediatagger.test_viewer import make_image, offscreen_environment, run_python_offscreen, shown_launch_viewer, shown_texts, shown_viewer_on
-from mediatagger.test_viewer_library import drive_without_a_tag_library_holding_one_image
+from mediatagger.library import Library
+from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image
 from mediatagger.viewer import DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT
 
 RUN_MEDIATAGGER_COMMAND = (
@@ -229,3 +230,39 @@ def test_running_the_mediatagger_command_on_a_drive_without_a_tag_library_asks_t
     result = run_python_offscreen(NOTE_WHETHER_THE_VIEWER_IS_SHOWN_WHEN_ASKED_SCRIPT, str(drive), str(folder))
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == "viewer_shown_when_asked=[True]"
+
+ENTER_TAGS_IN_THE_TAG_PROMPT_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT + (
+    "from PySide6.QtCore import Qt, QTimer\n"
+    "from PySide6.QtTest import QTest\n"
+    "from PySide6.QtWidgets import QApplication\n"
+    "app = QApplication([])\n"
+    "tags = sys.argv[3]\n"
+    "def enter_tags():\n"
+    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    QTest.keyClick(window, Qt.Key.Key_T)\n"
+    "    QTest.keyClicks(window.focusWidget(), tags)\n"
+    "    QTest.keyClick(window.focusWidget(), Qt.Key.Key_Return)\n"
+    "    QApplication.closeAllWindows()\n"
+    "    QApplication.quit()\n"
+    "QTimer.singleShot(1000, enter_tags)\n"
+    "sys.argv = ['mediatagger', sys.argv[2]]\n"
+) + RUN_MEDIATAGGER_COMMAND
+
+REPORT_SHOWN_TEXTS_ON_A_DRIVE_SCRIPT = (
+    TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT
+    + REPORT_SHOWN_TEXTS_ON_TIMER
+    + "sys.argv = ['mediatagger', sys.argv[2]]\n"
+    + RUN_MEDIATAGGER_COMMAND
+)
+
+
+def test_tags_entered_in_the_mediatagger_command_on_a_drive_with_a_tag_library_are_recorded_in_its_tags_db_and_shown_by_the_next_run(tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+
+    entered = run_python_offscreen(ENTER_TAGS_IN_THE_TAG_PROMPT_SCRIPT, str(drive), str(folder), "beach")
+    assert entered.returncode == 0, entered.stderr
+    assert Library.open(drive).tags(folder / "IMG_1.png") == ["beach"]
+
+    shown = run_python_offscreen(REPORT_SHOWN_TEXTS_ON_A_DRIVE_SCRIPT, str(drive), str(folder))
+    assert shown.returncode == 0, shown.stderr
+    assert shown.stdout.splitlines() == ["beach"]
