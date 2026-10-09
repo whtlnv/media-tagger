@@ -110,12 +110,27 @@ def drive_without_a_tag_library_holding_one_image(tmp_path):
     return drive, folder
 
 
+def drive_with_a_tag_library_holding_one_image(tmp_path):
+    drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    return drive, folder
+
+
 def viewer_on_drive(qtbot, folder, drive, ask_to_create_library):
     viewer = Viewer(
         folder, player_options=SILENT, is_mount_point=lambda path: path == drive,
         ask_to_create_library=ask_to_create_library,
     )
     qtbot.addWidget(viewer)
+    return viewer
+
+
+def shown_viewer_on_drive(qtbot, folder, drive, ask_to_create_library):
+    viewer = viewer_on_drive(qtbot, folder, drive, ask_to_create_library)
+    viewer.resize(400, 300)
+    viewer.show()
+    qtbot.waitExposed(viewer)
     return viewer
 
 
@@ -206,9 +221,7 @@ def test_opening_a_folder_on_a_drive_without_a_tag_library_asks_to_create_one_on
 
 
 def test_opening_a_folder_on_a_drive_that_already_has_a_tag_library_does_not_ask_to_create_one(qtbot, tmp_path):
-    drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     asked = []
 
     viewer_on_drive(qtbot, folder, drive, asked.append)
@@ -237,10 +250,7 @@ def test_declining_to_create_a_tag_library_on_a_drive_still_shows_the_opened_fol
     drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
     make_image(folder / "IMG_2.png", "blue")
 
-    viewer = viewer_on_drive(qtbot, folder, drive, lambda question: False)
-    viewer.resize(400, 300)
-    viewer.show()
-    qtbot.waitExposed(viewer)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
     assert shown_labels(viewer) == []
     assert centre_colour(viewer) == QColor("red")
@@ -255,15 +265,10 @@ def test_after_declining_to_create_a_tag_library_on_a_drive_the_status_bar_says_
 
 
 def test_opening_a_folder_on_a_read_only_drive_that_has_a_tag_library_shows_a_banner_saying_tags_cant_be_saved(qtbot, tmp_path):
-    drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     drive.chmod(0o555)
     try:
-        viewer = viewer_on_drive(qtbot, folder, drive, lambda question: False)
-        viewer.resize(400, 300)
-        viewer.show()
-        qtbot.waitExposed(viewer)
+        viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     finally:
         drive.chmod(0o755)
 
@@ -271,13 +276,8 @@ def test_opening_a_folder_on_a_read_only_drive_that_has_a_tag_library_shows_a_ba
 
 
 def test_opening_a_folder_on_a_writable_drive_that_has_a_tag_library_shows_no_read_only_banner(qtbot, tmp_path):
-    drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
-    viewer = viewer_on_drive(qtbot, folder, drive, lambda question: False)
-    viewer.resize(400, 300)
-    viewer.show()
-    qtbot.waitExposed(viewer)
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
     assert READ_ONLY_BANNER_TEXT not in shown_texts(viewer)
 
