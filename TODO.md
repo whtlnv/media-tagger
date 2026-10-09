@@ -60,6 +60,8 @@
 - [x] A media file that can't be decoded shows an "unsupported" placeholder instead of crashing
 - [ ] A decodable image shows the image, not the "unsupported" placeholder
 - [ ] Pressing `Space` on an "unsupported" placeholder shows the next item
+- [ ] A video item fills the viewer window with its video surface, with no "unsupported" placeholder text shown for it
+- [ ] A video file that can't be played (a corrupt `.mp4`) shows the "unsupported" placeholder instead of an empty video surface
 - [ ] Running the shipped `mediatagger <folder>` command opens the fullscreen viewer on that folder's first item
 - [ ] Running the shipped `mediatagger <file>` command opens the fullscreen viewer on that file
 - [ ] Acceptance: a screenshot of `mediatagger <folder>` on the Mac shows an image fitted to the screen with the `i` overlay reading `1 / N`
