@@ -37,7 +37,7 @@ class Viewer(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.fillRect(self.rect(), Qt.GlobalColor.black)
-        image = QImage(str(self.slideshow.current))
+        image = self._current_image()
         painter.drawImage(fitted_rect(image.size(), self.rect()), image)
 
     def keyPressEvent(self, event):
@@ -69,8 +69,11 @@ class Viewer(QWidget):
         self.info.adjustSize()
         self.info.setVisible(bool(self.slideshow.overlay))
 
+    def _current_image(self):
+        return QImage(str(self.slideshow.current))
+
     def _show_current(self):
-        self.placeholder.setVisible(QImage(str(self.slideshow.current)).isNull())
+        self.placeholder.setVisible(self._current_image().isNull())
         if is_video(self.slideshow.current):
             self.surface = self.surface or QOpenGLWidget(self)
             self.surface.show()
