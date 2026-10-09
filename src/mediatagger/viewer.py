@@ -96,4 +96,5 @@ class Viewer(QWidget):
             self.info.raise_()
             self.surface.when_ready(lambda clip=self.slideshow.current: self._play(clip))
         elif self.surface:
+            self.surface.cancel_pending()
             self.surface.hide()

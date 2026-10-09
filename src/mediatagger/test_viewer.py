@@ -438,3 +438,15 @@ def test_a_video_shown_before_its_surface_can_render_is_loaded_exactly_once_when
     wait_until_loaded(engine, clip)
     qtbot.wait(300)
     assert len(loads) == 1
+
+
+def test_leaving_a_video_before_its_surface_can_render_never_loads_it(qtbot, tmp_path):
+    make_clip(tmp_path / "IMG_1.mp4")
+    make_image(tmp_path / "IMG_2.png", "red")
+    viewer = unready_viewer_on(qtbot, tmp_path)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Space)
+    viewer.findChild(MpvSurface).became_ready()
+
+    qtbot.wait(300)
+    assert viewer.video_player.engine.path is None

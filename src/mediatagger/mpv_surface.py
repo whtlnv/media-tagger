@@ -36,6 +36,9 @@ class MpvSurface(QOpenGLWidget):
         else:
             self._pending = load
 
+    def cancel_pending(self):
+        self._pending = None
+
     def became_ready(self):
         """The render context exists (initializeGL calls this; tests call it to stand in for a GL context)."""
         self._ready = True
