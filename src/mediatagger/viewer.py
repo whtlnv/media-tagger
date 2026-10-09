@@ -31,9 +31,9 @@ def decode_fitted(path, bounds):
 
 
 class Viewer(QWidget):
-    def __init__(self, folder, player_options=None):
+    def __init__(self, folder=None, player_options=None):
         super().__init__()
-        self.slideshow = Slideshow.open(folder)
+        self.slideshow = folder and Slideshow.open(folder)
         self.video_player = VideoPlayer(new_engine(**{**PLAYER_OPTIONS, **(player_options or {})}))
         self.surface = None
         self._decoded_key = self._decoded = None
@@ -44,6 +44,9 @@ class Viewer(QWidget):
         self.placeholder = QLabel("Unsupported", self)
         self.placeholder.setStyleSheet(LABEL_STYLE)
         self.setWindowState(Qt.WindowState.WindowFullScreen)
+        if folder is None:
+            self.placeholder.setText("Drop a folder or file here, or press `o` to open")
+            return
         if self.slideshow is None:
             self.placeholder.setText(f"No images or videos in {folder.name}")
             return

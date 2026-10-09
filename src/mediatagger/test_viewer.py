@@ -552,3 +552,12 @@ def test_pressing_esc_closes_the_viewer_and_shuts_down_its_video_player(qtbot, t
 
     assert not viewer.isVisible()
     assert engine.handle is None
+
+
+def test_a_viewer_opened_with_no_path_shows_only_the_launch_text(qtbot):
+    viewer = Viewer(player_options=SILENT)
+    qtbot.addWidget(viewer)
+    viewer.show()
+    qtbot.waitExposed(viewer)
+
+    assert [label.text() for label in shown_labels(viewer)] == ["Drop a folder or file here, or press `o` to open"]
