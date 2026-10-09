@@ -51,12 +51,13 @@ class Library:
         removed = {word[1:] for word in words if word.startswith("-")}
         added = {word for word in words if not word.startswith("-")}
         tags = (set(self.tags(path)) | added) - removed
+        key = self._key(path)
         connection = sqlite3.connect(self._tags_db)
         with connection:
-            connection.execute("DELETE FROM tags WHERE path = ?", (self._key(path),))
+            connection.execute("DELETE FROM tags WHERE path = ?", (key,))
             connection.executemany(
                 "INSERT INTO tags (path, tag) VALUES (?, ?)",
-                [(self._key(path), tag) for tag in tags],
+                [(key, tag) for tag in tags],
             )
         connection.close()
 
