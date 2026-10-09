@@ -8,7 +8,7 @@ from PySide6.QtGui import QColor, QImage
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QLabel
 
-from mediatagger.test_video import make_clip
+from mediatagger.test_video import make_clip, wait_until_playing
 
 from mediatagger.mpv_surface import MpvSurface
 from mediatagger.viewer import Viewer
@@ -153,7 +153,7 @@ def test_pressing_p_in_the_viewer_on_a_video_pauses_it_and_up_seeks_it_forward(q
     make_image(tmp_path / "IMG_2.png", "red")
     viewer = shown_viewer_on(qtbot, tmp_path)
     engine = viewer.video_player.engine
-    engine.wait_for_property("time-pos", lambda time_pos: time_pos is not None, timeout=5)
+    wait_until_playing(engine)
 
     qtbot.keyClick(viewer, Qt.Key.Key_P)
     assert engine.pause is True
@@ -357,7 +357,7 @@ def test_pressing_down_in_the_viewer_on_a_paused_video_seeks_it_ten_seconds_back
     make_image(tmp_path / "IMG_2.png", "red")
     viewer = shown_viewer_on(qtbot, tmp_path)
     engine = viewer.video_player.engine
-    engine.wait_for_property("time-pos", lambda time_pos: time_pos is not None, timeout=5)
+    wait_until_playing(engine)
     qtbot.keyClick(viewer, Qt.Key.Key_P)
     engine.time_pos = 20
     engine.wait_for_property("time-pos", lambda time_pos: time_pos == pytest.approx(20, abs=1), timeout=5)
@@ -372,7 +372,7 @@ def test_pressing_enter_in_the_viewer_on_a_video_toggles_its_pause(qtbot, tmp_pa
     make_image(tmp_path / "IMG_2.png", "red")
     viewer = shown_viewer_on(qtbot, tmp_path)
     engine = viewer.video_player.engine
-    engine.wait_for_property("time-pos", lambda time_pos: time_pos is not None, timeout=5)
+    wait_until_playing(engine)
 
     qtbot.keyClick(viewer, Qt.Key.Key_Return)
     assert engine.pause is True
