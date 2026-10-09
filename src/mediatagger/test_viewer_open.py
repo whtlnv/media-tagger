@@ -10,8 +10,7 @@ from mediatagger.test_viewer import (
     centre_colour, make_folder_with_no_media, make_image, shown_labels, shown_launch_viewer, shown_texts, shown_viewer_on,
     SILENT, shows_unsupported_placeholder, shows_video_surface, wait_until_loaded,
 )
-from mediatagger import viewer as viewer_module
-from mediatagger.viewer import LIBRARY_TEXT, NO_LIBRARY_TEXT, Viewer
+from mediatagger.viewer import LIBRARY_TEXT, NO_LIBRARY_TEXT, NO_LIBRARY_VIEWING_ONLY_TEXT, Viewer
 
 
 def make_folders(parent, *names):
@@ -170,7 +169,7 @@ def test_opening_a_folder_on_the_system_disk_never_asks_to_create_a_library_and_
     qtbot.addWidget(viewer)
 
     assert asked == []
-    assert status_bar_texts(viewer) == [viewer_module.NO_LIBRARY_VIEWING_ONLY_TEXT]
+    assert status_bar_texts(viewer) == [NO_LIBRARY_VIEWING_ONLY_TEXT]
 
 
 def test_a_viewer_opened_on_a_folder_shows_its_first_item_and_not_the_launch_text(qtbot, tmp_path):
