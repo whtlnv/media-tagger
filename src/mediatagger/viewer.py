@@ -74,6 +74,7 @@ class Viewer(QWidget):
         self.video_player = VideoPlayer(new_engine(**{**PLAYER_OPTIONS, **(player_options or {})}))
         self.surface = None
         self._decoded_key = self._decoded = None
+        self._tags_label = None
         self.info = overlay_label("", self)
         self.info.move(CORNER_MARGIN, CORNER_MARGIN)
         self.info.hide()
@@ -193,7 +194,7 @@ class Viewer(QWidget):
         path = self.slideshow.current
         prompt = QLineEdit(self)
         prompt.setStyleSheet(LABEL_STYLE)
-        if hasattr(self, "_tags_label"):
+        if self._tags_label is not None:
             self._tags_label.hide()
         tags_label = overlay_label(" ".join(library.tags(path)), self)
         self._tags_label = tags_label
