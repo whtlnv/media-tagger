@@ -99,7 +99,8 @@ def test_pressing_p_in_the_viewer_on_a_video_pauses_it_and_up_seeks_it_forward(q
 
     before = engine.time_pos
     qtbot.keyClick(viewer, Qt.Key.Key_Up)
-    assert engine.time_pos == pytest.approx(before + 10, abs=1)
+    # mpv seeks asynchronously, so wait for the new position rather than reading it at once
+    engine.wait_for_property("time-pos", lambda time_pos: time_pos == pytest.approx(before + 10, abs=1), timeout=5)
 
 
 def test_a_viewer_created_while_the_numeric_locale_is_not_c_still_gets_a_working_player(tmp_path):
@@ -172,7 +173,7 @@ def test_pressing_down_in_the_viewer_on_a_paused_video_seeks_it_ten_seconds_back
 
     qtbot.keyClick(viewer, Qt.Key.Key_Down)
 
-    assert engine.time_pos == pytest.approx(10, abs=1)
+    engine.wait_for_property("time-pos", lambda time_pos: time_pos == pytest.approx(10, abs=1), timeout=5)
 
 
 def test_pressing_enter_in_the_viewer_on_a_video_toggles_its_pause(qtbot, tmp_path):
