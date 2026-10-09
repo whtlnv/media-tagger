@@ -23,6 +23,7 @@ class Viewer(QWidget):
         self.slideshow = Slideshow.open(folder)
         self.video_player = VideoPlayer(new_engine(**{**PLAYER_OPTIONS, **(player_options or {})}))
         self.surface = None
+        self.info_shown = False
         self._show_current()
 
     def closeEvent(self, event):
@@ -35,8 +36,14 @@ class Viewer(QWidget):
         painter.fillRect(self.rect(), Qt.GlobalColor.black)
         image = QImage(str(self.slideshow.current))
         painter.drawImage(fitted_rect(image.size(), self.rect()), image)
+        if self.info_shown:
+            painter.fillRect(self.rect(), Qt.GlobalColor.darkGray)
 
     def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_I:
+            self.info_shown = not self.info_shown
+            self.update()
+            return
         if event.key() in VIDEO_KEYS:
             self.video_player.press(VIDEO_KEYS[event.key()])
             return

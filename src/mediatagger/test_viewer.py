@@ -213,3 +213,16 @@ def test_closing_the_viewer_shuts_down_its_video_player(qtbot, tmp_path):
     viewer.close()
 
     assert engine.handle is None
+
+
+def test_pressing_i_in_the_viewer_draws_the_info_overlay_over_the_shown_image_and_pressing_i_again_removes_it(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    plain = viewer.grab().toImage()
+
+    qtbot.keyClick(viewer, Qt.Key.Key_I)
+    with_overlay = viewer.grab().toImage()
+    assert with_overlay != plain
+
+    qtbot.keyClick(viewer, Qt.Key.Key_I)
+    assert viewer.grab().toImage() == plain
