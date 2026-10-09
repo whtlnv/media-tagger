@@ -24,6 +24,28 @@ def _init_tags_db(tags_db, **meta):
     connection.close()
 
 
+def _ensure_item_id(connection, rel_path):
+    connection.execute("INSERT OR IGNORE INTO items (rel_path) VALUES (?)", (rel_path,))
+    (item_id,) = connection.execute("SELECT id FROM items WHERE rel_path = ?", (rel_path,)).fetchone()
+    return item_id
+
+
+def _set_item_tags(connection, item_id, tags):
+    connection.execute("DELETE FROM item_tags WHERE item_id = ?", (item_id,))
+    connection.executemany("INSERT OR IGNORE INTO tags (name) VALUES (?)", [(tag,) for tag in tags])
+    connection.executemany(
+        "INSERT INTO item_tags (item_id, tag_id) SELECT ?, id FROM tags WHERE name = ?",
+        [(item_id, tag) for tag in tags],
+    )
+
+
+def _parse_entry(text):
+    words = text.lower().split()
+    added = {word for word in words if not word.startswith("-")}
+    removed = {word[1:] for word in words if word.startswith("-")}
+    return added, removed
+
+
 class Library:
     schema_version = 1  # the version this code writes; an opened library reports the version its tags.db records
 
@@ -54,21 +76,12 @@ class Library:
         return str(path.relative_to(self._tags_db.parent.parent))
 
     def enter(self, path, text):
-        words = text.lower().split()
-        removed = {word[1:] for word in words if word.startswith("-")}
-        added = {word for word in words if not word.startswith("-")}
+        added, removed = _parse_entry(text)
         tags = (set(self.tags(path)) | added) - removed
         key = self._key(path)
         connection = sqlite3.connect(self._tags_db)
         with connection:
-            connection.execute("INSERT OR IGNORE INTO items (rel_path) VALUES (?)", (key,))
-            (item_id,) = connection.execute("SELECT id FROM items WHERE rel_path = ?", (key,)).fetchone()
-            connection.execute("DELETE FROM item_tags WHERE item_id = ?", (item_id,))
-            connection.executemany("INSERT OR IGNORE INTO tags (name) VALUES (?)", [(tag,) for tag in tags])
-            connection.executemany(
-                "INSERT INTO item_tags (item_id, tag_id) SELECT ?, id FROM tags WHERE name = ?",
-                [(item_id, tag) for tag in tags],
-            )
+            _set_item_tags(connection, _ensure_item_id(connection, key), tags)
         connection.close()
 
     def tags(self, path):
