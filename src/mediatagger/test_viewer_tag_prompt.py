@@ -164,3 +164,15 @@ def test_a_word_starting_with_minus_suggests_from_the_viewed_items_own_tags_on_a
 
     [suggestions] = visible_suggestion_lists(viewer)
     assert listed(suggestions) == ["sunset"]
+
+
+def test_words_already_entered_in_the_prompt_are_not_suggested_again_typing_beach_b_lists_bird_and_not_beach(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    Library.open(drive).enter(folder / "IMG_2.png", "beach bird")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    type_in_tag_prompt(qtbot, viewer, "beach b")
+
+    [suggestions] = visible_suggestion_lists(viewer)
+    assert listed(suggestions) == ["bird"]

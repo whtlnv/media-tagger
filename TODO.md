@@ -13,7 +13,7 @@ Note for every cycle: put new tag-prompt and autocomplete viewer tests in `src/m
 - [x] Typing a namespace prefix lists every tag under it at any depth: typing `people:` lists `people:ana` and `people:luis:jr`, and not `place:mexico`
 - [x] Tags the current item already has are not suggested for adding: on an item tagged `sunset`, with `summer` also in the library, typing `s` lists `summer` and not `sunset`
 - [x] A word starting with `-` suggests from the current item's own tags: on an item tagged `sunset`, with `summer` also in the library, typing `-s` lists `sunset` and not `summer`
-- [ ] Words already entered in the prompt are not suggested again: typing `beach b` lists `bird` and not `beach`
+- [x] Words already entered in the prompt are not suggested again: typing `beach b` lists `bird` and not `beach`
 - [ ] Suggestions come from the current drive's library: after dropping a folder from a second drive whose library has only `zebra`, typing `b` shows no popup and typing `z` lists `zebra`
 - [ ] A tag saved from the prompt is suggested the next time the prompt opens: after saving `zebra` on one item, opening the prompt on the next item and typing `z` lists `zebra`
 - [ ] In the suggestion popup, `↓` twice highlights the second suggestion and `↑` then highlights the first

@@ -298,7 +298,8 @@ class Viewer(QWidget):
     def _offer_suggestions(self, text):
         to_add, to_remove = self._suggestions
         removing = _last_word(text).startswith("-")
-        self.tag_input.completer().model().setStringList(to_remove if removing else to_add)
+        entered = text.split(" ")[:-1]
+        self.tag_input.completer().model().setStringList([tag for tag in (to_remove if removing else to_add) if tag not in entered])
 
     def _record_tags(self):
         library, path = self._tagging
