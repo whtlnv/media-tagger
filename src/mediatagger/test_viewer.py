@@ -38,10 +38,13 @@ def shows_unsupported_placeholder(viewer):
     return any("unsupported" in text.lower() for text in shown_texts)
 
 
-def centre_colour_of_viewer_on(qtbot, folder):
-    viewer = shown_viewer_on(qtbot, folder)
+def centre_colour(viewer):
     frame = viewer.grab().toImage()
     return frame.pixelColor(frame.width() // 2, frame.height() // 2)
+
+
+def centre_colour_of_viewer_on(qtbot, folder):
+    return centre_colour(shown_viewer_on(qtbot, folder))
 
 
 def test_a_viewer_opened_on_a_folder_whose_first_item_is_red_paints_red_at_its_centre(qtbot, tmp_path):
@@ -86,8 +89,7 @@ def test_pressing_space_in_the_viewer_on_a_video_followed_by_a_red_image_hides_t
 
     surface = viewer.findChild(QOpenGLWidget)
     assert surface is None or not surface.isVisible()
-    frame = viewer.grab().toImage()
-    assert frame.pixelColor(frame.width() // 2, frame.height() // 2) == QColor("red")
+    assert centre_colour(viewer) == QColor("red")
 
 
 def test_pressing_space_in_the_viewer_on_a_video_followed_by_an_image_leaves_the_player_stopped(qtbot, tmp_path):
@@ -128,12 +130,10 @@ def test_pressing_right_in_the_viewer_on_a_red_image_followed_by_a_blue_image_pa
     viewer = shown_viewer_on(qtbot, tmp_path)
 
     qtbot.keyClick(viewer, Qt.Key.Key_Right)
-    frame = viewer.grab().toImage()
-    assert frame.pixelColor(frame.width() // 2, frame.height() // 2) == QColor("blue")
+    assert centre_colour(viewer) == QColor("blue")
 
     qtbot.keyClick(viewer, Qt.Key.Key_Left)
-    frame = viewer.grab().toImage()
-    assert frame.pixelColor(frame.width() // 2, frame.height() // 2) == QColor("red")
+    assert centre_colour(viewer) == QColor("red")
 
 
 def test_pressing_space_in_the_viewer_on_an_image_followed_by_a_video_shows_the_video_surface_and_plays_that_clip(qtbot, tmp_path):
@@ -246,8 +246,7 @@ def test_the_viewers_i_overlay_is_corner_text_with_the_filename_and_position_tha
         labels = [label for label in viewer.findChildren(QLabel) if label.isVisible()]
         assert len(labels) == 1
         assert any(corner.contains(labels[0].geometry()) for corner in corners)
-        frame = viewer.grab().toImage()
-        return labels[0].text(), frame.pixelColor(frame.width() // 2, frame.height() // 2)
+        return labels[0].text(), centre_colour(viewer)
 
     qtbot.keyClick(viewer, Qt.Key.Key_I)
     text, centre = shown_overlay_and_centre_colour()
@@ -310,8 +309,7 @@ def test_a_viewer_opened_on_a_folder_whose_first_item_is_a_decodable_image_shows
     viewer = shown_viewer_on(qtbot, tmp_path)
 
     assert not shows_unsupported_placeholder(viewer)
-    frame = viewer.grab().toImage()
-    assert frame.pixelColor(frame.width() // 2, frame.height() // 2) == QColor("red")
+    assert centre_colour(viewer) == QColor("red")
 
 
 def test_pressing_space_in_the_viewer_on_an_unsupported_placeholder_followed_by_a_red_image_hides_the_placeholder_and_paints_red(qtbot, tmp_path):
@@ -322,8 +320,7 @@ def test_pressing_space_in_the_viewer_on_an_unsupported_placeholder_followed_by_
     qtbot.keyClick(viewer, Qt.Key.Key_Space)
 
     assert not shows_unsupported_placeholder(viewer)
-    frame = viewer.grab().toImage()
-    assert frame.pixelColor(frame.width() // 2, frame.height() // 2) == QColor("red")
+    assert centre_colour(viewer) == QColor("red")
 
 
 def test_a_viewer_opened_on_a_folder_whose_first_item_is_a_video_fills_its_window_with_the_video_surface_and_shows_no_unsupported_placeholder(qtbot, tmp_path):
@@ -352,8 +349,7 @@ def test_pressing_a_key_the_viewer_does_not_use_on_a_red_image_followed_by_a_blu
 
     qtbot.keyClick(viewer, Qt.Key.Key_X)
 
-    frame = viewer.grab().toImage()
-    assert frame.pixelColor(frame.width() // 2, frame.height() // 2) == QColor("red")
+    assert centre_colour(viewer) == QColor("red")
 
 
 def test_pressing_down_in_the_viewer_on_a_paused_video_seeks_it_ten_seconds_back(qtbot, tmp_path):
