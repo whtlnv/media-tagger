@@ -52,3 +52,19 @@ def test_in_the_tag_prompt_on_a_drive_whose_library_has_beach_and_bird_typing_be
 
     [suggestions] = visible_suggestion_lists(viewer)
     assert listed(suggestions) == ["beach"]
+
+
+def test_suggestions_are_ordered_by_item_count_with_bird_on_3_items_and_beach_on_1_typing_b_lists_bird_above_beach(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    for name in ("IMG_2.png", "IMG_3.png", "IMG_4.png"):
+        make_image(folder / name, "blue")
+    library = Library.open(drive)
+    library.enter(folder / "IMG_2.png", "bird beach")
+    library.enter(folder / "IMG_3.png", "bird")
+    library.enter(folder / "IMG_4.png", "bird")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    type_in_tag_prompt(qtbot, viewer, "b")
+
+    [suggestions] = visible_suggestion_lists(viewer)
+    assert listed(suggestions) == ["bird", "beach"]

@@ -100,7 +100,13 @@ class Library:
 
     def all_tags(self):
         connection = sqlite3.connect(self._tags_db)
-        names = [name for (name,) in connection.execute("SELECT name FROM tags ORDER BY name")]
+        names = [
+            name
+            for (name,) in connection.execute(
+                "SELECT tags.name FROM tags JOIN item_tags ON item_tags.tag_id = tags.id"
+                " GROUP BY tags.id ORDER BY COUNT(*) DESC, tags.name"
+            )
+        ]
         connection.close()
         return names
 
