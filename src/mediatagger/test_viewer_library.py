@@ -87,8 +87,7 @@ def test_opening_a_folder_two_levels_below_a_drive_with_a_tag_library_names_that
     folder.mkdir(parents=True)
     make_image(folder / "IMG_1.png", "red")
 
-    viewer = Viewer(folder, player_options=SILENT, is_mount_point=lambda path: path == drive)
-    qtbot.addWidget(viewer)
+    viewer = viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
     assert status_bar_texts(viewer) == [LIBRARY_TEXT.format("MEDIATAGGER")]
 
@@ -97,8 +96,7 @@ def test_opening_a_folder_that_is_itself_a_drives_mount_point_with_a_tag_library
     drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
     make_image(drive / "IMG_1.png", "red")
 
-    viewer = Viewer(drive, player_options=SILENT, is_mount_point=lambda path: path == drive)
-    qtbot.addWidget(viewer)
+    viewer = viewer_on_drive(qtbot, drive, drive, lambda question: False)
 
     assert status_bar_texts(viewer) == [LIBRARY_TEXT.format("MEDIATAGGER")]
 
@@ -109,11 +107,9 @@ def test_opening_a_file_on_a_drive_names_the_same_library_in_the_status_bar_as_o
     folder.mkdir(parents=True)
     make_image(folder / "IMG_1.png", "red")
     make_image(folder / "IMG_2.png", "blue")
-    folder_viewer = Viewer(folder, player_options=SILENT, is_mount_point=lambda path: path == drive)
-    qtbot.addWidget(folder_viewer)
+    folder_viewer = viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
-    file_viewer = Viewer(folder / "IMG_2.png", player_options=SILENT, is_mount_point=lambda path: path == drive)
-    qtbot.addWidget(file_viewer)
+    file_viewer = viewer_on_drive(qtbot, folder / "IMG_2.png", drive, lambda question: False)
 
     assert status_bar_texts(file_viewer) == status_bar_texts(folder_viewer)
 
