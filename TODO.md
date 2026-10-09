@@ -21,6 +21,7 @@
 - [x] After entering `beach family` for a file in a newly created library, `tags.db` holds the file's relative path once in `items` (id, rel_path unique, kind), `beach` and `family` once each in `tags` (id, name unique), and one `item_tags` (item_id, tag_id) row linking the file to each tag — the library still reports `beach`, `family` for the file
 - [x] Opening a library whose `tags.db` records schema version 1 (a `meta` table only, as Phase 3 created) upgrades it in place: afterwards `meta` records schema version 2, the drive id is unchanged, and `tags.db` holds the tables `items`, `tags` and `item_tags`
 - [ ] A newly created library records schema version 2 in its `tags.db`
+- [ ] A schema-version-1 library reports schema version 2 once it has been opened (and upgraded)
 - [ ] Opening a schema-version-1 library on a read-only drive does not fail: nothing is written and its files report no tags
 - [ ] A tag change is visible to a separate connection to `tags.db` as soon as it is entered, while the library stays open (each change is committed at once)
 - [ ] A library's `tags.db` uses SQLite's rollback journal, not WAL (it lives on removable exFAT media)
