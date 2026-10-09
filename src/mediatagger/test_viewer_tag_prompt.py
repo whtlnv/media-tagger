@@ -55,13 +55,32 @@ def test_in_the_tag_prompt_on_a_drive_whose_library_has_no_tags_yet_typing_b_sho
     assert visible_suggestion_lists() == []
 
 
-def test_in_the_tag_prompt_on_a_drive_whose_library_has_beach_and_bird_typing_be_lists_beach_and_not_bird(qtbot, tmp_path):
-    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach bird")
+@pytest.mark.parametrize(
+    "library_tags, typed, expected",
+    [
+        ("beach bird", "be", ["beach"]),
+        ("beach bird", "BE", ["beach"]),
+        ("beach family", "beach fam", ["family"]),
+        ("people:ana people:luis:jr place:mexico", "people:", ["people:ana", "people:luis:jr"]),
+        ("beach bird", "beach b", ["bird"]),
+        ("beach bird", "BEACH b", ["bird"]),
+    ],
+    ids=[
+        "typing_be_lists_beach_and_not_bird",
+        "matching_ignores_case_typing_upper_case_be_lists_beach",
+        "the_last_space_separated_word_is_completed_typing_beach_fam_lists_family",
+        "a_namespace_prefix_people_colon_lists_every_tag_under_it_at_any_depth_and_not_place_mexico",
+        "words_already_entered_are_not_suggested_again_typing_beach_b_lists_bird_and_not_beach",
+        "a_word_already_entered_in_upper_case_is_not_suggested_again_typing_upper_case_beach_b_lists_bird",
+    ],
+)
+def test_the_suggestion_popup_lists_the_library_tags_that_complete_the_word_being_typed(qtbot, tmp_path, library_tags, typed, expected):
+    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, library_tags)
 
-    type_in_tag_prompt(qtbot, viewer, "be")
+    type_in_tag_prompt(qtbot, viewer, typed)
 
     [suggestions] = visible_suggestion_lists()
-    assert listed(suggestions) == ["beach"]
+    assert listed(suggestions) == expected
 
 
 @pytest.mark.parametrize(
@@ -85,33 +104,6 @@ def test_suggestions_are_ordered_by_item_count_and_then_alphabetically_typing_b_
 
     [suggestions] = visible_suggestion_lists()
     assert listed(suggestions) == expected
-
-
-def test_suggestion_matching_ignores_case_typing_upper_case_be_lists_beach(qtbot, tmp_path):
-    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach bird")
-
-    type_in_tag_prompt(qtbot, viewer, "BE")
-
-    [suggestions] = visible_suggestion_lists()
-    assert listed(suggestions) == ["beach"]
-
-
-def test_suggestions_complete_the_last_space_separated_word_typing_beach_fam_with_family_in_the_library_lists_family(qtbot, tmp_path):
-    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach family")
-
-    type_in_tag_prompt(qtbot, viewer, "beach fam")
-
-    [suggestions] = visible_suggestion_lists()
-    assert listed(suggestions) == ["family"]
-
-
-def test_typing_a_namespace_prefix_people_colon_lists_every_tag_under_it_at_any_depth_and_not_place_mexico(qtbot, tmp_path):
-    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "people:ana people:luis:jr place:mexico")
-
-    type_in_tag_prompt(qtbot, viewer, "people:")
-
-    [suggestions] = visible_suggestion_lists()
-    assert listed(suggestions) == ["people:ana", "people:luis:jr"]
 
 
 def test_tags_the_viewed_item_already_has_are_not_suggested_on_an_item_tagged_sunset_with_summer_in_the_library_typing_s_lists_summer_and_not_sunset(qtbot, tmp_path):
@@ -140,15 +132,6 @@ def test_a_word_starting_with_minus_suggests_from_the_viewed_items_own_tags_on_a
 
     [suggestions] = visible_suggestion_lists()
     assert listed(suggestions) == ["sunset"]
-
-
-def test_words_already_entered_in_the_prompt_are_not_suggested_again_typing_beach_b_lists_bird_and_not_beach(qtbot, tmp_path):
-    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach bird")
-
-    type_in_tag_prompt(qtbot, viewer, "beach b")
-
-    [suggestions] = visible_suggestion_lists()
-    assert listed(suggestions) == ["bird"]
 
 
 def test_suggestions_come_from_the_current_drives_library_after_dropping_a_folder_from_a_second_drive_with_only_zebra_typing_b_shows_no_popup_and_z_lists_zebra(qtbot, tmp_path):
@@ -403,15 +386,6 @@ def test_after_a_failed_save_a_successful_save_takes_the_couldnt_save_message_of
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
     assert (Library.open(drive).tags(folder / "IMG_1.png"), "Couldn't save tags — is the drive still connected?" in status_bar_texts(viewer)) == (["beach"], False)
-
-
-def test_a_word_already_entered_in_upper_case_is_not_suggested_again_typing_upper_case_beach_b_lists_bird_and_not_beach(qtbot, tmp_path):
-    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach bird")
-
-    type_in_tag_prompt(qtbot, viewer, "BEACH b")
-
-    [suggestions] = visible_suggestion_lists()
-    assert listed(suggestions) == ["bird"]
 
 
 def test_a_removal_already_entered_is_not_suggested_again_on_an_item_tagged_sunset_and_sky_typing_minus_sunset_minus_s_lists_sky_only(qtbot, tmp_path):
