@@ -59,21 +59,20 @@ def test_a_playing_video_restarts_from_the_beginning_when_it_reaches_the_end(tmp
         engine.terminate()
 
 
-def test_pressing_p_on_a_playing_video_pauses_it(playing_video):
+@pytest.mark.parametrize("keys, setting, value", [
+    pytest.param(["p"], "pause", True, id="p on a playing video pauses it"),
+    pytest.param(["p", "p"], "pause", False, id="p on a paused video resumes it"),
+    pytest.param(["Space"], "pause", False, id="space on a playing video does not pause it"),
+    pytest.param(["m"], "mute", True, id="m on a video mutes it"),
+    pytest.param(["m", "m"], "mute", False, id="m on a muted video unmutes it"),
+])
+def test_pressing_a_playback_key_on_a_playing_video_sets_its_pause_or_mute(playing_video, keys, setting, value):
     player, engine = playing_video
 
-    player.press("p")
+    for key in keys:
+        player.press(key)
 
-    assert engine.pause is True
-
-
-def test_pressing_p_on_a_paused_video_resumes_it(playing_video):
-    player, engine = playing_video
-    player.press("p")
-
-    player.press("p")
-
-    assert engine.pause is False
+    assert getattr(engine, setting) is value
 
 
 def test_pressing_enter_toggles_a_video_between_playing_and_paused(playing_video):
@@ -84,14 +83,6 @@ def test_pressing_enter_toggles_a_video_between_playing_and_paused(playing_video
     player.press("Enter")
 
     assert paused_after_first_press is True
-    assert engine.pause is False
-
-
-def test_pressing_space_on_a_playing_video_does_not_pause_it(playing_video):
-    player, engine = playing_video
-
-    player.press("Space")
-
     assert engine.pause is False
 
 
@@ -121,23 +112,6 @@ def test_pressing_down_on_a_video_seeks_10_seconds_back(playing_video):
     player.press("Down")
 
     assert engine.time_pos == pytest.approx(before - 10, abs=1)
-
-
-def test_pressing_m_on_a_video_mutes_it(playing_video):
-    player, engine = playing_video
-
-    player.press("m")
-
-    assert engine.mute is True
-
-
-def test_pressing_m_on_a_muted_video_unmutes_it(playing_video):
-    player, engine = playing_video
-    player.press("m")
-
-    player.press("m")
-
-    assert engine.mute is False
 
 
 def test_pressing_i_f_right_or_left_on_a_playing_video_does_not_pause_it(playing_video):
