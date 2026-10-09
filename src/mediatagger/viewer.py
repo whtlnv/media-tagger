@@ -11,6 +11,12 @@ from mediatagger.video import VideoPlayer
 VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up"}
 
 
+def fitted_rect(size, bounds):
+    target = QRect(QPoint(), size.scaled(bounds.size(), Qt.AspectRatioMode.KeepAspectRatio))
+    target.moveCenter(bounds.center())
+    return target
+
+
 class Viewer(QWidget):
     def __init__(self, folder):
         super().__init__()
@@ -23,9 +29,7 @@ class Viewer(QWidget):
         painter = QPainter(self)
         painter.fillRect(self.rect(), Qt.GlobalColor.black)
         image = QImage(str(self.slideshow.current))
-        target = QRect(QPoint(), image.size().scaled(self.size(), Qt.AspectRatioMode.KeepAspectRatio))
-        target.moveCenter(self.rect().center())
-        painter.drawImage(target, image)
+        painter.drawImage(fitted_rect(image.size(), self.rect()), image)
 
     def keyPressEvent(self, event):
         if event.key() in VIDEO_KEYS:
