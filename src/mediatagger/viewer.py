@@ -183,7 +183,8 @@ class Viewer(QWidget):
         library = Library.open(self.library_drive)
         path = self.slideshow.current
         prompt = QLineEdit(self)
-        tags_label = QLabel(" ".join(library.tags(path)), self)
+        prompt.setStyleSheet(LABEL_STYLE)
+        tags_label = overlay_label(" ".join(library.tags(path)), self)
         prompt.returnPressed.connect(lambda: self._record_tags(library, path, prompt, tags_label))
         self._pin_bottom_centre(prompt)
         prompt.show()

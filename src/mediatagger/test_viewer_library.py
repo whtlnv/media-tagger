@@ -556,3 +556,17 @@ def test_pressing_t_makes_the_tag_prompts_input_the_viewers_focus_widget(qtbot, 
 
     [prompt] = visible_tag_prompts(viewer)
     assert viewer.focusWidget() is prompt
+
+
+def test_the_tag_prompts_input_and_its_shown_tags_are_styled_like_the_info_overlay(qtbot, tmp_path):
+    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    Library.create(drive).enter(folder / "IMG_1.png", "beach family")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    [prompt] = visible_tag_prompts(viewer)
+    [tags] = [label for label in shown_labels(viewer) if label.text() == "beach family"]
+    assert [prompt.styleSheet(), tags.styleSheet()] == [viewer.info.styleSheet()] * 2
