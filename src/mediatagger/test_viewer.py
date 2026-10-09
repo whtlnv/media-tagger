@@ -540,3 +540,15 @@ def test_the_viewer_decodes_the_shown_image_once_however_often_it_repaints(qtbot
 
     assert decodes == []
     assert centre_colour(viewer) == QColor("red")
+
+
+def test_pressing_esc_closes_the_viewer_and_shuts_down_its_video_player(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    engine = viewer.video_player.engine
+    wait_until_loaded(engine, clip)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Escape)
+
+    assert not viewer.isVisible()
+    assert engine.handle is None

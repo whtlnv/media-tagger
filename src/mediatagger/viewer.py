@@ -76,6 +76,9 @@ class Viewer(QWidget):
         painter.drawImage(fitted_rect(image.size(), self.rect()), image)
 
     def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Escape:  # interim: quits until the grid (Phase 7) makes Esc "back to grid"
+            self.close()
+            return
         if event.key() == Qt.Key.Key_F:
             self._toggle_fullscreen()
             return
