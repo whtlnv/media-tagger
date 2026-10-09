@@ -148,6 +148,7 @@ class Viewer(QWidget):
         self.placeholder.setText(f"No images or videos in {path.name}")
         self._centre(self.placeholder)
         self.placeholder.show()
+        self.info.hide()
         if self.surface:
             self.surface.hide()
 

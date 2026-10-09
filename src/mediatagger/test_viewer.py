@@ -904,3 +904,14 @@ def test_dropping_a_folder_with_no_media_while_a_video_is_showing_hides_the_vide
 
     assert shown_texts(viewer) == shown_texts(shown_viewer_on(qtbot, empty))
     assert not shows_video_surface(viewer)
+
+
+def test_dropping_a_folder_with_no_media_while_the_info_overlay_is_shown_hides_the_overlay(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    empty = make_folder_with_no_media(tmp_path / "Holidays")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    qtbot.keyClick(viewer, Qt.Key.Key_I)
+
+    drag_and_drop_onto(viewer, empty)
+
+    assert shown_texts(viewer) == shown_texts(shown_viewer_on(qtbot, empty))
