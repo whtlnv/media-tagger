@@ -351,3 +351,26 @@ def test_a_schema_version_1_library_reports_schema_version_2_once_it_has_been_op
     opened = Library.open(tmp_path)
 
     assert opened.schema_version == 2
+
+
+def test_opening_a_schema_version_1_library_on_a_read_only_drive_writes_nothing_and_its_files_report_no_tags(tmp_path):
+    _create_schema_version_1_library(tmp_path, "read-only-drive")
+    photo = tmp_path / "beach.jpg"
+    photo.touch()
+    library_folder = tmp_path / ".mediatagger"
+    tags_db = library_folder / "tags.db"
+    before = tags_db.read_bytes()
+    tags_db.chmod(0o444)
+    library_folder.chmod(0o555)
+    tmp_path.chmod(0o555)
+    try:
+        library = Library.open(tmp_path)
+        tags = library.tags(photo)
+    finally:
+        tmp_path.chmod(0o755)
+        library_folder.chmod(0o755)
+        tags_db.chmod(0o644)
+
+    assert tags == []
+    assert tags_db.read_bytes() == before
+    assert sorted(path.name for path in library_folder.iterdir()) == ["tags.db"]

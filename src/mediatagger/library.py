@@ -71,8 +71,11 @@ class Library:
     def open(cls, root):
         tags_db = _tags_db(root)
         connection = sqlite3.connect(tags_db)
-        with connection:
-            _migrate_to_schema_version_2(connection)
+        try:
+            with connection:
+                _migrate_to_schema_version_2(connection)
+        except sqlite3.OperationalError:
+            pass  # read-only drive: leave the library at its recorded schema version
         meta = dict(connection.execute("SELECT key, value FROM meta"))
         connection.close()
         return cls(tags_db, meta["drive_id"], int(meta["schema_version"]))
@@ -90,6 +93,8 @@ class Library:
         connection.close()
 
     def tags(self, path):
+        if self.schema_version < 2:
+            return []
         connection = sqlite3.connect(self._tags_db)
         rows = connection.execute(
             "SELECT tags.name FROM item_tags"
