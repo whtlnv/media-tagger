@@ -31,3 +31,12 @@ def test_in_the_tag_prompt_on_a_drive_whose_library_has_beach_and_bird_typing_b_
 
     [suggestions] = visible_suggestion_lists(viewer)
     assert sorted(listed(suggestions)) == ["beach", "bird"]
+
+
+def test_in_the_tag_prompt_on_a_drive_whose_library_has_no_tags_yet_typing_b_shows_no_suggestion_popup(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    type_in_tag_prompt(qtbot, viewer, "b")
+
+    assert visible_suggestion_lists(viewer) == []

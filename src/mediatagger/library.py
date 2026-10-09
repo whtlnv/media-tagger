@@ -98,6 +98,12 @@ class Library:
                 connection.execute("DELETE FROM items WHERE rel_path = ?", (key,))
         connection.close()
 
+    def all_tags(self):
+        connection = sqlite3.connect(self._tags_db)
+        names = [name for (name,) in connection.execute("SELECT name FROM tags ORDER BY name")]
+        connection.close()
+        return names
+
     def tags(self, path):
         if self.schema_version < 2:
             return []
