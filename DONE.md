@@ -1,3 +1,5 @@
+- [x] 2026-10-08 · When listing a folder that passes the openable check fails with an I/O error (the test makes the folder listing raise `OSError(errno.EIO, "Input/output error")`, as an unplugged USB drive does), the viewer shows "Can't open <name>" instead of crashing, and dropping a readable folder afterwards still starts its slideshow
+- [x] 2026-10-08 · When dropping a folder whose listing fails with an I/O error while another folder's image is showing (the test makes the listing raise `OSError(errno.EIO, ...)`), the previous image is no longer painted and pressing `o` opens the folder picker
 - [x] 2026-10-08 · Opening the viewer on a folder path that doesn't exist shows a centred "Can't open <name>" message instead of crashing
 - [x] 2026-10-08 · Opening the viewer on a file path that doesn't exist (e.g. `does_not_exist.jpg` in a missing folder) shows "Can't open does_not_exist.jpg" instead of crashing
 - [x] 2026-10-08 · Opening the viewer on a folder that can't be read (permission denied; the test chmods a temp folder to 000 and restores it afterwards) shows "Can't open <name>" instead of crashing
