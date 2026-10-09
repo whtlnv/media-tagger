@@ -1,11 +1,10 @@
-import os
 import subprocess
 import sys
 from pathlib import Path
 
 from PySide6.QtGui import QColor
 
-from mediatagger.test_viewer import make_image
+from mediatagger.test_viewer import make_image, offscreen_environment
 
 
 def test_running_the_mediatagger_command_on_a_folder_opens_the_fullscreen_viewer_on_its_first_item(tmp_path):
@@ -33,7 +32,7 @@ def test_running_the_mediatagger_command_on_a_folder_opens_the_fullscreen_viewer
     result = subprocess.run(
         [sys.executable, "-c", script, str(tmp_path)],
         capture_output=True, text=True, timeout=30,
-        env={**os.environ, "QT_QPA_PLATFORM": "offscreen"},
+        env=offscreen_environment(),
     )
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == f"fullscreen=True centre={QColor('red').name()}"
@@ -45,7 +44,7 @@ def test_the_installed_mediatagger_executable_started_on_its_own_keeps_running_w
     process = subprocess.Popen(
         [str(executable), str(tmp_path)],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
-        env={**os.environ, "QT_QPA_PLATFORM": "offscreen"},
+        env=offscreen_environment(),
     )
     try:
         process.wait(timeout=3)
@@ -83,7 +82,7 @@ def test_running_the_mediatagger_command_on_a_file_opens_the_fullscreen_viewer_o
     result = subprocess.run(
         [sys.executable, "-c", script, str(tmp_path / "IMG_2.png")],
         capture_output=True, text=True, timeout=30,
-        env={**os.environ, "QT_QPA_PLATFORM": "offscreen"},
+        env=offscreen_environment(),
     )
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == f"fullscreen=True centre={QColor('blue').name()}"

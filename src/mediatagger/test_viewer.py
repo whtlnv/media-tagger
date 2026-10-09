@@ -24,6 +24,10 @@ def make_image(path, color):
 SILENT = {"ao": "null"}
 
 
+def offscreen_environment():
+    return {**os.environ, "QT_QPA_PLATFORM": "offscreen"}
+
+
 def shown_viewer_on(qtbot, folder):
     viewer = Viewer(folder, player_options=SILENT)
     qtbot.addWidget(viewer)
@@ -199,7 +203,7 @@ def test_a_viewer_created_while_the_numeric_locale_is_not_c_still_gets_a_working
     result = subprocess.run(
         [sys.executable, "-c", script, str(tmp_path)],
         capture_output=True, text=True, timeout=30,
-        env={**os.environ, "QT_QPA_PLATFORM": "offscreen"},
+        env=offscreen_environment(),
     )
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == "None"
