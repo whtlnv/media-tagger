@@ -24,6 +24,11 @@ def _init_tags_db(tags_db, **meta):
     connection.close()
 
 
+def _migrate_to_schema_version_2(connection):
+    connection.executescript(CREATE_TAGS_TABLES)
+    connection.execute("UPDATE meta SET value = '2' WHERE key = 'schema_version' AND value = '1'")
+
+
 def _ensure_item_id(connection, rel_path):
     connection.execute("INSERT OR IGNORE INTO items (rel_path) VALUES (?)", (rel_path,))
     (item_id,) = connection.execute("SELECT id FROM items WHERE rel_path = ?", (rel_path,)).fetchone()
@@ -68,8 +73,7 @@ class Library:
         connection = sqlite3.connect(tags_db)
         meta = dict(connection.execute("SELECT key, value FROM meta"))
         with connection:
-            connection.executescript(CREATE_TAGS_TABLES)
-            connection.execute("UPDATE meta SET value = '2' WHERE key = 'schema_version' AND value = '1'")
+            _migrate_to_schema_version_2(connection)
         connection.close()
         return cls(tags_db, meta["drive_id"], int(meta["schema_version"]))
 
