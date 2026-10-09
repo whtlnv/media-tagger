@@ -1,3 +1,11 @@
+- [x] 2026-10-09 · Dropping a folder onto the viewer while the tag prompt is open closes the prompt without saving, so a later `Enter` cannot tag the previous item
+- [x] 2026-10-09 · The tag prompt's input reads as a text box: its style gives it a visible light border and a lighter translucent background than the overlays (the shown tags keep the overlays' look)
+- [x] 2026-10-09 · After the window is resized while the tag prompt is open, the prompt is still centred just above the status bar
+- [x] 2026-10-09 · Opening a schema-version-1 library whose upgrade fails for a reason other than a read-only drive (e.g. the database is locked) raises the error instead of reporting no tags
+- [x] 2026-10-09 · When a tag is removed from the last item that has it, its row in `tags` is deleted too
+- [x] 2026-10-09 · Opening a folder on a drive whose `tags.db` is garbage bytes (so the library can't be opened) still shows the slideshow, and the status bar says "Library on <DRIVE> can't be opened — viewing only"
+- [x] 2026-10-09 · On a drive whose library can't be opened, pressing `t` opens no tag prompt, shows "Tags can't be saved here", and leaves the drive's files unchanged
+- [x] 2026-10-09 · When opening the drive's library fails with an `OSError` (e.g. the drive was unplugged; the test patches `Library.open` to raise it), the viewer still shows the slideshow and the status bar says "Library on <DRIVE> can't be opened — viewing only"
 - [x] 2026-10-09 · A file in a library that was never tagged reports no tags
 - [x] 2026-10-09 · Entering `beach family` for a file in a library gives that file the tags `beach` and `family`
 - [x] 2026-10-09 · Tags entered for one file are not reported for another file in the same library
