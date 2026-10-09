@@ -72,6 +72,7 @@ class Library:
         tags_db = _tags_db(root)
         connection = sqlite3.connect(tags_db)
         try:
+            connection.execute("PRAGMA journal_mode = DELETE")
             with connection:
                 _migrate_to_schema_version_2(connection)
         except sqlite3.OperationalError:

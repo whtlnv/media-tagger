@@ -397,3 +397,21 @@ def test_a_tag_change_is_visible_to_a_separate_connection_to_tags_db_as_soon_as_
         observer.close()
 
     assert tags == [("beach",), ("family",)]
+
+
+def test_a_library_whose_tags_db_was_left_in_wal_mode_uses_the_rollback_journal_once_opened(tmp_path):
+    Library.create(tmp_path)
+    tags_db = tmp_path / ".mediatagger" / "tags.db"
+    connection = sqlite3.connect(tags_db)
+    connection.execute("PRAGMA journal_mode = WAL")
+    connection.close()
+
+    Library.open(tmp_path)
+
+    observer = sqlite3.connect(tags_db)
+    try:
+        (journal_mode,) = observer.execute("PRAGMA journal_mode").fetchone()
+    finally:
+        observer.close()
+
+    assert journal_mode == "delete"
