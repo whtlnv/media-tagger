@@ -227,15 +227,17 @@ class Viewer(QWidget):
         self._close_tag_prompt()
 
     def _close_tag_prompt(self):
-        library, path = self._tagging
-        self.tag_overlay.setText(" ".join(library.tags(path)))
-        self.tag_overlay.adjustSize()
-        self.tag_overlay.show()
-        self.tag_overlay.raise_()
+        self._show_tag_overlay(*self._tagging)
         self._tagging = None
         self.tag_input.hide()
         self.prompt_tags.hide()
         self.setFocus()  # keys go back to the viewer, not to the hidden input
+
+    def _show_tag_overlay(self, library, path):
+        self.tag_overlay.setText(" ".join(library.tags(path)))
+        self.tag_overlay.adjustSize()
+        self.tag_overlay.show()
+        self.tag_overlay.raise_()
 
     def _toggle_fullscreen(self):
         if self.isFullScreen():
