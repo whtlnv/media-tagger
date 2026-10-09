@@ -35,7 +35,10 @@ class VideoPlayer:
     def press(self, key):
         if key in ("Space", "Right", "Left"):
             self.engine.stop()
-            self.engine.wait_for_property("path", lambda path: path is None)
+            try:
+                self.engine.wait_for_property("path", lambda path: path is None, timeout=self.timeout)
+            except TimeoutError:
+                pass  # leave it stopping in the background rather than freeze the viewer
             return
         if key == "Up":
             self._seek(10)
@@ -50,8 +53,11 @@ class VideoPlayer:
             self.engine.pause = not self.engine.pause
 
     def _seek(self, seconds):
-        with self.engine.prepare_and_wait_for_event("playback_restart"):
-            self.engine.seek(seconds, precision="exact")
+        try:
+            with self.engine.prepare_and_wait_for_event("playback_restart", timeout=self.timeout):
+                self.engine.seek(seconds, precision="exact")
+        except TimeoutError:
+            pass  # the seek may still land; the viewer stays responsive either way
 
 
 def _outcome_of_this_load():

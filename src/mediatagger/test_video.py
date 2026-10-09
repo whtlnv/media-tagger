@@ -1,4 +1,5 @@
 import subprocess
+import threading
 
 import pytest
 
@@ -154,3 +155,16 @@ def test_a_clip_that_does_not_load_within_the_time_limit_is_reported_unplayable_
         assert VideoPlayer(engine, timeout=0.000001).show(clip) is False
     finally:
         engine.terminate()
+
+
+@pytest.mark.parametrize("key, ignored_command", [("Up", "seek"), ("Down", "seek"), ("Space", "stop")])
+def test_a_seek_or_stop_that_mpv_never_finishes_gives_up_instead_of_blocking(playing_video, monkeypatch, key, ignored_command):
+    player, engine = playing_video
+    player.timeout = 0.5
+    monkeypatch.setattr(engine, ignored_command, lambda *args, **kwargs: None)  # mpv never confirms it
+
+    pressing = threading.Thread(target=player.press, args=(key,), daemon=True)
+    pressing.start()
+    pressing.join(timeout=3)
+
+    assert not pressing.is_alive()
