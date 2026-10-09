@@ -22,4 +22,7 @@
 - [x] In the shipped `mediatagger` command started with no path, dropping a folder onto the window starts its slideshow at its first item
 - [x] A JPEG smaller than the window whose EXIF orientation says "rotate 90°" is shown upright at its decoded size (a landscape-stored photo tagged rotate 90° is drawn taller than wide)
 - [x] A JPEG larger than the window whose EXIF orientation says "rotate 90°" is shown upright when fitted to the window (drawn taller than wide, scaled down to fit)
+- [ ] Dropping a folder whose first item can't be decoded onto the launch screen shows the "Unsupported" placeholder, not the launch text
+- [ ] Dropping a folder with no images or videos while an image is showing shows "No images or videos in <folder>" and no longer paints the previous image
+- [ ] The "No images or videos in <folder>" text shown after dropping an empty folder onto the launch screen is centred in the window
 - [ ] Acceptance: a screenshot of `mediatagger` started with no path on the Mac shows the "Drop a folder or file here, or press `o` to open" screen
