@@ -66,8 +66,13 @@ class LastWordCompleter(QCompleter):
 
     def eventFilter(self, watched, event):
         if event.type() == QEvent.Type.KeyPress and event.key() == Qt.Key.Key_Tab:
-            self.widget().setText(self.widget().text().rpartition(" ")[0] + " " + self.popup().currentIndex().data())
+            self._accept_highlighted()
         return super().eventFilter(watched, event)
+
+    def _accept_highlighted(self):
+        prompt = self.widget()
+        highlighted = self.popup().currentIndex().data()
+        prompt.setText(prompt.text().rpartition(" ")[0] + " " + highlighted)
 
 
 class TagInput(QLineEdit):
