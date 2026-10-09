@@ -17,7 +17,7 @@
 - [x] A colon-namespaced tag of any depth is kept whole as one tag (`place:mexico:cancun` reports exactly `place:mexico:cancun`, not its parts)
 - [x] A file's tags are reported again after its library is closed and opened again
 - [x] A file's tags survive the drive being mounted at a different path: after the library's `.mediatagger` folder and the file (at the same place below the root) are copied to another root, the library there reports the same tags for the file
-- [ ] A library whose `tags.db` holds only its drive id and schema version (as libraries created before tagging existed do) can record and report a file's tags
+- [x] A library whose `tags.db` holds only its drive id and schema version (as libraries created before tagging existed do) can record and report a file's tags
 - [ ] Opening a library whose `tags.db` records schema version 1 upgrades it in place: afterwards its `meta` table records schema version 2 and its drive id is unchanged
 - [ ] A tag change is visible to a separate connection to `tags.db` as soon as it is entered, while the library stays open (each change is committed at once)
 - [ ] A library's `tags.db` uses SQLite's rollback journal, not WAL (it lives on removable exFAT media)

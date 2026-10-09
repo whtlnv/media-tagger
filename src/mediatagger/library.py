@@ -40,6 +40,8 @@ class Library:
         tags_db = _tags_db(root)
         connection = sqlite3.connect(tags_db)
         meta = dict(connection.execute("SELECT key, value FROM meta"))
+        with connection:
+            connection.execute("CREATE TABLE IF NOT EXISTS tags (path TEXT, tag TEXT)")
         connection.close()
         return cls(tags_db, meta["drive_id"], int(meta["schema_version"]))
 

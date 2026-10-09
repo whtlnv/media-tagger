@@ -264,3 +264,22 @@ def test_a_files_tags_survive_the_drive_being_mounted_at_a_different_path(tmp_pa
     remounted = Library.open(new_mount)
 
     assert remounted.tags(new_mount / "trips" / "beach.jpg") == ["beach", "family"]
+
+
+def test_a_library_whose_tags_db_holds_only_its_drive_id_and_schema_version_can_record_and_report_a_files_tags(tmp_path):
+    (tmp_path / ".mediatagger").mkdir()
+    connection = sqlite3.connect(tmp_path / ".mediatagger" / "tags.db")
+    with connection:
+        connection.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
+        connection.executemany(
+            "INSERT INTO meta (key, value) VALUES (?, ?)",
+            [("drive_id", "pre-tagging-drive"), ("schema_version", "1")],
+        )
+    connection.close()
+    photo = tmp_path / "beach.jpg"
+    photo.touch()
+    library = Library.open(tmp_path)
+
+    library.enter(photo, "beach family")
+
+    assert library.tags(photo) == ["beach", "family"]
