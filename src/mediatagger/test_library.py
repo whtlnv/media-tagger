@@ -121,3 +121,13 @@ def test_a_files_tags_are_reported_in_alphabetical_order_whatever_order_they_wer
     library.enter(photo, "family beach")
 
     assert library.tags(photo) == ["beach", "family"]
+
+
+def test_entering_a_tag_a_file_already_has_does_not_report_it_twice(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "beach.jpg"
+    photo.touch()
+
+    library.enter(photo, "beach beach")
+
+    assert library.tags(photo) == ["beach"]
