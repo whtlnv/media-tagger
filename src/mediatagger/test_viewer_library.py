@@ -702,3 +702,17 @@ def test_after_entering_beach_family_in_the_tag_prompt_a_tag_overlay_shows_beach
 
     assert visible_tag_prompts(viewer) == []
     assert shown_texts(viewer) == ["beach family"]
+
+
+def test_after_esc_closes_the_tag_prompt_on_a_file_tagged_beach_family_the_tag_overlay_shows_beach_family_again(qtbot, tmp_path):
+    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    Library.create(drive).enter(folder / "IMG_1.png", "beach family")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    qtbot.keyClick(viewer.focusWidget(), Qt.Key.Key_Escape)
+
+    assert visible_tag_prompts(viewer) == []
+    assert shown_texts(viewer) == ["beach family"]

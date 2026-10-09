@@ -225,12 +225,13 @@ class Viewer(QWidget):
         library, path = self._tagging
         library.enter(path, self.tag_input.text())
         self._close_tag_prompt()
+
+    def _close_tag_prompt(self):
+        library, path = self._tagging
         self.tag_overlay.setText(" ".join(library.tags(path)))
         self.tag_overlay.adjustSize()
         self.tag_overlay.show()
         self.tag_overlay.raise_()
-
-    def _close_tag_prompt(self):
         self._tagging = None
         self.tag_input.hide()
         self.prompt_tags.hide()
