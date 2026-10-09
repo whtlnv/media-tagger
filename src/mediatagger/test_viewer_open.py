@@ -2,7 +2,7 @@ import errno
 from contextlib import contextmanager
 from pathlib import Path
 
-from PySide6.QtCore import QMimeData, QPointF, Qt, QTimer, QUrl
+from PySide6.QtCore import QMimeData, QPoint, QPointF, QRect, Qt, QTimer, QUrl
 from PySide6.QtGui import QColor, QDragEnterEvent, QDropEvent
 from PySide6.QtWidgets import QApplication, QFileDialog, QLabel
 
@@ -14,7 +14,7 @@ from mediatagger.test_viewer import (
     SILENT, shows_unsupported_placeholder, shows_video_surface, wait_until_loaded,
 )
 from mediatagger.viewer import (
-    CREATE_LIBRARY_QUESTION, DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT, LIBRARY_TEXT, NO_LIBRARY_TEXT, NO_LIBRARY_VIEWING_ONLY_TEXT,
+    CORNER_MARGIN, CREATE_LIBRARY_QUESTION, DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT, LIBRARY_TEXT, NO_LIBRARY_TEXT, NO_LIBRARY_VIEWING_ONLY_TEXT,
     READ_ONLY_BANNER_TEXT, READ_ONLY_STATUS_TEXT, Viewer,
 )
 
@@ -369,6 +369,20 @@ def test_opening_a_folder_on_a_read_only_drive_that_has_a_tag_library_says_tags_
         viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
     assert READ_ONLY_STATUS_TEXT in status_bar_texts(viewer)
+
+
+def test_on_a_read_only_drive_with_a_tag_library_the_status_bar_texts_sit_side_by_side_inside_the_window_clear_of_its_left_and_bottom_edges(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    with made_read_only(drive):
+        viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    shown = [label for label in viewer.status_bar.findChildren(QLabel) if not label.isHidden()]
+    left, right = sorted((QRect(label.mapTo(viewer, QPoint()), label.size()) for label in shown), key=lambda frame: frame.left())
+    assert len(shown) == 2
+    assert viewer.rect().contains(left) and viewer.rect().contains(right)
+    assert left.left() >= CORNER_MARGIN
+    assert max(left.bottom(), right.bottom()) <= viewer.rect().bottom() - CORNER_MARGIN
+    assert left.right() < right.left()
 
 
 def test_opening_a_folder_on_a_read_only_drive_without_a_tag_library_shows_the_read_only_banner_instead_of_asking_to_create_one(qtbot, tmp_path):

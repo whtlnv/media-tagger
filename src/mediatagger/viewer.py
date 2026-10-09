@@ -3,7 +3,7 @@ from pathlib import Path
 
 from PySide6.QtCore import QPoint, QRect, Qt
 from PySide6.QtGui import QImageIOHandler, QImageReader, QPainter
-from PySide6.QtWidgets import QFileDialog, QLabel, QMessageBox, QWidget
+from PySide6.QtWidgets import QFileDialog, QHBoxLayout, QLabel, QMessageBox, QWidget
 
 import mediatagger
 from mediatagger.folder import is_video
@@ -77,6 +77,10 @@ class Viewer(QWidget):
         self.read_only_banner.hide()
         self.read_only_status = QLabel(READ_ONLY_STATUS_TEXT, self.status_bar)
         self.read_only_status.hide()
+        status_layout = QHBoxLayout(self.status_bar)
+        status_layout.setContentsMargins(CORNER_MARGIN, 0, CORNER_MARGIN, CORNER_MARGIN)
+        status_layout.addWidget(self.library_label)
+        status_layout.addWidget(self.read_only_status)
         self.setWindowState(Qt.WindowState.WindowFullScreen)
         self.setAcceptDrops(True)
         if path is None:
