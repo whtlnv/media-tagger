@@ -124,6 +124,9 @@ class Viewer(QWidget):
         if folder is None:
             return
         self.slideshow = Slideshow.open(folder)
+        if self.slideshow is None:
+            self.placeholder.setText(f"No images or videos in {folder.name}")
+            return
         self._show_current()
         self.update()
 

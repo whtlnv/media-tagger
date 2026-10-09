@@ -666,3 +666,17 @@ def test_rejecting_the_viewers_own_o_dialog_pointed_at_a_folder_leaves_the_launc
     finish_o_dialog_pointed_at(qtbot, viewer, tmp_path, "reject")
 
     assert shown_texts(viewer) == launch_text
+
+
+def test_choosing_a_folder_with_no_media_in_the_o_picker_says_so_like_opening_that_folder_does(qtbot, tmp_path):
+    folder = tmp_path / "Holidays"
+    folder.mkdir()
+    (folder / "notes.txt").write_text("hi")
+    viewer = Viewer(player_options=SILENT, folder_picker=lambda: folder)
+    qtbot.addWidget(viewer)
+    viewer.show()
+    qtbot.waitExposed(viewer)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_O)
+
+    assert shown_texts(viewer) == shown_texts(shown_viewer_on(qtbot, folder))
