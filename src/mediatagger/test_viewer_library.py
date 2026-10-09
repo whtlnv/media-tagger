@@ -671,7 +671,8 @@ def test_pressing_esc_in_the_tag_prompt_also_hides_its_shown_tags(qtbot, tmp_pat
 
     qtbot.keyClick(viewer.focusWidget(), Qt.Key.Key_Escape)
 
-    assert shown_labels(viewer) == []
+    assert visible_tag_prompts(viewer) == []
+    assert not viewer.prompt_tags.isVisible()
 
 
 def test_pressing_t_on_a_video_shows_the_tag_prompt_and_its_shown_tags_above_the_video_surface(qtbot, tmp_path):
