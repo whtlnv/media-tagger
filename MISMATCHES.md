@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 15:57 · `src/mediatagger/test_viewer_tag_prompt.py::test_a_tag_saved_from_the_prompt_is_suggested_the_next_time_the_prompt_opens_after_saving_zebra_on_one_item_typing_z_on_the_next_lists_zebra`
+- Behavior: A tag saved from the prompt is suggested the next time the prompt opens — after saving `zebra` on one item, opening the prompt on the next item and typing `z` lists `zebra`
+- Predicted: passes unexpectedly — `_open_tag_prompt` calls `library.all_tags()`, which reads the SQLite db fresh on every prompt open
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: The behavior already exists because suggestions are never cached across prompt opens. Removing the save step makes the test fail at the suggestion-list unpack (`ValueError`, no popup), so it isn't vacuous. Kept it as a regression pin; nothing for /green to do.
+
 ## 2026-10-09 15:52 · `src/mediatagger/test_viewer_tag_prompt.py::test_suggestions_come_from_the_current_drives_library_after_dropping_a_folder_from_a_second_drive_with_only_zebra_typing_b_shows_no_popup_and_z_lists_zebra`
 - Behavior: Suggestions come from the current drive's library — after dropping a folder from a second drive whose library has only `zebra`, typing `b` shows no popup and typing `z` lists `zebra`
 - Predicted: passes unexpectedly — `_open_tag_prompt` rebuilds suggestions from `self.library` each time, and `_open_library` swaps `self.library` on drop

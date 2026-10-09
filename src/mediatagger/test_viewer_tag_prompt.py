@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QAbstractItemView, QApplication
 from mediatagger.library import Library
 from mediatagger.test_viewer import make_image
 from mediatagger.test_viewer_library import (
-    drive_with_a_tag_library_holding_one_image, make_tag_library_drive, shown_viewer_on_drive, shown_viewer_on_drives, visible_tag_prompts,
+    drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, make_tag_library_drive, shown_viewer_on_drive, shown_viewer_on_drives, visible_tag_prompts,
 )
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 
@@ -198,5 +198,18 @@ def test_suggestions_come_from_the_current_drives_library_after_dropping_a_folde
     [prompt] = visible_tag_prompts(viewer)
     qtbot.keyClick(prompt, Qt.Key.Key_Backspace)
     qtbot.keyClicks(prompt, "z")
+    [suggestions] = visible_suggestion_lists(viewer)
+    assert listed(suggestions) == ["zebra"]
+
+
+def test_a_tag_saved_from_the_prompt_is_suggested_the_next_time_the_prompt_opens_after_saving_zebra_on_one_item_typing_z_on_the_next_lists_zebra(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    enter_in_tag_prompt(qtbot, viewer, "zebra")
+    qtbot.keyClick(viewer, Qt.Key.Key_Right)
+
+    type_in_tag_prompt(qtbot, viewer, "z")
+
     [suggestions] = visible_suggestion_lists(viewer)
     assert listed(suggestions) == ["zebra"]
