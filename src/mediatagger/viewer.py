@@ -71,7 +71,7 @@ class LastWordCompleter(QCompleter):
             self._open_above_the_prompt()
         if event.type() != QEvent.Type.KeyPress:
             return super().eventFilter(watched, event)
-        if event.key() == Qt.Key.Key_Tab:
+        if event.key() == Qt.Key.Key_Tab and self.popup().currentIndex().isValid():
             self._accept_highlighted()
         if watched is self.popup() and event.key() == Qt.Key.Key_Return and self.popup().currentIndex().isValid():
             self._accept_highlighted()

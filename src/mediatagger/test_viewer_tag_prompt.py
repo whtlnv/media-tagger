@@ -406,3 +406,13 @@ def test_enter_with_the_popup_showing_but_no_suggestion_highlighted_saves_the_pr
     qtbot.keyClick(suggestions, Qt.Key.Key_Return)
 
     assert (visible_tag_prompt_texts(viewer), Library.open(drive).tags(folder / "IMG_1.png")) == ([], ["sunset"])
+
+
+def test_tab_with_the_popup_showing_but_no_suggestion_highlighted_leaves_the_prompts_text_as_typed(qtbot, tmp_path):
+    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach bird")
+    type_in_tag_prompt(qtbot, viewer, "b")
+    [suggestions] = visible_suggestion_lists(viewer)
+
+    qtbot.keyClick(suggestions, Qt.Key.Key_Tab)
+
+    assert visible_tag_prompt_texts(viewer) == ["b"]
