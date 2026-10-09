@@ -229,7 +229,7 @@ class Viewer(QWidget):
             self.library_label.setText(NO_LIBRARY_VIEWING_ONLY_TEXT)
             return
         read_only = not os.access(drive, os.W_OK)
-        if not (drive / LIBRARY_FOLDER).exists():
+        if not (drive / LIBRARY_FOLDER / "tags.db").exists():
             if read_only:
                 self._show_library_status(NO_LIBRARY_TEXT, read_only=True)
                 return

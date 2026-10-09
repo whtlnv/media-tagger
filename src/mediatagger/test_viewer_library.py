@@ -191,6 +191,16 @@ def test_opening_a_folder_on_a_drive_without_a_tag_library_asks_to_create_one_on
     assert asked == [(CREATE_LIBRARY_QUESTION.format("MEDIATAGGER"), False)]
 
 
+def test_opening_a_folder_on_a_drive_whose_mediatagger_folder_holds_no_tags_db_asks_to_create_a_tag_library(qtbot, tmp_path):
+    drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
+    (drive / ".mediatagger").mkdir()
+    asked = []
+
+    viewer_on_drive(qtbot, folder, drive, decline_noting_the_question_in(asked))
+
+    assert asked == [CREATE_LIBRARY_QUESTION.format("MEDIATAGGER")]
+
+
 def test_opening_a_folder_on_a_drive_that_already_has_a_tag_library_does_not_ask_to_create_one(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     asked = []
