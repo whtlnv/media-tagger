@@ -26,8 +26,8 @@ def status_bar_texts(viewer):
 
 
 def make_tag_library_drive(drive):
-    (drive / ".mediatagger").mkdir(parents=True)
-    (drive / ".mediatagger" / "tags.db").touch()
+    drive.mkdir(parents=True)
+    Library.create(drive)
     return drive
 
 

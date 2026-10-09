@@ -70,7 +70,7 @@ class Viewer(QWidget):
         self.app_location = app_location
         self.ask_to_create_library = ask_to_create_library or self._ask_to_create_library
         self.declined_drives = set()
-        self.library_drive = None
+        self.library = None  # the open Library of the current drive, if it has one
         self.folder_picker = folder_picker or self._pick_folder
         self.slideshow = None
         self.video_player = VideoPlayer(new_engine(**{**PLAYER_OPTIONS, **(player_options or {})}))
@@ -200,14 +200,14 @@ class Viewer(QWidget):
         self.slideshow.press(key)
         self.video_player.press(key)
         self._refresh()
-        if self.library_drive:
-            self._show_tag_overlay(Library.open(self.library_drive), self.slideshow.current)
+        if self.library:
+            self._show_tag_overlay(self.library, self.slideshow.current)
 
     def _tag_prompt_has_focus(self):
         return self.focusWidget() is self.tag_input and self.tag_input.isVisible()
 
     def _open_tag_prompt(self):
-        library = Library.open(self.library_drive)
+        library = self.library
         path = self.slideshow.current
         self._tagging = (library, path)
         self.tag_overlay.hide()
@@ -289,6 +289,7 @@ class Viewer(QWidget):
         self._open_library(path)  # after the first item is shown, so a question about the library is asked over it
 
     def _open_library(self, path):
+        self.library = None
         drive = next(folder for folder in (path, *path.parents) if self.is_mount_point(folder))
         if self._never_holds_a_library(drive):
             self.library_label.setText(NO_LIBRARY_VIEWING_ONLY_TEXT)
@@ -301,8 +302,9 @@ class Viewer(QWidget):
             if not self._agrees_to_create_library(drive):
                 self._show_library_status(DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format(drive.name), read_only=False)
                 return
-            Library.create(drive)
-        self.library_drive = drive
+            self.library = Library.create(drive)
+        else:
+            self.library = Library.open(drive)
         self._show_library_status(LIBRARY_TEXT.format(drive.name), read_only)
 
     def _show_library_status(self, text, read_only):
