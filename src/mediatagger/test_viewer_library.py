@@ -659,3 +659,16 @@ def test_pressing_esc_after_esc_has_closed_the_tag_prompt_closes_the_viewer(qtbo
     qtbot.keyClick(viewer, Qt.Key.Key_Escape)
 
     assert not viewer.isVisible()
+
+
+def test_pressing_esc_in_the_tag_prompt_also_hides_its_shown_tags(qtbot, tmp_path):
+    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    Library.create(drive).enter(folder / "IMG_1.png", "beach family")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    qtbot.keyClick(viewer.focusWidget(), Qt.Key.Key_Escape)
+
+    assert shown_labels(viewer) == []
