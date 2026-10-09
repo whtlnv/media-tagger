@@ -21,6 +21,7 @@ STATUS_BAR_HEIGHT = 32
 NO_LIBRARY_TEXT = "No library open"
 LIBRARY_TEXT = "Library: {}"
 NO_LIBRARY_VIEWING_ONLY_TEXT = "No library — viewing only"
+CREATE_LIBRARY_QUESTION = "Create a tag library on {}?"
 
 
 def fitted_rect(size, bounds):
@@ -52,6 +53,7 @@ class Viewer(QWidget):
     def __init__(self, path=None, player_options=None, folder_picker=None, is_mount_point=os.path.ismount, ask_to_create_library=None):
         super().__init__()
         self.is_mount_point = is_mount_point
+        self.ask_to_create_library = ask_to_create_library
         self.folder_picker = folder_picker or self._pick_folder
         self.slideshow = None
         self.video_player = VideoPlayer(new_engine(**{**PLAYER_OPTIONS, **(player_options or {})}))
@@ -166,6 +168,8 @@ class Viewer(QWidget):
         drive = next(folder for folder in (path, *path.parents) if self.is_mount_point(folder))
         if drive == Path("/"):
             self.library_label.setText(NO_LIBRARY_VIEWING_ONLY_TEXT)
+        elif not (drive / ".mediatagger").exists():
+            self.ask_to_create_library(CREATE_LIBRARY_QUESTION.format(drive.name))
         else:
             self.library_label.setText(LIBRARY_TEXT.format(drive.name))
         if showing_info:

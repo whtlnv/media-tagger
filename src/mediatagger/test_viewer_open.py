@@ -10,7 +10,7 @@ from mediatagger.test_viewer import (
     centre_colour, make_folder_with_no_media, make_image, shown_labels, shown_launch_viewer, shown_texts, shown_viewer_on,
     SILENT, shows_unsupported_placeholder, shows_video_surface, wait_until_loaded,
 )
-from mediatagger.viewer import LIBRARY_TEXT, NO_LIBRARY_TEXT, NO_LIBRARY_VIEWING_ONLY_TEXT, Viewer
+from mediatagger.viewer import CREATE_LIBRARY_QUESTION, LIBRARY_TEXT, NO_LIBRARY_TEXT, NO_LIBRARY_VIEWING_ONLY_TEXT, Viewer
 
 
 def make_folders(parent, *names):
@@ -170,6 +170,26 @@ def test_opening_a_folder_on_the_system_disk_never_asks_to_create_a_library_and_
 
     assert asked == []
     assert status_bar_texts(viewer) == [NO_LIBRARY_VIEWING_ONLY_TEXT]
+
+
+def test_opening_a_folder_on_a_drive_without_a_tag_library_asks_to_create_one_on_that_drive_before_writing_to_it(qtbot, tmp_path):
+    drive = tmp_path / "MEDIATAGGER"
+    folder = drive / "Photos"
+    folder.mkdir(parents=True)
+    make_image(folder / "IMG_1.png", "red")
+    asked = []
+
+    def decline_noting_whether_the_drive_was_written(question):
+        asked.append((question, (drive / ".mediatagger").exists()))
+        return False
+
+    viewer = Viewer(
+        folder, player_options=SILENT, is_mount_point=lambda path: path == drive,
+        ask_to_create_library=decline_noting_whether_the_drive_was_written,
+    )
+    qtbot.addWidget(viewer)
+
+    assert asked == [(CREATE_LIBRARY_QUESTION.format("MEDIATAGGER"), False)]
 
 
 def test_a_viewer_opened_on_a_folder_shows_its_first_item_and_not_the_launch_text(qtbot, tmp_path):
