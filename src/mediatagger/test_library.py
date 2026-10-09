@@ -174,3 +174,14 @@ def test_entered_tags_are_lowercased(tmp_path):
     library.enter(photo, "Beach")
 
     assert library.tags(photo) == ["beach"]
+
+
+def test_removing_is_case_insensitive(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "beach.jpg"
+    photo.touch()
+    library.enter(photo, "beach sunset")
+
+    library.enter(photo, "-Sunset")
+
+    assert library.tags(photo) == ["beach"]

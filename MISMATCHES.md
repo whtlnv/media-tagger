@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 05:18 · `src/mediatagger/test_library.py::test_removing_is_case_insensitive`
+- Behavior: Removing is case-insensitive (`-Sunset` removes `sunset`)
+- Predicted: pass (no right-reason failure available) — `enter` lowercases the whole entry text before splitting off `-` prefixes
+- Actual: passed
+- Type: passed unexpectedly
+- Resolution: The prior cycle's `text.lower()` (commit 2682fbd) already covers removal. No rewrite can make this fail without contradicting current behavior, so the test stays as a pin and this item needs no /green.
+
 ## 2026-10-09 04:50 · `src/mediatagger/test_library.py::test_tags_entered_for_one_file_are_not_reported_for_another_file_in_the_same_library`
 - Behavior: Tags entered for one file are not reported for another file in the same library
 - Predicted: pass (no right-reason failure available) — `Library._tags` is already a dict keyed by path, so an untagged file falls through to `[]`
