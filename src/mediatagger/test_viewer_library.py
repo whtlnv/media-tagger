@@ -961,3 +961,13 @@ def test_pressing_t_on_a_read_only_drive_with_a_tag_library_says_tags_cant_be_sa
         qtbot.keyClick(viewer, Qt.Key.Key_T)
 
         assert TAGS_CANT_BE_SAVED_HERE_TEXT in status_bar_texts(viewer)
+
+
+def test_the_tags_cant_be_saved_here_message_leaves_the_status_bar_a_few_seconds_after_it_appears_while_the_library_status_stays(qtbot, tmp_path):
+    drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    qtbot.waitUntil(lambda: TAGS_CANT_BE_SAVED_HERE_TEXT not in status_bar_texts(viewer), timeout=10000)
+
+    assert status_bar_texts(viewer) == [DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format("MEDIATAGGER")]

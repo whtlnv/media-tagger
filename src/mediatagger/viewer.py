@@ -29,6 +29,7 @@ CREATE_LIBRARY_QUESTION = "Create a tag library on {}?"
 READ_ONLY_BANNER_TEXT = "This drive is read-only — tags can't be saved"
 READ_ONLY_STATUS_TEXT = "Read-only — tags can't be saved"
 TAGS_CANT_BE_SAVED_HERE_TEXT = "Tags can't be saved here"
+CANT_SAVE_MESSAGE_MS = 3000
 
 
 def overlay_label(text, parent):
@@ -204,6 +205,7 @@ class Viewer(QWidget):
                 self._open_tag_prompt()
             else:
                 self.cant_save_status.show()
+                QTimer.singleShot(CANT_SAVE_MESSAGE_MS, self.cant_save_status.hide)
             return
         if self._tag_prompt_has_focus():
             return  # keys the open tag prompt ignores must not reach the slideshow or video
