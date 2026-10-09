@@ -185,7 +185,8 @@ class Viewer(QWidget):
         self._refresh()
 
     def _tag_prompt_has_focus(self):
-        return isinstance(self.focusWidget(), QLineEdit) and self.focusWidget().isVisible()
+        focused = self.focusWidget()
+        return isinstance(focused, QLineEdit) and focused.isVisible()
 
     def _open_tag_prompt(self):
         library = Library.open(self.library_drive)
