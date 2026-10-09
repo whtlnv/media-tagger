@@ -153,8 +153,7 @@ class Viewer(QWidget):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Escape and self._tag_prompt_has_focus():
-            self.focusWidget().hide()
-            self._tags_label.hide()
+            self._close_tag_prompt(self.focusWidget(), self._tags_label)
             return
         if event.key() == Qt.Key.Key_Escape:  # interim: quits until the grid (Phase 7) makes Esc "back to grid"
             self.close()
@@ -204,6 +203,9 @@ class Viewer(QWidget):
 
     def _record_tags(self, library, path, prompt, tags_label):
         library.enter(path, prompt.text())
+        self._close_tag_prompt(prompt, tags_label)
+
+    def _close_tag_prompt(self, prompt, tags_label):
         prompt.hide()
         tags_label.hide()
 
