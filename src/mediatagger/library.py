@@ -2,7 +2,11 @@ import sqlite3
 import uuid
 
 LIBRARY_FOLDER = ".mediatagger"
-CREATE_TAGS_TABLE = "CREATE TABLE IF NOT EXISTS tags (path TEXT, tag TEXT)"
+CREATE_TAGS_TABLES = """
+CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY, rel_path TEXT UNIQUE);
+CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY, name TEXT UNIQUE);
+CREATE TABLE IF NOT EXISTS item_tags (item_id INTEGER, tag_id INTEGER);
+"""
 
 
 def _tags_db(root):
@@ -16,7 +20,7 @@ def _init_tags_db(tags_db, **meta):
         connection.executemany(
             "INSERT INTO meta (key, value) VALUES (?, ?)", meta.items()
         )
-        connection.execute(CREATE_TAGS_TABLE)
+        connection.executescript(CREATE_TAGS_TABLES)
     connection.close()
 
 
@@ -42,7 +46,7 @@ class Library:
         connection = sqlite3.connect(tags_db)
         meta = dict(connection.execute("SELECT key, value FROM meta"))
         with connection:
-            connection.execute(CREATE_TAGS_TABLE)
+            connection.executescript(CREATE_TAGS_TABLES)
         connection.close()
         return cls(tags_db, meta["drive_id"], int(meta["schema_version"]))
 
@@ -57,17 +61,24 @@ class Library:
         key = self._key(path)
         connection = sqlite3.connect(self._tags_db)
         with connection:
-            connection.execute("DELETE FROM tags WHERE path = ?", (key,))
+            connection.execute("INSERT OR IGNORE INTO items (rel_path) VALUES (?)", (key,))
+            (item_id,) = connection.execute("SELECT id FROM items WHERE rel_path = ?", (key,)).fetchone()
+            connection.execute("DELETE FROM item_tags WHERE item_id = ?", (item_id,))
+            connection.executemany("INSERT OR IGNORE INTO tags (name) VALUES (?)", [(tag,) for tag in tags])
             connection.executemany(
-                "INSERT INTO tags (path, tag) VALUES (?, ?)",
-                [(key, tag) for tag in tags],
+                "INSERT INTO item_tags (item_id, tag_id) SELECT ?, id FROM tags WHERE name = ?",
+                [(item_id, tag) for tag in tags],
             )
         connection.close()
 
     def tags(self, path):
         connection = sqlite3.connect(self._tags_db)
         rows = connection.execute(
-            "SELECT tag FROM tags WHERE path = ? ORDER BY tag", (self._key(path),)
+            "SELECT tags.name FROM item_tags"
+            " JOIN items ON items.id = item_tags.item_id"
+            " JOIN tags ON tags.id = item_tags.tag_id"
+            " WHERE items.rel_path = ? ORDER BY tags.name",
+            (self._key(path),),
         )
         tags = [tag for (tag,) in rows]
         connection.close()

@@ -283,3 +283,29 @@ def test_a_library_whose_tags_db_holds_only_its_drive_id_and_schema_version_can_
     library.enter(photo, "beach family")
 
     assert library.tags(photo) == ["beach", "family"]
+
+
+def test_tags_db_of_a_newly_created_library_records_each_file_and_tag_once_and_links_them_in_item_tags(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "beach.jpg"
+    photo.touch()
+
+    library.enter(photo, "beach family")
+
+    connection = sqlite3.connect(tmp_path / ".mediatagger" / "tags.db")
+    try:
+        items = connection.execute("SELECT rel_path FROM items").fetchall()
+        tags = connection.execute("SELECT name FROM tags ORDER BY name").fetchall()
+        links = connection.execute(
+            "SELECT items.rel_path, tags.name FROM item_tags"
+            " JOIN items ON items.id = item_tags.item_id"
+            " JOIN tags ON tags.id = item_tags.tag_id"
+            " ORDER BY tags.name"
+        ).fetchall()
+    finally:
+        connection.close()
+
+    assert items == [("beach.jpg",)]
+    assert tags == [("beach",), ("family",)]
+    assert links == [("beach.jpg", "beach"), ("beach.jpg", "family")]
+    assert library.tags(photo) == ["beach", "family"]
