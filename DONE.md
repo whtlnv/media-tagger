@@ -1,0 +1,67 @@
+- [x] 2026-10-08 · Opening a folder lists its images in natural filename order (`IMG_2.jpg` before `IMG_10.jpg`)
+- [x] 2026-10-08 · Opening a folder lists its videos (`.mp4`, `.mov`, `.avi`, `.mpg`, `.gif`, …) alongside its images, in the same natural order
+- [x] 2026-10-08 · A non-media file in the folder (`notes.txt`) is not in the slideshow
+- [x] 2026-10-08 · Media extensions are matched regardless of case (`IMG_1.JPG` is in the slideshow)
+- [x] 2026-10-08 · A hidden file with a media extension (`.hidden.jpg`) is not in the slideshow
+- [x] 2026-10-08 · macOS litter (`._IMG_1.jpg` AppleDouble files, `.DS_Store`) is not in the slideshow
+- [x] 2026-10-08 · A subfolder of the opened folder is not in the slideshow, nor are the media inside it
+- [x] 2026-10-08 · Opening a folder path shows its first item
+- [x] 2026-10-08 · Every image and video extension DESIGN.md lists (jpg, jpeg, png, webp, bmp, tif, tiff, heic, mp4, mov, avi, mpg, mpeg, mkv, m4v, wmv, 3gp, gif) is in the slideshow
+- [x] 2026-10-08 · Opening a file path shows that file, positioned within its folder's slideshow
+- [x] 2026-10-08 · Pressing `Space` shows the next item
+- [x] 2026-10-08 · Pressing `→` shows the next item
+- [x] 2026-10-08 · Pressing `←` shows the previous item
+- [x] 2026-10-08 · After opening a file path (`IMG_2.jpg` in a folder of `IMG_1`, `IMG_2`, `IMG_3`), `Space` shows `IMG_3.jpg` and `←` from there twice shows `IMG_1.jpg`
+- [x] 2026-10-08 · Pressing `Space` or `→` on the last item keeps showing the last item
+- [x] 2026-10-08 · Pressing `←` on the first item keeps showing the first item
+- [x] 2026-10-08 · An image wider than the screen's aspect ratio is shown scaled to the screen's width, keeping its aspect ratio
+- [x] 2026-10-08 · An image taller than the screen's aspect ratio is shown scaled to the screen's height, keeping its aspect ratio
+- [x] 2026-10-08 · Showing a video item starts it playing, unpaused and unmuted
+- [x] 2026-10-08 · A GIF item is played as a video, not shown as a still image
+- [x] 2026-10-08 · A still image (`.jpg`, `.png`, `.heic`) is shown as an image, not played as a video, while `.mp4`/`.avi`/`.mpg` are played as video
+- [x] 2026-10-08 · A playing video restarts from the beginning when it reaches the end
+- [x] 2026-10-08 · Pressing `p` on a playing video pauses it
+- [x] 2026-10-08 · Pressing `p` on a paused video resumes it
+- [x] 2026-10-08 · Pressing `Enter` toggles a video between playing and paused
+- [x] 2026-10-08 · Pressing `Space` on a playing video shows the next item rather than pausing
+- [x] 2026-10-08 · Moving from a video to another item stops the video's playback and sound
+- [x] 2026-10-08 · Pressing `↑` on a video seeks 10 seconds forward
+- [x] 2026-10-08 · Pressing `↓` on a video seeks 10 seconds back
+- [x] 2026-10-08 · Pressing `m` on a video mutes it
+- [x] 2026-10-08 · Pressing `m` on a muted video unmutes it
+- [x] 2026-10-08 · Pressing `i`, `f`, `→` or `←` on a playing video does not pause it; only `p` and `Enter` toggle pause
+- [x] 2026-10-08 · Pressing `→` or `←` on a video stops its playback and sound, like `Space` does
+- [x] 2026-10-08 · The info overlay is hidden when the viewer opens
+- [x] 2026-10-08 · Pressing `i` shows an overlay with the current filename and position (`3 / 120`)
+- [x] 2026-10-08 · The info overlay updates its filename and position when moving to another item
+- [x] 2026-10-08 · Positions of a thousand or more are shown with a thousands separator (`233 / 1,204`)
+- [x] 2026-10-08 · Pressing `i` while the overlay is shown hides it
+- [x] 2026-10-08 · A viewer opened on a folder whose first item is a red image paints red at the centre of its window
+- [x] 2026-10-08 · A viewer opened on a folder whose first item is a blue image paints blue at the centre of its window
+- [x] 2026-10-08 · A viewer opened on a folder whose first item is a video shows a video surface inside the viewer window, with the player loaded with that clip
+- [x] 2026-10-08 · A viewer opened on a folder whose first item is an image shows no video surface and loads no clip into the player
+- [x] 2026-10-08 · In the viewer, pressing `Space` on a video item followed by a red image hides the video surface and paints red at the centre
+- [x] 2026-10-08 · In the viewer, pressing `Space` on a video item followed by an image leaves the player stopped, with no clip playing
+- [x] 2026-10-08 · The viewer's video player draws its frames into the viewer's video surface through libmpv's render API (`vo=libmpv`, as `spikes/mpv_qt_embed.py` does) and plays sound through the default audio output, rather than null video/audio outputs
+- [x] 2026-10-08 · In the viewer, `p`, `↑`, `↓` and `m` on a video item reach the video player (e.g. `m` mutes it), and `Space`/`→`/`←` step the slideshow
+- [x] 2026-10-08 · In the viewer, pressing `→` on a red image followed by a blue image paints blue at the centre, and `←` from there paints red again
+- [x] 2026-10-08 · In the viewer, pressing `Space` on an image followed by a video shows the video surface and plays that clip
+- [x] 2026-10-08 · In the viewer, pressing `p` on a video item pauses it, and `↑` on a video item seeks it forward
+- [x] 2026-10-08 · In the viewer, an image is drawn fitted to the window with its aspect ratio kept and black around it (a wide red image in a square window leaves black above and below it)
+- [x] 2026-10-08 · In the viewer, pressing `i` draws the info overlay (filename and `1 / N`) on top of the shown item, and pressing `i` again removes it
+- [x] 2026-10-08 · In the viewer, the `i` overlay is text in a corner showing the filename and position (e.g. `IMG_1.png` and `1 / 2`), updates after `Space`, and leaves the image visible at the centre of the window
+- [x] 2026-10-08 · The viewer opens fullscreen
+- [x] 2026-10-08 · Pressing `f` in fullscreen leaves fullscreen
+- [x] 2026-10-08 · Pressing `f` when not fullscreen enters fullscreen
+- [x] 2026-10-08 · A media file that can't be decoded shows an "unsupported" placeholder instead of crashing
+- [x] 2026-10-08 · A decodable image shows the image, not the "unsupported" placeholder
+- [x] 2026-10-08 · Pressing `Space` on an "unsupported" placeholder shows the next item
+- [x] 2026-10-08 · A video item fills the viewer window with its video surface, with no "unsupported" placeholder text shown for it
+- [x] 2026-10-08 · A video file that can't be played (a corrupt `.mp4`) shows the "unsupported" placeholder instead of an empty video surface
+- [x] 2026-10-08 · In the viewer, a key the viewer doesn't use (e.g. `x`) leaves the current item showing
+- [x] 2026-10-08 · In the viewer, pressing `↓` on a video seeks it back
+- [x] 2026-10-08 · In the viewer, pressing `Enter` on a video toggles its pause
+- [x] 2026-10-08 · Running the shipped `mediatagger <folder>` command opens the fullscreen viewer on that folder's first item
+- [x] 2026-10-08 · The installed `mediatagger <folder>` executable, started on its own from a shell (no QApplication created beforehand), keeps running with its viewer open instead of crashing or exiting
+- [x] 2026-10-08 · Running the shipped `mediatagger <file>` command opens the fullscreen viewer on that file
+- [x] 2026-10-08 · Acceptance: a screenshot of `mediatagger <folder>` on the Mac shows an image fitted to the screen with the `i` overlay reading `1 / N`
