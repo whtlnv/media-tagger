@@ -187,6 +187,7 @@ class Viewer(QWidget):
         prompt.returnPressed.connect(lambda: self._record_tags(library, path, prompt, tags_label))
         self._pin_bottom_centre(prompt)
         prompt.show()
+        prompt.setFocus()
         tags_label.show()
 
     def _record_tags(self, library, path, prompt, tags_label):

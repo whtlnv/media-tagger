@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 08:16 · `src/mediatagger/test_viewer_library.py::test_pressing_t_gives_the_tag_prompt_keyboard_focus_so_typed_keys_go_into_it`
+- Behavior: Pressing `t` gives the tag prompt's input keyboard focus, so typed keys go into it straight away
+- Predicted: AssertionError — prompt text is `''` not `'beach'` (no focus, keys go to the viewer)
+- Actual: sqlite3.OperationalError — no such table: meta (raised inside keyPressEvent when opening the library)
+- Type: wrong-reason
+- Resolution: `drive_with_a_tag_library_holding_one_image` only touches an empty `tags.db`, which `Library.open` can't read; switched the setup to `Library.create(drive)`, and it now fails with the predicted AssertionError.
+
 ## 2026-10-09 07:28 · `src/mediatagger/test_viewer_library.py::test_pressing_t_in_the_viewer_on_a_file_with_no_tags_opens_the_tag_prompt_showing_no_tags`
 - Behavior: In the viewer, pressing `t` on a file with no tags opens the tag prompt showing no tags
 - Predicted: passes on first run (no right-reason failure available) — `_open_tag_prompt` joins `Library.tags`, which already returns `[]` for an untagged file

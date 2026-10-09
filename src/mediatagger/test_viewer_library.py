@@ -543,3 +543,16 @@ def test_the_tag_prompt_is_drawn_inside_the_viewer_window_centred_horizontally_n
     assert prompt.window() is viewer
     assert abs(frame.center().x() - viewer.rect().center().x()) <= 1
     assert viewer.height() * 3 // 4 <= frame.bottom() < viewer.status_bar.geometry().top()
+
+
+def test_pressing_t_makes_the_tag_prompts_input_the_viewers_focus_widget(qtbot, tmp_path):
+    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    Library.create(drive)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    [prompt] = visible_tag_prompts(viewer)
+    assert viewer.focusWidget() is prompt
