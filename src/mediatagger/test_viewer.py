@@ -10,6 +10,7 @@ from PySide6.QtWidgets import QLabel
 
 from mediatagger.test_video import make_clip
 
+from mediatagger.mpv_surface import MpvSurface
 from mediatagger.viewer import Viewer
 
 
@@ -382,3 +383,13 @@ def test_pressing_enter_in_the_viewer_on_a_video_toggles_its_pause(qtbot, tmp_pa
 
     qtbot.keyClick(viewer, Qt.Key.Key_Return)
     assert engine.pause is False
+
+
+def test_the_viewers_video_surface_renders_the_viewers_own_player(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    viewer.video_player.engine.wait_for_property("path", lambda path: path == str(clip), timeout=5)
+
+    surface = viewer.findChild(MpvSurface)
+    assert surface is not None and surface.isVisible()
+    assert surface.engine is viewer.video_player.engine

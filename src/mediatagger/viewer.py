@@ -1,9 +1,9 @@
 from PySide6.QtCore import QPoint, QRect, Qt
 from PySide6.QtGui import QImage, QPainter
-from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QLabel, QWidget
 
 from mediatagger.folder import is_video
+from mediatagger.mpv_surface import MpvSurface
 from mediatagger.slideshow import Slideshow
 from mediatagger.video import VideoPlayer, new_engine
 
@@ -31,6 +31,8 @@ class Viewer(QWidget):
         self._show_current()
 
     def closeEvent(self, event):
+        if self.surface:
+            self.surface.release()
         if self.video_player.engine.handle is not None:  # a second close must not call into a destroyed mpv handle
             self.video_player.engine.terminate()
         super().closeEvent(event)
@@ -83,7 +85,7 @@ class Viewer(QWidget):
         video = is_video(self.slideshow.current)
         self.placeholder.setVisible(not video and self._current_image().isNull())
         if video:
-            self.surface = self.surface or QOpenGLWidget(self)
+            self.surface = self.surface or MpvSurface(self.video_player.engine, self, on_ready=self._show_current)
             self.surface.show()
             if not self.video_player.show(self.slideshow.current):
                 self.surface.hide()
