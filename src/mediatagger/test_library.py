@@ -153,3 +153,14 @@ def test_entering_minus_sunset_for_a_file_not_tagged_sunset_leaves_its_tags_unch
     library.enter(photo, "-sunset")
 
     assert library.tags(photo) == ["beach", "family"]
+
+
+def test_one_entry_can_both_add_and_remove_tags(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "beach.jpg"
+    photo.touch()
+    library.enter(photo, "sunset")
+
+    library.enter(photo, "pool -sunset")
+
+    assert library.tags(photo) == ["pool"]

@@ -7,7 +7,7 @@
 - [x] Entering a tag a file already has does not report it twice
 - [x] Entering `-sunset` for a file tagged `beach` and `sunset` leaves it tagged only `beach`
 - [x] Entering `-sunset` for a file not tagged `sunset` leaves its tags unchanged
-- [ ] One entry can both add and remove (`pool -sunset` on a file tagged `sunset` leaves it tagged only `pool`)
+- [x] One entry can both add and remove (`pool -sunset` on a file tagged `sunset` leaves it tagged only `pool`)
 - [ ] Entered tags are lowercased (`Beach` is stored as `beach`)
 - [ ] Removing is case-insensitive (`-Sunset` removes `sunset`)
 - [ ] Extra spaces around and between entered tags are ignored (`  beach   family ` gives exactly `beach` and `family`)

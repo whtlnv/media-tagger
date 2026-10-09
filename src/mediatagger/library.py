@@ -42,10 +42,10 @@ class Library:
         return cls(meta["drive_id"], int(meta["schema_version"]))
 
     def enter(self, path, text):
-        if text.startswith("-"):
-            self._tags[path] = [tag for tag in self._tags[path] if tag != text[1:]]
-            return
-        self._tags[path] = sorted(set(text.split()))
+        words = text.split()
+        removed = {word[1:] for word in words if word.startswith("-")}
+        added = {word for word in words if not word.startswith("-")}
+        self._tags[path] = sorted((set(self.tags(path)) | added) - removed)
 
     def tags(self, path):
         return self._tags.get(path, [])
