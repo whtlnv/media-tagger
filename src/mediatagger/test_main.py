@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+from pathlib import Path
 
 from PySide6.QtGui import QColor
 
@@ -36,3 +37,21 @@ def test_running_the_mediatagger_command_on_a_folder_opens_the_fullscreen_viewer
     )
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == f"fullscreen=True centre={QColor('red').name()}"
+
+
+def test_the_installed_mediatagger_executable_started_on_its_own_keeps_running_with_its_viewer_open(tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    executable = Path(sys.executable).parent / "mediatagger"
+    process = subprocess.Popen(
+        [str(executable), str(tmp_path)],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+        env={**os.environ, "QT_QPA_PLATFORM": "offscreen"},
+    )
+    try:
+        process.wait(timeout=3)
+    except subprocess.TimeoutExpired:
+        pass
+    still_running = process.poll() is None
+    process.kill()
+    _, stderr = process.communicate()
+    assert still_running, stderr
