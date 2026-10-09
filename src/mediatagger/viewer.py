@@ -288,7 +288,8 @@ class Viewer(QWidget):
             self.surface = self.surface or MpvSurface(self.video_player.engine, self)
             self.surface.setGeometry(self.rect())
             self.surface.show()
-            self.info.raise_()
+            for overlay in (self.info, self.status_bar, self.read_only_banner):
+                overlay.raise_()
             self.surface.when_ready(lambda clip=self.slideshow.current: self._play(clip))
         elif self.surface:
             self.surface.cancel_pending()

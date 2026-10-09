@@ -394,6 +394,18 @@ def test_the_status_bar_text_is_shown_whole_with_room_for_its_full_height(qtbot,
     assert viewer.library_label.width() == viewer.library_label.sizeHint().width()
 
 
+def test_the_status_bar_text_stays_on_top_of_a_playing_video(qtbot, tmp_path):
+    drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
+    [folder] = make_folders(drive, "Clips")
+    make_clip(folder / "IMG_1.mp4")
+
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    qtbot.waitUntil(lambda: shows_video_surface(viewer))
+
+    status_text_centre = viewer.library_label.mapTo(viewer, viewer.library_label.rect().center())
+    assert viewer.childAt(status_text_centre) is viewer.library_label
+
+
 def test_on_a_read_only_drive_with_a_tag_library_each_status_bar_text_is_styled_like_the_info_overlay(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     with made_read_only(drive):
