@@ -612,3 +612,17 @@ def test_pressing_a_key_other_than_o_on_the_launch_screen_opens_no_folder_picker
 
     assert modal is None
     assert shown_texts(viewer) == launch_text
+
+
+def test_choosing_a_folder_in_the_o_picker_starts_that_folders_slideshow_at_its_first_item(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    make_image(tmp_path / "IMG_2.png", "blue")
+    viewer = Viewer(player_options=SILENT, folder_picker=lambda: tmp_path)
+    qtbot.addWidget(viewer)
+    viewer.show()
+    qtbot.waitExposed(viewer)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_O)
+
+    assert shown_labels(viewer) == []
+    assert centre_colour(viewer) == QColor("red")

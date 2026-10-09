@@ -31,8 +31,9 @@ def decode_fitted(path, bounds):
 
 
 class Viewer(QWidget):
-    def __init__(self, folder=None, player_options=None):
+    def __init__(self, folder=None, player_options=None, folder_picker=None):
         super().__init__()
+        self.folder_picker = folder_picker or self._pick_folder
         self.slideshow = folder and Slideshow.open(folder)
         self.video_player = VideoPlayer(new_engine(**{**PLAYER_OPTIONS, **(player_options or {})}))
         self.surface = None
@@ -87,7 +88,7 @@ class Viewer(QWidget):
             return
         if self.slideshow is None:
             if event.key() == Qt.Key.Key_O:
-                self._pick_folder()
+                self._open(self.folder_picker())
             return
         if event.key() == Qt.Key.Key_I:
             self.slideshow.press("i")
@@ -115,6 +116,13 @@ class Viewer(QWidget):
         picker = QFileDialog(self)
         picker.setFileMode(QFileDialog.FileMode.Directory)
         picker.exec()
+
+    def _open(self, folder):
+        if folder is None:
+            return
+        self.slideshow = Slideshow.open(folder)
+        self._show_current()
+        self.update()
 
     def _show_info(self):
         self.info.setText(self.slideshow.overlay or "")
