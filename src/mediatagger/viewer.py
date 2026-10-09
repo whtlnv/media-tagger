@@ -47,6 +47,7 @@ class Viewer(QWidget):
         self.placeholder = QLabel("Unsupported", self)
         self.placeholder.setStyleSheet(LABEL_STYLE)
         self.setWindowState(Qt.WindowState.WindowFullScreen)
+        self.setAcceptDrops(True)
         if folder is None:
             self.placeholder.setText("Drop a folder or file here, or press `o` to open")
             return
@@ -77,6 +78,9 @@ class Viewer(QWidget):
             return
         image = self._current_image()
         painter.drawImage(fitted_rect(image.size(), self.rect()), image)
+
+    def dragEnterEvent(self, event):
+        event.acceptProposedAction()
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Escape:  # interim: quits until the grid (Phase 7) makes Esc "back to grid"

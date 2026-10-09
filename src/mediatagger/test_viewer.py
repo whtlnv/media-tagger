@@ -3,8 +3,8 @@ import subprocess
 import sys
 
 import pytest
-from PySide6.QtCore import QRect, QSize, Qt, QTimer
-from PySide6.QtGui import QColor, QImage
+from PySide6.QtCore import QMimeData, QRect, QSize, Qt, QTimer, QUrl
+from PySide6.QtGui import QColor, QDragEnterEvent, QImage
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QApplication, QFileDialog, QLabel
 
@@ -680,3 +680,17 @@ def test_choosing_a_folder_with_no_media_in_the_o_picker_says_so_like_opening_th
     qtbot.keyClick(viewer, Qt.Key.Key_O)
 
     assert shown_texts(viewer) == shown_texts(shown_viewer_on(qtbot, folder))
+
+
+def test_dragging_a_folder_from_the_file_manager_over_the_viewer_is_accepted_as_a_drop(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    viewer = shown_launch_viewer(qtbot)
+    dragged = QMimeData()
+    dragged.setUrls([QUrl.fromLocalFile(str(tmp_path))])
+    drag_enter = QDragEnterEvent(
+        viewer.rect().center(), Qt.DropAction.CopyAction, dragged, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier,
+    )
+
+    QApplication.sendEvent(viewer, drag_enter)
+
+    assert drag_enter.isAccepted()
