@@ -489,3 +489,12 @@ def test_the_info_overlay_is_light_text_on_a_dark_translucent_panel_whatever_the
     frame = viewer.grab().toImage()
     panel = frame.pixelColor(viewer.info.geometry().left() + 4, viewer.info.geometry().center().y())  # in the padding
     assert panel != QColor("red") and panel.red() < 200 and panel.red() > 0  # red image dimmed, not hidden
+
+
+def test_the_unsupported_placeholder_is_light_text_whatever_the_desktop_theme(qtbot, tmp_path):
+    (tmp_path / "IMG_1.png").write_bytes(b"not really a png")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    light_theme(viewer)
+
+    colours = colours_inside(viewer, viewer.placeholder)
+    assert any(colour.lightness() > 200 and colour.saturation() < 40 for colour in colours)
