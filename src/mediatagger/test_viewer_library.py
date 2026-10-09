@@ -544,6 +544,20 @@ def test_the_tag_prompt_is_drawn_inside_the_viewer_window_centred_horizontally_n
     assert viewer.height() * 3 // 4 <= frame.bottom() < viewer.status_bar.geometry().top()
 
 
+def test_after_the_window_is_resized_while_the_tag_prompt_is_open_the_prompt_is_still_centred_just_above_the_status_bar(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    resize_and_wait(qtbot, viewer, 1600, 900)
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    resize_and_wait(qtbot, viewer, 1000, 700)
+
+    [prompt] = visible_tag_prompts(viewer)
+    frame = frame_in(viewer, prompt)
+    assert abs(frame.center().x() - viewer.rect().center().x()) <= 1
+    assert viewer.height() * 3 // 4 <= frame.bottom() < viewer.status_bar.geometry().top()
+
+
 def test_pressing_t_makes_the_tag_prompts_input_the_viewers_focus_widget(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)

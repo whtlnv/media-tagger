@@ -138,6 +138,7 @@ class Viewer(QWidget):
         self._centre(self.placeholder)
         self._pin_top_centre(self.read_only_banner)
         self._pin_top_right(self.tag_overlay)
+        self._pin_bottom_centre(self.tag_input)
 
     def _centre(self, label):
         label.adjustSize()
