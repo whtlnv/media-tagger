@@ -286,3 +286,17 @@ def test_esc_with_the_suggestion_popup_open_closes_only_the_popup_leaving_the_pr
     qtbot.keyClick(suggestions, Qt.Key.Key_Escape)
 
     assert (visible_suggestion_lists(viewer), visible_tag_prompt_texts(viewer), viewer.isVisible()) == ([], ["beach fam"], True)
+
+
+def test_accepting_a_suggestion_for_the_only_word_in_the_prompt_leaves_no_leading_space_fam_down_tab_leaves_exactly_family(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    Library.open(drive).enter(folder / "IMG_2.png", "family")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    type_in_tag_prompt(qtbot, viewer, "fam")
+    [suggestions] = visible_suggestion_lists(viewer)
+
+    qtbot.keyClick(suggestions, Qt.Key.Key_Down)
+    qtbot.keyClick(suggestions, Qt.Key.Key_Tab)
+
+    assert visible_tag_prompt_texts(viewer) == ["family"]

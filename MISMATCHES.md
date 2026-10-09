@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 16:40 · `src/mediatagger/test_viewer_tag_prompt.py::test_accepting_a_suggestion_for_the_only_word_in_the_prompt_leaves_no_leading_space_fam_down_tab_leaves_exactly_family`
+- Behavior: Accepting a suggestion for the only word in the prompt leaves no leading space: `fam`, `↓`, `Tab` leaves exactly `family` in the prompt
+- Predicted: passes on first run — `LastWordCompleter._accept_highlighted` does `typed.removesuffix(word) + highlighted`, which never inserts a separator (a right-reason failure would have been AssertionError `[' family']`)
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: The behavior already exists from the `beach fam` Tab cycle, which replaces only the suffix. The test is not vacuous (the prompt holds `fam` before Tab, so it only passes if the suggestion is accepted with no leading space). Kept it as a regression pin rather than inventing a failure.
+
 ## 2026-10-09 16:37 · `src/mediatagger/test_viewer_tag_prompt.py::test_esc_with_the_suggestion_popup_open_closes_only_the_popup_leaving_the_prompt_open_with_its_text_and_the_viewer_running`
 - Behavior: `Esc` with the suggestion popup open closes only the popup: the prompt stays open with its text and the app keeps running
 - Predicted: AssertionError — Esc reaches `Viewer.keyPressEvent` and closes the tag prompt along with the popup (prompt texts `[]`)
