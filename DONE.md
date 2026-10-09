@@ -1,3 +1,31 @@
+- [x] 2026-10-08 · Opening the app with no path shows an empty window with the text "Drop a folder or file here, or press `o` to open"
+- [x] 2026-10-08 · Opening the app with a path shows that path's first item, not the "Drop a folder or file here" text
+- [x] 2026-10-08 · Pressing `o` on the launch screen opens a folder picker
+- [x] 2026-10-08 · A key other than `o` (e.g. `x`) on the launch screen opens no folder picker and leaves the launch text showing
+- [x] 2026-10-08 · Choosing a folder in the `o` picker starts that folder's slideshow at its first item (the viewer takes the folder picker as an injectable stand-in, so tests supply one that returns a folder instead of opening a real modal dialog; the earlier `o` picker test moves to that stand-in too)
+- [x] 2026-10-08 · Cancelling the `o` picker leaves the launch screen showing its "Drop a folder or file here" text
+- [x] 2026-10-08 · With no stand-in picker, pressing `o` and accepting the viewer's own folder dialog after it is pointed at a folder of images (the test drives the real Directory-mode dialog with `setDirectory(folder)` then `accept()`, not `selectFile`) starts that folder's slideshow at its first item (today the dialog's choice is discarded)
+- [x] 2026-10-08 · With no stand-in picker, pressing `o` and rejecting the viewer's own folder dialog after it is pointed at a folder of images (`setDirectory(folder)` then `reject()`) leaves the launch screen showing its "Drop a folder or file here" text, not that folder's slideshow
+- [x] 2026-10-08 · Choosing a folder with no images or videos in the `o` picker shows "No images or videos in <folder>" instead of crashing
+- [x] 2026-10-08 · Dragging a folder or file from the file manager over the window is accepted as a drop
+- [x] 2026-10-08 · Dragging something that is not a local file or folder (e.g. plain text) over the window is refused
+- [x] 2026-10-08 · Dragging a web link (an `https://` URL, not a local file) over the window is refused
+- [x] 2026-10-08 · Dropping a folder onto the launch screen starts that folder's slideshow at its first item (the test first drag-enters over the window with the folder's mime data via the `drag_enter_over` helper so Qt accepts the drag, then drops the same mime data; a drop with no accepted drag-enter is discarded by Qt before the window sees it)
+- [x] 2026-10-08 · Dropping a file onto the launch screen starts its folder's slideshow at that file
+- [x] 2026-10-08 · Dropping a folder while viewing another folder replaces the slideshow with the dropped folder's, starting at its first item
+- [x] 2026-10-08 · Dropping a file while viewing another folder replaces the slideshow with that file's folder, starting at that file
+- [x] 2026-10-08 · Dropping a folder while the `i` overlay is shown leaves no overlay text from the previous folder: it shows the dropped folder's first filename and `1 / N`
+- [x] 2026-10-08 · Dropping a folder while a video is playing stops that video's playback and sound
+- [x] 2026-10-08 · Running the shipped `mediatagger` command with no path opens the window showing "Drop a folder or file here, or press `o` to open" instead of exiting with an error
+- [x] 2026-10-08 · In the shipped `mediatagger` command started with no path, dropping a folder onto the window starts its slideshow at its first item
+- [x] 2026-10-08 · A JPEG smaller than the window whose EXIF orientation says "rotate 90°" is shown upright at its decoded size (a landscape-stored photo tagged rotate 90° is drawn taller than wide)
+- [x] 2026-10-08 · A JPEG larger than the window whose EXIF orientation says "rotate 90°" is shown upright when fitted to the window (drawn taller than wide, scaled down to fit)
+- [x] 2026-10-08 · Dropping a folder whose first item can't be decoded onto the launch screen shows the "Unsupported" placeholder, not the launch text
+- [x] 2026-10-08 · Dropping a folder with no images or videos while an image is showing shows "No images or videos in <folder>" and no longer paints the previous image
+- [x] 2026-10-08 · The "No images or videos in <folder>" text shown after dropping an empty folder onto the launch screen is centred in the window
+- [x] 2026-10-08 · Acceptance: a screenshot of `mediatagger` started with no path on the Mac shows the "Drop a folder or file here, or press `o` to open" screen
+- [x] 2026-10-08 · Dropping a folder with no images or videos while a video is showing hides the video surface and shows "No images or videos in <folder>"
+- [x] 2026-10-08 · Dropping a folder with no images or videos while the `i` overlay is shown hides the overlay
 - [x] 2026-10-08 · Opening a folder lists its images in natural filename order (`IMG_2.jpg` before `IMG_10.jpg`)
 - [x] 2026-10-08 · Opening a folder lists its videos (`.mp4`, `.mov`, `.avi`, `.mpg`, `.gif`, …) alongside its images, in the same natural order
 - [x] 2026-10-08 · A non-media file in the folder (`notes.txt`) is not in the slideshow
