@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 10:28 · `src/mediatagger/test_viewer_library.py::test_after_the_window_is_resized_the_tag_overlay_is_still_a_corner_margin_from_the_top_and_right_edges`
+- Behavior: After the window is resized (e.g. leaving fullscreen with `f`), the tag overlay is still `CORNER_MARGIN` from the top and right edges
+- Predicted: passes on first run — `Viewer.resizeEvent` already calls `_pin_top_right(self.tag_overlay)` (added with the corner-placement item), so no right-reason red exists
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: The test is not vacuous. With the `resizeEvent` re-pin removed, it fails with `assert 83 == (999 - 16)` (the overlay keeps the position it got before the window was resized). Kept the test as a passing pin. The TODO item needs no production change.
+
 ## 2026-10-09 10:23 · `src/mediatagger/test_viewer_library.py::test_the_tag_overlay_has_the_same_look_as_the_info_overlay`
 - Behavior: The tag overlay has the same look as the info overlay
 - Predicted: passes on first run — `tag_overlay` is built with `overlay_label`, which applies the same `LABEL_STYLE` as `info` (so no right-reason red exists)
