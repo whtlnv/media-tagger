@@ -104,6 +104,14 @@ def finish_o_dialog_pointed_at(qtbot, viewer, folder, finish):
     qtbot.keyClick(viewer, Qt.Key.Key_O)
 
 
+def drag_enter_over(viewer, dragged):
+    drag_enter = QDragEnterEvent(
+        viewer.rect().center(), Qt.DropAction.CopyAction, dragged, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier,
+    )
+    QApplication.sendEvent(viewer, drag_enter)
+    return drag_enter
+
+
 def shows_unsupported_placeholder(viewer):
     return any("unsupported" in text.lower() for text in shown_texts(viewer))
 
@@ -687,11 +695,8 @@ def test_dragging_a_folder_from_the_file_manager_over_the_viewer_is_accepted_as_
     viewer = shown_launch_viewer(qtbot)
     dragged = QMimeData()
     dragged.setUrls([QUrl.fromLocalFile(str(tmp_path))])
-    drag_enter = QDragEnterEvent(
-        viewer.rect().center(), Qt.DropAction.CopyAction, dragged, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier,
-    )
 
-    QApplication.sendEvent(viewer, drag_enter)
+    drag_enter = drag_enter_over(viewer, dragged)
 
     assert drag_enter.isAccepted()
 
@@ -700,10 +705,7 @@ def test_dragging_plain_text_over_the_viewer_is_refused(qtbot):
     viewer = shown_launch_viewer(qtbot)
     dragged = QMimeData()
     dragged.setText("just some words")
-    drag_enter = QDragEnterEvent(
-        viewer.rect().center(), Qt.DropAction.CopyAction, dragged, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier,
-    )
 
-    QApplication.sendEvent(viewer, drag_enter)
+    drag_enter = drag_enter_over(viewer, dragged)
 
     assert not drag_enter.isAccepted()
