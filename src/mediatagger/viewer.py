@@ -234,9 +234,10 @@ class Viewer(QWidget):
         self.setFocus()  # keys go back to the viewer, not to the hidden input
 
     def _show_tag_overlay(self, library, path):
-        self.tag_overlay.setText(" ".join(library.tags(path)))
+        tags = " ".join(library.tags(path))
+        self.tag_overlay.setText(tags)
         self.tag_overlay.adjustSize()
-        self.tag_overlay.show()
+        self.tag_overlay.setVisible(bool(tags))
         self.tag_overlay.raise_()
 
     def _toggle_fullscreen(self):
