@@ -226,3 +226,13 @@ def test_hyphens_join_words_into_one_tag(tmp_path):
     library.enter(photo, "day-at-beach")
 
     assert library.tags(photo) == ["day-at-beach"]
+
+
+def test_a_colon_namespaced_tag_of_any_depth_is_kept_whole(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "beach.jpg"
+    photo.touch()
+
+    library.enter(photo, "place:mexico:cancun")
+
+    assert library.tags(photo) == ["place:mexico:cancun"]

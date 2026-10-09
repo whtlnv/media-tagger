@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 05:40 · `src/mediatagger/test_library.py::test_a_colon_namespaced_tag_of_any_depth_is_kept_whole`
+- Behavior: A colon-namespaced tag of any depth is kept whole as one tag (`place:mexico:cancun` reports exactly `place:mexico:cancun`, not its parts)
+- Predicted: passes on first run — `Library.enter` splits only on whitespace, so colons never break a token
+- Actual: 1 passed
+- Type: passed unexpectedly
+- Resolution: The behavior already falls out of whitespace tokenizing; kept as a test-after pin, and there's nothing for `/green` to implement.
+
 ## 2026-10-09 05:30 · `src/mediatagger/test_library.py::test_hyphens_join_words_into_one_tag`
 - Behavior: Hyphens join words into one tag (`day-at-beach` reports exactly `day-at-beach`)
 - Predicted: passes on first run — `Library.enter` splits only on whitespace and treats only a leading `-` as removal, so an inner hyphen stays inside the word
