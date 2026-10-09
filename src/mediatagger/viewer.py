@@ -188,8 +188,9 @@ class Viewer(QWidget):
                 self.library_label.setText(DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format(drive.name))
                 return
             Library.create(drive)
-        self.read_only_banner.setVisible(not os.access(drive, os.W_OK))
-        self.read_only_status.setVisible(not os.access(drive, os.W_OK))
+        read_only = not os.access(drive, os.W_OK)
+        self.read_only_banner.setVisible(read_only)
+        self.read_only_status.setVisible(read_only)
         self.library_label.setText(LIBRARY_TEXT.format(drive.name))
 
     def _show_cant_open(self, path):
