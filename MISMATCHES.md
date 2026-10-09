@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-08 20:54 · `src/mediatagger/test_viewer.py::test_dropping_a_file_onto_the_launch_screen_starts_its_folders_slideshow_at_that_file`
+- Behavior: Dropping a file onto the launch screen starts its folder's slideshow at that file
+- Predicted: passes on first run (`dropEvent` sends the dropped path to `Slideshow.open`, which already resolves a file to its parent folder starting at that file); otherwise an AssertionError, red vs blue
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: The previous cycle's `dropEvent` → `Slideshow.open(path)` already handles files, so no failing test can drive this behavior. The test isn't vacuous: it drops the second image and asserts blue, which a start-at-first-item drop (red) would fail. I kept it as a pin for the behavior instead of rewriting it.
+
 ## 2026-10-08 20:24 · `src/mediatagger/test_viewer.py::test_rejecting_the_viewers_own_o_dialog_pointed_at_a_folder_leaves_the_launch_text_showing`
 - Behavior: rejecting the viewer's own `o` dialog after `setDirectory(folder)` leaves the "Drop a folder or file here" launch text showing
 - Predicted: passes on first run — `_pick_folder`'s `if picker.exec():` guard (added in the accept cycle, 6874ea8) already returns `None` on reject

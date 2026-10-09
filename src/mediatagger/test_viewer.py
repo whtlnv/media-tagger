@@ -740,3 +740,17 @@ def test_dropping_a_folder_onto_the_launch_screen_starts_that_folders_slideshow_
 
     assert shown_labels(viewer) == []
     assert centre_colour(viewer) == QColor("red")
+
+
+def test_dropping_a_file_onto_the_launch_screen_starts_its_folders_slideshow_at_that_file(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    make_image(tmp_path / "IMG_2.png", "blue")
+    viewer = shown_launch_viewer(qtbot)
+    dragged = QMimeData()
+    dragged.setUrls([QUrl.fromLocalFile(str(tmp_path / "IMG_2.png"))])
+    drag_enter_over(viewer, dragged)
+
+    drop_onto(viewer, dragged)
+
+    assert shown_labels(viewer) == []
+    assert centre_colour(viewer) == QColor("blue")
