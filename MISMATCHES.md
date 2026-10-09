@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-08 18:27 · `src/mediatagger/test_viewer.py::test_pressing_space_in_the_viewer_on_an_unsupported_placeholder_followed_by_a_red_image_hides_the_placeholder_and_paints_red`
+- Behavior: Pressing `Space` on an "unsupported" placeholder shows the next item
+- Predicted: pass (behavior expected to exist already; a right-reason failure would have been AssertionError, placeholder still visible)
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: `keyPressEvent` already steps the slideshow and `_show_current` recomputes placeholder visibility from `_current_image().isNull()`, so the earlier placeholder cycle delivered this item. The only failing variant (placeholder → video, where the placeholder wrongly stays up because a video's QImage is null) is the next TODO item, so the test was kept as a characterization test rather than rewritten into a different behavior.
+
 ## 2026-10-08 18:24 · `src/mediatagger/test_viewer.py::test_a_viewer_opened_on_a_folder_whose_first_item_is_a_decodable_image_shows_that_image_and_no_unsupported_placeholder`
 - Behavior: A decodable image shows the image, not the "unsupported" placeholder
 - Predicted: passes on first run — `_show_current` already sets the placeholder visible only when `QImage(...).isNull()`

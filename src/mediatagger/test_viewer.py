@@ -311,3 +311,15 @@ def test_a_viewer_opened_on_a_folder_whose_first_item_is_a_decodable_image_shows
     assert not shows_unsupported_placeholder(viewer)
     frame = viewer.grab().toImage()
     assert frame.pixelColor(frame.width() // 2, frame.height() // 2) == QColor("red")
+
+
+def test_pressing_space_in_the_viewer_on_an_unsupported_placeholder_followed_by_a_red_image_hides_the_placeholder_and_paints_red(qtbot, tmp_path):
+    (tmp_path / "IMG_1.png").write_bytes(b"not really a png")
+    make_image(tmp_path / "IMG_2.png", "red")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Space)
+
+    assert not shows_unsupported_placeholder(viewer)
+    frame = viewer.grab().toImage()
+    assert frame.pixelColor(frame.width() // 2, frame.height() // 2) == QColor("red")
