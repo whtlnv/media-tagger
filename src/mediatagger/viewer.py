@@ -21,8 +21,9 @@ class Viewer(QWidget):
         QPainter(self).drawImage(self.rect(), QImage(str(self.slideshow.current)))
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key.Key_M:
-            self.video_player.press("m")
+        video_keys = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up"}
+        if event.key() in video_keys:
+            self.video_player.press(video_keys[event.key()])
             return
         key = "Left" if event.key() == Qt.Key.Key_Left else "Space"
         self.slideshow.press(key)

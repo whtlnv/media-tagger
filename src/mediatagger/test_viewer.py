@@ -1,3 +1,4 @@
+import pytest
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QImage
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
@@ -130,3 +131,18 @@ def test_pressing_space_in_the_viewer_on_an_image_followed_by_a_video_shows_the_
     surface = viewer.findChild(QOpenGLWidget)
     assert surface is not None and surface.isVisible()
     viewer.video_player.engine.wait_for_property("path", lambda path: path == str(clip), timeout=5)
+
+
+def test_pressing_p_in_the_viewer_on_a_video_pauses_it_and_up_seeks_it_forward(qtbot, tmp_path):
+    make_clip(tmp_path / "IMG_1.mp4", duration=30)
+    make_image(tmp_path / "IMG_2.png", "red")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    engine = viewer.video_player.engine
+    engine.wait_for_property("time-pos", lambda time_pos: time_pos is not None, timeout=5)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_P)
+    assert engine.pause is True
+
+    before = engine.time_pos
+    qtbot.keyClick(viewer, Qt.Key.Key_Up)
+    assert engine.time_pos == pytest.approx(before + 10, abs=1)
