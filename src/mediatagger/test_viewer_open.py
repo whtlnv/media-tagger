@@ -222,6 +222,21 @@ def test_accepting_to_create_a_tag_library_on_a_drive_creates_it_and_names_the_d
     assert status_bar_texts(viewer) == [LIBRARY_TEXT.format("MEDIATAGGER")]
 
 
+def test_declining_to_create_a_tag_library_on_a_drive_leaves_the_drive_without_a_mediatagger_folder(qtbot, tmp_path):
+    drive = tmp_path / "MEDIATAGGER"
+    folder = drive / "Photos"
+    folder.mkdir(parents=True)
+    make_image(folder / "IMG_1.png", "red")
+
+    viewer = Viewer(
+        folder, player_options=SILENT, is_mount_point=lambda path: path == drive,
+        ask_to_create_library=lambda question: False,
+    )
+    qtbot.addWidget(viewer)
+
+    assert not (drive / ".mediatagger").exists()
+
+
 def test_a_viewer_opened_on_a_folder_shows_its_first_item_and_not_the_launch_text(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red")
     make_image(tmp_path / "IMG_2.png", "blue")

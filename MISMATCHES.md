@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 00:20 · `src/mediatagger/test_viewer_open.py::test_declining_to_create_a_tag_library_on_a_drive_leaves_the_drive_without_a_mediatagger_folder`
+- Behavior: Declining "Create a tag library on <drive>?" leaves the drive without a `.mediatagger` folder
+- Predicted: passes on first run — `_open_library` already returns before `mkdir` when `ask_to_create_library` returns False
+- Actual: passed on first run; the assertion has teeth (the sibling accepting test shows the same setup with a True answer does create `.mediatagger`)
+- Type: passed unexpectedly
+- Resolution: the early `return` on decline from the accept cycle already implements this; kept as a characterization pin rather than rewritten to fail artificially, and flagged that this TODO item needs no green step
+
 ## 2026-10-08 23:58 · `src/mediatagger/test_viewer_open.py::test_opening_a_folder_on_a_drive_that_already_has_a_tag_library_does_not_ask_to_create_one`
 - Behavior: Opening a folder on a drive whose mount point already has `.mediatagger/tags.db` does not ask to create a library
 - Predicted: passes on first run (`viewer.py` only asks when `.mediatagger` is absent, so the previous green already covers this)
