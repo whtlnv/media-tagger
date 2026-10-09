@@ -354,3 +354,16 @@ def test_dropping_a_folder_with_no_media_while_the_info_overlay_is_shown_hides_t
     drag_and_drop_onto(viewer, empty)
 
     assert shown_texts(viewer) == shown_texts(shown_viewer_on(qtbot, empty))
+
+
+def test_dropping_a_folder_that_does_not_exist_while_a_video_is_showing_stops_it_hides_its_surface_and_says_it_cant_open_it(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4")
+    missing = tmp_path / "Holidays"
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    wait_until_loaded(viewer.video_player.engine, clip)
+
+    drag_and_drop_onto(viewer, missing)
+
+    assert viewer.video_player.engine.path is None
+    assert not shows_video_surface(viewer)
+    assert shown_texts(viewer) == shown_texts(shown_viewer_on(qtbot, missing))

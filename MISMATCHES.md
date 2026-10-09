@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-08 22:24 · `src/mediatagger/test_viewer_open.py::test_dropping_a_folder_that_does_not_exist_while_a_video_is_showing_stops_it_hides_its_surface_and_says_it_cant_open_it`
+- Behavior: Dropping a folder that doesn't exist while a video is showing stops the video, hides the video surface and shows "Can't open <name>"
+- Predicted: passes — `dropEvent` already stops the video and `_open`'s unreadable-path branch routes through `_show_message`, which hides the surface
+- Actual: passed
+- Type: passed unexpectedly
+- Resolution: The behavior already exists: b6c2fde sent the missing-path case through the shared `_show_message`, which also serves the drop path. A temporary sabotage check confirmed the test isn't vacuous: removing `surface.hide()` from `_show_message` fails it on `shows_video_surface`. I kept the test as a regression pin rather than rewrite it to fail artificially.
+
 ## 2026-10-08 22:18 · `src/mediatagger/test_viewer_open.py::test_a_viewer_opened_on_a_file_in_a_missing_folder_shows_a_cant_open_message_naming_the_file`
 - Behavior: Opening the viewer on a file path that doesn't exist (in a missing folder) shows "Can't open does_not_exist.jpg" instead of crashing
 - Predicted: pass — the previous cycle's `if not path.exists()` guard in `Viewer._open` covers both files and folders
