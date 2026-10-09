@@ -498,3 +498,17 @@ def test_the_unsupported_placeholder_is_light_text_whatever_the_desktop_theme(qt
 
     colours = colours_inside(viewer, viewer.placeholder)
     assert any(colour.lightness() > 200 and colour.saturation() < 40 for colour in colours)
+
+
+def test_a_viewer_opened_on_a_folder_with_no_media_says_so_at_the_centre_and_ignores_keys(qtbot, tmp_path):
+    folder = tmp_path / "Holidays"
+    folder.mkdir()
+    (folder / "notes.txt").write_text("hi")
+    viewer = shown_viewer_on(qtbot, folder)
+
+    for key in (Qt.Key.Key_Space, Qt.Key.Key_Left, Qt.Key.Key_I, Qt.Key.Key_P):
+        qtbot.keyClick(viewer, key)
+
+    shown = [label for label in viewer.findChildren(QLabel) if label.isVisible()]
+    assert [label.text() for label in shown] == ["No images or videos in Holidays"]
+    assert (shown[0].geometry().center() - viewer.rect().center()).manhattanLength() <= 2

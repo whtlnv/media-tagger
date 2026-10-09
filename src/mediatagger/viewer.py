@@ -34,6 +34,9 @@ class Viewer(QWidget):
         self.placeholder = QLabel("Unsupported", self)
         self.placeholder.setStyleSheet(LABEL_STYLE)
         self.setWindowState(Qt.WindowState.WindowFullScreen)
+        if self.slideshow is None:
+            self.placeholder.setText(f"No images or videos in {folder.name}")
+            return
         self._show_current()
 
     def closeEvent(self, event):
@@ -57,16 +60,20 @@ class Viewer(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.fillRect(self.rect(), Qt.GlobalColor.black)
+        if self.slideshow is None:
+            return
         image = self._current_image()
         painter.drawImage(fitted_rect(image.size(), self.rect()), image)
 
     def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_F:
+            self._toggle_fullscreen()
+            return
+        if self.slideshow is None:
+            return
         if event.key() == Qt.Key.Key_I:
             self.slideshow.press("i")
             self._show_info()
-            return
-        if event.key() == Qt.Key.Key_F:
-            self._toggle_fullscreen()
             return
         if event.key() in VIDEO_KEYS:
             self.video_player.press(VIDEO_KEYS[event.key()])

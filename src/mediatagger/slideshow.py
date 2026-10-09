@@ -8,9 +8,11 @@ class Slideshow:
 
     @classmethod
     def open(cls, path):
+        """The slideshow of a file's folder starting at it, or of a folder from its first item; None if it has none."""
         if path.is_file():
             return cls(path)
-        return cls(media_files(path)[0])
+        items = media_files(path)
+        return cls(items[0]) if items else None
 
     def press(self, key):
         items = media_files(self.current.parent)
