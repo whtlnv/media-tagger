@@ -25,4 +25,4 @@
 - [x] Dropping a folder whose first item can't be decoded onto the launch screen shows the "Unsupported" placeholder, not the launch text
 - [x] Dropping a folder with no images or videos while an image is showing shows "No images or videos in <folder>" and no longer paints the previous image
 - [x] The "No images or videos in <folder>" text shown after dropping an empty folder onto the launch screen is centred in the window
-- [ ] Acceptance: a screenshot of `mediatagger` started with no path on the Mac shows the "Drop a folder or file here, or press `o` to open" screen
+- [x] Acceptance: a screenshot of `mediatagger` started with no path on the Mac shows the "Drop a folder or file here, or press `o` to open" screen
