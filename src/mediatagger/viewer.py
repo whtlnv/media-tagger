@@ -147,7 +147,11 @@ class Viewer(QWidget):
             self._show_message(f"Can't open {path.name}")
             return
         showing_info = self.slideshow is not None and self.slideshow.overlay
-        self.slideshow = Slideshow.open(path)
+        try:
+            self.slideshow = Slideshow.open(path)
+        except OSError:
+            self._show_message(f"Can't open {path.name}")
+            return
         if self.slideshow is None:
             self._show_message(f"No images or videos in {path.name}")
             return

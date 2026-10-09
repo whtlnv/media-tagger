@@ -1,3 +1,6 @@
+import errno
+from pathlib import Path
+
 from PySide6.QtCore import QMimeData, QPointF, Qt, QTimer, QUrl
 from PySide6.QtGui import QColor, QDragEnterEvent, QDropEvent
 from PySide6.QtWidgets import QApplication, QFileDialog
@@ -413,5 +416,25 @@ def test_choosing_a_readable_folder_in_the_o_dialog_after_cant_open_is_shown_sta
 
     finish_o_dialog_pointed_at(qtbot, viewer, holidays, "accept")
 
+    assert shown_labels(viewer) == []
+    assert centre_colour(viewer) == QColor("red")
+
+
+def test_a_viewer_opened_on_a_folder_whose_listing_fails_with_an_io_error_says_it_cant_open_it_and_a_dropped_readable_folder_still_starts(qtbot, tmp_path, monkeypatch):
+    unplugged, readable = make_folders(tmp_path, "USB", "Trip")
+    make_image(unplugged / "IMG_1.png", "blue")
+    make_image(readable / "IMG_1.png", "red")
+    real_iterdir = Path.iterdir
+
+    def iterdir_failing_on_the_unplugged_drive(path):
+        if path == unplugged:
+            raise OSError(errno.EIO, "Input/output error")
+        return real_iterdir(path)
+
+    monkeypatch.setattr(Path, "iterdir", iterdir_failing_on_the_unplugged_drive)
+    viewer = shown_viewer_on(qtbot, unplugged)
+
+    assert shown_texts(viewer) == shown_texts(shown_viewer_on(qtbot, tmp_path / "Missing" / "USB"))
+    drag_and_drop_onto(viewer, readable)
     assert shown_labels(viewer) == []
     assert centre_colour(viewer) == QColor("red")
