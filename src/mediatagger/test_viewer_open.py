@@ -8,9 +8,9 @@ from PySide6.QtWidgets import QApplication, QFileDialog, QLabel
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import (
     centre_colour, make_folder_with_no_media, make_image, shown_labels, shown_launch_viewer, shown_texts, shown_viewer_on,
-    shows_unsupported_placeholder, shows_video_surface, wait_until_loaded,
+    SILENT, shows_unsupported_placeholder, shows_video_surface, wait_until_loaded,
 )
-from mediatagger.viewer import NO_LIBRARY_TEXT
+from mediatagger.viewer import LIBRARY_TEXT, NO_LIBRARY_TEXT, Viewer
 
 
 def make_folders(parent, *names):
@@ -94,6 +94,21 @@ def test_the_launch_screen_status_bar_says_no_library_is_open(qtbot):
 
     status_texts = [label.text() for label in viewer.status_bar.findChildren(QLabel) if label.isVisible()]
     assert status_texts == [NO_LIBRARY_TEXT]
+
+
+def test_opening_a_folder_two_levels_below_a_drive_with_a_tag_library_names_that_drive_in_the_status_bar(qtbot, tmp_path):
+    drive = tmp_path / "MEDIATAGGER"
+    (drive / ".mediatagger").mkdir(parents=True)
+    (drive / ".mediatagger" / "tags.db").touch()
+    folder = drive / "Photos" / "2024"
+    folder.mkdir(parents=True)
+    make_image(folder / "IMG_1.png", "red")
+
+    viewer = Viewer(folder, player_options=SILENT, is_mount_point=lambda path: path == drive)
+    qtbot.addWidget(viewer)
+
+    status_texts = [label.text() for label in viewer.status_bar.findChildren(QLabel) if not label.isHidden()]
+    assert status_texts == [LIBRARY_TEXT.format("MEDIATAGGER")]
 
 
 def test_a_viewer_opened_on_a_folder_shows_its_first_item_and_not_the_launch_text(qtbot, tmp_path):

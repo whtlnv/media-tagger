@@ -19,6 +19,7 @@ SLIDESHOW_KEYS = {Qt.Key.Key_Left: "Left", Qt.Key.Key_Right: "Right", Qt.Key.Key
 UNSUPPORTED_TEXT = "Unsupported"
 STATUS_BAR_HEIGHT = 32
 NO_LIBRARY_TEXT = "No library open"
+LIBRARY_TEXT = "Library: {}"
 
 
 def fitted_rect(size, bounds):
@@ -47,8 +48,9 @@ def decode_fitted(path, bounds):
 
 
 class Viewer(QWidget):
-    def __init__(self, path=None, player_options=None, folder_picker=None):
+    def __init__(self, path=None, player_options=None, folder_picker=None, is_mount_point=os.path.ismount):
         super().__init__()
+        self.is_mount_point = is_mount_point
         self.folder_picker = folder_picker or self._pick_folder
         self.slideshow = None
         self.video_player = VideoPlayer(new_engine(**{**PLAYER_OPTIONS, **(player_options or {})}))
@@ -61,7 +63,7 @@ class Viewer(QWidget):
         self.placeholder = QLabel(UNSUPPORTED_TEXT, self)
         self.placeholder.setStyleSheet(LABEL_STYLE)
         self.status_bar = QWidget(self)
-        QLabel(NO_LIBRARY_TEXT, self.status_bar)
+        self.library_label = QLabel(NO_LIBRARY_TEXT, self.status_bar)
         self.setWindowState(Qt.WindowState.WindowFullScreen)
         self.setAcceptDrops(True)
         if path is None:
@@ -160,6 +162,8 @@ class Viewer(QWidget):
             self._show_message(f"No images or videos in {path.name}")
             return
         self.placeholder.setText(UNSUPPORTED_TEXT)
+        drive = next(folder for folder in path.parents if self.is_mount_point(folder))
+        self.library_label.setText(LIBRARY_TEXT.format(drive.name))
         if showing_info:
             self.slideshow.press("i")
         self._refresh()
