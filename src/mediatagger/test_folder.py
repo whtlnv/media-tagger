@@ -8,28 +8,25 @@ def touch(folder, *names):
         (folder / name).touch()
 
 
-def test_opening_a_folder_lists_its_images_in_natural_filename_order(tmp_path):
-    touch(tmp_path, "IMG_10.jpg", "IMG_2.jpg", "IMG_1.jpg")
-
-    assert media_files(tmp_path) == [
-        tmp_path / "IMG_1.jpg",
-        tmp_path / "IMG_2.jpg",
-        tmp_path / "IMG_10.jpg",
-    ]
+EXTENSIONS_IN_THE_DESIGN = ["jpg", "jpeg", "png", "webp", "bmp", "tif", "tiff", "heic",
+                            "mp4", "mov", "avi", "mpg", "mpeg", "mkv", "m4v", "wmv", "3gp", "gif"]
+ONE_ITEM_PER_EXTENSION = [f"item_{i}.{ext}" for i, ext in enumerate(EXTENSIONS_IN_THE_DESIGN, start=1)]
 
 
-def test_opening_a_folder_lists_its_videos_alongside_its_images_in_natural_order(tmp_path):
-    touch(tmp_path, "clip_10.mp4", "IMG_3.jpg", "clip_2.mov", "anim_1.gif", "IMG_20.jpg", "old_5.avi", "old_7.mpg")
+@pytest.mark.parametrize("names, listed", [
+    pytest.param(["IMG_10.jpg", "IMG_2.jpg", "IMG_1.jpg"], ["IMG_1.jpg", "IMG_2.jpg", "IMG_10.jpg"],
+                 id="images in natural filename order"),
+    pytest.param(["clip_10.mp4", "IMG_3.jpg", "clip_2.mov", "anim_1.gif", "IMG_20.jpg", "old_5.avi", "old_7.mpg"],
+                 ["IMG_3.jpg", "IMG_20.jpg", "anim_1.gif", "clip_2.mov", "clip_10.mp4", "old_5.avi", "old_7.mpg"],
+                 id="videos alongside images in natural order"),
+    pytest.param(["IMG_1.JPG", "clip_2.Mp4"], ["IMG_1.JPG", "clip_2.Mp4"],
+                 id="extensions matched regardless of case"),
+    pytest.param(ONE_ITEM_PER_EXTENSION, ONE_ITEM_PER_EXTENSION, id="every image and video extension in the design"),
+])
+def test_opening_a_folder_lists_its_media_in_natural_filename_order(tmp_path, names, listed):
+    touch(tmp_path, *names)
 
-    assert media_files(tmp_path) == [
-        tmp_path / "IMG_3.jpg",
-        tmp_path / "IMG_20.jpg",
-        tmp_path / "anim_1.gif",
-        tmp_path / "clip_2.mov",
-        tmp_path / "clip_10.mp4",
-        tmp_path / "old_5.avi",
-        tmp_path / "old_7.mpg",
-    ]
+    assert media_files(tmp_path) == [tmp_path / name for name in listed]
 
 
 @pytest.mark.parametrize("names, listed", [
@@ -43,15 +40,6 @@ def test_a_file_that_is_not_shown_media_is_not_in_the_slideshow(tmp_path, names,
     assert media_files(tmp_path) == [tmp_path / name for name in listed]
 
 
-def test_media_extensions_are_matched_regardless_of_case(tmp_path):
-    touch(tmp_path, "IMG_1.JPG", "clip_2.Mp4")
-
-    assert media_files(tmp_path) == [
-        tmp_path / "IMG_1.JPG",
-        tmp_path / "clip_2.Mp4",
-    ]
-
-
 def test_a_subfolder_and_the_media_inside_it_are_not_in_the_slideshow(tmp_path):
     (tmp_path / "IMG_1.jpg").touch()
     subfolder = tmp_path / "holiday.jpg"
@@ -59,15 +47,6 @@ def test_a_subfolder_and_the_media_inside_it_are_not_in_the_slideshow(tmp_path):
     (subfolder / "IMG_9.jpg").touch()
 
     assert media_files(tmp_path) == [tmp_path / "IMG_1.jpg"]
-
-
-def test_every_image_and_video_extension_in_the_design_is_in_the_slideshow(tmp_path):
-    extensions = ["jpg", "jpeg", "png", "webp", "bmp", "tif", "tiff", "heic",
-                  "mp4", "mov", "avi", "mpg", "mpeg", "mkv", "m4v", "wmv", "3gp", "gif"]
-    names = [f"item_{i}.{ext}" for i, ext in enumerate(extensions, start=1)]
-    touch(tmp_path, *names)
-
-    assert media_files(tmp_path) == [tmp_path / name for name in names]
 
 
 @pytest.mark.parametrize("name, played_as_video", [
