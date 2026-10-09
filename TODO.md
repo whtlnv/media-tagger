@@ -1,2 +1,47 @@
 # TODO
 
+- [ ] A file in a library that was never tagged reports no tags
+- [ ] Entering `beach family` for a file in a library gives that file the tags `beach` and `family`
+- [ ] Tags entered for one file are not reported for another file in the same library
+- [ ] A file's tags are reported in alphabetical order, whatever order they were entered in (`family beach` reports `beach`, `family`)
+- [ ] Entering a tag a file already has does not report it twice
+- [ ] Entering `-sunset` for a file tagged `beach` and `sunset` leaves it tagged only `beach`
+- [ ] Entering `-sunset` for a file not tagged `sunset` leaves its tags unchanged
+- [ ] One entry can both add and remove (`pool -sunset` on a file tagged `sunset` leaves it tagged only `pool`)
+- [ ] Entered tags are lowercased (`Beach` is stored as `beach`)
+- [ ] Removing is case-insensitive (`-Sunset` removes `sunset`)
+- [ ] Extra spaces around and between entered tags are ignored (`  beach   family ` gives exactly `beach` and `family`)
+- [ ] An entry of only spaces leaves the file's tags unchanged
+- [ ] A lone `-` in an entry is ignored (`beach -` gives exactly `beach`)
+- [ ] Hyphens join words into one tag (`day-at-beach` reports exactly `day-at-beach`)
+- [ ] A colon-namespaced tag of any depth is kept whole as one tag (`place:mexico:cancun` reports exactly `place:mexico:cancun`, not its parts)
+- [ ] A file's tags are reported again after its library is closed and opened again
+- [ ] A file's tags survive the drive being mounted at a different path: after the library's `.mediatagger` folder and the file (at the same place below the root) are copied to another root, the library there reports the same tags for the file
+- [ ] A library whose `tags.db` holds only its drive id and schema version (as libraries created before tagging existed do) can record and report a file's tags
+- [ ] Opening a library whose `tags.db` records schema version 1 upgrades it in place: afterwards its `meta` table records schema version 2 and its drive id is unchanged
+- [ ] A tag change is visible to a separate connection to `tags.db` as soon as it is entered, while the library stays open (each change is committed at once)
+- [ ] A library's `tags.db` uses SQLite's rollback journal, not WAL (it lives on removable exFAT media)
+- [ ] In the viewer on a writable drive with a tag library, pressing `t` opens a tag prompt that shows the current file's tags (e.g. `beach family`)
+- [ ] In the viewer, pressing `t` on a file with no tags opens the tag prompt showing no tags
+- [ ] Opening a folder on a drive whose `.mediatagger` folder exists but holds no `tags.db` asks before creating the library (having a library means having `tags.db`)
+- [ ] Typing `beach family` in the tag prompt and pressing `Enter` closes the prompt and records both tags for the current file in the drive's `tags.db` (opening that library afterwards reports them)
+- [ ] While the tag prompt is open, typing a space, `i`, `p`, `f` or `m` goes into the prompt: the slideshow stays on the same item, the info overlay does not toggle, and a video is not paused or muted
+- [ ] While the tag prompt is open, `←`, `→`, `↑` and `↓` do not move the slideshow or seek a video
+- [ ] Pressing `Esc` in the tag prompt closes it without changing the file's tags
+- [ ] Pressing `Esc` in the tag prompt leaves the viewer open (only `Esc` with no prompt open closes the viewer)
+- [ ] Pressing `t` on a video item shows the tag prompt above the video surface
+- [ ] After tagging a file `beach family`, a tag overlay in a corner of the viewer shows `beach family`
+- [ ] The tag overlay is hidden on a file with no tags
+- [ ] Moving with `Space` from a tagged file to an untagged one hides the tag overlay, and `←` back shows that file's tags again
+- [ ] Opening a folder whose first file was tagged in an earlier session shows that file's tags in the tag overlay (a new viewer on the same drive)
+- [ ] The tag overlay sits in the top-right corner, `CORNER_MARGIN` from the top and right edges, with the same look as the info overlay, and does not overlap the info overlay or the read-only banner
+- [ ] The tag overlay stays visible on top of a video item
+- [ ] Tagging a file on a drive opened at another mount path shows the same tags as before: a viewer on a copy of the drive at a different root shows the file's tags in the overlay
+- [ ] After dropping a folder from a second drive with a tag library, tags entered in the prompt are recorded in the second drive's `tags.db`, not the first's
+- [ ] On a read-only drive with a tag library, pressing `t` opens no tag prompt
+- [ ] On a read-only drive with a tag library, the tag overlay still shows a file's existing tags
+- [ ] On a drive whose tag library was declined, pressing `t` opens no tag prompt
+- [ ] On the system disk (viewing only), pressing `t` opens no tag prompt
+- [ ] On the drive the app itself runs from, pressing `t` opens no tag prompt and nothing is written to that drive
+- [ ] When pressing `t` opens no tag prompt (no library, declined, read-only, system disk, the app's own drive), the status bar briefly says "Tags can't be saved here"
+- [ ] Running the shipped `mediatagger <folder>` command on a drive with a tag library, pressing `t`, typing `beach` and pressing `Enter` records `beach` for the first file in the drive's `tags.db`, and a second run of the command on that folder shows `beach` in the tag overlay (the test's driver script treats a temp folder as the mount point)
