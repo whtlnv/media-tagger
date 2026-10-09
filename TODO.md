@@ -22,6 +22,7 @@
 - [x] `tags.db` of a newly created library is an SQLite database whose `meta` table holds the drive id and the schema version, readable with Python's `sqlite3` by another program
 - [x] Accepting "Create a tag library on <drive>?" in the viewer creates a real library: its `tags.db` reports a drive id when opened as a library
 - [x] Opening a folder on a read-only drive still shows its slideshow at the first item
+- [ ] A library created at a mount point, removed, and created again at the same mount point reports a different drive id the second time (the drive id is random, not derived from the drive's path or name)
 - [ ] On a read-only drive the status bar says tags can't be saved (e.g. `Read-only: tags can't be saved`)
 - [ ] Opening a folder on a read-only drive with no tag library shows the read-only banner instead of asking to create a library
 - [ ] After declining "Create a tag library on <drive>?", opening another folder on the same drive in the same session does not ask again
