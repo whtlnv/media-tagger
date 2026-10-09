@@ -185,3 +185,13 @@ def test_removing_is_case_insensitive(tmp_path):
     library.enter(photo, "-Sunset")
 
     assert library.tags(photo) == ["beach"]
+
+
+def test_extra_spaces_around_and_between_entered_tags_are_ignored(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "beach.jpg"
+    photo.touch()
+
+    library.enter(photo, "  beach   family ")
+
+    assert library.tags(photo) == ["beach", "family"]

@@ -10,7 +10,7 @@
 - [x] One entry can both add and remove (`pool -sunset` on a file tagged `sunset` leaves it tagged only `pool`)
 - [x] Entered tags are lowercased (`Beach` is stored as `beach`)
 - [x] Removing is case-insensitive (`-Sunset` removes `sunset`)
-- [ ] Extra spaces around and between entered tags are ignored (`  beach   family ` gives exactly `beach` and `family`)
+- [x] Extra spaces around and between entered tags are ignored (`  beach   family ` gives exactly `beach` and `family`)
 - [ ] An entry of only spaces leaves the file's tags unchanged
 - [ ] A lone `-` in an entry is ignored (`beach -` gives exactly `beach`)
 - [ ] Hyphens join words into one tag (`day-at-beach` reports exactly `day-at-beach`)

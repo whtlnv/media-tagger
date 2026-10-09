@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 05:20 · `src/mediatagger/test_library.py::test_extra_spaces_around_and_between_entered_tags_are_ignored`
+- Behavior: Extra spaces around and between entered tags are ignored (`  beach   family ` gives exactly `beach` and `family`)
+- Predicted: passes on first run — `Library.enter` already tokenizes with a no-argument `str.split()`, which drops leading, trailing and repeated whitespace
+- Actual: 1 passed
+- Type: passed unexpectedly
+- Resolution: Nothing is missing, because the space-separated tokenizing added in an earlier cycle already does this; the test can't fail without removing working behavior, so it stays as a test-after pin and there's nothing for `/green` to implement.
+
 ## 2026-10-09 05:18 · `src/mediatagger/test_library.py::test_removing_is_case_insensitive`
 - Behavior: Removing is case-insensitive (`-Sunset` removes `sunset`)
 - Predicted: pass (no right-reason failure available) — `enter` lowercases the whole entry text before splitting off `-` prefixes
