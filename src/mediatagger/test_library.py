@@ -164,59 +164,22 @@ def test_tags_entered_for_one_file_are_not_reported_for_another_file_in_the_same
     assert library.tags(untagged) == []
 
 
-def test_entering_minus_sunset_for_a_file_tagged_beach_and_sunset_leaves_it_tagged_only_beach(tmp_path):
+@pytest.mark.parametrize("tagged, entry, tags", [
+    pytest.param("beach sunset", "-sunset", ["beach"], id="minus sunset on a file tagged beach and sunset leaves only beach"),
+    pytest.param("beach family", "-sunset", ["beach", "family"], id="minus sunset on a file not tagged sunset leaves its tags unchanged"),
+    pytest.param("sunset", "pool -sunset", ["pool"], id="one entry can both add and remove tags"),
+    pytest.param("beach sunset", "-Sunset", ["beach"], id="removing is case-insensitive"),
+    pytest.param("beach family", "   ", ["beach", "family"], id="an entry of only spaces leaves the tags unchanged"),
+])
+def test_an_entry_for_a_tagged_file_in_a_library_updates_its_tags(tmp_path, tagged, entry, tags):
     library = Library.create(tmp_path)
     photo = tmp_path / "beach.jpg"
     photo.touch()
-    library.enter(photo, "beach sunset")
+    library.enter(photo, tagged)
 
-    library.enter(photo, "-sunset")
+    library.enter(photo, entry)
 
-    assert library.tags(photo) == ["beach"]
-
-
-def test_entering_minus_sunset_for_a_file_not_tagged_sunset_leaves_its_tags_unchanged(tmp_path):
-    library = Library.create(tmp_path)
-    photo = tmp_path / "beach.jpg"
-    photo.touch()
-    library.enter(photo, "beach family")
-
-    library.enter(photo, "-sunset")
-
-    assert library.tags(photo) == ["beach", "family"]
-
-
-def test_one_entry_can_both_add_and_remove_tags(tmp_path):
-    library = Library.create(tmp_path)
-    photo = tmp_path / "beach.jpg"
-    photo.touch()
-    library.enter(photo, "sunset")
-
-    library.enter(photo, "pool -sunset")
-
-    assert library.tags(photo) == ["pool"]
-
-
-def test_removing_is_case_insensitive(tmp_path):
-    library = Library.create(tmp_path)
-    photo = tmp_path / "beach.jpg"
-    photo.touch()
-    library.enter(photo, "beach sunset")
-
-    library.enter(photo, "-Sunset")
-
-    assert library.tags(photo) == ["beach"]
-
-
-def test_an_entry_of_only_spaces_leaves_the_files_tags_unchanged(tmp_path):
-    library = Library.create(tmp_path)
-    photo = tmp_path / "beach.jpg"
-    photo.touch()
-    library.enter(photo, "beach family")
-
-    library.enter(photo, "   ")
-
-    assert library.tags(photo) == ["beach", "family"]
+    assert library.tags(photo) == tags
 
 
 def test_a_files_tags_are_reported_again_after_its_library_is_closed_and_opened_again(tmp_path):
