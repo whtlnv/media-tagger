@@ -93,6 +93,12 @@ def status_bar_texts(viewer):
     return [label.text() for label in viewer.status_bar.findChildren(QLabel) if not label.isHidden()]
 
 
+def make_tag_library_drive(drive):
+    (drive / ".mediatagger").mkdir(parents=True)
+    (drive / ".mediatagger" / "tags.db").touch()
+    return drive
+
+
 def test_the_launch_screen_status_bar_says_no_library_is_open(qtbot):
     viewer = shown_launch_viewer(qtbot)
 
@@ -100,9 +106,7 @@ def test_the_launch_screen_status_bar_says_no_library_is_open(qtbot):
 
 
 def test_opening_a_folder_two_levels_below_a_drive_with_a_tag_library_names_that_drive_in_the_status_bar(qtbot, tmp_path):
-    drive = tmp_path / "MEDIATAGGER"
-    (drive / ".mediatagger").mkdir(parents=True)
-    (drive / ".mediatagger" / "tags.db").touch()
+    drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
     folder = drive / "Photos" / "2024"
     folder.mkdir(parents=True)
     make_image(folder / "IMG_1.png", "red")
@@ -114,9 +118,7 @@ def test_opening_a_folder_two_levels_below_a_drive_with_a_tag_library_names_that
 
 
 def test_opening_a_folder_that_is_itself_a_drives_mount_point_with_a_tag_library_names_that_folder_in_the_status_bar(qtbot, tmp_path):
-    drive = tmp_path / "MEDIATAGGER"
-    (drive / ".mediatagger").mkdir(parents=True)
-    (drive / ".mediatagger" / "tags.db").touch()
+    drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
     make_image(drive / "IMG_1.png", "red")
 
     viewer = Viewer(drive, player_options=SILENT, is_mount_point=lambda path: path == drive)
