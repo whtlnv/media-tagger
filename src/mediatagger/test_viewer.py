@@ -813,3 +813,19 @@ def test_dropping_a_folder_while_the_i_overlay_is_shown_shows_the_dropped_folder
     assert len(shown_texts(viewer)) == 1
     text = shown_texts(viewer)[0]
     assert "PHOTO_1.png" in text and "1 / 3" in text
+
+
+def test_dropping_a_folder_while_a_video_is_playing_stops_that_videos_playback_and_sound(qtbot, tmp_path):
+    viewed, dropped = tmp_path / "viewed", tmp_path / "dropped"
+    viewed.mkdir()
+    dropped.mkdir()
+    clip = make_clip(viewed / "IMG_1.mp4")
+    make_image(dropped / "IMG_1.png", "green")
+    viewer = shown_viewer_on(qtbot, viewed)
+    wait_until_loaded(viewer.video_player.engine, clip)
+    dragged = dragged_local_path(dropped)
+    drag_enter_over(viewer, dragged)
+
+    drop_onto(viewer, dragged)
+
+    assert viewer.video_player.engine.path is None

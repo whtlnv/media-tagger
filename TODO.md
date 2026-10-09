@@ -17,7 +17,7 @@
 - [x] Dropping a folder while viewing another folder replaces the slideshow with the dropped folder's, starting at its first item
 - [x] Dropping a file while viewing another folder replaces the slideshow with that file's folder, starting at that file
 - [x] Dropping a folder while the `i` overlay is shown leaves no overlay text from the previous folder: it shows the dropped folder's first filename and `1 / N`
-- [ ] Dropping a folder while a video is playing stops that video's playback and sound
+- [x] Dropping a folder while a video is playing stops that video's playback and sound
 - [ ] Running the shipped `mediatagger` command with no path opens the window showing "Drop a folder or file here, or press `o` to open" instead of exiting with an error
 - [ ] In the shipped `mediatagger` command started with no path, dropping a folder onto the window starts its slideshow at its first item
 - [ ] A JPEG smaller than the window whose EXIF orientation says "rotate 90°" is shown upright at its decoded size (a landscape-stored photo tagged rotate 90° is drawn taller than wide)

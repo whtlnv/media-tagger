@@ -84,6 +84,7 @@ class Viewer(QWidget):
             event.acceptProposedAction()
 
     def dropEvent(self, event):
+        self.video_player.press("Right")
         self._open(Path(event.mimeData().urls()[0].toLocalFile()))
 
     def keyPressEvent(self, event):
