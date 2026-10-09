@@ -192,7 +192,8 @@ class Viewer(QWidget):
         read_only = not os.access(drive, os.W_OK)
         if not (drive / ".mediatagger").exists():
             if read_only:
-                self.read_only_banner.show()
+                self._show_read_only(True)
+                self.library_label.setText(NO_LIBRARY_TEXT)
                 return
             if not self._agrees_to_create_library(drive):
                 self._show_read_only(False)

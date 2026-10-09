@@ -417,6 +417,25 @@ def test_after_viewing_a_read_only_drive_dropping_a_folder_from_a_writable_drive
     assert READ_ONLY_STATUS_TEXT not in status
 
 
+def test_after_viewing_a_drive_with_a_tag_library_opening_a_folder_on_a_read_only_drive_without_one_says_tags_cant_be_saved_and_no_longer_names_the_previous_library(qtbot, tmp_path):
+    viewed_drive = make_tag_library_drive(tmp_path / "BACKUP")
+    [viewed] = make_folders(viewed_drive, "Videos")
+    make_image(viewed / "IMG_1.png", "green")
+    read_only_drive, dropped = drive_without_a_tag_library_holding_one_image(tmp_path)
+    with made_read_only(read_only_drive):
+        viewer = Viewer(
+            viewed, player_options=SILENT, is_mount_point=lambda path: path in (viewed_drive, read_only_drive),
+            ask_to_create_library=lambda question: False,
+        )
+        qtbot.addWidget(viewer)
+
+        drag_and_drop_onto(viewer, dropped)
+        status = status_bar_texts(viewer)
+
+    assert READ_ONLY_STATUS_TEXT in status
+    assert LIBRARY_TEXT.format("BACKUP") not in status
+
+
 def test_a_viewer_opened_on_a_folder_shows_its_first_item_and_not_the_launch_text(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red")
     make_image(tmp_path / "IMG_2.png", "blue")
