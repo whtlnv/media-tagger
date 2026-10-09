@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 15:52 · `src/mediatagger/test_viewer_tag_prompt.py::test_suggestions_come_from_the_current_drives_library_after_dropping_a_folder_from_a_second_drive_with_only_zebra_typing_b_shows_no_popup_and_z_lists_zebra`
+- Behavior: Suggestions come from the current drive's library — after dropping a folder from a second drive whose library has only `zebra`, typing `b` shows no popup and typing `z` lists `zebra`
+- Predicted: passes unexpectedly — `_open_tag_prompt` rebuilds suggestions from `self.library` each time, and `_open_library` swaps `self.library` on drop
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: The behavior already exists from the earlier library-switching and suggestion cycles. Removing the drop makes the test fail at the `b` assertion, so it isn't vacuous. Kept it as a regression pin; nothing for /green to do.
+
 ## 2026-10-09 15:20 · `src/mediatagger/test_viewer_tag_prompt.py::test_typing_a_namespace_prefix_people_colon_lists_every_tag_under_it_at_any_depth_and_not_place_mexico`
 - Behavior: Typing a namespace prefix lists every tag under it at any depth: `people:` lists `people:ana` and `people:luis:jr`, not `place:mexico`
 - Predicted: passes on first run — tags are stored whole, and LastWordCompleter's prefix match already treats `people:` as a plain string prefix

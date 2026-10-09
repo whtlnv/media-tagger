@@ -3,7 +3,10 @@ from PySide6.QtWidgets import QAbstractItemView, QApplication
 
 from mediatagger.library import Library
 from mediatagger.test_viewer import make_image
-from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, shown_viewer_on_drive, visible_tag_prompts
+from mediatagger.test_viewer_library import (
+    drive_with_a_tag_library_holding_one_image, make_tag_library_drive, shown_viewer_on_drive, shown_viewer_on_drives, visible_tag_prompts,
+)
+from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 
 
 def visible_suggestion_lists(viewer):
@@ -176,3 +179,24 @@ def test_words_already_entered_in_the_prompt_are_not_suggested_again_typing_beac
 
     [suggestions] = visible_suggestion_lists(viewer)
     assert listed(suggestions) == ["bird"]
+
+
+def test_suggestions_come_from_the_current_drives_library_after_dropping_a_folder_from_a_second_drive_with_only_zebra_typing_b_shows_no_popup_and_z_lists_zebra(qtbot, tmp_path):
+    first_drive, viewed = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(first_drive).enter(viewed / "IMG_1.png", "beach bird")
+    second_drive = make_tag_library_drive(tmp_path / "BACKUP")
+    [dropped] = make_folders(second_drive, "Photos")
+    make_image(dropped / "IMG_1.png", "green")
+    make_image(dropped / "IMG_2.png", "blue")
+    Library.open(second_drive).enter(dropped / "IMG_2.png", "zebra")
+    viewer = shown_viewer_on_drives(qtbot, viewed, (first_drive, second_drive), lambda question: False)
+    drag_and_drop_onto(viewer, dropped)
+
+    type_in_tag_prompt(qtbot, viewer, "b")
+    assert visible_suggestion_lists(viewer) == []
+
+    [prompt] = visible_tag_prompts(viewer)
+    qtbot.keyClick(prompt, Qt.Key.Key_Backspace)
+    qtbot.keyClicks(prompt, "z")
+    [suggestions] = visible_suggestion_lists(viewer)
+    assert listed(suggestions) == ["zebra"]
