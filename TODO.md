@@ -19,7 +19,7 @@
 - [x] Dropping a folder while the `i` overlay is shown leaves no overlay text from the previous folder: it shows the dropped folder's first filename and `1 / N`
 - [x] Dropping a folder while a video is playing stops that video's playback and sound
 - [x] Running the shipped `mediatagger` command with no path opens the window showing "Drop a folder or file here, or press `o` to open" instead of exiting with an error
-- [ ] In the shipped `mediatagger` command started with no path, dropping a folder onto the window starts its slideshow at its first item
+- [x] In the shipped `mediatagger` command started with no path, dropping a folder onto the window starts its slideshow at its first item
 - [ ] A JPEG smaller than the window whose EXIF orientation says "rotate 90°" is shown upright at its decoded size (a landscape-stored photo tagged rotate 90° is drawn taller than wide)
 - [ ] A JPEG larger than the window whose EXIF orientation says "rotate 90°" is shown upright when fitted to the window (drawn taller than wide, scaled down to fit)
 - [ ] Acceptance: a screenshot of `mediatagger` started with no path on the Mac shows the "Drop a folder or file here, or press `o` to open" screen

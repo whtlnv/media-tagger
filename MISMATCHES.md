@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-08 21:18 · `src/mediatagger/test_main.py::test_dropping_a_folder_onto_the_mediatagger_command_started_with_no_path_starts_its_slideshow_at_its_first_item`
+- Behavior: In the shipped `mediatagger` command started with no path, dropping a folder onto the window starts its slideshow at its first item
+- Predicted: passes on first run (`main()` builds `Viewer(None)`, whose `dropEvent` → `_open` already starts the slideshow, as the in-process drop tests show); otherwise an AssertionError, black centre with the launch text still showing
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: The entry point adds nothing between the launch viewer and its drop handling, so the earlier drop cycles already deliver this through the shipped command. A mutation check (`dropEvent` returning early) fails it with black centre and the launch text showing, so I kept it as an end-to-end pin with production restored.
+
 ## 2026-10-08 21:01 · `src/mediatagger/test_viewer.py::test_dropping_a_file_while_viewing_another_folder_replaces_the_slideshow_with_that_files_folder_at_that_file`
 - Behavior: Dropping a file while viewing another folder replaces the slideshow with that file's folder, starting at that file
 - Predicted: passes on first run (`dropEvent` → `_open` → `Slideshow.open` already resolves a file to its folder at that file, with no guard on an existing slideshow); otherwise an AssertionError, blue vs yellow

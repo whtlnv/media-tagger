@@ -115,3 +115,40 @@ def test_running_the_mediatagger_command_with_no_path_opens_the_window_showing_t
     )
     assert result.returncode == 0, result.stderr
     assert result.stdout.splitlines() == launch_texts
+
+DROP_FOLDER_WITH_NO_PATH_SCRIPT = (
+    "import sys\n"
+    "from importlib.metadata import entry_points\n"
+    "from PySide6.QtCore import QMimeData, Qt, QTimer, QUrl\n"
+    "from PySide6.QtGui import QDragEnterEvent, QDropEvent\n"
+    "from PySide6.QtWidgets import QApplication, QLabel\n"
+    "app = QApplication([])\n"
+    "folder = sys.argv[1]\n"
+    "def drop_then_report():\n"
+    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    dragged = QMimeData()\n"
+    "    dragged.setUrls([QUrl.fromLocalFile(folder)])\n"
+    "    centre = window.rect().center()\n"
+    "    for event_type in (QDragEnterEvent, QDropEvent):\n"
+    "        QApplication.sendEvent(window, event_type(\n"
+    "            centre, Qt.DropAction.CopyAction, dragged, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier,\n"
+    "        ))\n"
+    "    frame = window.grab().toImage()\n"
+    "    colour = frame.pixelColor(frame.width() // 2, frame.height() // 2).name()\n"
+    "    texts = [label.text() for label in window.findChildren(QLabel) if label.isVisible()]\n"
+    "    print(f'centre={colour} texts={texts}', flush=True)\n"
+    "    QApplication.closeAllWindows()\n"
+    "    QApplication.quit()\n"
+    "QTimer.singleShot(1000, drop_then_report)\n"
+    "(command,) = entry_points(group='console_scripts', name='mediatagger')\n"
+    "sys.argv = ['mediatagger']\n"
+    "command.load()()\n"
+)
+
+
+def test_dropping_a_folder_onto_the_mediatagger_command_started_with_no_path_starts_its_slideshow_at_its_first_item(tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    make_image(tmp_path / "IMG_2.png", "blue")
+    result = run_python_offscreen(DROP_FOLDER_WITH_NO_PATH_SCRIPT, str(tmp_path))
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == f"centre={QColor('red').name()} texts=[]"
