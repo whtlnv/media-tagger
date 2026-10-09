@@ -91,12 +91,13 @@ Search history is remembered (`↑` in the search box).
 ### Launch
 
 - If the drive from last session is mounted: reopen the last folder in the grid.
-- Otherwise: empty screen "Drop a folder or file here, or press `o` to open".
+- Otherwise: empty screen "Drop a folder or file here, or press o to open".
 
 ### Drag & drop
 
 - Drop a folder: start the slideshow of that folder.
 - Drop a file: slideshow of its folder, starting at that file.
+- A path that is missing or unreadable (or a file whose folder can't be listed) shows "Can't open <name>"; dropping or opening (`o`) another path still works.
 
 ### Viewer (fullscreen)
 
