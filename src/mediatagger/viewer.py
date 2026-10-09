@@ -56,9 +56,13 @@ def _collect_due_generation():
     gc.collect(due[-1] if due else 0)
 
 
+def _last_word(text):
+    return text.split(" ")[-1]
+
+
 class LastWordCompleter(QCompleter):
     def splitPath(self, path):
-        return [path.split(" ")[-1].removeprefix("-")]
+        return [_last_word(path).removeprefix("-")]
 
 
 class TagInput(QLineEdit):
@@ -293,7 +297,7 @@ class Viewer(QWidget):
 
     def _offer_suggestions(self, text):
         to_add, to_remove = self._suggestions
-        removing = text.split(" ")[-1].startswith("-")
+        removing = _last_word(text).startswith("-")
         self.tag_input.completer().model().setStringList(to_remove if removing else to_add)
 
     def _record_tags(self):
