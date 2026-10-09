@@ -54,6 +54,7 @@ On the Pi, not the drive: `~/.cache/mediatagger/<drive_id>/thumbs.db` (thumbnail
 
 - Shows the item's current own tags.
 - `beach family` adds both; `-sunset` removes `sunset`.
+- `Enter` saves the entry; `Esc` closes the prompt without changing tags.
 - Autocomplete over existing tags, most used first; typing `people:` lists all `people:*` tags.
 
 ## Search
@@ -139,6 +140,8 @@ Search history is remembered (`↑` in the search box).
 ### Status bar (always visible)
 
 It names the open library (`Library: MEDIATAGGER`) or says there is none (viewing only), and on a read-only drive adds `Read-only — tags can't be saved`.
+
+Pressing `t` where tags can't be saved (no library, declined, read-only, system disk, the app's own drive) briefly shows `Tags can't be saved here`.
 
 Any background work is announced and its completion shown, e.g. `⟳ Generating thumbnails 132 / 1,204` → `✓ Thumbnails ready`, `⟳ Backing up database…` → `✓ Backed up`. Nothing runs silently.
 
