@@ -165,19 +165,23 @@ class Viewer(QWidget):
             self._show_message(f"No images or videos in {path.name}")
             return
         self.placeholder.setText(UNSUPPORTED_TEXT)
-        drive = next(folder for folder in (path, *path.parents) if self.is_mount_point(folder))
-        if drive == Path("/"):
-            self.library_label.setText(NO_LIBRARY_VIEWING_ONLY_TEXT)
-        elif not (drive / ".mediatagger").exists():
-            if self.ask_to_create_library(CREATE_LIBRARY_QUESTION.format(drive.name)):
-                (drive / ".mediatagger").mkdir()
-                (drive / ".mediatagger" / "tags.db").touch()
-                self.library_label.setText(LIBRARY_TEXT.format(drive.name))
-        else:
-            self.library_label.setText(LIBRARY_TEXT.format(drive.name))
+        self._open_library(path)
         if showing_info:
             self.slideshow.press("i")
         self._refresh()
+
+    def _open_library(self, path):
+        drive = next(folder for folder in (path, *path.parents) if self.is_mount_point(folder))
+        library_dir = drive / ".mediatagger"
+        if drive == Path("/"):
+            self.library_label.setText(NO_LIBRARY_VIEWING_ONLY_TEXT)
+            return
+        if not library_dir.exists():
+            if not self.ask_to_create_library(CREATE_LIBRARY_QUESTION.format(drive.name)):
+                return
+            library_dir.mkdir()
+            (library_dir / "tags.db").touch()
+        self.library_label.setText(LIBRARY_TEXT.format(drive.name))
 
     def _show_cant_open(self, path):
         self.slideshow = None
