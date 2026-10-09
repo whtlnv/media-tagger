@@ -8,6 +8,8 @@ from mediatagger.folder import is_video
 from mediatagger.slideshow import Slideshow
 from mediatagger.video import VideoPlayer
 
+VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up"}
+
 
 class Viewer(QWidget):
     def __init__(self, folder):
@@ -21,9 +23,8 @@ class Viewer(QWidget):
         QPainter(self).drawImage(self.rect(), QImage(str(self.slideshow.current)))
 
     def keyPressEvent(self, event):
-        video_keys = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up"}
-        if event.key() in video_keys:
-            self.video_player.press(video_keys[event.key()])
+        if event.key() in VIDEO_KEYS:
+            self.video_player.press(VIDEO_KEYS[event.key()])
             return
         key = "Left" if event.key() == Qt.Key.Key_Left else "Space"
         self.slideshow.press(key)
