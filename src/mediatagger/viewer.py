@@ -182,7 +182,7 @@ class Viewer(QWidget):
 
     def _open_library(self, path):
         drive = next(folder for folder in (path, *path.parents) if self.is_mount_point(folder))
-        if drive == Path("/") or drive in Path(mediatagger.__file__).parents:
+        if self._never_holds_a_library(drive):
             self.library_label.setText(NO_LIBRARY_VIEWING_ONLY_TEXT)
             return
         read_only = not os.access(drive, os.W_OK)
@@ -197,6 +197,10 @@ class Viewer(QWidget):
         self.read_only_banner.setVisible(read_only)
         self.read_only_status.setVisible(read_only)
         self.library_label.setText(LIBRARY_TEXT.format(drive.name))
+
+    @staticmethod
+    def _never_holds_a_library(drive):
+        return drive == Path("/") or drive in Path(mediatagger.__file__).parents
 
     def _agrees_to_create_library(self, drive):
         if drive in self.declined_drives:
