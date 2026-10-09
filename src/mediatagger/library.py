@@ -43,6 +43,9 @@ class Library:
         connection.close()
         return cls(tags_db, meta["drive_id"], int(meta["schema_version"]))
 
+    def _key(self, path):
+        return str(path.relative_to(self._tags_db.parent.parent))
+
     def enter(self, path, text):
         words = text.lower().split()
         removed = {word[1:] for word in words if word.startswith("-")}
@@ -50,17 +53,17 @@ class Library:
         tags = (set(self.tags(path)) | added) - removed
         connection = sqlite3.connect(self._tags_db)
         with connection:
-            connection.execute("DELETE FROM tags WHERE path = ?", (str(path),))
+            connection.execute("DELETE FROM tags WHERE path = ?", (self._key(path),))
             connection.executemany(
                 "INSERT INTO tags (path, tag) VALUES (?, ?)",
-                [(str(path), tag) for tag in tags],
+                [(self._key(path), tag) for tag in tags],
             )
         connection.close()
 
     def tags(self, path):
         connection = sqlite3.connect(self._tags_db)
         rows = connection.execute(
-            "SELECT tag FROM tags WHERE path = ? ORDER BY tag", (str(path),)
+            "SELECT tag FROM tags WHERE path = ? ORDER BY tag", (self._key(path),)
         )
         tags = [tag for (tag,) in rows]
         connection.close()

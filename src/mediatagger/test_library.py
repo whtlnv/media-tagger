@@ -247,3 +247,20 @@ def test_a_files_tags_are_reported_again_after_its_library_is_closed_and_opened_
     reopened = Library.open(tmp_path)
 
     assert reopened.tags(photo) == ["beach", "family"]
+
+
+def test_a_files_tags_survive_the_drive_being_mounted_at_a_different_path(tmp_path):
+    original_mount = tmp_path / "original"
+    new_mount = tmp_path / "new"
+    (original_mount / "trips").mkdir(parents=True)
+    (new_mount / "trips").mkdir(parents=True)
+    library = Library.create(original_mount)
+    photo = original_mount / "trips" / "beach.jpg"
+    photo.touch()
+    library.enter(photo, "beach family")
+    shutil.copytree(original_mount / ".mediatagger", new_mount / ".mediatagger")
+    shutil.copy(photo, new_mount / "trips" / "beach.jpg")
+
+    remounted = Library.open(new_mount)
+
+    assert remounted.tags(new_mount / "trips" / "beach.jpg") == ["beach", "family"]
