@@ -9,7 +9,7 @@
 - [x] Opening a folder on the system disk (whose nearest mount point is `/`) never asks to create a library and the status bar says no library, viewing only
 - [x] Opening a folder on a drive whose mount point has no `.mediatagger/tags.db` asks "Create a tag library on <drive>?" before writing anything to the drive (the question is handed to the viewer the way the folder picker is, so tests never open a real dialog)
 - [x] Opening a folder on a drive whose mount point already has `.mediatagger/tags.db` does not ask to create a library
-- [ ] Accepting "Create a tag library on <drive>?" creates `<mount point>/.mediatagger/tags.db` and names the drive in the status bar as the open library
+- [x] Accepting "Create a tag library on <drive>?" creates `<mount point>/.mediatagger/tags.db` and names the drive in the status bar as the open library
 - [ ] Declining "Create a tag library on <drive>?" leaves the drive without a `.mediatagger` folder
 - [ ] Declining "Create a tag library on <drive>?" still shows the opened folder's slideshow at its first item
 - [ ] After declining "Create a tag library on <drive>?", the status bar says the drive has no tag library and viewing only is available

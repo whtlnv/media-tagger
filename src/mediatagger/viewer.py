@@ -169,7 +169,10 @@ class Viewer(QWidget):
         if drive == Path("/"):
             self.library_label.setText(NO_LIBRARY_VIEWING_ONLY_TEXT)
         elif not (drive / ".mediatagger").exists():
-            self.ask_to_create_library(CREATE_LIBRARY_QUESTION.format(drive.name))
+            if self.ask_to_create_library(CREATE_LIBRARY_QUESTION.format(drive.name)):
+                (drive / ".mediatagger").mkdir()
+                (drive / ".mediatagger" / "tags.db").touch()
+                self.library_label.setText(LIBRARY_TEXT.format(drive.name))
         else:
             self.library_label.setText(LIBRARY_TEXT.format(drive.name))
         if showing_info:
