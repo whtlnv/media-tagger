@@ -36,9 +36,14 @@ def run_python_offscreen(script, argument):
     )
 
 
-def shown_viewer_on(qtbot, folder):
+def viewer_on(qtbot, folder):
     viewer = Viewer(folder, player_options=SILENT)
     qtbot.addWidget(viewer)
+    return viewer
+
+
+def shown_viewer_on(qtbot, folder):
+    viewer = viewer_on(qtbot, folder)
     viewer.resize(400, 300)
     viewer.show()
     qtbot.waitExposed(viewer)
@@ -275,8 +280,7 @@ def test_the_viewers_i_overlay_is_corner_text_with_the_filename_and_position_tha
 
 def test_a_viewer_opened_on_a_folder_and_shown_is_fullscreen(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red")
-    viewer = Viewer(tmp_path, player_options=SILENT)
-    qtbot.addWidget(viewer)
+    viewer = viewer_on(qtbot, tmp_path)
 
     viewer.show()
     qtbot.waitExposed(viewer)
@@ -286,8 +290,7 @@ def test_a_viewer_opened_on_a_folder_and_shown_is_fullscreen(qtbot, tmp_path):
 
 def test_pressing_f_in_the_fullscreen_viewer_leaves_fullscreen(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red")
-    viewer = Viewer(tmp_path, player_options=SILENT)
-    qtbot.addWidget(viewer)
+    viewer = viewer_on(qtbot, tmp_path)
     viewer.show()
     qtbot.waitExposed(viewer)
 
@@ -298,8 +301,7 @@ def test_pressing_f_in_the_fullscreen_viewer_leaves_fullscreen(qtbot, tmp_path):
 
 def test_pressing_f_when_the_viewer_is_not_fullscreen_enters_fullscreen(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red")
-    viewer = Viewer(tmp_path, player_options=SILENT)
-    qtbot.addWidget(viewer)
+    viewer = viewer_on(qtbot, tmp_path)
     viewer.show()
     qtbot.waitExposed(viewer)
     qtbot.keyClick(viewer, Qt.Key.Key_F)
