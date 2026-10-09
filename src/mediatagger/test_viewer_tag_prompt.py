@@ -24,11 +24,15 @@ def type_in_tag_prompt(qtbot, viewer, text):
     qtbot.keyClicks(prompt, text)
 
 
-def test_in_the_tag_prompt_on_a_drive_whose_library_has_beach_and_bird_typing_b_shows_a_suggestion_popup_listing_beach_and_bird(qtbot, tmp_path):
+def shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, tags):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     make_image(folder / "IMG_2.png", "blue")
-    Library.open(drive).enter(folder / "IMG_2.png", "beach bird")
-    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    Library.open(drive).enter(folder / "IMG_2.png", tags)
+    return drive, folder, shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+
+def test_in_the_tag_prompt_on_a_drive_whose_library_has_beach_and_bird_typing_b_shows_a_suggestion_popup_listing_beach_and_bird(qtbot, tmp_path):
+    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach bird")
 
     type_in_tag_prompt(qtbot, viewer, "b")
 
@@ -46,10 +50,7 @@ def test_in_the_tag_prompt_on_a_drive_whose_library_has_no_tags_yet_typing_b_sho
 
 
 def test_in_the_tag_prompt_on_a_drive_whose_library_has_beach_and_bird_typing_be_lists_beach_and_not_bird(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    make_image(folder / "IMG_2.png", "blue")
-    Library.open(drive).enter(folder / "IMG_2.png", "beach bird")
-    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach bird")
 
     type_in_tag_prompt(qtbot, viewer, "be")
 
@@ -106,10 +107,7 @@ def test_suggestions_with_the_same_item_count_are_listed_alphabetically_with_bir
 
 
 def test_suggestion_matching_ignores_case_typing_upper_case_be_lists_beach(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    make_image(folder / "IMG_2.png", "blue")
-    Library.open(drive).enter(folder / "IMG_2.png", "beach bird")
-    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach bird")
 
     type_in_tag_prompt(qtbot, viewer, "BE")
 
@@ -118,10 +116,7 @@ def test_suggestion_matching_ignores_case_typing_upper_case_be_lists_beach(qtbot
 
 
 def test_suggestions_complete_the_last_space_separated_word_typing_beach_fam_with_family_in_the_library_lists_family(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    make_image(folder / "IMG_2.png", "blue")
-    Library.open(drive).enter(folder / "IMG_2.png", "beach family")
-    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach family")
 
     type_in_tag_prompt(qtbot, viewer, "beach fam")
 
@@ -130,10 +125,7 @@ def test_suggestions_complete_the_last_space_separated_word_typing_beach_fam_wit
 
 
 def test_typing_a_namespace_prefix_people_colon_lists_every_tag_under_it_at_any_depth_and_not_place_mexico(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    make_image(folder / "IMG_2.png", "blue")
-    Library.open(drive).enter(folder / "IMG_2.png", "people:ana people:luis:jr place:mexico")
-    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "people:ana people:luis:jr place:mexico")
 
     type_in_tag_prompt(qtbot, viewer, "people:")
 
@@ -170,10 +162,7 @@ def test_a_word_starting_with_minus_suggests_from_the_viewed_items_own_tags_on_a
 
 
 def test_words_already_entered_in_the_prompt_are_not_suggested_again_typing_beach_b_lists_bird_and_not_beach(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    make_image(folder / "IMG_2.png", "blue")
-    Library.open(drive).enter(folder / "IMG_2.png", "beach bird")
-    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach bird")
 
     type_in_tag_prompt(qtbot, viewer, "beach b")
 
@@ -216,10 +205,7 @@ def test_a_tag_saved_from_the_prompt_is_suggested_the_next_time_the_prompt_opens
 
 
 def test_in_the_suggestion_popup_down_twice_highlights_the_second_suggestion_and_up_then_highlights_the_first(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    make_image(folder / "IMG_2.png", "blue")
-    Library.open(drive).enter(folder / "IMG_2.png", "beach bird")
-    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach bird")
     type_in_tag_prompt(qtbot, viewer, "b")
     [suggestions] = visible_suggestion_lists(viewer)
     first, second = listed(suggestions)
@@ -233,10 +219,7 @@ def test_in_the_suggestion_popup_down_twice_highlights_the_second_suggestion_and
 
 
 def test_tab_accepts_the_highlighted_suggestion_replacing_only_the_word_being_typed_beach_fam_down_tab_leaves_beach_family_and_closes_the_popup(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    make_image(folder / "IMG_2.png", "blue")
-    Library.open(drive).enter(folder / "IMG_2.png", "beach family")
-    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach family")
     type_in_tag_prompt(qtbot, viewer, "beach fam")
     [suggestions] = visible_suggestion_lists(viewer)
 
@@ -248,10 +231,7 @@ def test_tab_accepts_the_highlighted_suggestion_replacing_only_the_word_being_ty
 
 
 def test_enter_accepts_the_highlighted_suggestion_without_saving_beach_fam_down_enter_leaves_beach_family_in_the_open_prompt_and_the_items_tags_unchanged(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    make_image(folder / "IMG_2.png", "blue")
-    Library.open(drive).enter(folder / "IMG_2.png", "beach family")
-    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach family")
     type_in_tag_prompt(qtbot, viewer, "beach fam")
     [suggestions] = visible_suggestion_lists(viewer)
 
@@ -276,10 +256,7 @@ def test_accepting_a_removal_suggestion_keeps_the_minus_on_an_item_tagged_sunset
 
 
 def test_esc_with_the_suggestion_popup_open_closes_only_the_popup_leaving_the_prompt_open_with_its_text_and_the_viewer_running(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    make_image(folder / "IMG_2.png", "blue")
-    Library.open(drive).enter(folder / "IMG_2.png", "beach family")
-    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach family")
     type_in_tag_prompt(qtbot, viewer, "beach fam")
     [suggestions] = visible_suggestion_lists(viewer)
 
@@ -289,10 +266,7 @@ def test_esc_with_the_suggestion_popup_open_closes_only_the_popup_leaving_the_pr
 
 
 def test_accepting_a_suggestion_for_the_only_word_in_the_prompt_leaves_no_leading_space_fam_down_tab_leaves_exactly_family(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    make_image(folder / "IMG_2.png", "blue")
-    Library.open(drive).enter(folder / "IMG_2.png", "family")
-    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "family")
     type_in_tag_prompt(qtbot, viewer, "fam")
     [suggestions] = visible_suggestion_lists(viewer)
 
@@ -318,10 +292,7 @@ def test_esc_after_the_suggestion_popup_has_been_closed_cancels_the_prompt_leavi
 
 
 def test_enter_with_no_suggestion_popup_showing_saves_the_prompts_text_beach_fam_esc_enter_adds_beach_and_fam_to_the_item(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    make_image(folder / "IMG_2.png", "blue")
-    Library.open(drive).enter(folder / "IMG_2.png", "family")
-    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "family")
     type_in_tag_prompt(qtbot, viewer, "beach fam")
     [suggestions] = visible_suggestion_lists(viewer)
     qtbot.keyClick(suggestions, Qt.Key.Key_Escape)
