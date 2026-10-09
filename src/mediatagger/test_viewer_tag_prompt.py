@@ -213,3 +213,20 @@ def test_a_tag_saved_from_the_prompt_is_suggested_the_next_time_the_prompt_opens
 
     [suggestions] = visible_suggestion_lists(viewer)
     assert listed(suggestions) == ["zebra"]
+
+
+def test_in_the_suggestion_popup_down_twice_highlights_the_second_suggestion_and_up_then_highlights_the_first(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    Library.open(drive).enter(folder / "IMG_2.png", "beach bird")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    type_in_tag_prompt(qtbot, viewer, "b")
+    [suggestions] = visible_suggestion_lists(viewer)
+    first, second = listed(suggestions)
+
+    qtbot.keyClick(suggestions, Qt.Key.Key_Down)
+    qtbot.keyClick(suggestions, Qt.Key.Key_Down)
+    highlighted_after_down_twice = suggestions.currentIndex().data()
+    qtbot.keyClick(suggestions, Qt.Key.Key_Up)
+
+    assert (highlighted_after_down_twice, suggestions.currentIndex().data()) == (second, first)

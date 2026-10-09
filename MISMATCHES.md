@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 16:02 · `src/mediatagger/test_viewer_tag_prompt.py::test_in_the_suggestion_popup_down_twice_highlights_the_second_suggestion_and_up_then_highlights_the_first`
+- Behavior: In the suggestion popup, `↓` twice highlights the second suggestion and `↑` then highlights the first
+- Predicted: passes on first run — QCompleter's popup event filter already moves the current row on ↓/↑ (↓ with nothing highlighted picks row 0)
+- Actual: passed (1 passed)
+- Type: passed unexpectedly (predicted pass)
+- Resolution: Qt provides arrow-key highlighting for free; dropping one `↓` makes the test fail (`('beach', None) != ('bird', 'beach')`), so it isn't vacuous. Kept as a regression pin; nothing for /green to do.
+
 ## 2026-10-09 15:57 · `src/mediatagger/test_viewer_tag_prompt.py::test_a_tag_saved_from_the_prompt_is_suggested_the_next_time_the_prompt_opens_after_saving_zebra_on_one_item_typing_z_on_the_next_lists_zebra`
 - Behavior: A tag saved from the prompt is suggested the next time the prompt opens — after saving `zebra` on one item, opening the prompt on the next item and typing `z` lists `zebra`
 - Predicted: passes unexpectedly — `_open_tag_prompt` calls `library.all_tags()`, which reads the SQLite db fresh on every prompt open

@@ -16,7 +16,7 @@ Note for every cycle: put new tag-prompt and autocomplete viewer tests in `src/m
 - [x] Words already entered in the prompt are not suggested again: typing `beach b` lists `bird` and not `beach`
 - [x] Suggestions come from the current drive's library: after dropping a folder from a second drive whose library has only `zebra`, typing `b` shows no popup and typing `z` lists `zebra`
 - [x] A tag saved from the prompt is suggested the next time the prompt opens: after saving `zebra` on one item, opening the prompt on the next item and typing `z` lists `zebra`
-- [ ] In the suggestion popup, `↓` twice highlights the second suggestion and `↑` then highlights the first
+- [x] In the suggestion popup, `↓` twice highlights the second suggestion and `↑` then highlights the first
 - [ ] `Tab` accepts the highlighted suggestion, replacing only the word being typed: `beach fam`, `↓`, `Tab` leaves `beach family` in the prompt and closes the popup
 - [ ] `Enter` accepts the highlighted suggestion without saving: `beach fam`, `↓`, `Enter` leaves `beach family` in the open prompt and the item's tags unchanged
   - note: `Enter` accepts only when a suggestion is highlighted (via `↓`/`↑`). With the popup showing but nothing highlighted, `Enter` saves as before — `test_on_a_file_tagged_beach_family_typing_minus_family_in_the_tag_prompt_and_pressing_enter_leaves_it_tagged_only_beach` must keep passing (no contradiction).
