@@ -196,7 +196,7 @@ class Viewer(QWidget):
             self._show_info()
             return
         if event.key() == Qt.Key.Key_T:
-            if self.library is not None and not self._drive_is_read_only():
+            if self._tags_can_be_saved_here():
                 self._open_tag_prompt()
             return
         if self._tag_prompt_has_focus():
@@ -211,6 +211,9 @@ class Viewer(QWidget):
         self.video_player.press(key)
         self._refresh()
         self._show_current_tags()
+
+    def _tags_can_be_saved_here(self):
+        return self.library is not None and not self._drive_is_read_only()
 
     def _drive_is_read_only(self):
         return not self.read_only_banner.isHidden()
