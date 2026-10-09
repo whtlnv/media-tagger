@@ -1,2 +1,29 @@
 # TODO
 
+- [ ] While a slideshow is showing, a status bar is visible along the bottom edge of the window, with the current item still shown above it
+  - predicted-contradiction: `src/mediatagger/test_viewer.py::test_a_viewer_opened_on_a_folder_whose_first_item_is_a_video_fills_its_window_with_the_video_surface_and_shows_no_unsupported_placeholder` — asserts: the video surface's geometry equals the whole viewer rect — retired-by: "a status bar is visible along the bottom edge of the window, with the current item still shown above it"
+  - predicted-contradiction: `src/mediatagger/test_viewer.py::test_a_video_reached_from_an_image_fills_the_viewer_window` — asserts: the video surface's geometry equals the whole viewer rect — retired-by: "a status bar is visible along the bottom edge of the window, with the current item still shown above it"
+  - predicted-contradiction: `src/mediatagger/test_viewer.py::test_the_unsupported_placeholder_sits_at_the_centre_of_the_window_and_stays_there_on_resize` — asserts: the unsupported placeholder is centred on the whole window (within 2px) — retired-by: "with the current item still shown above it"
+- [ ] On the launch screen (no path given), the status bar says no library is open
+- [ ] Opening a folder two levels below a drive's mount point, where the mount point has `.mediatagger/tags.db`, names that drive in the status bar as the open library (e.g. `Library: MEDIATAGGER`) (the test treats a temp folder as the drive's mount point; tests never consult real drives)
+- [ ] Opening a folder that is itself a drive's mount point, with `.mediatagger/tags.db`, names that folder in the status bar as the open library
+- [ ] Opening a file on a drive names the same library in the status bar as opening its folder does
+- [ ] Dropping a folder from a different drive while viewing switches the status bar to that drive's library
+- [ ] Opening a folder on the system disk (whose nearest mount point is `/`) never asks to create a library and the status bar says no library, viewing only
+- [ ] Opening a folder on a drive whose mount point has no `.mediatagger/tags.db` asks "Create a tag library on <drive>?" before writing anything to the drive (the question is handed to the viewer the way the folder picker is, so tests never open a real dialog)
+- [ ] Opening a folder on a drive whose mount point already has `.mediatagger/tags.db` does not ask to create a library
+- [ ] Accepting "Create a tag library on <drive>?" creates `<mount point>/.mediatagger/tags.db` and names the drive in the status bar as the open library
+- [ ] Declining "Create a tag library on <drive>?" leaves the drive without a `.mediatagger` folder
+- [ ] Declining "Create a tag library on <drive>?" still shows the opened folder's slideshow at its first item
+- [ ] After declining "Create a tag library on <drive>?", the status bar says the drive has no tag library and viewing only is available
+- [ ] A newly created library reports the same drive id after it is closed and opened again
+- [ ] A newly created library records its schema version alongside its drive id
+- [ ] Two libraries created on different drives report different drive ids
+- [ ] Opening a folder on a read-only drive that has a tag library shows a banner saying tags can't be saved (the test makes the mount point read-only and restores it afterwards)
+- [ ] Opening a folder on a writable drive that has a tag library shows no read-only banner
+- [ ] Opening a folder on a read-only drive still shows its slideshow at the first item
+- [ ] On a read-only drive the status bar says tags can't be saved (e.g. `Read-only: tags can't be saved`)
+- [ ] Opening a folder on a read-only drive with no tag library shows the read-only banner instead of asking to create a library
+- [ ] After declining "Create a tag library on <drive>?", opening another folder on the same drive in the same session does not ask again
+- [ ] Opening a path that can't be opened ("Can't open <name>") does not ask to create a library
+- [ ] Running the shipped `mediatagger <folder>` command on a folder whose drive has no tag library asks before creating one, and declining keeps the slideshow open with the status bar saying the drive has no tag library (the test's driver script treats a temp folder as the mount point and declines the question)
