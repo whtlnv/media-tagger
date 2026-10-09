@@ -1,7 +1,7 @@
 # TODO
 
 - [x] While a slideshow is showing, a status bar is visible along the bottom edge of the window, overlaid on the current item, which still fills the whole window (images, videos and the unsupported placeholder lay out as before)
-- [ ] On the launch screen (no path given), the status bar says no library is open
+- [x] On the launch screen (no path given), the status bar says no library is open
 - [ ] Opening a folder two levels below a drive's mount point, where the mount point has `.mediatagger/tags.db`, names that drive in the status bar as the open library (e.g. `Library: MEDIATAGGER`) (the test treats a temp folder as the drive's mount point; tests never consult real drives)
 - [ ] Opening a folder that is itself a drive's mount point, with `.mediatagger/tags.db`, names that folder in the status bar as the open library
 - [ ] Opening a file on a drive names the same library in the status bar as opening its folder does

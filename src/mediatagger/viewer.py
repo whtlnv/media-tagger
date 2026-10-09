@@ -18,6 +18,7 @@ CORNER_MARGIN = 16
 SLIDESHOW_KEYS = {Qt.Key.Key_Left: "Left", Qt.Key.Key_Right: "Right", Qt.Key.Key_Space: "Space"}
 UNSUPPORTED_TEXT = "Unsupported"
 STATUS_BAR_HEIGHT = 32
+NO_LIBRARY_TEXT = "No library open"
 
 
 def fitted_rect(size, bounds):
@@ -60,6 +61,7 @@ class Viewer(QWidget):
         self.placeholder = QLabel(UNSUPPORTED_TEXT, self)
         self.placeholder.setStyleSheet(LABEL_STYLE)
         self.status_bar = QWidget(self)
+        QLabel(NO_LIBRARY_TEXT, self.status_bar)
         self.setWindowState(Qt.WindowState.WindowFullScreen)
         self.setAcceptDrops(True)
         if path is None:

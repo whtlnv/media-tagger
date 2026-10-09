@@ -3,13 +3,14 @@ from pathlib import Path
 
 from PySide6.QtCore import QMimeData, QPointF, Qt, QTimer, QUrl
 from PySide6.QtGui import QColor, QDragEnterEvent, QDropEvent
-from PySide6.QtWidgets import QApplication, QFileDialog
+from PySide6.QtWidgets import QApplication, QFileDialog, QLabel
 
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import (
     centre_colour, make_folder_with_no_media, make_image, shown_labels, shown_launch_viewer, shown_texts, shown_viewer_on,
     shows_unsupported_placeholder, shows_video_surface, wait_until_loaded,
 )
+from mediatagger.viewer import NO_LIBRARY_TEXT
 
 
 def make_folders(parent, *names):
@@ -86,6 +87,13 @@ def test_the_launch_screen_text_shows_the_o_key_without_backticks(qtbot):
     viewer = shown_launch_viewer(qtbot)
 
     assert shown_texts(viewer) == ["Drop a folder or file here, or press o to open"]
+
+
+def test_the_launch_screen_status_bar_says_no_library_is_open(qtbot):
+    viewer = shown_launch_viewer(qtbot)
+
+    status_texts = [label.text() for label in viewer.status_bar.findChildren(QLabel) if label.isVisible()]
+    assert status_texts == [NO_LIBRARY_TEXT]
 
 
 def test_a_viewer_opened_on_a_folder_shows_its_first_item_and_not_the_launch_text(qtbot, tmp_path):
