@@ -288,3 +288,12 @@ def test_pressing_f_when_the_viewer_is_not_fullscreen_enters_fullscreen(qtbot, t
     qtbot.keyClick(viewer, Qt.Key.Key_F)
 
     assert viewer.isFullScreen()
+
+
+def test_a_viewer_opened_on_a_folder_whose_first_item_cannot_be_decoded_shows_an_unsupported_placeholder(qtbot, tmp_path):
+    (tmp_path / "IMG_1.png").write_bytes(b"not really a png")
+    make_image(tmp_path / "IMG_2.png", "red")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+
+    shown_texts = [label.text() for label in viewer.findChildren(QLabel) if label.isVisible()]
+    assert any("unsupported" in text.lower() for text in shown_texts)

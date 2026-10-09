@@ -57,7 +57,7 @@
 - [x] The viewer opens fullscreen
 - [x] Pressing `f` in fullscreen leaves fullscreen
 - [x] Pressing `f` when not fullscreen enters fullscreen
-- [ ] A media file that can't be decoded shows an "unsupported" placeholder instead of crashing
+- [x] A media file that can't be decoded shows an "unsupported" placeholder instead of crashing
 - [ ] A decodable image shows the image, not the "unsupported" placeholder
 - [ ] Pressing `Space` on an "unsupported" placeholder shows the next item
 - [ ] Running the shipped `mediatagger <folder>` command opens the fullscreen viewer on that folder's first item

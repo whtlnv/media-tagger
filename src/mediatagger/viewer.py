@@ -25,6 +25,7 @@ class Viewer(QWidget):
         self.surface = None
         self.info = QLabel(self)
         self.info.hide()
+        self.placeholder = QLabel("Unsupported", self)
         self.setWindowState(Qt.WindowState.WindowFullScreen)
         self._show_current()
 
@@ -69,6 +70,7 @@ class Viewer(QWidget):
         self.info.setVisible(bool(self.slideshow.overlay))
 
     def _show_current(self):
+        self.placeholder.setVisible(QImage(str(self.slideshow.current)).isNull())
         if is_video(self.slideshow.current):
             self.surface = self.surface or QOpenGLWidget(self)
             self.surface.show()
