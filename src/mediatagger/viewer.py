@@ -131,13 +131,13 @@ class Viewer(QWidget):
         if picker.exec():
             return Path(picker.selectedFiles()[0])
 
-    def _open(self, folder):
-        if folder is None:
+    def _open(self, path):
+        if path is None:
             return
         showing_info = self.slideshow is not None and self.slideshow.overlay
-        self.slideshow = Slideshow.open(folder)
+        self.slideshow = Slideshow.open(path)
         if self.slideshow is None:
-            self.placeholder.setText(f"No images or videos in {folder.name}")
+            self.placeholder.setText(f"No images or videos in {path.name}")
             self._centre(self.placeholder)
             self.placeholder.show()
             return
