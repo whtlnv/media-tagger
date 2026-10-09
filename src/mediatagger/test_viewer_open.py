@@ -1,4 +1,5 @@
 import errno
+from contextlib import contextmanager
 from pathlib import Path
 
 from PySide6.QtCore import QMimeData, QPointF, Qt, QTimer, QUrl
@@ -133,6 +134,15 @@ def shown_viewer_on_drive(qtbot, folder, drive, ask_to_create_library):
     viewer.show()
     qtbot.waitExposed(viewer)
     return viewer
+
+
+@contextmanager
+def made_read_only(drive):
+    drive.chmod(0o555)
+    try:
+        yield
+    finally:
+        drive.chmod(0o755)
 
 
 def test_the_launch_screen_status_bar_says_no_library_is_open(qtbot):
@@ -275,11 +285,8 @@ def test_after_declining_to_create_a_tag_library_on_a_drive_the_status_bar_says_
 
 def test_opening_a_folder_on_a_read_only_drive_that_has_a_tag_library_shows_a_banner_saying_tags_cant_be_saved(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    drive.chmod(0o555)
-    try:
+    with made_read_only(drive):
         viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
-    finally:
-        drive.chmod(0o755)
 
     assert shown_texts(viewer) == [READ_ONLY_BANNER_TEXT]
 
@@ -287,13 +294,10 @@ def test_opening_a_folder_on_a_read_only_drive_that_has_a_tag_library_shows_a_ba
 def test_opening_a_folder_on_a_read_only_drive_still_shows_its_slideshow_at_the_first_item(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     make_image(folder / "IMG_2.png", "blue")
-    drive.chmod(0o555)
-    try:
+    with made_read_only(drive):
         viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
         shown = shown_texts(viewer)
         colour = centre_colour(viewer)
-    finally:
-        drive.chmod(0o755)
 
     assert shown == [READ_ONLY_BANNER_TEXT]
     assert colour == QColor("red")
