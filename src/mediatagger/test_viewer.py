@@ -892,3 +892,15 @@ def test_dropping_a_folder_while_a_video_is_playing_stops_that_videos_playback_a
     drag_and_drop_onto(viewer, dropped)
 
     assert viewer.video_player.engine.path is None
+
+
+def test_dropping_a_folder_with_no_media_while_a_video_is_showing_hides_the_video_surface_and_says_so(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4")
+    empty = make_folder_with_no_media(tmp_path / "Holidays")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    wait_until_loaded(viewer.video_player.engine, clip)
+
+    drag_and_drop_onto(viewer, empty)
+
+    assert shown_texts(viewer) == shown_texts(shown_viewer_on(qtbot, empty))
+    assert not shows_video_surface(viewer)
