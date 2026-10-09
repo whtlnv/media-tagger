@@ -869,3 +869,19 @@ def test_a_file_tagged_beach_family_in_a_viewer_shows_beach_family_in_the_tag_ov
     viewer = shown_viewer_on_drive(qtbot, other_drive / "Photos", other_drive, lambda question: False)
 
     assert shown_texts(viewer) == ["beach family"]
+
+
+def test_after_dropping_a_folder_from_a_second_drive_with_a_tag_library_tags_entered_in_the_prompt_are_recorded_in_the_second_drives_tags_db_not_the_firsts(qtbot, tmp_path):
+    first_drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
+    second_drive = make_tag_library_drive(tmp_path / "BACKUP")
+    [viewed] = make_folders(first_drive, "Photos")
+    [dropped] = make_folders(second_drive, "Photos")
+    make_image(viewed / "IMG_1.png", "red")
+    make_image(dropped / "IMG_1.png", "green")
+    viewer = shown_viewer_on_drives(qtbot, viewed, (first_drive, second_drive), lambda question: False)
+    drag_and_drop_onto(viewer, dropped)
+
+    enter_in_tag_prompt(qtbot, viewer, "beach family")
+
+    assert Library.open(second_drive).tags(dropped / "IMG_1.png") == ["beach", "family"]
+    assert Library.open(first_drive).tags(viewed / "IMG_1.png") == []

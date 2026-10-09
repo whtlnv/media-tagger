@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 10:57 · `src/mediatagger/test_viewer_library.py::test_after_dropping_a_folder_from_a_second_drive_with_a_tag_library_tags_entered_in_the_prompt_are_recorded_in_the_second_drives_tags_db_not_the_firsts`
+- Behavior: After dropping a folder from a second drive with a tag library, tags entered in the prompt are recorded in the second drive's `tags.db`, not the first's
+- Predicted: pass — `dropEvent` → `_open` → `_open_library` already replaces `self.library` with the dropped drive's library, and `_open_tag_prompt` tags through `self.library` (no right-reason failure available)
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: the behavior already exists (from the "dropping a folder from a different drive switches the status bar" item); a mutation check that kept the first drive's library open across the drop turned the test red (the dropped file is not under the first drive), so it is a real end-to-end pin and was kept as-is
+
 ## 2026-10-09 10:50 · `src/mediatagger/test_viewer_library.py::test_a_file_tagged_beach_family_in_a_viewer_shows_beach_family_in_the_tag_overlay_of_a_viewer_on_a_copy_of_the_drive_at_another_root`
 - Behavior: Tagging a file on a drive opened at another mount path shows the same tags as before: a viewer on a copy of the drive at a different root shows the file's tags in the overlay
 - Predicted: pass — `Library._key` stores paths relative to the drive root and the viewer opens the library at the drive it views (no right-reason failure available)
