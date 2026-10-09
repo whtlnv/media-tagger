@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QAbstractItemView, QApplication
 from mediatagger.library import Library
 from mediatagger.test_viewer import make_image
 from mediatagger.test_viewer_library import (
-    drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, make_tag_library_drive, shown_viewer_on_drive, shown_viewer_on_drives, visible_tag_prompts,
+    drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, make_tag_library_drive, shown_viewer_on_drive, shown_viewer_on_drives, visible_tag_prompt_texts, visible_tag_prompts,
 )
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 
@@ -245,3 +245,17 @@ def test_tab_accepts_the_highlighted_suggestion_replacing_only_the_word_being_ty
 
     [prompt] = visible_tag_prompts(viewer)
     assert (prompt.text(), visible_suggestion_lists(viewer)) == ("beach family", [])
+
+
+def test_enter_accepts_the_highlighted_suggestion_without_saving_beach_fam_down_enter_leaves_beach_family_in_the_open_prompt_and_the_items_tags_unchanged(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    Library.open(drive).enter(folder / "IMG_2.png", "beach family")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    type_in_tag_prompt(qtbot, viewer, "beach fam")
+    [suggestions] = visible_suggestion_lists(viewer)
+
+    qtbot.keyClick(suggestions, Qt.Key.Key_Down)
+    qtbot.keyClick(suggestions, Qt.Key.Key_Return)
+
+    assert (visible_tag_prompt_texts(viewer), Library.open(drive).tags(folder / "IMG_1.png")) == (["beach family"], [])

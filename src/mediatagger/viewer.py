@@ -67,6 +67,10 @@ class LastWordCompleter(QCompleter):
     def eventFilter(self, watched, event):
         if event.type() == QEvent.Type.KeyPress and event.key() == Qt.Key.Key_Tab:
             self._accept_highlighted()
+        if watched is self.popup() and event.type() == QEvent.Type.KeyPress and event.key() == Qt.Key.Key_Return:
+            self._accept_highlighted()
+            self.popup().hide()
+            return True
         return super().eventFilter(watched, event)
 
     def _accept_highlighted(self):
