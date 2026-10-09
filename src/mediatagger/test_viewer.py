@@ -1,3 +1,7 @@
+import os
+import subprocess
+import sys
+
 import pytest
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QImage
@@ -161,3 +165,26 @@ def test_a_viewer_draws_a_wide_red_image_fitted_to_a_square_window_with_black_ab
     assert frame.pixelColor(middle, frame.height() // 2) == QColor("red")
     assert frame.pixelColor(middle, 10) == QColor("black")
     assert frame.pixelColor(middle, frame.height() - 10) == QColor("black")
+
+
+def test_a_viewer_created_while_the_numeric_locale_is_not_c_still_gets_a_working_player(tmp_path):
+    """QApplication sets LC_NUMERIC from the environment; libmpv refuses to start (and python-mpv crashes) unless it is "C"."""
+    make_image(tmp_path / "IMG_1.png", "red")
+    script = (
+        "import locale, sys\n"
+        "from pathlib import Path\n"
+        "from PySide6.QtWidgets import QApplication\n"
+        "from mediatagger.viewer import Viewer\n"
+        "app = QApplication([])\n"
+        "locale.setlocale(locale.LC_NUMERIC, 'de_DE.UTF-8')\n"
+        "viewer = Viewer(Path(sys.argv[1]))\n"
+        "print(viewer.video_player.engine.path)\n"
+        "viewer.close()\n"
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", script, str(tmp_path)],
+        capture_output=True, text=True, timeout=30,
+        env={**os.environ, "QT_QPA_PLATFORM": "offscreen"},
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "None"

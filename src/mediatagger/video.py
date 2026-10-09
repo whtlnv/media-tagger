@@ -1,3 +1,14 @@
+import locale
+
+import mpv
+
+
+def new_engine(**options):
+    """libmpv refuses to start unless LC_NUMERIC is "C", and QApplication resets it from the environment."""
+    locale.setlocale(locale.LC_NUMERIC, "C")
+    return mpv.MPV(**options)
+
+
 class VideoPlayer:
     def __init__(self, engine):
         self.engine = engine

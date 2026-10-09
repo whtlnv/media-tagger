@@ -1,4 +1,3 @@
-import mpv
 from PySide6.QtCore import QPoint, QRect, Qt
 from PySide6.QtGui import QImage, QPainter
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
@@ -6,7 +5,7 @@ from PySide6.QtWidgets import QWidget
 
 from mediatagger.folder import is_video
 from mediatagger.slideshow import Slideshow
-from mediatagger.video import VideoPlayer
+from mediatagger.video import VideoPlayer, new_engine
 
 VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up"}
 
@@ -21,7 +20,7 @@ class Viewer(QWidget):
     def __init__(self, folder):
         super().__init__()
         self.slideshow = Slideshow.open(folder)
-        self.video_player = VideoPlayer(mpv.MPV(vo="libmpv"))
+        self.video_player = VideoPlayer(new_engine(vo="libmpv"))
         self.surface = None
         self._show_current()
 
