@@ -4,7 +4,7 @@ from pathlib import Path
 
 from PySide6.QtCore import QEventLoop, QPoint, QRect, Qt, QTimer
 from PySide6.QtGui import QImageIOHandler, QImageReader, QPainter
-from PySide6.QtWidgets import QFileDialog, QHBoxLayout, QLabel, QLineEdit, QMessageBox, QWidget
+from PySide6.QtWidgets import QCompleter, QFileDialog, QHBoxLayout, QLabel, QLineEdit, QMessageBox, QWidget
 
 from mediatagger.folder import is_video
 from mediatagger.library import Library, tags_db_path
@@ -92,6 +92,7 @@ class Viewer(QWidget):
         self.tag_input = TagInput(self)
         self.tag_input.setStyleSheet(TAG_INPUT_STYLE)
         self.tag_input.returnPressed.connect(self._record_tags)
+        self.tag_input.setCompleter(QCompleter(["beach", "bird"], self.tag_input))
         self.tag_input.hide()
         self.prompt_tags = overlay_label("", self)
         self.prompt_tags.hide()

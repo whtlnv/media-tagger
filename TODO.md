@@ -2,7 +2,7 @@
 
 Note for every cycle: put new tag-prompt and autocomplete viewer tests in `src/mediatagger/test_viewer_tag_prompt.py` (create it if missing; `test_viewer_library.py` is already over 1000 lines). Library-level tests go in `test_library.py`. Tests run offscreen and silent (`player_options={"ao": "null"}`), close every window/popup they open, and never touch real drives or `~`.
 
-- [ ] In the tag prompt on a drive whose library has the tags `beach` and `bird`, typing `b` shows a suggestion popup listing `beach` and `bird`
+- [x] In the tag prompt on a drive whose library has the tags `beach` and `bird`, typing `b` shows a suggestion popup listing `beach` and `bird`
 - [ ] In the tag prompt on a drive whose library has the tags `beach` and `bird`, typing `be` lists `beach` and not `bird`
 - [ ] In the tag prompt on a drive whose library has no tags yet, typing `b` shows no suggestion popup
 - [ ] Suggestions are ordered by how many items carry the tag: with `bird` on 3 items and `beach` on 1, typing `b` lists `bird` above `beach`
