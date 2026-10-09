@@ -14,8 +14,8 @@ from mediatagger.mpv_surface import MpvSurface
 from mediatagger.viewer import Viewer, decode_fitted
 
 
-def make_image(path, color):
-    image = QImage(64, 48, QImage.Format.Format_RGB32)
+def make_image(path, color, width=64, height=48):
+    image = QImage(width, height, QImage.Format.Format_RGB32)
     image.fill(QColor(color))
     image.save(str(path))
     return path
@@ -201,9 +201,7 @@ def test_pressing_p_in_the_viewer_on_a_video_pauses_it_and_up_seeks_it_forward(q
 
 
 def test_a_viewer_draws_a_wide_red_image_fitted_to_a_square_window_with_black_above_and_below_it(qtbot, tmp_path):
-    image = QImage(200, 100, QImage.Format.Format_RGB32)
-    image.fill(QColor("red"))
-    image.save(str(tmp_path / "IMG_1.png"))
+    make_image(tmp_path / "IMG_1.png", "red", width=200, height=100)
     viewer = shown_viewer_on(qtbot, tmp_path)
     viewer.resize(300, 300)
     qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
@@ -476,9 +474,7 @@ def colours_inside(viewer, label):
 
 
 def test_the_info_overlay_is_light_text_on_a_dark_translucent_panel_whatever_the_desktop_theme(qtbot, tmp_path):
-    image = QImage(400, 300, QImage.Format.Format_RGB32)
-    image.fill(QColor("red"))
-    image.save(str(tmp_path / "IMG_1.png"))
+    make_image(tmp_path / "IMG_1.png", "red", width=400, height=300)
     viewer = shown_viewer_on(qtbot, tmp_path)
     light_theme(viewer)
 
@@ -515,9 +511,7 @@ def test_a_viewer_opened_on_a_folder_with_no_media_says_so_at_the_centre_and_ign
 
 
 def test_an_image_larger_than_the_window_is_decoded_at_most_at_the_window_size_keeping_its_shape(tmp_path):
-    big = QImage(4000, 3000, QImage.Format.Format_RGB32)
-    big.fill(QColor("red"))
-    big.save(str(tmp_path / "IMG_1.jpg"))
+    make_image(tmp_path / "IMG_1.jpg", "red", width=4000, height=3000)
 
     decoded = decode_fitted(tmp_path / "IMG_1.jpg", QSize(400, 400))
 
