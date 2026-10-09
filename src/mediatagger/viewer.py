@@ -107,6 +107,10 @@ class Viewer(QWidget):
             self.surface.setGeometry(self.rect())
         self.status_bar.setGeometry(0, self.height() - STATUS_BAR_HEIGHT, self.width(), STATUS_BAR_HEIGHT)
         self._centre(self.placeholder)
+        frame = self.read_only_banner.geometry()
+        frame.moveCenter(self.rect().center())
+        frame.moveTop(CORNER_MARGIN)
+        self.read_only_banner.setGeometry(frame)
 
     def _centre(self, label):
         label.adjustSize()

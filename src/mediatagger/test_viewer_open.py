@@ -405,6 +405,19 @@ def test_on_a_read_only_drive_with_a_tag_library_the_read_only_banner_is_styled_
     assert banner.styleSheet() == viewer.info.styleSheet()
 
 
+def test_on_a_read_only_drive_with_a_tag_library_the_read_only_banner_sits_centred_horizontally_a_corner_margin_below_the_top_edge(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    with made_read_only(drive):
+        viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    viewer.resize(1600, 900)
+    qtbot.waitUntil(lambda: viewer.width() == 1600)
+
+    [banner] = shown_labels(viewer)
+    frame = QRect(banner.mapTo(viewer, QPoint()), banner.size())
+    assert frame.top() == CORNER_MARGIN
+    assert abs(frame.center().x() - viewer.rect().center().x()) <= 1
+
+
 def test_opening_a_folder_on_a_read_only_drive_without_a_tag_library_shows_the_read_only_banner_instead_of_asking_to_create_one(qtbot, tmp_path):
     drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
     asked = []
