@@ -7,7 +7,6 @@ from mediatagger.library import Library
 def test_a_newly_created_library_reports_the_same_drive_id_after_it_is_closed_and_opened_again(tmp_path):
     created = Library.create(tmp_path)
     drive_id = created.drive_id
-    created.close()
 
     reopened = Library.open(tmp_path)
 
@@ -18,7 +17,6 @@ def test_a_newly_created_library_reports_the_same_drive_id_after_it_is_closed_an
 def test_a_newly_created_library_records_its_schema_version_alongside_its_drive_id(tmp_path):
     created = Library.create(tmp_path)
     schema_version = created.schema_version
-    created.close()
 
     reopened = Library.open(tmp_path)
 
@@ -46,7 +44,6 @@ def test_a_library_reports_the_same_drive_id_when_its_drive_is_mounted_at_a_diff
     new_mount.mkdir()
     created = Library.create(original_mount)
     drive_id = created.drive_id
-    created.close()
     shutil.copytree(original_mount / ".mediatagger", new_mount / ".mediatagger")
 
     remounted = Library.open(new_mount)
@@ -56,7 +53,6 @@ def test_a_library_reports_the_same_drive_id_when_its_drive_is_mounted_at_a_diff
 
 def test_tags_db_of_a_newly_created_library_is_an_sqlite_database_whose_meta_table_holds_the_drive_id_and_schema_version(tmp_path):
     created = Library.create(tmp_path)
-    created.close()
 
     connection = sqlite3.connect(tmp_path / ".mediatagger" / "tags.db")
     try:
@@ -70,7 +66,6 @@ def test_tags_db_of_a_newly_created_library_is_an_sqlite_database_whose_meta_tab
 
 def test_a_library_created_removed_and_created_again_at_the_same_mount_point_reports_a_different_drive_id(tmp_path):
     first = Library.create(tmp_path)
-    first.close()
     shutil.rmtree(tmp_path / ".mediatagger")
 
     second = Library.create(tmp_path)

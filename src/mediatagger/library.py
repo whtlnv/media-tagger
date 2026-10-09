@@ -38,6 +38,3 @@ class Library:
         ).fetchone()
         connection.close()
         return cls(drive_id)
-
-    def close(self):
-        pass
