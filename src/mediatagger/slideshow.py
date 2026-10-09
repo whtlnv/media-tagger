@@ -2,31 +2,34 @@ from mediatagger.folder import media_files
 
 
 class Slideshow:
-    def __init__(self, current):
-        self.current = current
+    """A folder's media in natural order, listed once when opened, with a position in it."""
+
+    def __init__(self, items, index):
+        self.items = items
+        self.index = index
         self.overlay = None
+
+    @property
+    def current(self):
+        return self.items[self.index]
 
     @classmethod
     def open(cls, path):
         """The slideshow of a file's folder starting at it, or of a folder from its first item; None if it has none."""
-        if path.is_file():
-            return cls(path)
-        items = media_files(path)
-        return cls(items[0]) if items else None
+        folder = path.parent if path.is_file() else path
+        items = media_files(folder)
+        if not items:
+            return None
+        return cls(items, items.index(path) if path in items else 0)
 
     def press(self, key):
-        items = media_files(self.current.parent)
-        index = items.index(self.current)
         if key == "i":
-            self.overlay = None if self.overlay else _info(items, index)
+            self.overlay = None if self.overlay else self._info()
             return
         step = -1 if key == "Left" else 1
-        last = len(items) - 1
-        index = max(0, min(index + step, last))
-        self.current = items[index]
+        self.index = max(0, min(self.index + step, len(self.items) - 1))
         if self.overlay:
-            self.overlay = _info(items, index)
+            self.overlay = self._info()
 
-
-def _info(items, index):
-    return f"{items[index].name} {index + 1:,} / {len(items):,}"
+    def _info(self):
+        return f"{self.current.name} {self.index + 1:,} / {len(self.items):,}"

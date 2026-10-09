@@ -1,5 +1,6 @@
 import pytest
 
+from mediatagger.folder import media_files
 from mediatagger.slideshow import Slideshow
 from mediatagger.test_folder import touch
 
@@ -98,3 +99,20 @@ def test_pressing_i_while_the_info_overlay_is_shown_hides_it(tmp_path):
     slideshow.press("i")
 
     assert slideshow.overlay is None
+
+
+def test_stepping_through_a_slideshow_lists_its_folder_only_once(tmp_path, monkeypatch):
+    touch(tmp_path, "IMG_1.jpg", "IMG_2.jpg", "IMG_3.jpg")
+    listings = []
+
+    def counted_media_files(folder):
+        listings.append(folder)
+        return media_files(folder)
+
+    monkeypatch.setattr("mediatagger.slideshow.media_files", counted_media_files)
+    slideshow = Slideshow.open(tmp_path / "IMG_2.jpg")
+    for key in ("Space", "Left", "Left", "i", "Right"):
+        slideshow.press(key)
+
+    assert len(listings) == 1
+    assert slideshow.current == tmp_path / "IMG_2.jpg"
