@@ -274,6 +274,18 @@ def test_a_viewer_opened_on_a_file_in_a_missing_folder_shows_a_cant_open_message
     assert shown_texts(viewer) == ["Can't open does_not_exist.jpg"]
 
 
+def test_a_viewer_opened_on_a_folder_it_is_not_allowed_to_read_shows_a_cant_open_message_naming_it(qtbot, tmp_path):
+    locked = tmp_path / "Private"
+    locked.mkdir()
+    locked.chmod(0o000)
+    try:
+        viewer = shown_viewer_on(qtbot, locked)
+    finally:
+        locked.chmod(0o755)
+
+    assert shown_texts(viewer) == ["Can't open Private"]
+
+
 def test_dropping_a_folder_while_viewing_another_folder_replaces_the_slideshow_with_the_dropped_folders_at_its_first_item(qtbot, tmp_path):
     viewer, dropped = viewer_past_its_first_item_beside_a_green_then_yellow_folder(qtbot, tmp_path)
 

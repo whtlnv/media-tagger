@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from PySide6.QtCore import QPoint, QRect, Qt
@@ -134,7 +135,7 @@ class Viewer(QWidget):
     def _open(self, path):
         if path is None:
             return
-        if not path.exists():
+        if not os.access(path, os.R_OK):
             self._show_message(f"Can't open {path.name}")
             return
         showing_info = self.slideshow is not None and self.slideshow.overlay
