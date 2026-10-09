@@ -8,7 +8,7 @@ MEDIA_EXTENSIONS = IMAGE_EXTENSIONS | VIDEO_EXTENSIONS
 
 
 def _natural_key(path):
-    return [int(part) if part.isdigit() else part for part in re.split(r"(\d+)", path.name)]
+    return [int(part) if part.isdigit() else part.casefold() for part in re.split(r"(\d+)", path.name)]
 
 
 def _is_media(path):
