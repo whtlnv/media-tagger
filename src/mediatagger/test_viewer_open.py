@@ -230,6 +230,19 @@ def test_declining_to_create_a_tag_library_on_a_drive_leaves_the_drive_without_a
     assert not (drive / ".mediatagger").exists()
 
 
+def test_declining_to_create_a_tag_library_on_a_drive_still_shows_the_opened_folders_slideshow_at_its_first_item(qtbot, tmp_path):
+    drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+
+    viewer = viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    viewer.resize(400, 300)
+    viewer.show()
+    qtbot.waitExposed(viewer)
+
+    assert shown_labels(viewer) == []
+    assert centre_colour(viewer) == QColor("red")
+
+
 def test_a_viewer_opened_on_a_folder_shows_its_first_item_and_not_the_launch_text(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red")
     make_image(tmp_path / "IMG_2.png", "blue")

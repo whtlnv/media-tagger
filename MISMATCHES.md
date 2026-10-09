@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 00:30 · `src/mediatagger/test_viewer_open.py::test_declining_to_create_a_tag_library_on_a_drive_still_shows_the_opened_folders_slideshow_at_its_first_item`
+- Behavior: Declining "Create a tag library on <drive>?" still shows the opened folder's slideshow at its first item
+- Predicted: passes on first run — `_open_library` only returns early on decline, and `_open` calls `_refresh()` afterwards regardless
+- Actual: passed on first run; the assertion has teeth (the folder holds red then blue, so showing anything but the first item or a label would fail)
+- Type: passed unexpectedly
+- Resolution: the early `return` in `_open_library` doesn't skip the slideshow refresh, so this already holds; kept as a characterization pin rather than rewritten to fail artificially, and flagged that this TODO item needs no green step
+
 ## 2026-10-09 00:20 · `src/mediatagger/test_viewer_open.py::test_declining_to_create_a_tag_library_on_a_drive_leaves_the_drive_without_a_mediatagger_folder`
 - Behavior: Declining "Create a tag library on <drive>?" leaves the drive without a `.mediatagger` folder
 - Predicted: passes on first run — `_open_library` already returns before `mkdir` when `ask_to_create_library` returns False

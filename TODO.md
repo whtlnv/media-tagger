@@ -11,7 +11,7 @@
 - [x] Opening a folder on a drive whose mount point already has `.mediatagger/tags.db` does not ask to create a library
 - [x] Accepting "Create a tag library on <drive>?" creates `<mount point>/.mediatagger/tags.db` and names the drive in the status bar as the open library
 - [x] Declining "Create a tag library on <drive>?" leaves the drive without a `.mediatagger` folder
-- [ ] Declining "Create a tag library on <drive>?" still shows the opened folder's slideshow at its first item
+- [x] Declining "Create a tag library on <drive>?" still shows the opened folder's slideshow at its first item
 - [ ] After declining "Create a tag library on <drive>?", the status bar says the drive has no tag library and viewing only is available
 - [ ] A newly created library reports the same drive id after it is closed and opened again
 - [ ] A newly created library records its schema version alongside its drive id
