@@ -196,7 +196,7 @@ class Viewer(QWidget):
             self._show_info()
             return
         if event.key() == Qt.Key.Key_T:
-            if self.read_only_banner.isHidden():
+            if not self._drive_is_read_only():
                 self._open_tag_prompt()
             return
         if self._tag_prompt_has_focus():
@@ -211,6 +211,9 @@ class Viewer(QWidget):
         self.video_player.press(key)
         self._refresh()
         self._show_current_tags()
+
+    def _drive_is_read_only(self):
+        return not self.read_only_banner.isHidden()
 
     def _tag_prompt_has_focus(self):
         return self.focusWidget() is self.tag_input and self.tag_input.isVisible()
