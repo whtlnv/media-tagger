@@ -136,6 +136,12 @@ def drop_onto(viewer, dragged):
     QApplication.sendEvent(viewer, drop)
 
 
+def drag_and_drop_onto(viewer, path):
+    dragged = dragged_local_path(path)
+    drag_enter_over(viewer, dragged)
+    drop_onto(viewer, dragged)
+
+
 def viewer_past_its_first_item_beside_a_green_then_yellow_folder(qtbot, tmp_path):
     viewed, dropped = tmp_path / "viewed", tmp_path / "dropped"
     viewed.mkdir()
@@ -783,10 +789,8 @@ def test_dropping_a_folder_onto_the_launch_screen_starts_that_folders_slideshow_
     make_image(tmp_path / "IMG_1.png", "red")
     make_image(tmp_path / "IMG_2.png", "blue")
     viewer = shown_launch_viewer(qtbot)
-    dragged = dragged_local_path(tmp_path)
-    drag_enter_over(viewer, dragged)
 
-    drop_onto(viewer, dragged)
+    drag_and_drop_onto(viewer, tmp_path)
 
     assert shown_labels(viewer) == []
     assert centre_colour(viewer) == QColor("red")
@@ -796,10 +800,8 @@ def test_dropping_a_file_onto_the_launch_screen_starts_its_folders_slideshow_at_
     make_image(tmp_path / "IMG_1.png", "red")
     make_image(tmp_path / "IMG_2.png", "blue")
     viewer = shown_launch_viewer(qtbot)
-    dragged = dragged_local_path(tmp_path / "IMG_2.png")
-    drag_enter_over(viewer, dragged)
 
-    drop_onto(viewer, dragged)
+    drag_and_drop_onto(viewer, tmp_path / "IMG_2.png")
 
     assert shown_labels(viewer) == []
     assert centre_colour(viewer) == QColor("blue")
@@ -810,10 +812,8 @@ def test_dropping_a_folder_whose_first_item_cannot_be_decoded_onto_the_launch_sc
     make_image(tmp_path / "IMG_2.png", "red")
     viewer = shown_launch_viewer(qtbot)
     launch_text = shown_texts(viewer)
-    dragged = dragged_local_path(tmp_path)
-    drag_enter_over(viewer, dragged)
 
-    drop_onto(viewer, dragged)
+    drag_and_drop_onto(viewer, tmp_path)
 
     assert shown_texts(viewer) != launch_text
     assert shows_unsupported_placeholder(viewer)
@@ -825,10 +825,8 @@ def test_dropping_a_folder_with_no_media_while_an_image_is_showing_says_so_and_n
     empty.mkdir()
     (empty / "notes.txt").write_text("hi")
     viewer = shown_viewer_on(qtbot, tmp_path)
-    dragged = dragged_local_path(empty)
-    drag_enter_over(viewer, dragged)
 
-    drop_onto(viewer, dragged)
+    drag_and_drop_onto(viewer, empty)
 
     assert shown_texts(viewer) == shown_texts(shown_viewer_on(qtbot, empty))
     frame = viewer.grab().toImage()
@@ -842,10 +840,8 @@ def test_the_no_media_text_shown_after_dropping_an_empty_folder_onto_the_launch_
     viewer = shown_launch_viewer(qtbot)
     viewer.resize(600, 500)
     qtbot.waitUntil(lambda: viewer.width() == 600)
-    dragged = dragged_local_path(empty)
-    drag_enter_over(viewer, dragged)
 
-    drop_onto(viewer, dragged)
+    drag_and_drop_onto(viewer, empty)
 
     frame = viewer.grab().toImage()
     lit = [(x, y) for x in range(frame.width()) for y in range(frame.height()) if frame.pixelColor(x, y).lightness() > 200]
@@ -857,10 +853,8 @@ def test_the_no_media_text_shown_after_dropping_an_empty_folder_onto_the_launch_
 
 def test_dropping_a_folder_while_viewing_another_folder_replaces_the_slideshow_with_the_dropped_folders_at_its_first_item(qtbot, tmp_path):
     viewer, dropped = viewer_past_its_first_item_beside_a_green_then_yellow_folder(qtbot, tmp_path)
-    dragged = dragged_local_path(dropped)
-    drag_enter_over(viewer, dragged)
 
-    drop_onto(viewer, dragged)
+    drag_and_drop_onto(viewer, dropped)
 
     assert shown_labels(viewer) == []
     assert centre_colour(viewer) == QColor("green")
@@ -868,10 +862,8 @@ def test_dropping_a_folder_while_viewing_another_folder_replaces_the_slideshow_w
 
 def test_dropping_a_file_while_viewing_another_folder_replaces_the_slideshow_with_that_files_folder_at_that_file(qtbot, tmp_path):
     viewer, dropped = viewer_past_its_first_item_beside_a_green_then_yellow_folder(qtbot, tmp_path)
-    dragged = dragged_local_path(dropped / "IMG_2.png")
-    drag_enter_over(viewer, dragged)
 
-    drop_onto(viewer, dragged)
+    drag_and_drop_onto(viewer, dropped / "IMG_2.png")
 
     assert shown_labels(viewer) == []
     assert centre_colour(viewer) == QColor("yellow")
@@ -888,10 +880,8 @@ def test_dropping_a_folder_while_the_i_overlay_is_shown_shows_the_dropped_folder
     viewer = shown_viewer_on(qtbot, viewed)
     qtbot.keyClick(viewer, Qt.Key.Key_Right)
     qtbot.keyClick(viewer, Qt.Key.Key_I)
-    dragged = dragged_local_path(dropped)
-    drag_enter_over(viewer, dragged)
 
-    drop_onto(viewer, dragged)
+    drag_and_drop_onto(viewer, dropped)
 
     assert len(shown_texts(viewer)) == 1
     text = shown_texts(viewer)[0]
@@ -906,9 +896,7 @@ def test_dropping_a_folder_while_a_video_is_playing_stops_that_videos_playback_a
     make_image(dropped / "IMG_1.png", "green")
     viewer = shown_viewer_on(qtbot, viewed)
     wait_until_loaded(viewer.video_player.engine, clip)
-    dragged = dragged_local_path(dropped)
-    drag_enter_over(viewer, dragged)
 
-    drop_onto(viewer, dragged)
+    drag_and_drop_onto(viewer, dropped)
 
     assert viewer.video_player.engine.path is None
