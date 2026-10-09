@@ -66,6 +66,13 @@ def shown_viewer_on_drive(qtbot, folder, drive, ask_to_create_library):
     return viewer
 
 
+def decline_noting_the_question_in(asked):
+    def decline(question):
+        asked.append(question)
+        return False
+    return decline
+
+
 @contextmanager
 def made_read_only(drive):
     drive.chmod(0o555)
@@ -149,11 +156,7 @@ def test_opening_a_folder_on_the_drive_the_app_runs_from_never_asks_to_create_a_
     app_runs_from(drive, monkeypatch)
     asked = []
 
-    def decline(question):
-        asked.append(question)
-        return False
-
-    viewer = viewer_on_drive(qtbot, folder, drive, decline)
+    viewer = viewer_on_drive(qtbot, folder, drive, decline_noting_the_question_in(asked))
 
     assert asked == []
     assert not (drive / ".mediatagger").exists()
@@ -240,11 +243,7 @@ def test_after_declining_to_create_a_tag_library_on_a_drive_opening_another_fold
     make_image(other / "IMG_1.png", "green")
     asked = []
 
-    def decline(question):
-        asked.append(question)
-        return False
-
-    viewer = viewer_on_drive(qtbot, folder, drive, decline)
+    viewer = viewer_on_drive(qtbot, folder, drive, decline_noting_the_question_in(asked))
     drag_and_drop_onto(viewer, other)
 
     assert asked == [CREATE_LIBRARY_QUESTION.format("MEDIATAGGER")]
@@ -254,11 +253,7 @@ def test_opening_a_folder_that_does_not_exist_on_a_drive_without_a_tag_library_d
     drive, _ = drive_without_a_tag_library_holding_one_image(tmp_path)
     asked = []
 
-    def decline(question):
-        asked.append(question)
-        return False
-
-    viewer = shown_viewer_on_drive(qtbot, drive / "Holidays", drive, decline)
+    viewer = shown_viewer_on_drive(qtbot, drive / "Holidays", drive, decline_noting_the_question_in(asked))
 
     assert asked == []
     assert shown_texts(viewer) == shown_texts(shown_viewer_on(qtbot, tmp_path / "Holidays"))
@@ -380,12 +375,8 @@ def test_opening_a_folder_on_a_read_only_drive_without_a_tag_library_shows_the_r
     drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
     asked = []
 
-    def decline(question):
-        asked.append(question)
-        return False
-
     with made_read_only(drive):
-        viewer = shown_viewer_on_drive(qtbot, folder, drive, decline)
+        viewer = shown_viewer_on_drive(qtbot, folder, drive, decline_noting_the_question_in(asked))
         shown = shown_texts(viewer)
 
     assert asked == []
