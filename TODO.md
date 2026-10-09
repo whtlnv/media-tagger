@@ -24,7 +24,7 @@
 - [x] Opening a folder on a read-only drive still shows its slideshow at the first item
 - [x] A library created at a mount point, removed, and created again at the same mount point reports a different drive id the second time (the drive id is random, not derived from the drive's path or name)
 - [x] On a read-only drive the status bar says tags can't be saved (e.g. `Read-only: tags can't be saved`)
-- [ ] Opening a folder on a read-only drive with no tag library shows the read-only banner instead of asking to create a library
+- [x] Opening a folder on a read-only drive with no tag library shows the read-only banner instead of asking to create a library
 - [ ] After declining "Create a tag library on <drive>?", opening another folder on the same drive in the same session does not ask again
 - [ ] Opening a path that can't be opened ("Can't open <name>") does not ask to create a library
 - [ ] Opening a folder on the drive the app itself runs from (the mount point containing the running `mediatagger` package; the test fakes the app's drive to be the temp drive being opened) never asks to create a library, writes nothing to that drive, and the status bar says no library, viewing only

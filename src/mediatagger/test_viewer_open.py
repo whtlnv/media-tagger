@@ -311,6 +311,22 @@ def test_opening_a_folder_on_a_read_only_drive_that_has_a_tag_library_says_tags_
     assert READ_ONLY_STATUS_TEXT in status_bar_texts(viewer)
 
 
+def test_opening_a_folder_on_a_read_only_drive_without_a_tag_library_shows_the_read_only_banner_instead_of_asking_to_create_one(qtbot, tmp_path):
+    drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
+    asked = []
+
+    def decline(question):
+        asked.append(question)
+        return False
+
+    with made_read_only(drive):
+        viewer = shown_viewer_on_drive(qtbot, folder, drive, decline)
+        shown = shown_texts(viewer)
+
+    assert asked == []
+    assert shown == [READ_ONLY_BANNER_TEXT]
+
+
 def test_opening_a_folder_on_a_writable_drive_that_has_a_tag_library_shows_no_read_only_banner(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
