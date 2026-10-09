@@ -709,3 +709,13 @@ def test_dragging_plain_text_over_the_viewer_is_refused(qtbot):
     drag_enter = drag_enter_over(viewer, dragged)
 
     assert not drag_enter.isAccepted()
+
+
+def test_dragging_a_web_link_over_the_viewer_is_refused(qtbot):
+    viewer = shown_launch_viewer(qtbot)
+    dragged = QMimeData()
+    dragged.setUrls([QUrl("https://example.com/photo.jpg")])
+
+    drag_enter = drag_enter_over(viewer, dragged)
+
+    assert not drag_enter.isAccepted()

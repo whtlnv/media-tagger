@@ -80,7 +80,7 @@ class Viewer(QWidget):
         painter.drawImage(fitted_rect(image.size(), self.rect()), image)
 
     def dragEnterEvent(self, event):
-        if event.mimeData().hasUrls():
+        if any(url.isLocalFile() for url in event.mimeData().urls()):
             event.acceptProposedAction()
 
     def keyPressEvent(self, event):
