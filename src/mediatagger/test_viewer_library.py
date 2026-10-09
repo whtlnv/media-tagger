@@ -73,16 +73,16 @@ def viewer_on_drive(qtbot, folder, drive, ask_to_create_library, app_location=AP
     return viewer_on_drives(qtbot, folder, (drive,), ask_to_create_library, app_location)
 
 
-def shown_viewer_on_drives(qtbot, folder, drives, ask_to_create_library):
-    viewer = viewer_on_drives(qtbot, folder, drives, ask_to_create_library)
+def shown_viewer_on_drives(qtbot, folder, drives, ask_to_create_library, app_location=APP_PACKAGE):
+    viewer = viewer_on_drives(qtbot, folder, drives, ask_to_create_library, app_location)
     viewer.resize(400, 300)
     viewer.show()
     qtbot.waitExposed(viewer)
     return viewer
 
 
-def shown_viewer_on_drive(qtbot, folder, drive, ask_to_create_library):
-    return shown_viewer_on_drives(qtbot, folder, (drive,), ask_to_create_library)
+def shown_viewer_on_drive(qtbot, folder, drive, ask_to_create_library, app_location=APP_PACKAGE):
+    return shown_viewer_on_drives(qtbot, folder, (drive,), ask_to_create_library, app_location)
 
 
 def visible_tag_prompts(viewer):
@@ -894,10 +894,7 @@ def file_contents_under(root):
 def test_pressing_t_on_the_drive_the_app_runs_from_opens_no_tag_prompt_and_writes_nothing_to_that_drive(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     before = file_contents_under(drive)
-    viewer = viewer_on_drive(qtbot, folder, drive, lambda question: False, app_package_on(drive))
-    viewer.resize(400, 300)
-    viewer.show()
-    qtbot.waitExposed(viewer)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False, app_package_on(drive))
 
     qtbot.keyClick(viewer, Qt.Key.Key_T)
 
