@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 15:05 · `src/mediatagger/test_viewer_tag_prompt.py::test_suggestions_are_ordered_by_item_count_with_beach_on_3_items_and_bird_on_1_typing_b_lists_beach_above_bird`
+- Behavior: with `beach` on 3 items and `bird` on 1, typing `b` lists `beach` above `bird`
+- Predicted: pass. The prior green (1a2cc3a) already sorts `all_tags` by `COUNT(*) DESC, name`, so the general rule is in place and no right-reason failure was available
+- Actual: passed (1 passed)
+- Type: passed unexpectedly (by the skill's standard; matched my prediction)
+- Resolution: The previous cycle implemented the general ordering, not a `bird`-specific case. The assertion is sound and not vacuous, so I kept the test as a regression pin (it would catch an ascending or alphabetical sort) instead of rewriting it
+
 ## 2026-10-09 14:57 · `src/mediatagger/test_viewer_tag_prompt.py::test_in_the_tag_prompt_on_a_drive_whose_library_has_beach_and_bird_typing_be_lists_beach_and_not_bird`
 - Behavior: In the tag prompt on a drive whose library has `beach` and `bird`, typing `be` lists `beach` and not `bird`
 - Predicted: pass — since 0933f9e the completer's list comes from `library.all_tags()`, and QCompleter's default prefix filtering narrows `be` to `beach`
