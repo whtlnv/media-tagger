@@ -273,3 +273,16 @@ def test_accepting_a_removal_suggestion_keeps_the_minus_on_an_item_tagged_sunset
 
     [prompt] = visible_tag_prompts(viewer)
     assert prompt.text() == "-sunset"
+
+
+def test_esc_with_the_suggestion_popup_open_closes_only_the_popup_leaving_the_prompt_open_with_its_text_and_the_viewer_running(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    Library.open(drive).enter(folder / "IMG_2.png", "beach family")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    type_in_tag_prompt(qtbot, viewer, "beach fam")
+    [suggestions] = visible_suggestion_lists(viewer)
+
+    qtbot.keyClick(suggestions, Qt.Key.Key_Escape)
+
+    assert (visible_suggestion_lists(viewer), visible_tag_prompt_texts(viewer), viewer.isVisible()) == ([], ["beach fam"], True)

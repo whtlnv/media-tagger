@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 16:37 · `src/mediatagger/test_viewer_tag_prompt.py::test_esc_with_the_suggestion_popup_open_closes_only_the_popup_leaving_the_prompt_open_with_its_text_and_the_viewer_running`
+- Behavior: `Esc` with the suggestion popup open closes only the popup: the prompt stays open with its text and the app keeps running
+- Predicted: AssertionError — Esc reaches `Viewer.keyPressEvent` and closes the tag prompt along with the popup (prompt texts `[]`)
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: QCompleter's popup event filter hands Esc straight to the line edit's `event()`, which doesn't propagate it to the Viewer, then hides the popup. A probe that sent Esc through `viewer.windowHandle()` (real popup routing) gave the same result. So this is existing Qt behavior, not a vacuous test: the assertion would fail if Esc closed the prompt. Kept the test as a regression pin rather than inventing a failure.
+
 ## 2026-10-09 16:07 · `src/mediatagger/test_viewer_tag_prompt.py::test_tab_accepts_the_highlighted_suggestion_replacing_only_the_word_being_typed_beach_fam_down_tab_leaves_beach_family_and_closes_the_popup`
 - Behavior: `Tab` accepts the highlighted suggestion, replacing only the word being typed: `beach fam`, `↓`, `Tab` leaves `beach family` in the prompt and closes the popup
 - Predicted: AssertionError — prompt text `'family'` (QCompleter replacing the whole line with the completion on highlight/accept), popup closed
