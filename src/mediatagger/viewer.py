@@ -45,7 +45,7 @@ class Viewer(QWidget):
             self._show_info()
             return
         if event.key() == Qt.Key.Key_F:
-            self.showNormal() if self.isFullScreen() else self.showFullScreen()
+            self._toggle_fullscreen()
             return
         if event.key() in VIDEO_KEYS:
             self.video_player.press(VIDEO_KEYS[event.key()])
@@ -56,6 +56,12 @@ class Viewer(QWidget):
         self._show_current()
         self._show_info()
         self.update()
+
+    def _toggle_fullscreen(self):
+        if self.isFullScreen():
+            self.showNormal()
+        else:
+            self.showFullScreen()
 
     def _show_info(self):
         self.info.setText(self.slideshow.overlay or "")
