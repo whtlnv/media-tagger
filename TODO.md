@@ -6,7 +6,7 @@
 - [x] A key other than `o` (e.g. `x`) on the launch screen opens no folder picker and leaves the launch text showing
 - [x] Choosing a folder in the `o` picker starts that folder's slideshow at its first item (the viewer takes the folder picker as an injectable stand-in, so tests supply one that returns a folder instead of opening a real modal dialog; the earlier `o` picker test moves to that stand-in too)
 - [x] Cancelling the `o` picker leaves the launch screen showing its "Drop a folder or file here" text
-- [ ] With no stand-in picker, pressing `o` and accepting the viewer's own folder dialog after it is pointed at a folder of images (the test drives the real Directory-mode dialog with `setDirectory(folder)` then `accept()`, not `selectFile`) starts that folder's slideshow at its first item (today the dialog's choice is discarded)
+- [x] With no stand-in picker, pressing `o` and accepting the viewer's own folder dialog after it is pointed at a folder of images (the test drives the real Directory-mode dialog with `setDirectory(folder)` then `accept()`, not `selectFile`) starts that folder's slideshow at its first item (today the dialog's choice is discarded)
 - [ ] With no stand-in picker, pressing `o` and rejecting the viewer's own folder dialog after it is pointed at a folder of images (`setDirectory(folder)` then `reject()`) leaves the launch screen showing its "Drop a folder or file here" text, not that folder's slideshow
 - [ ] Choosing a folder with no images or videos in the `o` picker shows "No images or videos in <folder>" instead of crashing
 - [ ] Dragging a folder or file from the file manager over the window is accepted as a drop

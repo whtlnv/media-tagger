@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from PySide6.QtCore import QPoint, QRect, Qt
 from PySide6.QtGui import QImageReader, QPainter
 from PySide6.QtWidgets import QFileDialog, QLabel, QWidget
@@ -115,7 +117,8 @@ class Viewer(QWidget):
     def _pick_folder(self):
         picker = QFileDialog(self)
         picker.setFileMode(QFileDialog.FileMode.Directory)
-        picker.exec()
+        if picker.exec():
+            return Path(picker.selectedFiles()[0])
 
     def _open(self, folder):
         if folder is None:

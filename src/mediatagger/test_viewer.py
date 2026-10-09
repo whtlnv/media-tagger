@@ -635,3 +635,20 @@ def test_cancelling_the_o_picker_leaves_the_launch_text_showing(qtbot):
     modal_opened_by_key(qtbot, viewer, Qt.Key.Key_O)
 
     assert shown_texts(viewer) == launch_text
+
+
+def test_accepting_the_viewers_own_o_dialog_pointed_at_a_folder_starts_that_folders_slideshow_at_its_first_item(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    make_image(tmp_path / "IMG_2.png", "blue")
+    viewer = shown_launch_viewer(qtbot)
+
+    def accept_pointed_at_folder():
+        dialog = QApplication.activeModalWidget()
+        dialog.setDirectory(str(tmp_path))
+        dialog.accept()
+
+    QTimer.singleShot(200, accept_pointed_at_folder)
+    qtbot.keyClick(viewer, Qt.Key.Key_O)
+
+    assert shown_labels(viewer) == []
+    assert centre_colour(viewer) == QColor("red")
