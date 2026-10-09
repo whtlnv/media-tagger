@@ -67,5 +67,5 @@
 - [x] The "Tags can't be saved here" message leaves the status bar again a few seconds after it appears, while the library status stays
 - [x] Running the shipped `mediatagger <folder>` command on a drive with a tag library, pressing `t`, typing `beach` and pressing `Enter` records `beach` for the first file in the drive's `tags.db`, and a second run of the command on that folder shows `beach` in the tag overlay (the test's driver script treats a temp folder as the mount point)
 - [x] Pressing `Enter` in the tag prompt over a playing video saves the tags without pausing the video (a line edit passes `Enter` on to the viewer after using it)
-- [ ] Removing a file's last tag removes the file's row from `items`, so only tagged items are stored
+- [x] Removing a file's last tag removes the file's row from `items`, so only tagged items are stored
 - [ ] A tagged file's `items` row records its kind as `file` (the `items` table has a `kind` column)

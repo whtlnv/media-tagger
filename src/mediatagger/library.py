@@ -91,6 +91,8 @@ class Library:
         connection = sqlite3.connect(self._tags_db)
         with connection:
             _set_item_tags(connection, _ensure_item_id(connection, key), tags)
+            if not tags:
+                connection.execute("DELETE FROM items WHERE rel_path = ?", (key,))
         connection.close()
 
     def tags(self, path):

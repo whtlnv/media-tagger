@@ -415,3 +415,20 @@ def test_a_library_whose_tags_db_was_left_in_wal_mode_uses_the_rollback_journal_
         observer.close()
 
     assert journal_mode == "delete"
+
+
+def test_removing_a_files_last_tag_removes_the_files_row_from_items(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "beach.jpg"
+    photo.touch()
+    library.enter(photo, "beach")
+
+    library.enter(photo, "-beach")
+
+    connection = sqlite3.connect(tmp_path / ".mediatagger" / "tags.db")
+    try:
+        items = connection.execute("SELECT rel_path FROM items").fetchall()
+    finally:
+        connection.close()
+
+    assert items == []
