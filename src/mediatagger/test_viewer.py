@@ -368,3 +368,17 @@ def test_pressing_down_in_the_viewer_on_a_paused_video_seeks_it_ten_seconds_back
     qtbot.keyClick(viewer, Qt.Key.Key_Down)
 
     assert engine.time_pos == pytest.approx(10, abs=1)
+
+
+def test_pressing_enter_in_the_viewer_on_a_video_toggles_its_pause(qtbot, tmp_path):
+    make_clip(tmp_path / "IMG_1.mp4", duration=30)
+    make_image(tmp_path / "IMG_2.png", "red")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    engine = viewer.video_player.engine
+    engine.wait_for_property("time-pos", lambda time_pos: time_pos is not None, timeout=5)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Return)
+    assert engine.pause is True
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Return)
+    assert engine.pause is False
