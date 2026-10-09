@@ -5,7 +5,7 @@
 - [x] Opening a folder two levels below a drive's mount point, where the mount point has `.mediatagger/tags.db`, names that drive in the status bar as the open library (e.g. `Library: MEDIATAGGER`) (the test treats a temp folder as the drive's mount point; tests never consult real drives)
 - [x] Opening a folder that is itself a drive's mount point, with `.mediatagger/tags.db`, names that folder in the status bar as the open library
 - [x] Opening a file on a drive names the same library in the status bar as opening its folder does
-- [ ] Dropping a folder from a different drive while viewing switches the status bar to that drive's library
+- [x] Dropping a folder from a different drive while viewing switches the status bar to that drive's library
 - [ ] Opening a folder on the system disk (whose nearest mount point is `/`) never asks to create a library and the status bar says no library, viewing only
 - [ ] Opening a folder on a drive whose mount point has no `.mediatagger/tags.db` asks "Create a tag library on <drive>?" before writing anything to the drive (the question is handed to the viewer the way the folder picker is, so tests never open a real dialog)
 - [ ] Opening a folder on a drive whose mount point already has `.mediatagger/tags.db` does not ask to create a library

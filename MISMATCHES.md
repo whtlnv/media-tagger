@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-08 23:47 · `src/mediatagger/test_viewer_open.py::test_dropping_a_folder_from_a_different_drive_while_viewing_switches_the_status_bar_to_that_drives_library`
+- Behavior: Dropping a folder from a different drive while viewing switches the status bar to that drive's library
+- Predicted: passes on first run — `dropEvent` routes through `_open`, which already walks the dropped path's parents to its mount point and sets the library label
+- Actual: passed on first run; with the drop removed it fails with `['Library: MEDIATAGGER'] == ['Library: BACKUP']`, so the assertion has teeth
+- Type: passed unexpectedly
+- Resolution: the behavior already exists because drop and open share `_open`; kept as a characterization pin rather than rewritten to fail artificially, and flagged that this TODO item needs no green step
+
 ## 2026-10-08 23:45 · `src/mediatagger/test_viewer_open.py::test_opening_a_file_on_a_drive_names_the_same_library_in_the_status_bar_as_opening_its_folder`
 - Behavior: Opening a file on a drive names the same library in the status bar as opening its folder does
 - Predicted: passes on first run — `Viewer._open` already searches `(path, *path.parents)` for the mount point, so a file path finds the same drive as its folder

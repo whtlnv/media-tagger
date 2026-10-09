@@ -142,6 +142,21 @@ def test_opening_a_file_on_a_drive_names_the_same_library_in_the_status_bar_as_o
     assert status_bar_texts(file_viewer) == status_bar_texts(folder_viewer)
 
 
+def test_dropping_a_folder_from_a_different_drive_while_viewing_switches_the_status_bar_to_that_drives_library(qtbot, tmp_path):
+    first_drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
+    second_drive = make_tag_library_drive(tmp_path / "BACKUP")
+    [viewed] = make_folders(first_drive, "Photos")
+    [dropped] = make_folders(second_drive, "Videos")
+    make_image(viewed / "IMG_1.png", "red")
+    make_image(dropped / "IMG_1.png", "green")
+    viewer = Viewer(viewed, player_options=SILENT, is_mount_point=lambda path: path in (first_drive, second_drive))
+    qtbot.addWidget(viewer)
+
+    drag_and_drop_onto(viewer, dropped)
+
+    assert status_bar_texts(viewer) == [LIBRARY_TEXT.format("BACKUP")]
+
+
 def test_a_viewer_opened_on_a_folder_shows_its_first_item_and_not_the_launch_text(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red")
     make_image(tmp_path / "IMG_2.png", "blue")
