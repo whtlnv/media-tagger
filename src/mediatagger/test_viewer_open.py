@@ -599,7 +599,8 @@ def test_the_no_media_text_shown_after_dropping_an_empty_folder_onto_the_launch_
     drag_and_drop_onto(viewer, empty)
 
     frame = viewer.grab().toImage()
-    lit = [(x, y) for x in range(frame.width()) for y in range(frame.height()) if frame.pixelColor(x, y).lightness() > 200]
+    above_status_bar = viewer.status_bar.geometry().top()
+    lit = [(x, y) for x in range(frame.width()) for y in range(above_status_bar) if frame.pixelColor(x, y).lightness() > 200]
     xs, ys = [x for x, _ in lit], [y for _, y in lit]
     text_centre_x, text_centre_y = (min(xs) + max(xs)) // 2, (min(ys) + max(ys)) // 2
     assert abs(text_centre_x - frame.width() // 2) <= 4
