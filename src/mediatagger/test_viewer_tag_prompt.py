@@ -13,6 +13,7 @@ from mediatagger.test_viewer_library import (
     visible_tag_prompts,
 )
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
+from mediatagger.viewer import COULDNT_SAVE_TAGS_TEXT
 
 
 def visible_suggestion_lists(viewer):
@@ -383,7 +384,6 @@ def test_with_5000_tags_in_the_library_each_keystroke_after_the_popup_opens_upda
 
 
 def test_when_saving_the_prompt_fails_with_a_sqlite_error_the_prompt_stays_open_with_its_text_and_the_status_bar_says_it_couldnt_save_tags(qtbot, tmp_path, monkeypatch):
-    from mediatagger.viewer import COULDNT_SAVE_TAGS_TEXT
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
