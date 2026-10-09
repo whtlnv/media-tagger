@@ -794,3 +794,15 @@ def test_after_space_to_a_file_with_longer_tags_the_tag_overlay_still_ends_a_cor
     [tag_overlay] = shown_labels(viewer)
     frame = QRect(tag_overlay.mapTo(viewer, QPoint()), tag_overlay.size())
     assert frame.right() == viewer.rect().right() - CORNER_MARGIN
+
+
+def test_the_tag_overlay_has_the_same_look_as_the_info_overlay(qtbot, tmp_path):
+    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    Library.create(drive).enter(folder / "IMG_1.png", "beach family")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    [tag_overlay] = shown_labels(viewer)
+    assert tag_overlay.text() == "beach family"
+    assert tag_overlay.styleSheet() == viewer.info.styleSheet()

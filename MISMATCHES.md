@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 10:23 · `src/mediatagger/test_viewer_library.py::test_the_tag_overlay_has_the_same_look_as_the_info_overlay`
+- Behavior: The tag overlay has the same look as the info overlay
+- Predicted: passes on first run — `tag_overlay` is built with `overlay_label`, which applies the same `LABEL_STYLE` as `info` (so no right-reason red exists)
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: The behavior arrived with the tag overlay itself (`viewer.py` builds it via `overlay_label`); kept the test as a pin, matching the sibling banner/status-bar look tests, and flagged the TODO item as already satisfied rather than inventing a failing test.
+
 ## 2026-10-09 09:24 · `src/mediatagger/test_viewer_library.py::test_pressing_t_on_a_video_shows_the_tag_prompt_and_its_shown_tags_above_the_video_surface`
 - Behavior: Pressing `t` on a video item shows the tag prompt above the video surface
 - Predicted: AssertionError — `childAt` at the prompt's centre returns the `MpvSurface` (low confidence: the prompt is created after the surface)
