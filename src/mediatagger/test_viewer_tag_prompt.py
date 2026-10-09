@@ -40,3 +40,15 @@ def test_in_the_tag_prompt_on_a_drive_whose_library_has_no_tags_yet_typing_b_sho
     type_in_tag_prompt(qtbot, viewer, "b")
 
     assert visible_suggestion_lists(viewer) == []
+
+
+def test_in_the_tag_prompt_on_a_drive_whose_library_has_beach_and_bird_typing_be_lists_beach_and_not_bird(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    Library.open(drive).enter(folder / "IMG_2.png", "beach bird")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    type_in_tag_prompt(qtbot, viewer, "be")
+
+    [suggestions] = visible_suggestion_lists(viewer)
+    assert listed(suggestions) == ["beach"]

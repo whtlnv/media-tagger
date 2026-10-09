@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 14:57 · `src/mediatagger/test_viewer_tag_prompt.py::test_in_the_tag_prompt_on_a_drive_whose_library_has_beach_and_bird_typing_be_lists_beach_and_not_bird`
+- Behavior: In the tag prompt on a drive whose library has `beach` and `bird`, typing `be` lists `beach` and not `bird`
+- Predicted: pass — since 0933f9e the completer's list comes from `library.all_tags()`, and QCompleter's default prefix filtering narrows `be` to `beach`
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: Second attempt (the 13:54 pin never landed in the file); the list is now library-sourced, as the earlier entry anticipated, and prefix filtering is stock Qt behavior, so no honest failing version exists. Re-added and kept as a regression pin on prefix filtering; nothing for /green to build.
+
 ## 2026-10-09 13:54 · `src/mediatagger/test_viewer_tag_prompt.py::test_in_the_tag_prompt_on_a_drive_whose_library_has_beach_and_bird_typing_be_lists_beach_and_not_bird`
 - Behavior: In the tag prompt on a drive whose library has `beach` and `bird`, typing `be` lists `beach` and not `bird`
 - Predicted: pass — 5015f4a hardcoded `QCompleter(["beach", "bird"])`, and QCompleter's default prefix filtering already narrows `be` to `beach`
