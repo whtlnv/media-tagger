@@ -805,6 +805,20 @@ def test_dropping_a_file_onto_the_launch_screen_starts_its_folders_slideshow_at_
     assert centre_colour(viewer) == QColor("blue")
 
 
+def test_dropping_a_folder_whose_first_item_cannot_be_decoded_onto_the_launch_screen_shows_the_unsupported_placeholder_not_the_launch_text(qtbot, tmp_path):
+    (tmp_path / "IMG_1.png").write_bytes(b"not really a png")
+    make_image(tmp_path / "IMG_2.png", "red")
+    viewer = shown_launch_viewer(qtbot)
+    launch_text = shown_texts(viewer)
+    dragged = dragged_local_path(tmp_path)
+    drag_enter_over(viewer, dragged)
+
+    drop_onto(viewer, dragged)
+
+    assert shown_texts(viewer) != launch_text
+    assert shows_unsupported_placeholder(viewer)
+
+
 def test_dropping_a_folder_while_viewing_another_folder_replaces_the_slideshow_with_the_dropped_folders_at_its_first_item(qtbot, tmp_path):
     viewer, dropped = viewer_past_its_first_item_beside_a_green_then_yellow_folder(qtbot, tmp_path)
     dragged = dragged_local_path(dropped)
