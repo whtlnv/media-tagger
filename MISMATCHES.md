@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 17:31 · `src/mediatagger/test_main.py::test_running_the_mediatagger_command_on_a_drive_whose_library_has_beach_pressing_t_and_typing_b_shows_the_suggestion_popup_listing_beach`
+- Behavior: Running the shipped `mediatagger <folder>` command on a drive whose library has `beach`, pressing `t` and typing `b` shows the suggestion popup listing `beach`
+- Predicted: AssertionError — stdout `suggestions=[]`, since in a standalone offscreen process the window isn't active, so the prompt lacks focus and QLineEdit never opens the completer popup
+- Actual: passed — stdout `suggestions=[['beach']]`
+- Type: passed unexpectedly
+- Resolution: `main()` just builds the same `Viewer` the in-process tests use, and the completer popup opens offscreen without window activation, so the behaviour was already delivered by earlier cycles; the test is kept as an end-to-end pin over the shipped entry point, not rewritten, after checking it discriminates (typing `z` in the same script reports `suggestions=[]`).
+
 ## 2026-10-09 17:13 · `src/mediatagger/test_viewer_tag_prompt.py::test_with_5000_tags_in_the_library_each_keystroke_in_the_tag_prompt_updates_the_suggestions_in_under_50_ms`
 - Behavior: With 5,000 tags in the library, each keystroke in the tag prompt updates the suggestions in under 50 ms
 - Predicted: AssertionError — slowest keystroke ≥ 50 ms, since every keystroke rebuilds the 5,000-entry string list and the completer refilters and redraws its popup

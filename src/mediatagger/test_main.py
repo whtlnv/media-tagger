@@ -264,3 +264,29 @@ def test_tags_entered_in_the_mediatagger_command_on_a_drive_with_a_tag_library_a
     shown = run_python_offscreen(REPORT_SHOWN_TEXTS_ON_A_DRIVE_SCRIPT, str(drive), str(folder))
     assert shown.returncode == 0, shown.stderr
     assert shown.stdout.splitlines() == ["beach"]
+
+REPORT_SUGGESTIONS_AFTER_TYPING_IN_THE_TAG_PROMPT_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT + (
+    "from PySide6.QtCore import Qt, QTimer\n"
+    "from PySide6.QtTest import QTest\n"
+    "from PySide6.QtWidgets import QApplication\n"
+    "from mediatagger.test_viewer_tag_prompt import listed, visible_suggestion_lists\n"
+    "app = QApplication([])\n"
+    "typed = sys.argv[3]\n"
+    "def type_then_report():\n"
+    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    QTest.keyClick(window, Qt.Key.Key_T)\n"
+    "    QTest.keyClicks(window.focusWidget(), typed)\n"
+    "    print(f'suggestions={[listed(suggestions) for suggestions in visible_suggestion_lists(window)]}', flush=True)\n"
+    "    QApplication.closeAllWindows()\n"
+    "    QApplication.quit()\n"
+    "QTimer.singleShot(1000, type_then_report)\n"
+) + RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT
+
+
+def test_running_the_mediatagger_command_on_a_drive_whose_library_has_beach_pressing_t_and_typing_b_shows_the_suggestion_popup_listing_beach(tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    make_image(folder / "IMG_2.png", "blue")
+    result = run_python_offscreen(REPORT_SUGGESTIONS_AFTER_TYPING_IN_THE_TAG_PROMPT_SCRIPT, str(drive), str(folder / "IMG_2.png"), "b")
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "suggestions=[['beach']]"
