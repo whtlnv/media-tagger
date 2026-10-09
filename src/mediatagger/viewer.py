@@ -15,6 +15,7 @@ VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up", Qt.Key.
 LABEL_STYLE = "color: white; background-color: rgba(0, 0, 0, 160); padding: 8px 12px; border-radius: 6px; font-size: 18px;"
 CORNER_MARGIN = 16
 SLIDESHOW_KEYS = {Qt.Key.Key_Left: "Left", Qt.Key.Key_Right: "Right", Qt.Key.Key_Space: "Space"}
+UNSUPPORTED_TEXT = "Unsupported"
 
 
 def fitted_rect(size, bounds):
@@ -47,7 +48,7 @@ class Viewer(QWidget):
         self.info.setStyleSheet(LABEL_STYLE)
         self.info.move(CORNER_MARGIN, CORNER_MARGIN)
         self.info.hide()
-        self.placeholder = QLabel("Unsupported", self)
+        self.placeholder = QLabel(UNSUPPORTED_TEXT, self)
         self.placeholder.setStyleSheet(LABEL_STYLE)
         self.setWindowState(Qt.WindowState.WindowFullScreen)
         self.setAcceptDrops(True)
@@ -138,7 +139,7 @@ class Viewer(QWidget):
         if self.slideshow is None:
             self.placeholder.setText(f"No images or videos in {folder.name}")
             return
-        self.placeholder.setText("Unsupported")
+        self.placeholder.setText(UNSUPPORTED_TEXT)
         if showing_info:
             self.slideshow.press("i")
         self._refresh()
