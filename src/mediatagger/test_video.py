@@ -1,9 +1,8 @@
 import subprocess
 
-import mpv
 import pytest
 
-from mediatagger.video import VideoPlayer
+from mediatagger.video import VideoPlayer, new_engine
 
 
 def make_clip(path, duration=2):
@@ -22,7 +21,7 @@ def wait_until_playing(engine):
 @pytest.fixture
 def playing_video(tmp_path):
     clip = make_clip(tmp_path / "clip.mp4", duration=30)
-    engine = mpv.MPV(vo="null", ao="null")
+    engine = new_engine(vo="null", ao="null")
     try:
         player = VideoPlayer(engine)
         player.show(clip)
@@ -34,7 +33,7 @@ def playing_video(tmp_path):
 
 def test_showing_a_video_starts_it_playing_unpaused_and_unmuted(tmp_path):
     clip = make_clip(tmp_path / "clip.mp4")
-    engine = mpv.MPV(vo="null", ao="null", pause=True, mute=True)
+    engine = new_engine(vo="null", ao="null", pause=True, mute=True)
     try:
         VideoPlayer(engine).show(clip)
 
@@ -48,7 +47,7 @@ def test_showing_a_video_starts_it_playing_unpaused_and_unmuted(tmp_path):
 
 def test_a_playing_video_restarts_from_the_beginning_when_it_reaches_the_end(tmp_path):
     clip = make_clip(tmp_path / "clip.mp4")
-    engine = mpv.MPV(vo="null", ao="null")
+    engine = new_engine(vo="null", ao="null")
     try:
         VideoPlayer(engine).show(clip)
 
