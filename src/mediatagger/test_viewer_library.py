@@ -525,3 +525,21 @@ def test_pressing_t_again_after_closing_the_tag_prompt_shows_only_one_tag_prompt
 
     assert visible_tag_prompt_texts(viewer) == [""]
     assert shown_texts(viewer).count("beach family") == 1
+
+
+def test_the_tag_prompt_is_drawn_inside_the_viewer_window_centred_horizontally_near_the_bottom_just_above_the_status_bar(qtbot, tmp_path):
+    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    Library.create(drive)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    viewer.resize(1600, 900)
+    qtbot.waitUntil(lambda: viewer.width() == 1600)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    [prompt] = visible_tag_prompts(viewer)
+    frame = QRect(prompt.mapTo(viewer, QPoint()), prompt.size())
+    assert prompt.window() is viewer
+    assert abs(frame.center().x() - viewer.rect().center().x()) <= 1
+    assert viewer.height() * 3 // 4 <= frame.bottom() < viewer.status_bar.geometry().top()

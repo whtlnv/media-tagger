@@ -179,6 +179,10 @@ class Viewer(QWidget):
         prompt = QLineEdit(self)
         tags_label = QLabel(" ".join(library.tags(path)), self)
         prompt.returnPressed.connect(lambda: self._record_tags(library, path, prompt, tags_label))
+        frame = prompt.geometry()
+        frame.moveCenter(self.rect().center())
+        frame.moveBottom(self.status_bar.geometry().top() - 1)
+        prompt.setGeometry(frame)
         prompt.show()
         tags_label.show()
 
