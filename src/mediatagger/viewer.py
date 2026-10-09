@@ -128,11 +128,15 @@ class Viewer(QWidget):
     def _open(self, folder):
         if folder is None:
             return
+        showing_info = self.slideshow is not None and self.slideshow.overlay
         self.slideshow = Slideshow.open(folder)
         if self.slideshow is None:
             self.placeholder.setText(f"No images or videos in {folder.name}")
             return
+        if showing_info:
+            self.slideshow.press("i")
         self._show_current()
+        self._show_info()
         self.update()
 
     def _show_info(self):

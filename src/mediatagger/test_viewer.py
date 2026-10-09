@@ -792,3 +792,24 @@ def test_dropping_a_file_while_viewing_another_folder_replaces_the_slideshow_wit
 
     assert shown_labels(viewer) == []
     assert centre_colour(viewer) == QColor("yellow")
+
+
+def test_dropping_a_folder_while_the_i_overlay_is_shown_shows_the_dropped_folders_first_filename_and_position(qtbot, tmp_path):
+    viewed, dropped = tmp_path / "viewed", tmp_path / "dropped"
+    viewed.mkdir()
+    dropped.mkdir()
+    make_image(viewed / "IMG_1.png", "red")
+    make_image(viewed / "IMG_2.png", "blue")
+    for n in (1, 2, 3):
+        make_image(dropped / f"PHOTO_{n}.png", "green")
+    viewer = shown_viewer_on(qtbot, viewed)
+    qtbot.keyClick(viewer, Qt.Key.Key_Right)
+    qtbot.keyClick(viewer, Qt.Key.Key_I)
+    dragged = dragged_local_path(dropped)
+    drag_enter_over(viewer, dragged)
+
+    drop_onto(viewer, dragged)
+
+    assert len(shown_texts(viewer)) == 1
+    text = shown_texts(viewer)[0]
+    assert "PHOTO_1.png" in text and "1 / 3" in text
