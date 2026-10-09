@@ -189,14 +189,21 @@ class Viewer(QWidget):
             if read_only:
                 self.read_only_banner.show()
                 return
-            if drive in self.declined_drives or not self.ask_to_create_library(CREATE_LIBRARY_QUESTION.format(drive.name)):
-                self.declined_drives.add(drive)
+            if not self._agrees_to_create_library(drive):
                 self.library_label.setText(DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format(drive.name))
                 return
             Library.create(drive)
         self.read_only_banner.setVisible(read_only)
         self.read_only_status.setVisible(read_only)
         self.library_label.setText(LIBRARY_TEXT.format(drive.name))
+
+    def _agrees_to_create_library(self, drive):
+        if drive in self.declined_drives:
+            return False
+        if not self.ask_to_create_library(CREATE_LIBRARY_QUESTION.format(drive.name)):
+            self.declined_drives.add(drive)
+            return False
+        return True
 
     def _show_cant_open(self, path):
         self.slideshow = None
