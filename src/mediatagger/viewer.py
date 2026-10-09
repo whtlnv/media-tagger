@@ -65,9 +65,11 @@ class LastWordCompleter(QCompleter):
         return [_last_word(path).removeprefix("-")]
 
     def eventFilter(self, watched, event):
-        if event.type() == QEvent.Type.KeyPress and event.key() == Qt.Key.Key_Tab:
+        if event.type() != QEvent.Type.KeyPress:
+            return super().eventFilter(watched, event)
+        if event.key() == Qt.Key.Key_Tab:
             self._accept_highlighted()
-        if watched is self.popup() and event.type() == QEvent.Type.KeyPress and event.key() == Qt.Key.Key_Return:
+        if watched is self.popup() and event.key() == Qt.Key.Key_Return:
             self._accept_highlighted()
             self.popup().hide()
             return True
