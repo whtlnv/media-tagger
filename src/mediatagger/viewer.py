@@ -21,6 +21,7 @@ STATUS_BAR_HEIGHT = 32
 NO_LIBRARY_TEXT = "No library open"
 LIBRARY_TEXT = "Library: {}"
 NO_LIBRARY_VIEWING_ONLY_TEXT = "No library — viewing only"
+DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT = "{} has no tag library — viewing only"
 CREATE_LIBRARY_QUESTION = "Create a tag library on {}?"
 
 
@@ -178,6 +179,7 @@ class Viewer(QWidget):
             return
         if not library_dir.exists():
             if not self.ask_to_create_library(CREATE_LIBRARY_QUESTION.format(drive.name)):
+                self.library_label.setText(DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format(drive.name))
                 return
             library_dir.mkdir()
             (library_dir / "tags.db").touch()

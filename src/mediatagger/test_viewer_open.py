@@ -10,7 +10,9 @@ from mediatagger.test_viewer import (
     centre_colour, make_folder_with_no_media, make_image, shown_labels, shown_launch_viewer, shown_texts, shown_viewer_on,
     SILENT, shows_unsupported_placeholder, shows_video_surface, wait_until_loaded,
 )
-from mediatagger.viewer import CREATE_LIBRARY_QUESTION, LIBRARY_TEXT, NO_LIBRARY_TEXT, NO_LIBRARY_VIEWING_ONLY_TEXT, Viewer
+from mediatagger.viewer import (
+    CREATE_LIBRARY_QUESTION, DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT, LIBRARY_TEXT, NO_LIBRARY_TEXT, NO_LIBRARY_VIEWING_ONLY_TEXT, Viewer,
+)
 
 
 def make_folders(parent, *names):
@@ -241,6 +243,14 @@ def test_declining_to_create_a_tag_library_on_a_drive_still_shows_the_opened_fol
 
     assert shown_labels(viewer) == []
     assert centre_colour(viewer) == QColor("red")
+
+
+def test_after_declining_to_create_a_tag_library_on_a_drive_the_status_bar_says_the_drive_has_no_tag_library_and_viewing_only(qtbot, tmp_path):
+    drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
+
+    viewer = viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    assert status_bar_texts(viewer) == [DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format("MEDIATAGGER")]
 
 
 def test_a_viewer_opened_on_a_folder_shows_its_first_item_and_not_the_launch_text(qtbot, tmp_path):
