@@ -1,3 +1,4 @@
+import sqlite3
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -212,7 +213,12 @@ def test_accepting_to_create_a_tag_library_on_a_drive_creates_a_real_library_who
 
     viewer_on_drive(qtbot, folder, drive, lambda question: True)
 
-    assert Library.open(drive).drive_id
+    connection = sqlite3.connect(drive / ".mediatagger" / "tags.db")
+    try:
+        meta = dict(connection.execute("SELECT key, value FROM meta"))
+    finally:
+        connection.close()
+    assert meta == {"drive_id": Library.open(drive).drive_id, "schema_version": str(Library.schema_version)}
 
 
 def test_declining_to_create_a_tag_library_on_a_drive_leaves_the_drive_without_a_mediatagger_folder(qtbot, tmp_path):
