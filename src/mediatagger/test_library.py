@@ -164,3 +164,13 @@ def test_one_entry_can_both_add_and_remove_tags(tmp_path):
     library.enter(photo, "pool -sunset")
 
     assert library.tags(photo) == ["pool"]
+
+
+def test_entered_tags_are_lowercased(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "beach.jpg"
+    photo.touch()
+
+    library.enter(photo, "Beach")
+
+    assert library.tags(photo) == ["beach"]
