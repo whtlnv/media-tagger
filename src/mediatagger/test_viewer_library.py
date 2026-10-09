@@ -74,6 +74,10 @@ def shown_viewer_on_drive(qtbot, folder, drive, ask_to_create_library):
     return shown_viewer_on_drives(qtbot, folder, (drive,), ask_to_create_library)
 
 
+def visible_tag_prompt_texts(viewer):
+    return [prompt.text() for prompt in viewer.findChildren(QLineEdit) if prompt.isVisible()]
+
+
 def decline_noting_the_question_in(asked):
     def decline(question):
         asked.append(question)
@@ -437,7 +441,7 @@ def test_pressing_t_in_the_viewer_on_a_writable_drive_with_a_tag_library_opens_a
 
     qtbot.keyClick(viewer, Qt.Key.Key_T)
 
-    assert [prompt.text() for prompt in viewer.findChildren(QLineEdit) if prompt.isVisible()] == ["beach family"]
+    assert visible_tag_prompt_texts(viewer) == ["beach family"]
 
 
 def test_pressing_t_in_the_viewer_on_a_file_with_no_tags_opens_the_tag_prompt_showing_no_tags(qtbot, tmp_path):
@@ -449,4 +453,4 @@ def test_pressing_t_in_the_viewer_on_a_file_with_no_tags_opens_the_tag_prompt_sh
 
     qtbot.keyClick(viewer, Qt.Key.Key_T)
 
-    assert [prompt.text() for prompt in viewer.findChildren(QLineEdit) if prompt.isVisible()] == [""]
+    assert visible_tag_prompt_texts(viewer) == [""]
