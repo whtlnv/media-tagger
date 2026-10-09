@@ -283,6 +283,22 @@ def test_after_declining_to_create_a_tag_library_on_a_drive_the_status_bar_says_
     assert status_bar_texts(viewer) == [DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format("MEDIATAGGER")]
 
 
+def test_after_declining_to_create_a_tag_library_on_a_drive_opening_another_folder_on_that_drive_does_not_ask_again(qtbot, tmp_path):
+    drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
+    [other] = make_folders(drive, "Videos")
+    make_image(other / "IMG_1.png", "green")
+    asked = []
+
+    def decline(question):
+        asked.append(question)
+        return False
+
+    viewer = viewer_on_drive(qtbot, folder, drive, decline)
+    drag_and_drop_onto(viewer, other)
+
+    assert asked == [CREATE_LIBRARY_QUESTION.format("MEDIATAGGER")]
+
+
 def test_opening_a_folder_on_a_read_only_drive_that_has_a_tag_library_shows_a_banner_saying_tags_cant_be_saved(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     with made_read_only(drive):

@@ -58,6 +58,7 @@ class Viewer(QWidget):
         super().__init__()
         self.is_mount_point = is_mount_point
         self.ask_to_create_library = ask_to_create_library
+        self.declined_drives = set()
         self.folder_picker = folder_picker or self._pick_folder
         self.slideshow = None
         self.video_player = VideoPlayer(new_engine(**{**PLAYER_OPTIONS, **(player_options or {})}))
@@ -188,7 +189,8 @@ class Viewer(QWidget):
             if read_only:
                 self.read_only_banner.show()
                 return
-            if not self.ask_to_create_library(CREATE_LIBRARY_QUESTION.format(drive.name)):
+            if drive in self.declined_drives or not self.ask_to_create_library(CREATE_LIBRARY_QUESTION.format(drive.name)):
+                self.declined_drives.add(drive)
                 self.library_label.setText(DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format(drive.name))
                 return
             Library.create(drive)
