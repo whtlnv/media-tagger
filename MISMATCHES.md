@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 10:44 · `src/mediatagger/test_viewer_library.py::test_moving_with_space_from_an_image_to_a_video_tagged_beach_family_shows_the_tag_overlay_on_top_of_the_video`
+- Behavior: The tag overlay stays visible on top of a video item
+- Predicted: none recorded — the test was run before a prediction was stated (process slip)
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: the behavior already exists — `_show_current` raises `self.tag_overlay` over the surface (added with the "tag prompt above the video surface" item), and `_show_tag_overlay` raises it again; a mutation check that removed both raises turned the test red (`childAt` returned `MpvSurface`), so the test is a real pin, not vacuous, and was kept as-is
+
 ## 2026-10-09 10:28 · `src/mediatagger/test_viewer_library.py::test_after_the_window_is_resized_the_tag_overlay_is_still_a_corner_margin_from_the_top_and_right_edges`
 - Behavior: After the window is resized (e.g. leaving fullscreen with `f`), the tag overlay is still `CORNER_MARGIN` from the top and right edges
 - Predicted: passes on first run — `Viewer.resizeEvent` already calls `_pin_top_right(self.tag_overlay)` (added with the corner-placement item), so no right-reason red exists

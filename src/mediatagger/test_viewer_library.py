@@ -840,3 +840,16 @@ def test_with_the_info_overlay_and_the_read_only_banner_showing_the_tag_overlay_
     assert viewer.info.isVisible() and viewer.read_only_banner.isVisible()
     assert not frame(tag_overlay).intersects(frame(viewer.info))
     assert not frame(tag_overlay).intersects(frame(viewer.read_only_banner))
+
+
+def test_moving_with_space_from_an_image_to_a_video_tagged_beach_family_shows_the_tag_overlay_on_top_of_the_video(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_clip(folder / "IMG_2.mp4")
+    Library.open(drive).enter(folder / "IMG_2.mp4", "beach family")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Space)
+    qtbot.waitUntil(lambda: shows_video_surface(viewer))
+
+    [tag_overlay] = [label for label in shown_labels(viewer) if label.text() == "beach family"]
+    assert viewer.childAt(tag_overlay.geometry().center()) is tag_overlay
