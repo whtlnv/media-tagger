@@ -323,3 +323,12 @@ def test_pressing_space_in_the_viewer_on_an_unsupported_placeholder_followed_by_
     assert not shows_unsupported_placeholder(viewer)
     frame = viewer.grab().toImage()
     assert frame.pixelColor(frame.width() // 2, frame.height() // 2) == QColor("red")
+
+
+def test_a_viewer_opened_on_a_folder_whose_first_item_is_a_video_fills_its_window_with_the_video_surface_and_shows_no_unsupported_placeholder(qtbot, tmp_path):
+    make_clip(tmp_path / "IMG_1.mp4")
+    make_image(tmp_path / "IMG_2.png", "red")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+
+    assert not shows_unsupported_placeholder(viewer)
+    assert viewer.findChild(QOpenGLWidget).geometry() == viewer.rect()

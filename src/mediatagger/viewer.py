@@ -34,6 +34,10 @@ class Viewer(QWidget):
             self.video_player.engine.terminate()
         super().closeEvent(event)
 
+    def resizeEvent(self, event):
+        if self.surface:
+            self.surface.setGeometry(self.rect())
+
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.fillRect(self.rect(), Qt.GlobalColor.black)
@@ -73,8 +77,9 @@ class Viewer(QWidget):
         return QImage(str(self.slideshow.current))
 
     def _show_current(self):
-        self.placeholder.setVisible(self._current_image().isNull())
-        if is_video(self.slideshow.current):
+        video = is_video(self.slideshow.current)
+        self.placeholder.setVisible(not video and self._current_image().isNull())
+        if video:
             self.surface = self.surface or QOpenGLWidget(self)
             self.surface.show()
             self.video_player.show(self.slideshow.current)
