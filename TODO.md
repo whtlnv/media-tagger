@@ -20,7 +20,7 @@ Note for every cycle: put new tag-prompt and autocomplete viewer tests in `src/m
 - [x] `Tab` accepts the highlighted suggestion, replacing only the word being typed: `beach fam`, `↓`, `Tab` leaves `beach family` in the prompt and closes the popup
 - [x] `Enter` accepts the highlighted suggestion without saving: `beach fam`, `↓`, `Enter` leaves `beach family` in the open prompt and the item's tags unchanged
   - note: `Enter` accepts only when a suggestion is highlighted (via `↓`/`↑`). With the popup showing but nothing highlighted, `Enter` saves as before — `test_on_a_file_tagged_beach_family_typing_minus_family_in_the_tag_prompt_and_pressing_enter_leaves_it_tagged_only_beach` must keep passing (no contradiction).
-- [ ] Accepting a removal suggestion keeps the `-`: on an item tagged `sunset`, `-s`, `↓`, `Tab` leaves `-sunset` in the prompt
+- [x] Accepting a removal suggestion keeps the `-`: on an item tagged `sunset`, `-s`, `↓`, `Tab` leaves `-sunset` in the prompt
 - [ ] `Esc` with the suggestion popup open closes only the popup: the prompt stays open with its text and the app keeps running
 - [ ] `Esc` after the popup has been closed cancels the prompt, leaving the item's tags unchanged
 - [ ] `Enter` with no suggestion popup showing saves the prompt's text: `beach fam`, `Esc`, `Enter` adds `beach` and `fam` to the item

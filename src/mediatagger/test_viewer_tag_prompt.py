@@ -259,3 +259,17 @@ def test_enter_accepts_the_highlighted_suggestion_without_saving_beach_fam_down_
     qtbot.keyClick(suggestions, Qt.Key.Key_Return)
 
     assert (visible_tag_prompt_texts(viewer), Library.open(drive).tags(folder / "IMG_1.png")) == (["beach family"], [])
+
+
+def test_accepting_a_removal_suggestion_keeps_the_minus_on_an_item_tagged_sunset_minus_s_down_tab_leaves_minus_sunset_in_the_prompt(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "sunset")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    type_in_tag_prompt(qtbot, viewer, "-s")
+    [suggestions] = visible_suggestion_lists(viewer)
+
+    qtbot.keyClick(suggestions, Qt.Key.Key_Down)
+    qtbot.keyClick(suggestions, Qt.Key.Key_Tab)
+
+    [prompt] = visible_tag_prompts(viewer)
+    assert prompt.text() == "-sunset"
