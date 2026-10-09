@@ -112,3 +112,15 @@ def test_suggestion_matching_ignores_case_typing_upper_case_be_lists_beach(qtbot
 
     [suggestions] = visible_suggestion_lists(viewer)
     assert listed(suggestions) == ["beach"]
+
+
+def test_suggestions_complete_the_last_space_separated_word_typing_beach_fam_with_family_in_the_library_lists_family(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    Library.open(drive).enter(folder / "IMG_2.png", "beach family")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    type_in_tag_prompt(qtbot, viewer, "beach fam")
+
+    [suggestions] = visible_suggestion_lists(viewer)
+    assert listed(suggestions) == ["family"]

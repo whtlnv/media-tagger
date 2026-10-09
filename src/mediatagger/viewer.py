@@ -56,6 +56,11 @@ def _collect_due_generation():
     gc.collect(due[-1] if due else 0)
 
 
+class LastWordCompleter(QCompleter):
+    def splitPath(self, path):
+        return [path.split(" ")[-1]]
+
+
 class TagInput(QLineEdit):
     def keyPressEvent(self, event):
         super().keyPressEvent(event)
@@ -114,7 +119,7 @@ class Viewer(QWidget):
         self.tag_input = TagInput(self)
         self.tag_input.setStyleSheet(TAG_INPUT_STYLE)
         self.tag_input.returnPressed.connect(self._record_tags)
-        self.tag_input.setCompleter(QCompleter([], self.tag_input))
+        self.tag_input.setCompleter(LastWordCompleter([], self.tag_input))
         self.tag_input.completer().setCaseSensitivity(Qt.CaseInsensitive)
         self.tag_input.hide()
         self.prompt_tags = overlay_label("", self)
