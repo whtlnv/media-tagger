@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 11:30 · `src/mediatagger/test_viewer_library.py::test_pressing_t_on_a_folder_on_the_system_disk_opens_no_tag_prompt`
+- Behavior: On the system disk (viewing only), pressing `t` opens no tag prompt
+- Predicted: passes (no right-reason failure available) — `_open_library` returns before opening a library on `/`, so `library` is None and `_tags_can_be_saved_here` already blocks `t` since the "declined library" cycle
+- Actual: passes
+- Type: passed unexpectedly
+- Resolution: the behavior was already delivered as a side effect of the `library is not None` guard; no rewrite can make this exact behavior fail, so the test is kept as a characterization pin of the system-disk case and the TODO item needs no production change
+
 ## 2026-10-09 11:20 · `src/mediatagger/test_viewer_library.py::test_on_a_read_only_drive_with_a_tag_library_the_tag_overlay_still_shows_a_files_existing_tags`
 - Behavior: On a read-only drive with a tag library, the tag overlay still shows a file's existing tags
 - Predicted: likely a pass, not a right-reason failure: `_open_library` already opens the library on a read-only drive (`Library.open` swallows the migration's OperationalError) and `_show_current_tags` runs after it

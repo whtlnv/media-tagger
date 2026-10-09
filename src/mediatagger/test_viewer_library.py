@@ -913,3 +913,14 @@ def test_pressing_t_on_a_drive_whose_tag_library_was_declined_opens_no_tag_promp
     qtbot.keyClick(viewer, Qt.Key.Key_T)
 
     assert visible_tag_prompts(viewer) == []
+
+
+def test_pressing_t_on_a_folder_on_the_system_disk_opens_no_tag_prompt(qtbot, tmp_path):
+    folder = tmp_path / "Photos"
+    folder.mkdir()
+    make_image(folder / "IMG_1.png", "red")
+    viewer = shown_viewer_on_drive(qtbot, folder, Path("/"), lambda question: False)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    assert visible_tag_prompts(viewer) == []
