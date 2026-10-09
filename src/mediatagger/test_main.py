@@ -4,7 +4,7 @@ from pathlib import Path
 
 from PySide6.QtGui import QColor
 
-from mediatagger.test_viewer import make_image, offscreen_environment, run_python_offscreen, shown_launch_viewer, shown_texts
+from mediatagger.test_viewer import make_image, offscreen_environment, run_python_offscreen, shown_launch_viewer, shown_texts, shown_viewer_on
 
 RUN_MEDIATAGGER_COMMAND = (
     "from importlib.metadata import entry_points\n"
@@ -134,3 +134,28 @@ def test_dropping_a_folder_onto_the_mediatagger_command_started_with_no_path_sta
     result = run_python_offscreen(DROP_FOLDER_WITH_NO_PATH_SCRIPT, str(tmp_path))
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == f"centre={QColor('red').name()} texts=[]"
+
+REPORT_SHOWN_TEXTS_SCRIPT = (
+    "import sys\n"
+    "from PySide6.QtCore import QTimer\n"
+    "from PySide6.QtWidgets import QApplication\n"
+    "from mediatagger.test_viewer import shown_texts\n"
+    "app = QApplication([])\n"
+    "def report():\n"
+    "    for window in QApplication.topLevelWidgets():\n"
+    "        if window.isVisible():\n"
+    "            for text in shown_texts(window):\n"
+    "                print(text, flush=True)\n"
+    "    QApplication.closeAllWindows()\n"
+    "    QApplication.quit()\n"
+    "QTimer.singleShot(1000, report)\n"
+    "sys.argv = ['mediatagger', sys.argv[1]]\n"
+) + RUN_MEDIATAGGER_COMMAND
+
+
+def test_running_the_mediatagger_command_on_a_path_that_does_not_exist_keeps_running_and_says_it_cant_open_it(qtbot):
+    missing = Path("/no/such/path")
+    cant_open_texts = shown_texts(shown_viewer_on(qtbot, missing))
+    result = run_python_offscreen(REPORT_SHOWN_TEXTS_SCRIPT, str(missing))
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.splitlines() == cant_open_texts

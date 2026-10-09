@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-08 22:36 · `src/mediatagger/test_main.py::test_running_the_mediatagger_command_on_a_path_that_does_not_exist_keeps_running_and_says_it_cant_open_it`
+- Behavior: Running the shipped `mediatagger /no/such/path` command keeps running and shows "Can't open path" instead of exiting with an error
+- Predicted: passes on first run (wrong-reason) — `main()` already forwards `Path(sys.argv[1])` to `Viewer`, whose `_open` already shows the Can't-open message for unreadable paths
+- Actual: passed on first run; running the script by hand prints "Can't open path" and exits 0, so the assertion is real, not vacuous
+- Type: passed unexpectedly
+- Resolution: The earlier in-process Can't-open items already delivered this through the unchanged entry point, so no missing behavior is left to drive. The test stays as an end-to-end pin; it was not rewritten because any failing version would have to test some other behavior.
+
 ## 2026-10-08 22:29 · `src/mediatagger/test_viewer_open.py::test_dropping_a_readable_folder_after_cant_open_is_shown_starts_that_folders_slideshow_at_its_first_item`
 - Behavior: After "Can't open <name>" is shown, dropping a readable folder onto the window starts that folder's slideshow at its first item
 - Predicted: passes — `dropEvent` → `_open` builds the slideshow, and `_show_current` hides the "Can't open" placeholder once the first image decodes
