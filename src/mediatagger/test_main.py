@@ -162,6 +162,17 @@ TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT = (
     "os.path.ismount = lambda path: os.fspath(path) == drive\n"
 )
 
+# The question comes up only once the viewer has settled fullscreen, so poll for it rather than guess when.
+DECLINE_THE_QUESTION_ONCE_ASKED = (
+    "polling = QTimer()\n"
+    "polling.timeout.connect(decline)\n"
+    "polling.start(100)\n"
+    "def report_soon():\n"
+    "    polling.stop()\n"
+    "    QTimer.singleShot(1000, report)\n"
+    "QTimer.singleShot(10000, report_soon)\n"
+)
+
 DECLINE_CREATING_A_LIBRARY_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT + (
     "from PySide6.QtCore import QTimer\n"
     "from PySide6.QtWidgets import QApplication\n"
@@ -171,17 +182,17 @@ DECLINE_CREATING_A_LIBRARY_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT + (
     "asked = []\n"
     "def decline():\n"
     "    question = QApplication.activeModalWidget()\n"
-    "    asked.append(question is not None)\n"
     "    if question is not None:\n"
+    "        asked.append(True)\n"
     "        question.reject()\n"
+    "        report_soon()\n"
     "def report():\n"
     "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
     "    print(f'asked={asked} centre={centre_colour(window).name()} status={status_bar_texts(window)}', flush=True)\n"
     "    QApplication.closeAllWindows()\n"
     "    QApplication.quit()\n"
-    "QTimer.singleShot(500, decline)\n"
-    "QTimer.singleShot(1500, report)\n"
-    "sys.argv = ['mediatagger', sys.argv[2]]\n"
+    + DECLINE_THE_QUESTION_ONCE_ASKED
+    + "sys.argv = ['mediatagger', sys.argv[2]]\n"
 ) + RUN_MEDIATAGGER_COMMAND
 
 
@@ -203,13 +214,13 @@ NOTE_WHETHER_THE_VIEWER_IS_SHOWN_WHEN_ASKED_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_M
     "    if question is not None:\n"
     "        viewer_shown_when_asked.append(any(isinstance(window, Viewer) and window.isVisible() for window in QApplication.topLevelWidgets()))\n"
     "        question.reject()\n"
+    "        report_soon()\n"
     "def report():\n"
     "    print(f'viewer_shown_when_asked={viewer_shown_when_asked}', flush=True)\n"
     "    QApplication.closeAllWindows()\n"
     "    QApplication.quit()\n"
-    "QTimer.singleShot(500, decline)\n"
-    "QTimer.singleShot(1500, report)\n"
-    "sys.argv = ['mediatagger', sys.argv[2]]\n"
+    + DECLINE_THE_QUESTION_ONCE_ASKED
+    + "sys.argv = ['mediatagger', sys.argv[2]]\n"
 ) + RUN_MEDIATAGGER_COMMAND
 
 

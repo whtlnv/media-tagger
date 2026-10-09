@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from PySide6.QtCore import QPoint, QRect, Qt
+from PySide6.QtCore import QEventLoop, QPoint, QRect, Qt, QTimer
 from PySide6.QtGui import QImageIOHandler, QImageReader, QPainter
 from PySide6.QtWidgets import QFileDialog, QHBoxLayout, QLabel, QMessageBox, QWidget
 
@@ -19,6 +19,7 @@ LABEL_STYLE = "color: white; background-color: rgba(0, 0, 0, 160); padding: 8px 
 CORNER_MARGIN = 16
 SLIDESHOW_KEYS = {Qt.Key.Key_Left: "Left", Qt.Key.Key_Right: "Right", Qt.Key.Key_Space: "Space"}
 UNSUPPORTED_TEXT = "Unsupported"
+FULLSCREEN_SETTLE_MS = 1000
 STATUS_BAR_HEIGHT = 32
 NO_LIBRARY_TEXT = "No library open"
 LIBRARY_TEXT = "Library: {}"
@@ -172,8 +173,16 @@ class Viewer(QWidget):
             self.showFullScreen()
 
     def _ask_to_create_library(self, question):
-        self.show()
+        if not self.isVisible():
+            self._show_and_settle()
         return QMessageBox(QMessageBox.Icon.Question, "", question, QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, self).exec() == QMessageBox.StandardButton.Yes
+
+    def _show_and_settle(self):
+        """macOS animates the switch to fullscreen; a modal opened mid-animation leaves the window at 100x30."""
+        self.show()
+        settling = QEventLoop()
+        QTimer.singleShot(FULLSCREEN_SETTLE_MS, settling.quit)
+        settling.exec()
 
     def _pick_folder(self):
         picker = QFileDialog(self)
