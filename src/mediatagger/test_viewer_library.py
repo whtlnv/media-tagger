@@ -924,3 +924,17 @@ def test_pressing_t_on_a_folder_on_the_system_disk_opens_no_tag_prompt(qtbot, tm
     qtbot.keyClick(viewer, Qt.Key.Key_T)
 
     assert visible_tag_prompts(viewer) == []
+
+
+def test_pressing_t_on_the_drive_the_app_runs_from_opens_no_tag_prompt_and_writes_nothing_to_that_drive(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    before = {path: path.read_bytes() for path in drive.rglob("*") if path.is_file()}
+    viewer = viewer_on_drive(qtbot, folder, drive, lambda question: False, app_package_on(drive))
+    viewer.resize(400, 300)
+    viewer.show()
+    qtbot.waitExposed(viewer)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    assert visible_tag_prompts(viewer) == []
+    assert {path: path.read_bytes() for path in drive.rglob("*") if path.is_file()} == before

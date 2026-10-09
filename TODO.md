@@ -61,6 +61,6 @@
 - [x] On a read-only drive with a tag library, the tag overlay still shows a file's existing tags
 - [x] On a drive whose tag library was declined, pressing `t` opens no tag prompt
 - [x] On the system disk (viewing only), pressing `t` opens no tag prompt
-- [ ] On the drive the app itself runs from, pressing `t` opens no tag prompt and nothing is written to that drive
+- [x] On the drive the app itself runs from, pressing `t` opens no tag prompt and nothing is written to that drive
 - [ ] When pressing `t` opens no tag prompt (no library, declined, read-only, system disk, the app's own drive), the status bar briefly says "Tags can't be saved here"
 - [ ] Running the shipped `mediatagger <folder>` command on a drive with a tag library, pressing `t`, typing `beach` and pressing `Enter` records `beach` for the first file in the drive's `tags.db`, and a second run of the command on that folder shows `beach` in the tag overlay (the test's driver script treats a temp folder as the mount point)

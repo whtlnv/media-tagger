@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 11:33 · `src/mediatagger/test_viewer_library.py::test_pressing_t_on_the_drive_the_app_runs_from_opens_no_tag_prompt_and_writes_nothing_to_that_drive`
+- Behavior: On the drive the app itself runs from, pressing `t` opens no tag prompt and nothing is written to that drive
+- Predicted: passes (no right-reason failure available) — `_never_holds_a_library` already treats the app's own drive as viewing only, so `library` is None and `_tags_can_be_saved_here` blocks `t`
+- Actual: passes
+- Type: passed unexpectedly
+- Resolution: already delivered by the app-drive guard in `_open_library`; the test uses the strongest case (the app's drive already holds a tags.db) and snapshots every file on the drive. It is not vacuous, because with the default app location the library opens and `t` shows a prompt. Kept as a characterization pin; no production change needed
+
 ## 2026-10-09 11:30 · `src/mediatagger/test_viewer_library.py::test_pressing_t_on_a_folder_on_the_system_disk_opens_no_tag_prompt`
 - Behavior: On the system disk (viewing only), pressing `t` opens no tag prompt
 - Predicted: passes (no right-reason failure available) — `_open_library` returns before opening a library on `/`, so `library` is None and `_tags_can_be_saved_here` already blocks `t` since the "declined library" cycle
