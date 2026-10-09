@@ -22,6 +22,12 @@ def make_image(path, color, width=64, height=48):
     return path
 
 
+def make_folder_with_no_media(path):
+    path.mkdir()
+    (path / "notes.txt").write_text("hi")
+    return path
+
+
 def make_jpeg_tagged_rotate_90(path, color, width, height):
     """A JPEG stored as width x height whose EXIF orientation (6) says to show it rotated 90° clockwise."""
     make_image(path, color, width, height)
@@ -588,9 +594,7 @@ def test_the_unsupported_placeholder_is_light_text_whatever_the_desktop_theme(qt
 
 
 def test_a_viewer_opened_on_a_folder_with_no_media_says_so_at_the_centre_and_ignores_keys(qtbot, tmp_path):
-    folder = tmp_path / "Holidays"
-    folder.mkdir()
-    (folder / "notes.txt").write_text("hi")
+    folder = make_folder_with_no_media(tmp_path / "Holidays")
     viewer = shown_viewer_on(qtbot, folder)
 
     for key in (Qt.Key.Key_Space, Qt.Key.Key_Left, Qt.Key.Key_I, Qt.Key.Key_P):
@@ -739,9 +743,7 @@ def test_rejecting_the_viewers_own_o_dialog_pointed_at_a_folder_leaves_the_launc
 
 
 def test_choosing_a_folder_with_no_media_in_the_o_picker_says_so_like_opening_that_folder_does(qtbot, tmp_path):
-    folder = tmp_path / "Holidays"
-    folder.mkdir()
-    (folder / "notes.txt").write_text("hi")
+    folder = make_folder_with_no_media(tmp_path / "Holidays")
     viewer = shown_launch_viewer(qtbot, folder_picker=lambda: folder)
 
     qtbot.keyClick(viewer, Qt.Key.Key_O)
@@ -815,9 +817,7 @@ def test_dropping_a_folder_whose_first_item_cannot_be_decoded_onto_the_launch_sc
 
 def test_dropping_a_folder_with_no_media_while_an_image_is_showing_says_so_and_no_longer_paints_that_image(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red")
-    empty = tmp_path / "Holidays"
-    empty.mkdir()
-    (empty / "notes.txt").write_text("hi")
+    empty = make_folder_with_no_media(tmp_path / "Holidays")
     viewer = shown_viewer_on(qtbot, tmp_path)
 
     drag_and_drop_onto(viewer, empty)
@@ -828,9 +828,7 @@ def test_dropping_a_folder_with_no_media_while_an_image_is_showing_says_so_and_n
 
 
 def test_the_no_media_text_shown_after_dropping_an_empty_folder_onto_the_launch_screen_is_centred_in_the_window(qtbot, tmp_path):
-    empty = tmp_path / "Holidays"
-    empty.mkdir()
-    (empty / "notes.txt").write_text("hi")
+    empty = make_folder_with_no_media(tmp_path / "Holidays")
     viewer = shown_launch_viewer(qtbot)
     viewer.resize(600, 500)
     qtbot.waitUntil(lambda: viewer.width() == 600)
