@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-08 23:58 · `src/mediatagger/test_viewer_open.py::test_opening_a_folder_on_a_drive_that_already_has_a_tag_library_does_not_ask_to_create_one`
+- Behavior: Opening a folder on a drive whose mount point already has `.mediatagger/tags.db` does not ask to create a library
+- Predicted: passes on first run (`viewer.py` only asks when `.mediatagger` is absent, so the previous green already covers this)
+- Actual: passed
+- Type: passed unexpectedly
+- Resolution: The previous cycle's `elif not (drive / ".mediatagger").exists()` already implements this; no failing rewrite exists without driving a different behavior, so the test is left as a characterization pin and no Red was produced.
+
 ## 2026-10-08 23:47 · `src/mediatagger/test_viewer_open.py::test_dropping_a_folder_from_a_different_drive_while_viewing_switches_the_status_bar_to_that_drives_library`
 - Behavior: Dropping a folder from a different drive while viewing switches the status bar to that drive's library
 - Predicted: passes on first run — `dropEvent` routes through `_open`, which already walks the dropped path's parents to its mount point and sets the library label

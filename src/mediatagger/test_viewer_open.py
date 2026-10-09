@@ -192,6 +192,20 @@ def test_opening_a_folder_on_a_drive_without_a_tag_library_asks_to_create_one_on
     assert asked == [(CREATE_LIBRARY_QUESTION.format("MEDIATAGGER"), False)]
 
 
+def test_opening_a_folder_on_a_drive_that_already_has_a_tag_library_does_not_ask_to_create_one(qtbot, tmp_path):
+    drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    asked = []
+
+    viewer = Viewer(
+        folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=asked.append,
+    )
+    qtbot.addWidget(viewer)
+
+    assert asked == []
+
+
 def test_a_viewer_opened_on_a_folder_shows_its_first_item_and_not_the_launch_text(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red")
     make_image(tmp_path / "IMG_2.png", "blue")
