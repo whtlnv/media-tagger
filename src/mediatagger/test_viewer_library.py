@@ -926,9 +926,13 @@ def test_pressing_t_on_a_folder_on_the_system_disk_opens_no_tag_prompt(qtbot, tm
     assert visible_tag_prompts(viewer) == []
 
 
+def file_contents_under(root):
+    return {path: path.read_bytes() for path in root.rglob("*") if path.is_file()}
+
+
 def test_pressing_t_on_the_drive_the_app_runs_from_opens_no_tag_prompt_and_writes_nothing_to_that_drive(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    before = {path: path.read_bytes() for path in drive.rglob("*") if path.is_file()}
+    before = file_contents_under(drive)
     viewer = viewer_on_drive(qtbot, folder, drive, lambda question: False, app_package_on(drive))
     viewer.resize(400, 300)
     viewer.show()
@@ -937,4 +941,4 @@ def test_pressing_t_on_the_drive_the_app_runs_from_opens_no_tag_prompt_and_write
     qtbot.keyClick(viewer, Qt.Key.Key_T)
 
     assert visible_tag_prompts(viewer) == []
-    assert {path: path.read_bytes() for path in drive.rglob("*") if path.is_file()} == before
+    assert file_contents_under(drive) == before
