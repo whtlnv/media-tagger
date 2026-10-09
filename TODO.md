@@ -16,6 +16,7 @@
 - [x] Dropping a file onto the launch screen starts its folder's slideshow at that file
 - [x] Dropping a folder while viewing another folder replaces the slideshow with the dropped folder's, starting at its first item
 - [ ] Dropping a file while viewing another folder replaces the slideshow with that file's folder, starting at that file
+- [ ] Dropping a folder while the `i` overlay is shown leaves no overlay text from the previous folder: it shows the dropped folder's first filename and `1 / N`
 - [ ] Dropping a folder while a video is playing stops that video's playback and sound
 - [ ] Running the shipped `mediatagger` command with no path opens the window showing "Drop a folder or file here, or press `o` to open" instead of exiting with an error
 - [ ] In the shipped `mediatagger` command started with no path, dropping a folder onto the window starts its slideshow at its first item
