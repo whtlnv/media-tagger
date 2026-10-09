@@ -145,3 +145,12 @@ def test_showing_a_good_clip_in_place_of_a_playing_one_reports_it_loaded(playing
 
     assert player.show(other) is True
     assert engine.path == str(other)
+
+
+def test_a_clip_that_does_not_load_within_the_time_limit_is_reported_unplayable_instead_of_blocking(tmp_path):
+    clip = make_clip(tmp_path / "clip.mp4")
+    engine = new_engine(vo="null", ao="null")
+    try:
+        assert VideoPlayer(engine, timeout=0.000001).show(clip) is False
+    finally:
+        engine.terminate()
