@@ -113,6 +113,18 @@ def test_opening_a_folder_two_levels_below_a_drive_with_a_tag_library_names_that
     assert status_bar_texts(viewer) == [LIBRARY_TEXT.format("MEDIATAGGER")]
 
 
+def test_opening_a_folder_that_is_itself_a_drives_mount_point_with_a_tag_library_names_that_folder_in_the_status_bar(qtbot, tmp_path):
+    drive = tmp_path / "MEDIATAGGER"
+    (drive / ".mediatagger").mkdir(parents=True)
+    (drive / ".mediatagger" / "tags.db").touch()
+    make_image(drive / "IMG_1.png", "red")
+
+    viewer = Viewer(drive, player_options=SILENT, is_mount_point=lambda path: path == drive)
+    qtbot.addWidget(viewer)
+
+    assert status_bar_texts(viewer) == [LIBRARY_TEXT.format("MEDIATAGGER")]
+
+
 def test_a_viewer_opened_on_a_folder_shows_its_first_item_and_not_the_launch_text(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red")
     make_image(tmp_path / "IMG_2.png", "blue")
