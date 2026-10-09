@@ -1,6 +1,11 @@
 from mediatagger.folder import is_video, media_files
 
 
+def touch(folder, *names):
+    for name in names:
+        (folder / name).touch()
+
+
 def test_opening_a_folder_lists_its_images_in_natural_filename_order(tmp_path):
     for name in ["IMG_10.jpg", "IMG_2.jpg", "IMG_1.jpg"]:
         (tmp_path / name).touch()

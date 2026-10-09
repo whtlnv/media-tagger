@@ -1,9 +1,5 @@
 from mediatagger.slideshow import Slideshow
-
-
-def touch(folder, *names):
-    for name in names:
-        (folder / name).touch()
+from mediatagger.test_folder import touch
 
 
 def test_opening_a_folder_path_shows_its_first_item(tmp_path):
