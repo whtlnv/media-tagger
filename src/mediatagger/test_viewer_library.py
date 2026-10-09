@@ -466,10 +466,7 @@ def test_after_viewing_a_drive_with_a_tag_library_opening_a_folder_on_a_read_onl
 
 
 def test_pressing_t_in_the_viewer_on_a_file_with_no_tags_opens_the_tag_prompt_showing_no_tags(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
-    Library.create(drive)
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
     qtbot.keyClick(viewer, Qt.Key.Key_T)
@@ -478,10 +475,8 @@ def test_pressing_t_in_the_viewer_on_a_file_with_no_tags_opens_the_tag_prompt_sh
 
 
 def test_pressing_t_on_a_file_tagged_beach_family_shows_beach_family_as_text_beside_the_tag_prompts_empty_input(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
-    Library.create(drive).enter(folder / "IMG_1.png", "family beach")
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "family beach")
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
     qtbot.keyClick(viewer, Qt.Key.Key_T)
@@ -491,10 +486,7 @@ def test_pressing_t_on_a_file_tagged_beach_family_shows_beach_family_as_text_bes
 
 
 def test_typing_beach_family_in_the_tag_prompt_and_pressing_enter_closes_it_and_records_both_tags_in_the_drives_tags_db(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
-    Library.create(drive)
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
     enter_in_tag_prompt(qtbot, viewer, "beach family")
@@ -504,10 +496,8 @@ def test_typing_beach_family_in_the_tag_prompt_and_pressing_enter_closes_it_and_
 
 
 def test_on_a_file_tagged_beach_family_typing_minus_family_in_the_tag_prompt_and_pressing_enter_leaves_it_tagged_only_beach(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
-    Library.create(drive).enter(folder / "IMG_1.png", "beach family")
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach family")
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
     enter_in_tag_prompt(qtbot, viewer, "-family")
@@ -516,10 +506,8 @@ def test_on_a_file_tagged_beach_family_typing_minus_family_in_the_tag_prompt_and
 
 
 def test_pressing_t_again_after_closing_the_tag_prompt_shows_only_one_tag_prompt_with_one_copy_of_the_files_tags(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
-    Library.create(drive).enter(folder / "IMG_1.png", "beach family")
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach family")
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     enter_in_tag_prompt(qtbot, viewer, "beach")
 
@@ -530,10 +518,7 @@ def test_pressing_t_again_after_closing_the_tag_prompt_shows_only_one_tag_prompt
 
 
 def test_the_tag_prompt_is_drawn_inside_the_viewer_window_centred_horizontally_near_the_bottom_just_above_the_status_bar(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
-    Library.create(drive)
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     viewer.resize(1600, 900)
     qtbot.waitUntil(lambda: viewer.width() == 1600)
@@ -548,10 +533,7 @@ def test_the_tag_prompt_is_drawn_inside_the_viewer_window_centred_horizontally_n
 
 
 def test_pressing_t_makes_the_tag_prompts_input_the_viewers_focus_widget(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
-    Library.create(drive)
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
     qtbot.keyClick(viewer, Qt.Key.Key_T)
@@ -561,10 +543,8 @@ def test_pressing_t_makes_the_tag_prompts_input_the_viewers_focus_widget(qtbot, 
 
 
 def test_the_tag_prompts_input_and_its_shown_tags_are_styled_like_the_info_overlay(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
-    Library.create(drive).enter(folder / "IMG_1.png", "beach family")
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach family")
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
     qtbot.keyClick(viewer, Qt.Key.Key_T)
@@ -575,11 +555,8 @@ def test_the_tag_prompts_input_and_its_shown_tags_are_styled_like_the_info_overl
 
 
 def test_typing_space_i_p_f_m_in_the_open_tag_prompt_goes_into_it_and_leaves_the_slideshow_and_info_overlay_unchanged(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     make_image(folder / "IMG_2.png", "blue")
-    Library.create(drive)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     qtbot.keyClick(viewer, Qt.Key.Key_T)
     window_state = viewer.windowState()
@@ -649,10 +626,8 @@ def test_arrow_keys_in_the_tag_prompt_open_over_a_paused_video_neither_move_the_
 
 
 def test_pressing_esc_in_the_tag_prompt_closes_it_leaving_the_viewer_open_and_the_files_tags_unchanged(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
-    Library.create(drive).enter(folder / "IMG_1.png", "beach family")
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach family")
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     qtbot.keyClick(viewer, Qt.Key.Key_T)
     qtbot.keyClicks(viewer.focusWidget(), "-family sunset")
@@ -665,10 +640,7 @@ def test_pressing_esc_in_the_tag_prompt_closes_it_leaving_the_viewer_open_and_th
 
 
 def test_pressing_esc_after_esc_has_closed_the_tag_prompt_closes_the_viewer(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
-    Library.create(drive)
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     qtbot.keyClick(viewer, Qt.Key.Key_T)
     qtbot.keyClick(viewer.focusWidget(), Qt.Key.Key_Escape)
@@ -679,10 +651,8 @@ def test_pressing_esc_after_esc_has_closed_the_tag_prompt_closes_the_viewer(qtbo
 
 
 def test_pressing_esc_in_the_tag_prompt_also_hides_its_shown_tags(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
-    Library.create(drive).enter(folder / "IMG_1.png", "beach family")
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach family")
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     qtbot.keyClick(viewer, Qt.Key.Key_T)
 
@@ -709,10 +679,7 @@ def test_pressing_t_on_a_video_shows_the_tag_prompt_and_its_shown_tags_above_the
 
 
 def test_after_entering_beach_family_in_the_tag_prompt_a_tag_overlay_shows_beach_family_while_the_prompt_is_closed(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
-    Library.create(drive)
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
     enter_in_tag_prompt(qtbot, viewer, "beach family")
@@ -722,10 +689,8 @@ def test_after_entering_beach_family_in_the_tag_prompt_a_tag_overlay_shows_beach
 
 
 def test_after_esc_closes_the_tag_prompt_on_a_file_tagged_beach_family_the_tag_overlay_shows_beach_family_again(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
-    Library.create(drive).enter(folder / "IMG_1.png", "beach family")
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach family")
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     qtbot.keyClick(viewer, Qt.Key.Key_T)
 
@@ -736,10 +701,7 @@ def test_after_esc_closes_the_tag_prompt_on_a_file_tagged_beach_family_the_tag_o
 
 
 def test_after_esc_closes_the_tag_prompt_on_a_file_with_no_tags_the_tag_overlay_is_hidden(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
-    Library.create(drive)
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     qtbot.keyClick(viewer, Qt.Key.Key_T)
 
@@ -750,11 +712,8 @@ def test_after_esc_closes_the_tag_prompt_on_a_file_with_no_tags_the_tag_overlay_
 
 
 def test_moving_with_space_from_a_file_tagged_beach_family_to_an_untagged_one_hides_the_tag_overlay_and_left_back_shows_beach_family_again(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     make_image(folder / "IMG_2.png", "blue")
-    Library.create(drive)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     enter_in_tag_prompt(qtbot, viewer, "beach family")
 
@@ -766,10 +725,7 @@ def test_moving_with_space_from_a_file_tagged_beach_family_to_an_untagged_one_hi
 
 
 def test_opening_a_folder_whose_first_file_was_tagged_beach_family_in_an_earlier_viewer_shows_beach_family_in_the_tag_overlay(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
-    Library.create(drive)
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     earlier = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     enter_in_tag_prompt(qtbot, earlier, "beach family")
     earlier.close()
@@ -780,10 +736,8 @@ def test_opening_a_folder_whose_first_file_was_tagged_beach_family_in_an_earlier
 
 
 def test_the_tag_overlay_sits_in_the_top_right_corner_a_corner_margin_from_the_top_and_right_edges(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
-    Library.create(drive).enter(folder / "IMG_1.png", "beach family")
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach family")
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     viewer.resize(1600, 900)
     qtbot.waitUntil(lambda: viewer.width() == 1600)
@@ -795,11 +749,9 @@ def test_the_tag_overlay_sits_in_the_top_right_corner_a_corner_margin_from_the_t
 
 
 def test_after_space_to_a_file_with_longer_tags_the_tag_overlay_still_ends_a_corner_margin_from_the_right_edge(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     make_image(folder / "IMG_2.png", "blue")
-    library = Library.create(drive)
+    library = Library.open(drive)
     library.enter(folder / "IMG_1.png", "beach")
     library.enter(folder / "IMG_2.png", "beach family holiday grandparents sunset")
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
@@ -814,10 +766,8 @@ def test_after_space_to_a_file_with_longer_tags_the_tag_overlay_still_ends_a_cor
 
 
 def test_the_tag_overlay_has_the_same_look_as_the_info_overlay(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
-    Library.create(drive).enter(folder / "IMG_1.png", "beach family")
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach family")
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
     [tag_overlay] = shown_labels(viewer)
@@ -826,10 +776,8 @@ def test_the_tag_overlay_has_the_same_look_as_the_info_overlay(qtbot, tmp_path):
 
 
 def test_after_the_window_is_resized_the_tag_overlay_is_still_a_corner_margin_from_the_top_and_right_edges(qtbot, tmp_path):
-    [drive] = make_folders(tmp_path, "MEDIATAGGER")
-    [folder] = make_folders(drive, "Photos")
-    make_image(folder / "IMG_1.png", "red")
-    Library.create(drive).enter(folder / "IMG_1.png", "beach family")
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach family")
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     viewer.resize(1600, 900)
     qtbot.waitUntil(lambda: viewer.width() == 1600)
