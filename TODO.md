@@ -5,7 +5,7 @@
 - [x] Opening the viewer on a folder that can't be read (permission denied; the test chmods a temp folder to 000 and restores it afterwards) shows "Can't open <name>" instead of crashing
 - [x] Dropping a folder that doesn't exist while a video is showing stops the video, hides the video surface and shows "Can't open <name>"
 - [x] Dropping a folder that doesn't exist while the `i` overlay is shown hides the overlay
-- [ ] After "Can't open <name>" is shown, dropping a readable folder onto the window starts that folder's slideshow at its first item
+- [x] After "Can't open <name>" is shown, dropping a readable folder onto the window starts that folder's slideshow at its first item
 - [ ] After "Can't open <name>" is shown, pressing `o` and choosing a readable folder in the picker starts that folder's slideshow
 - [ ] Running the shipped `mediatagger /no/such/path` command keeps running and shows "Can't open path" instead of exiting with an error
 - [ ] The launch screen text reads "Drop a folder or file here, or press o to open", with no backticks around the o

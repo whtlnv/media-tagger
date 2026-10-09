@@ -378,3 +378,14 @@ def test_dropping_a_folder_that_does_not_exist_while_the_info_overlay_is_shown_h
     drag_and_drop_onto(viewer, missing)
 
     assert shown_texts(viewer) == shown_texts(shown_viewer_on(qtbot, missing))
+
+
+def test_dropping_a_readable_folder_after_cant_open_is_shown_starts_that_folders_slideshow_at_its_first_item(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    make_image(tmp_path / "IMG_2.png", "blue")
+    viewer = shown_viewer_on(qtbot, tmp_path / "Holidays")
+
+    drag_and_drop_onto(viewer, tmp_path)
+
+    assert shown_labels(viewer) == []
+    assert centre_colour(viewer) == QColor("red")

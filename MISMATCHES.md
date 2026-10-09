@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-08 22:29 · `src/mediatagger/test_viewer_open.py::test_dropping_a_readable_folder_after_cant_open_is_shown_starts_that_folders_slideshow_at_its_first_item`
+- Behavior: After "Can't open <name>" is shown, dropping a readable folder onto the window starts that folder's slideshow at its first item
+- Predicted: passes — `dropEvent` → `_open` builds the slideshow, and `_show_current` hides the "Can't open" placeholder once the first image decodes
+- Actual: passed
+- Type: passed unexpectedly
+- Resolution: The behavior already exists: the drop path reuses `_open`, which sets up a new slideshow no matter what message was showing before. A temporary sabotage check confirmed the test isn't vacuous: removing the placeholder `setVisible` call in `_show_current` fails it with the "Can't open" label still shown. I kept the test as a regression pin rather than rewrite it to fail artificially.
+
 ## 2026-10-08 22:26 · `src/mediatagger/test_viewer_open.py::test_dropping_a_folder_that_does_not_exist_while_the_info_overlay_is_shown_hides_the_overlay`
 - Behavior: Dropping a folder that doesn't exist while the `i` overlay is shown hides the overlay
 - Predicted: passes — `_open`'s unreadable-path branch calls `_show_message`, which already hides `self.info`
