@@ -84,8 +84,11 @@ class Viewer(QWidget):
             event.acceptProposedAction()
 
     def dropEvent(self, event):
-        self.video_player.press("Right")
+        self._stop_video()
         self._open(Path(event.mimeData().urls()[0].toLocalFile()))
+
+    def _stop_video(self):
+        self.video_player.press("Right")  # leaving the current item is what stops its video
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Escape:  # interim: quits until the grid (Phase 7) makes Esc "back to grid"
