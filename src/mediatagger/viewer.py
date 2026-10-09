@@ -134,18 +134,21 @@ class Viewer(QWidget):
     def _open(self, path):
         if path is None:
             return
+        if not path.exists():
+            self._show_message(f"Can't open {path.name}")
+            return
         showing_info = self.slideshow is not None and self.slideshow.overlay
         self.slideshow = Slideshow.open(path)
         if self.slideshow is None:
-            self._show_no_media(path)
+            self._show_message(f"No images or videos in {path.name}")
             return
         self.placeholder.setText(UNSUPPORTED_TEXT)
         if showing_info:
             self.slideshow.press("i")
         self._refresh()
 
-    def _show_no_media(self, path):
-        self.placeholder.setText(f"No images or videos in {path.name}")
+    def _show_message(self, text):
+        self.placeholder.setText(text)
         self._centre(self.placeholder)
         self.placeholder.show()
         self.info.hide()

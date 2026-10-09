@@ -255,6 +255,17 @@ def test_the_no_media_text_shown_after_dropping_an_empty_folder_onto_the_launch_
     assert abs(text_centre_y - frame.height() // 2) <= 4
 
 
+def test_a_viewer_opened_on_a_folder_that_does_not_exist_shows_a_centred_cant_open_message_naming_it(qtbot, tmp_path):
+    missing = tmp_path / "Holidays"
+
+    viewer = shown_viewer_on(qtbot, missing)
+
+    assert shown_texts(viewer) == ["Can't open Holidays"]
+    message = shown_labels(viewer)[0]
+    assert abs(message.geometry().center().x() - viewer.rect().center().x()) <= 1
+    assert abs(message.geometry().center().y() - viewer.rect().center().y()) <= 1
+
+
 def test_dropping_a_folder_while_viewing_another_folder_replaces_the_slideshow_with_the_dropped_folders_at_its_first_item(qtbot, tmp_path):
     viewer, dropped = viewer_past_its_first_item_beside_a_green_then_yellow_folder(qtbot, tmp_path)
 
