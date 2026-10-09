@@ -511,3 +511,17 @@ def test_on_a_file_tagged_beach_family_typing_minus_family_in_the_tag_prompt_and
     enter_in_tag_prompt(qtbot, viewer, "-family")
 
     assert Library.open(drive).tags(folder / "IMG_1.png") == ["beach"]
+
+
+def test_pressing_t_again_after_closing_the_tag_prompt_shows_only_one_tag_prompt_with_one_copy_of_the_files_tags(qtbot, tmp_path):
+    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    Library.create(drive).enter(folder / "IMG_1.png", "beach family")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    enter_in_tag_prompt(qtbot, viewer, "beach")
+
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    assert visible_tag_prompt_texts(viewer) == [""]
+    assert shown_texts(viewer).count("beach family") == 1
