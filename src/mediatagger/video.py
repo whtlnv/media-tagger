@@ -18,7 +18,7 @@ class VideoPlayer:
         self.timeout = timeout
 
     def show(self, path):
-        """Load and play path; True once it has loaded, False if mpv ended it without loading it."""
+        """Load and play path; True once it has loaded, False if mpv ended it or it didn't load within the timeout."""
         self.engine.loop_file = "inf"
         try:
             with self.engine.prepare_and_wait_for_event(
