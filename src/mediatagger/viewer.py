@@ -28,6 +28,7 @@ DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT = "{} has no tag library — viewing only
 CREATE_LIBRARY_QUESTION = "Create a tag library on {}?"
 READ_ONLY_BANNER_TEXT = "This drive is read-only — tags can't be saved"
 READ_ONLY_STATUS_TEXT = "Read-only — tags can't be saved"
+TAGS_CANT_BE_SAVED_HERE_TEXT = "Tags can't be saved here"
 
 
 def overlay_label(text, parent):
@@ -104,10 +105,13 @@ class Viewer(QWidget):
         self.library_label = overlay_label(NO_LIBRARY_TEXT, self.status_bar)
         self.read_only_status = overlay_label(READ_ONLY_STATUS_TEXT, self.status_bar)
         self.read_only_status.hide()
+        self.cant_save_status = overlay_label(TAGS_CANT_BE_SAVED_HERE_TEXT, self.status_bar)
+        self.cant_save_status.hide()
         status_layout = QHBoxLayout(self.status_bar)
         status_layout.setContentsMargins(CORNER_MARGIN, 0, CORNER_MARGIN, CORNER_MARGIN)
         status_layout.addWidget(self.library_label)
         status_layout.addWidget(self.read_only_status)
+        status_layout.addWidget(self.cant_save_status)
         status_layout.addStretch()
 
     def closeEvent(self, event):
@@ -198,6 +202,8 @@ class Viewer(QWidget):
         if event.key() == Qt.Key.Key_T:
             if self._tags_can_be_saved_here():
                 self._open_tag_prompt()
+            else:
+                self.cant_save_status.show()
             return
         if self._tag_prompt_has_focus():
             return  # keys the open tag prompt ignores must not reach the slideshow or video

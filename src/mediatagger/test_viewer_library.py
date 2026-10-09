@@ -942,3 +942,12 @@ def test_pressing_t_on_the_drive_the_app_runs_from_opens_no_tag_prompt_and_write
 
     assert visible_tag_prompts(viewer) == []
     assert file_contents_under(drive) == before
+
+
+def test_pressing_t_on_a_drive_whose_tag_library_was_declined_says_tags_cant_be_saved_here_in_the_status_bar(qtbot, tmp_path):
+    drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    assert "Tags can't be saved here" in status_bar_texts(viewer)
