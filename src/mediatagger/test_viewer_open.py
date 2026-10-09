@@ -284,6 +284,21 @@ def test_opening_a_folder_on_a_read_only_drive_that_has_a_tag_library_shows_a_ba
     assert shown_texts(viewer) == [READ_ONLY_BANNER_TEXT]
 
 
+def test_opening_a_folder_on_a_read_only_drive_still_shows_its_slideshow_at_the_first_item(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    drive.chmod(0o555)
+    try:
+        viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+        shown = shown_texts(viewer)
+        colour = centre_colour(viewer)
+    finally:
+        drive.chmod(0o755)
+
+    assert shown == [READ_ONLY_BANNER_TEXT]
+    assert colour == QColor("red")
+
+
 def test_opening_a_folder_on_a_writable_drive_that_has_a_tag_library_shows_no_read_only_banner(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
