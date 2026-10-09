@@ -1,3 +1,40 @@
+- [x] 2026-10-09 · While a slideshow is showing, a status bar is visible along the bottom edge of the window, overlaid on the current item, which still fills the whole window (images, videos and the unsupported placeholder lay out as before)
+- [x] 2026-10-09 · On the launch screen (no path given), the status bar says no library is open
+- [x] 2026-10-09 · Opening a folder two levels below a drive's mount point, where the mount point has `.mediatagger/tags.db`, names that drive in the status bar as the open library (e.g. `Library: MEDIATAGGER`) (the test treats a temp folder as the drive's mount point; tests never consult real drives)
+- [x] 2026-10-09 · Opening a folder that is itself a drive's mount point, with `.mediatagger/tags.db`, names that folder in the status bar as the open library
+- [x] 2026-10-09 · Opening a file on a drive names the same library in the status bar as opening its folder does
+- [x] 2026-10-09 · Dropping a folder from a different drive while viewing switches the status bar to that drive's library
+- [x] 2026-10-09 · Opening a folder on the system disk (whose nearest mount point is `/`) never asks to create a library and the status bar says no library, viewing only
+- [x] 2026-10-09 · Opening a folder on a drive whose mount point has no `.mediatagger/tags.db` asks "Create a tag library on <drive>?" before writing anything to the drive (the question is handed to the viewer the way the folder picker is, so tests never open a real dialog)
+- [x] 2026-10-09 · Opening a folder on a drive whose mount point already has `.mediatagger/tags.db` does not ask to create a library
+- [x] 2026-10-09 · Accepting "Create a tag library on <drive>?" creates `<mount point>/.mediatagger/tags.db` and names the drive in the status bar as the open library
+- [x] 2026-10-09 · Declining "Create a tag library on <drive>?" leaves the drive without a `.mediatagger` folder
+- [x] 2026-10-09 · Declining "Create a tag library on <drive>?" still shows the opened folder's slideshow at its first item
+- [x] 2026-10-09 · After declining "Create a tag library on <drive>?", the status bar says the drive has no tag library and viewing only is available
+- [x] 2026-10-09 · A newly created library reports the same drive id after it is closed and opened again
+- [x] 2026-10-09 · A newly created library records its schema version alongside its drive id
+- [x] 2026-10-09 · Two libraries created on different drives report different drive ids
+- [x] 2026-10-09 · Opening a folder on a read-only drive that has a tag library shows a banner saying tags can't be saved (the test makes the mount point read-only and restores it afterwards)
+- [x] 2026-10-09 · Opening a folder on a writable drive that has a tag library shows no read-only banner
+- [x] 2026-10-09 · A library's drive id survives the drive being mounted at a different path: a library created on one root, whose `.mediatagger` folder is then copied to another root, reports the same drive id there (so the id is stored in the drive's tags.db, not derived from the path)
+- [x] 2026-10-09 · `tags.db` of a newly created library is an SQLite database whose `meta` table holds the drive id and the schema version, readable with Python's `sqlite3` by another program
+- [x] 2026-10-09 · Accepting "Create a tag library on <drive>?" in the viewer creates a real library: its `tags.db` reports a drive id when opened as a library
+- [x] 2026-10-09 · Opening a folder on a read-only drive still shows its slideshow at the first item
+- [x] 2026-10-09 · A library created at a mount point, removed, and created again at the same mount point reports a different drive id the second time (the drive id is random, not derived from the drive's path or name)
+- [x] 2026-10-09 · On a read-only drive the status bar says tags can't be saved (e.g. `Read-only: tags can't be saved`)
+- [x] 2026-10-09 · Opening a folder on a read-only drive with no tag library shows the read-only banner instead of asking to create a library
+- [x] 2026-10-09 · After declining "Create a tag library on <drive>?", opening another folder on the same drive in the same session does not ask again
+- [x] 2026-10-09 · Opening a path that can't be opened ("Can't open <name>") does not ask to create a library
+- [x] 2026-10-09 · Opening a folder on the drive the app itself runs from (the mount point containing the running `mediatagger` package; the test fakes the app's drive to be the temp drive being opened) never asks to create a library, writes nothing to that drive, and the status bar says no library, viewing only
+- [x] 2026-10-09 · Opening a folder on the app's own drive when that drive already has `.mediatagger/tags.db` does not open that library: the status bar says no library, viewing only
+- [x] 2026-10-09 · Running the shipped `mediatagger <folder>` command on a folder whose drive has no tag library asks before creating one, and declining keeps the slideshow open with the status bar saying the drive has no tag library (the test's driver script treats a temp folder as the mount point and declines the question)
+- [x] 2026-10-09 · When "Create a tag library on <drive>?" is asked, the viewer window is already shown, so the question appears over it rather than before any window exists (the test's injected question records whether the viewer is visible when asked)
+- [x] 2026-10-09 · After viewing a read-only drive, dropping a folder from a writable drive without a tag library (declining the question) hides the read-only banner and the read-only status
+- [x] 2026-10-09 · Opening a folder on a read-only drive with no tag library makes the status bar say tags can't be saved, and no longer name a library from a previously viewed drive
+- [x] 2026-10-09 · On a read-only drive with a tag library, the status bar's two texts sit side by side inside the window, at least `CORNER_MARGIN` from its left and bottom edges, and do not overlap one another
+- [x] 2026-10-09 · Each status bar text uses the same look as the info overlay (white text on a translucent black panel)
+- [x] 2026-10-09 · The read-only banner uses the same look as the info overlay (white text on a translucent black panel)
+- [x] 2026-10-09 · The read-only banner sits centred horizontally, `CORNER_MARGIN` below the top edge of the window (tested in a window wide enough that it cannot meet the info overlay in the top-left corner)
 - [x] 2026-10-08 · When listing a folder that passes the openable check fails with an I/O error (the test makes the folder listing raise `OSError(errno.EIO, "Input/output error")`, as an unplugged USB drive does), the viewer shows "Can't open <name>" instead of crashing, and dropping a readable folder afterwards still starts its slideshow
 - [x] 2026-10-08 · When dropping a folder whose listing fails with an I/O error while another folder's image is showing (the test makes the listing raise `OSError(errno.EIO, ...)`), the previous image is no longer painted and pressing `o` opens the folder picker
 - [x] 2026-10-08 · Opening the viewer on a folder path that doesn't exist shows a centred "Can't open <name>" message instead of crashing
