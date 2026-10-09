@@ -88,12 +88,12 @@ def test_suggestions_are_ordered_by_item_count_with_beach_on_3_items_and_bird_on
 
 def test_suggestions_with_the_same_item_count_are_listed_alphabetically_with_bird_and_beach_on_2_items_each_typing_b_lists_beach_above_bird(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    for name in ("IMG_2.png", "IMG_3.png"):
+    for name in ("IMG_2.png", "IMG_3.png", "IMG_4.png"):
         make_image(folder / name, "blue")
     library = Library.open(drive)
     library.enter(folder / "IMG_2.png", "bird")
     library.enter(folder / "IMG_3.png", "bird beach")
-    library.enter(folder / "IMG_1.png", "beach")
+    library.enter(folder / "IMG_4.png", "beach")
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
     type_in_tag_prompt(qtbot, viewer, "b")
