@@ -9,6 +9,9 @@ from mediatagger.video import VideoPlayer, new_engine
 
 PLAYER_OPTIONS = {"vo": "libmpv"}
 VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up", Qt.Key.Key_Down: "Down", Qt.Key.Key_Return: "Enter"}
+# Explicit colours: the desktop theme's default text colour may be black, which vanishes on a black background.
+LABEL_STYLE = "color: white; background-color: rgba(0, 0, 0, 160); padding: 8px 12px; border-radius: 6px; font-size: 18px;"
+CORNER_MARGIN = 16
 SLIDESHOW_KEYS = {Qt.Key.Key_Left: "Left", Qt.Key.Key_Right: "Right", Qt.Key.Key_Space: "Space"}
 
 
@@ -25,8 +28,11 @@ class Viewer(QWidget):
         self.video_player = VideoPlayer(new_engine(**{**PLAYER_OPTIONS, **(player_options or {})}))
         self.surface = None
         self.info = QLabel(self)
+        self.info.setStyleSheet(LABEL_STYLE)
+        self.info.move(CORNER_MARGIN, CORNER_MARGIN)
         self.info.hide()
         self.placeholder = QLabel("Unsupported", self)
+        self.placeholder.setStyleSheet(LABEL_STYLE)
         self.setWindowState(Qt.WindowState.WindowFullScreen)
         self._show_current()
 

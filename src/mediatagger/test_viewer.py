@@ -460,3 +460,32 @@ def test_the_unsupported_placeholder_sits_at_the_centre_of_the_window_and_stays_
 
     offset = viewer.placeholder.geometry().center() - viewer.rect().center()
     assert offset.manhattanLength() <= 2
+
+
+def light_theme(viewer):
+    """A desktop theme like the Pi's, whose default text colour is black."""
+    palette = viewer.palette()
+    palette.setColor(palette.ColorRole.WindowText, QColor("black"))
+    viewer.setPalette(palette)
+
+
+def colours_inside(viewer, label):
+    frame = viewer.grab().toImage()
+    area = label.geometry()
+    return [frame.pixelColor(x, y) for x in range(area.left(), area.right()) for y in range(area.top(), area.bottom())]
+
+
+def test_the_info_overlay_is_light_text_on_a_dark_translucent_panel_whatever_the_desktop_theme(qtbot, tmp_path):
+    image = QImage(400, 300, QImage.Format.Format_RGB32)
+    image.fill(QColor("red"))
+    image.save(str(tmp_path / "IMG_1.png"))
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    light_theme(viewer)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_I)
+
+    colours = colours_inside(viewer, viewer.info)
+    assert any(colour.lightness() > 200 and colour.saturation() < 40 for colour in colours)  # light text
+    frame = viewer.grab().toImage()
+    panel = frame.pixelColor(viewer.info.geometry().left() + 4, viewer.info.geometry().center().y())  # in the padding
+    assert panel != QColor("red") and panel.red() < 200 and panel.red() > 0  # red image dimmed, not hidden
