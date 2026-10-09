@@ -95,3 +95,8 @@ def test_a_still_image_is_shown_as_an_image_while_mp4_avi_mpg_are_played_as_vide
         "old_5.avi": True,
         "old_6.mpg": True,
     }
+
+
+def test_every_video_extension_design_md_lists_is_played_as_video_regardless_of_case(tmp_path):
+    names = ["a.mp4", "b.MOV", "c.avi", "d.mpg", "e.MPEG", "f.mkv", "g.m4v", "h.wmv", "i.3gp", "j.GIF", "k.MP4"]
+    assert [name for name in names if not is_video(tmp_path / name)] == []
