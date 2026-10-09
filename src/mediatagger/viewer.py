@@ -16,6 +16,7 @@ VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up", Qt.Key.
 # Explicit colours: the desktop theme's default text colour may be black, which vanishes on a black background.
 LABEL_STYLE = "color: white; background-color: rgba(0, 0, 0, 160); padding: 8px 12px; border-radius: 6px; font-size: 18px;"
 CORNER_MARGIN = 16
+TAG_PROMPT_WIDTH = 600
 SLIDESHOW_KEYS = {Qt.Key.Key_Left: "Left", Qt.Key.Key_Right: "Right", Qt.Key.Key_Space: "Space"}
 UNSUPPORTED_TEXT = "Unsupported"
 APP_PACKAGE = Path(__file__).parent  # its drive is never written while the app runs
@@ -74,7 +75,15 @@ class Viewer(QWidget):
         self.video_player = VideoPlayer(new_engine(**{**PLAYER_OPTIONS, **(player_options or {})}))
         self.surface = None
         self._decoded_key = self._decoded = None
-        self._tags_label = None
+        self._tagging = None  # (library, path) of the item being tagged while the tag prompt is open
+        self.tag_input = QLineEdit(self)
+        self.tag_input.setStyleSheet(LABEL_STYLE)
+        self.tag_input.returnPressed.connect(self._record_tags)
+        self.tag_input.hide()
+        self.prompt_tags = overlay_label("", self)
+        self.prompt_tags.hide()
+        self.tag_overlay = overlay_label("", self)
+        self.tag_overlay.hide()
         self.info = overlay_label("", self)
         self.info.move(CORNER_MARGIN, CORNER_MARGIN)
         self.info.hide()
@@ -127,6 +136,12 @@ class Viewer(QWidget):
         frame.moveTop(CORNER_MARGIN)
         label.setGeometry(frame)
 
+    def _pin_above(self, label, widget):
+        frame = label.geometry()
+        frame.moveCenter(widget.geometry().center())
+        frame.moveBottom(widget.geometry().top() - CORNER_MARGIN // 2)
+        label.setGeometry(frame)
+
     def _pin_bottom_centre(self, widget):
         frame = widget.geometry()
         frame.moveCenter(self.rect().center())
@@ -154,7 +169,7 @@ class Viewer(QWidget):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Escape and self._tag_prompt_has_focus():
-            self._close_tag_prompt(self.focusWidget(), self._tags_label)
+            self._close_tag_prompt()
             return
         if event.key() == Qt.Key.Key_Escape:  # interim: quits until the grid (Phase 7) makes Esc "back to grid"
             self.close()
@@ -186,33 +201,40 @@ class Viewer(QWidget):
         self._refresh()
 
     def _tag_prompt_has_focus(self):
-        focused = self.focusWidget()
-        return isinstance(focused, QLineEdit) and focused.isVisible()
+        return self.focusWidget() is self.tag_input and self.tag_input.isVisible()
 
     def _open_tag_prompt(self):
         library = Library.open(self.library_drive)
         path = self.slideshow.current
-        prompt = QLineEdit(self)
-        prompt.setStyleSheet(LABEL_STYLE)
-        if self._tags_label is not None:
-            self._tags_label.hide()
-        tags_label = overlay_label(" ".join(library.tags(path)), self)
-        self._tags_label = tags_label
-        prompt.returnPressed.connect(lambda: self._record_tags(library, path, prompt, tags_label))
-        self._pin_bottom_centre(prompt)
-        prompt.show()
-        prompt.setFocus()
-        tags_label.show()
+        self._tagging = (library, path)
+        self.tag_overlay.hide()
+        tags = " ".join(library.tags(path))
+        self.prompt_tags.setText(tags)
+        self.prompt_tags.adjustSize()
+        self.tag_input.clear()
+        self.tag_input.resize(min(TAG_PROMPT_WIDTH, self.width() - 2 * CORNER_MARGIN), self.tag_input.sizeHint().height())
+        self._pin_bottom_centre(self.tag_input)
+        self._pin_above(self.prompt_tags, self.tag_input)
+        self.tag_input.show()
+        self.tag_input.raise_()
+        self.prompt_tags.setVisible(bool(tags))
+        self.prompt_tags.raise_()
+        self.tag_input.setFocus()
 
-    def _record_tags(self, library, path, prompt, tags_label):
-        library.enter(path, prompt.text())
-        self._close_tag_prompt(prompt, tags_label)
-        tags_label.setText(" ".join(library.tags(path)))
-        tags_label.show()
+    def _record_tags(self):
+        library, path = self._tagging
+        library.enter(path, self.tag_input.text())
+        self._close_tag_prompt()
+        self.tag_overlay.setText(" ".join(library.tags(path)))
+        self.tag_overlay.adjustSize()
+        self.tag_overlay.show()
+        self.tag_overlay.raise_()
 
-    def _close_tag_prompt(self, prompt, tags_label):
-        prompt.hide()
-        tags_label.hide()
+    def _close_tag_prompt(self):
+        self._tagging = None
+        self.tag_input.hide()
+        self.prompt_tags.hide()
+        self.setFocus()  # keys go back to the viewer, not to the hidden input
 
     def _toggle_fullscreen(self):
         if self.isFullScreen():
@@ -333,7 +355,7 @@ class Viewer(QWidget):
             self.surface = self.surface or MpvSurface(self.video_player.engine, self)
             self.surface.setGeometry(self.rect())
             self.surface.show()
-            for overlay in (self.info, self.status_bar, self.read_only_banner):
+            for overlay in (self.info, self.status_bar, self.read_only_banner, self.tag_overlay, self.prompt_tags, self.tag_input):
                 overlay.raise_()
             self.surface.when_ready(lambda clip=self.slideshow.current: self._play(clip))
         elif self.surface:
