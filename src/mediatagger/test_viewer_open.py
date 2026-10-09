@@ -95,8 +95,12 @@ def test_the_launch_screen_text_shows_the_o_key_without_backticks(qtbot):
     assert shown_texts(viewer) == ["Drop a folder or file here, or press o to open"]
 
 
+def status_bar_labels(viewer):
+    return [label for label in viewer.status_bar.findChildren(QLabel) if not label.isHidden()]
+
+
 def status_bar_texts(viewer):
-    return [label.text() for label in viewer.status_bar.findChildren(QLabel) if not label.isHidden()]
+    return [label.text() for label in status_bar_labels(viewer)]
 
 
 def make_tag_library_drive(drive):
@@ -376,7 +380,7 @@ def test_on_a_read_only_drive_with_a_tag_library_the_status_bar_texts_sit_side_b
     with made_read_only(drive):
         viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
-    shown = [label for label in viewer.status_bar.findChildren(QLabel) if not label.isHidden()]
+    shown = status_bar_labels(viewer)
     left, right = sorted((QRect(label.mapTo(viewer, QPoint()), label.size()) for label in shown), key=lambda frame: frame.left())
     assert len(shown) == 2
     assert viewer.rect().contains(left) and viewer.rect().contains(right)
@@ -427,7 +431,7 @@ def test_on_a_read_only_drive_with_a_tag_library_each_status_bar_text_is_styled_
     with made_read_only(drive):
         viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
-    shown = [label for label in viewer.status_bar.findChildren(QLabel) if not label.isHidden()]
+    shown = status_bar_labels(viewer)
     assert len(shown) == 2
     assert [label.styleSheet() for label in shown] == [viewer.info.styleSheet()] * 2
 
