@@ -438,3 +438,24 @@ def test_a_viewer_opened_on_a_folder_whose_listing_fails_with_an_io_error_says_i
     drag_and_drop_onto(viewer, readable)
     assert shown_labels(viewer) == []
     assert centre_colour(viewer) == QColor("red")
+
+
+def test_dropping_a_folder_whose_listing_fails_with_an_io_error_while_an_image_is_showing_no_longer_paints_it_and_o_opens_the_folder_picker(qtbot, tmp_path, monkeypatch):
+    viewed, unplugged = make_folders(tmp_path, "Trip", "USB")
+    make_image(viewed / "IMG_1.png", "red")
+    make_image(unplugged / "IMG_1.png", "blue")
+    real_iterdir = Path.iterdir
+
+    def iterdir_failing_on_the_unplugged_drive(path):
+        if path == unplugged:
+            raise OSError(errno.EIO, "Input/output error")
+        return real_iterdir(path)
+
+    monkeypatch.setattr(Path, "iterdir", iterdir_failing_on_the_unplugged_drive)
+    viewer = shown_viewer_on(qtbot, viewed)
+
+    drag_and_drop_onto(viewer, unplugged)
+
+    frame = viewer.grab().toImage()
+    assert frame.pixelColor(10, frame.height() // 2) == QColor("black")
+    assert isinstance(modal_opened_by_key(qtbot, viewer, Qt.Key.Key_O), QFileDialog)

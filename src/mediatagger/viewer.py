@@ -150,6 +150,7 @@ class Viewer(QWidget):
         try:
             self.slideshow = Slideshow.open(path)
         except OSError:
+            self.slideshow = None
             self._show_cant_open(path)
             return
         if self.slideshow is None:
