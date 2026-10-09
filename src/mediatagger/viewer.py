@@ -8,7 +8,7 @@ from mediatagger.slideshow import Slideshow
 from mediatagger.video import VideoPlayer, new_engine
 
 PLAYER_OPTIONS = {"vo": "libmpv"}
-VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up"}
+VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up", Qt.Key.Key_Down: "Down"}
 SLIDESHOW_KEYS = {Qt.Key.Key_Left: "Left", Qt.Key.Key_Right: "Space", Qt.Key.Key_Space: "Space"}
 
 
