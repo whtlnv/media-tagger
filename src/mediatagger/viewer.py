@@ -136,6 +136,7 @@ class Viewer(QWidget):
         if path is None:
             return
         if not os.access(path, os.R_OK):
+            self.slideshow = None
             self._show_message(f"Can't open {path.name}")
             return
         showing_info = self.slideshow is not None and self.slideshow.overlay

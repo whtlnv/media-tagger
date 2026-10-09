@@ -6,7 +6,7 @@
 - [x] Dropping a folder that doesn't exist while a video is showing stops the video, hides the video surface and shows "Can't open <name>"
 - [x] Dropping a folder that doesn't exist while the `i` overlay is shown hides the overlay
 - [x] After "Can't open <name>" is shown, dropping a readable folder onto the window starts that folder's slideshow at its first item
-- [ ] After "Can't open <name>" is shown, pressing `o` and choosing a readable folder in the picker starts that folder's slideshow
+- [x] After "Can't open <name>" is shown, pressing `o` and choosing a readable folder in the picker starts that folder's slideshow
 - [ ] Running the shipped `mediatagger /no/such/path` command keeps running and shows "Can't open path" instead of exiting with an error
 - [ ] The launch screen text reads "Drop a folder or file here, or press o to open", with no backticks around the o
   - predicted-contradiction: `src/mediatagger/test_viewer_open.py::test_a_viewer_opened_with_no_path_shows_only_the_launch_text` — asserts: the launch screen shows exactly "Drop a folder or file here, or press `o` to open" (with backticks) — retired-by: "reads \"Drop a folder or file here, or press o to open\", with no backticks around the o"

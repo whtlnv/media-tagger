@@ -389,3 +389,16 @@ def test_dropping_a_readable_folder_after_cant_open_is_shown_starts_that_folders
 
     assert shown_labels(viewer) == []
     assert centre_colour(viewer) == QColor("red")
+
+
+def test_choosing_a_readable_folder_in_the_o_dialog_after_cant_open_is_shown_starts_that_folders_slideshow(qtbot, tmp_path):
+    trip, holidays = make_folders(tmp_path, "Trip", "Holidays")
+    make_image(trip / "IMG_1.png", "blue")
+    make_image(holidays / "IMG_1.png", "red")
+    viewer = shown_viewer_on(qtbot, trip)
+    drag_and_drop_onto(viewer, tmp_path / "Missing")
+
+    finish_o_dialog_pointed_at(qtbot, viewer, holidays, "accept")
+
+    assert shown_labels(viewer) == []
+    assert centre_colour(viewer) == QColor("red")
