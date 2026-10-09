@@ -42,11 +42,24 @@ def viewer_on(qtbot, folder):
     return viewer
 
 
-def shown_viewer_on(qtbot, folder):
+def unready_viewer_on(qtbot, folder):
     viewer = viewer_on(qtbot, folder)
     viewer.resize(400, 300)
     viewer.show()
     qtbot.waitExposed(viewer)
+    return viewer
+
+
+def make_surface_ready(viewer):
+    """The offscreen platform has no OpenGL, so stand in for the video surface's render context being created."""
+    surface = viewer.findChild(MpvSurface)
+    if surface is not None:
+        surface.became_ready()
+
+
+def shown_viewer_on(qtbot, folder):
+    viewer = unready_viewer_on(qtbot, folder)
+    make_surface_ready(viewer)
     return viewer
 
 
@@ -166,6 +179,7 @@ def test_pressing_space_in_the_viewer_on_an_image_followed_by_a_video_shows_the_
     viewer = shown_viewer_on(qtbot, tmp_path)
 
     qtbot.keyClick(viewer, Qt.Key.Key_Space)
+    make_surface_ready(viewer)
 
     assert shows_video_surface(viewer)
     wait_until_loaded(viewer.video_player.engine, clip)
@@ -409,3 +423,18 @@ def test_the_info_overlay_stays_on_top_of_a_video(qtbot, tmp_path):
     qtbot.keyClick(viewer, Qt.Key.Key_Space)
 
     assert viewer.childAt(viewer.info.geometry().center()) is viewer.info
+
+
+def test_a_video_shown_before_its_surface_can_render_is_loaded_exactly_once_when_the_surface_becomes_ready(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4")
+    viewer = unready_viewer_on(qtbot, tmp_path)
+    engine = viewer.video_player.engine
+    loads = []
+    engine.event_callback("start_file")(lambda event: loads.append(event))
+    assert engine.path is None  # nothing loads before the surface can render, or mpv drops the clip's video
+
+    viewer.findChild(MpvSurface).became_ready()
+
+    wait_until_loaded(engine, clip)
+    qtbot.wait(300)
+    assert len(loads) == 1

@@ -9,12 +9,12 @@ class MpvSurface(QOpenGLWidget):
 
     frame_ready = Signal()
 
-    def __init__(self, engine, parent=None, on_ready=lambda: None):
-        """on_ready runs once the render context exists: a clip loaded before then played without its video."""
+    def __init__(self, engine, parent=None):
         super().__init__(parent)
         self.engine = engine
-        self.on_ready = on_ready
         self.render_context = None
+        self._ready = False
+        self._pending = None
         self.frame_ready.connect(self.update, Qt.ConnectionType.QueuedConnection)
 
     def initializeGL(self):
@@ -27,7 +27,21 @@ class MpvSurface(QOpenGLWidget):
             self.engine, "opengl", opengl_init_params={"get_proc_address": self._get_proc_address}
         )
         self.render_context.update_cb = self.frame_ready.emit
-        self.on_ready()
+        self.became_ready()
+
+    def when_ready(self, load):
+        """Run load now if the surface can render, else once it can: mpv drops the video of a clip loaded earlier."""
+        if self._ready:
+            load()
+        else:
+            self._pending = load
+
+    def became_ready(self):
+        """The render context exists (initializeGL calls this; tests call it to stand in for a GL context)."""
+        self._ready = True
+        pending, self._pending = self._pending, None
+        if pending:
+            pending()
 
     def paintGL(self):
         if self.render_context is None:
