@@ -5,8 +5,12 @@ from contextlib import contextmanager
 from mediatagger.library import Library
 
 
+def _tags_db(root):
+    return root / ".mediatagger" / "tags.db"
+
+
 def _query(root, sql):
-    connection = sqlite3.connect(root / ".mediatagger" / "tags.db")
+    connection = sqlite3.connect(_tags_db(root))
     try:
         return connection.execute(sql).fetchall()
     finally:
@@ -19,7 +23,7 @@ def _read_meta(root):
 
 @contextmanager
 def _read_only_drive(root):
-    tags_db = root / ".mediatagger" / "tags.db"
+    tags_db = _tags_db(root)
     tags_db.chmod(0o444)
     tags_db.parent.chmod(0o555)
     root.chmod(0o555)
@@ -33,7 +37,7 @@ def _read_only_drive(root):
 
 def _create_schema_version_1_library(root, drive_id):
     (root / ".mediatagger").mkdir()
-    connection = sqlite3.connect(root / ".mediatagger" / "tags.db")
+    connection = sqlite3.connect(_tags_db(root))
     with connection:
         connection.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
         connection.executemany(
@@ -110,7 +114,7 @@ def test_a_library_created_removed_and_created_again_at_the_same_mount_point_rep
 
 def test_an_opened_library_reports_the_schema_version_recorded_in_its_tags_db(tmp_path):
     Library.create(tmp_path)
-    connection = sqlite3.connect(tmp_path / ".mediatagger" / "tags.db")
+    connection = sqlite3.connect(_tags_db(tmp_path))
     with connection:
         connection.execute("UPDATE meta SET value = '0' WHERE key = 'schema_version'")
     connection.close()
@@ -384,7 +388,7 @@ def test_a_tag_change_is_visible_to_a_separate_connection_to_tags_db_as_soon_as_
     library = Library.create(tmp_path)
     photo = tmp_path / "beach.jpg"
     photo.touch()
-    observer = sqlite3.connect(tmp_path / ".mediatagger" / "tags.db")
+    observer = sqlite3.connect(_tags_db(tmp_path))
     try:
         library.enter(photo, "beach family")
 
@@ -397,7 +401,7 @@ def test_a_tag_change_is_visible_to_a_separate_connection_to_tags_db_as_soon_as_
 
 def test_a_library_whose_tags_db_was_left_in_wal_mode_uses_the_rollback_journal_once_opened(tmp_path):
     Library.create(tmp_path)
-    tags_db = tmp_path / ".mediatagger" / "tags.db"
+    tags_db = _tags_db(tmp_path)
     connection = sqlite3.connect(tags_db)
     connection.execute("PRAGMA journal_mode = WAL")
     connection.close()
