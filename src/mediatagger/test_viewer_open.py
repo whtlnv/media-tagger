@@ -11,7 +11,8 @@ from mediatagger.test_viewer import (
     SILENT, shows_unsupported_placeholder, shows_video_surface, wait_until_loaded,
 )
 from mediatagger.viewer import (
-    CREATE_LIBRARY_QUESTION, DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT, LIBRARY_TEXT, NO_LIBRARY_TEXT, NO_LIBRARY_VIEWING_ONLY_TEXT, Viewer,
+    CREATE_LIBRARY_QUESTION, DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT, LIBRARY_TEXT, NO_LIBRARY_TEXT, NO_LIBRARY_VIEWING_ONLY_TEXT,
+    READ_ONLY_BANNER_TEXT, Viewer,
 )
 
 
@@ -251,6 +252,22 @@ def test_after_declining_to_create_a_tag_library_on_a_drive_the_status_bar_says_
     viewer = viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
     assert status_bar_texts(viewer) == [DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format("MEDIATAGGER")]
+
+
+def test_opening_a_folder_on_a_read_only_drive_that_has_a_tag_library_shows_a_banner_saying_tags_cant_be_saved(qtbot, tmp_path):
+    drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    drive.chmod(0o555)
+    try:
+        viewer = viewer_on_drive(qtbot, folder, drive, lambda question: False)
+        viewer.resize(400, 300)
+        viewer.show()
+        qtbot.waitExposed(viewer)
+    finally:
+        drive.chmod(0o755)
+
+    assert shown_texts(viewer) == [READ_ONLY_BANNER_TEXT]
 
 
 def test_a_viewer_opened_on_a_folder_shows_its_first_item_and_not_the_launch_text(qtbot, tmp_path):

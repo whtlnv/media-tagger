@@ -16,7 +16,7 @@
 - [x] A newly created library reports the same drive id after it is closed and opened again
 - [x] A newly created library records its schema version alongside its drive id
 - [x] Two libraries created on different drives report different drive ids
-- [ ] Opening a folder on a read-only drive that has a tag library shows a banner saying tags can't be saved (the test makes the mount point read-only and restores it afterwards)
+- [x] Opening a folder on a read-only drive that has a tag library shows a banner saying tags can't be saved (the test makes the mount point read-only and restores it afterwards)
 - [ ] Opening a folder on a writable drive that has a tag library shows no read-only banner
 - [ ] Opening a folder on a read-only drive still shows its slideshow at the first item
 - [ ] On a read-only drive the status bar says tags can't be saved (e.g. `Read-only: tags can't be saved`)
