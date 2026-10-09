@@ -835,6 +835,26 @@ def test_dropping_a_folder_with_no_media_while_an_image_is_showing_says_so_and_n
     assert frame.pixelColor(10, frame.height() // 2) == QColor("black")
 
 
+def test_the_no_media_text_shown_after_dropping_an_empty_folder_onto_the_launch_screen_is_centred_in_the_window(qtbot, tmp_path):
+    empty = tmp_path / "Holidays"
+    empty.mkdir()
+    (empty / "notes.txt").write_text("hi")
+    viewer = shown_launch_viewer(qtbot)
+    viewer.resize(600, 500)
+    qtbot.waitUntil(lambda: viewer.width() == 600)
+    dragged = dragged_local_path(empty)
+    drag_enter_over(viewer, dragged)
+
+    drop_onto(viewer, dragged)
+
+    frame = viewer.grab().toImage()
+    lit = [(x, y) for x in range(frame.width()) for y in range(frame.height()) if frame.pixelColor(x, y).lightness() > 200]
+    xs, ys = [x for x, _ in lit], [y for _, y in lit]
+    text_centre_x, text_centre_y = (min(xs) + max(xs)) // 2, (min(ys) + max(ys)) // 2
+    assert abs(text_centre_x - frame.width() // 2) <= 4
+    assert abs(text_centre_y - frame.height() // 2) <= 4
+
+
 def test_dropping_a_folder_while_viewing_another_folder_replaces_the_slideshow_with_the_dropped_folders_at_its_first_item(qtbot, tmp_path):
     viewer, dropped = viewer_past_its_first_item_beside_a_green_then_yellow_folder(qtbot, tmp_path)
     dragged = dragged_local_path(dropped)

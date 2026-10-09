@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-08 21:40 · `src/mediatagger/test_viewer.py::test_the_no_media_text_shown_after_dropping_an_empty_folder_onto_the_launch_screen_is_centred_in_the_window`
+- Behavior: the "No images or videos in <folder>" text after dropping an empty folder onto the launch screen is centred in the window
+- Predicted: AssertionError — the label keeps the longer launch text's width, so the shorter text is drawn left of centre
+- Actual: passed unexpectedly — the offscreen launch viewer is 100×30, so the launch-sized label overflows both edges and lit pixels span the full width, making the bounding-box centre coincide with the window centre
+- Type: passed unexpectedly
+- Resolution: resized the window to 600×500 before dropping (like the Unsupported-placeholder centring test); it now fails with the text centre 54px off
+
 ## 2026-10-08 21:18 · `src/mediatagger/test_main.py::test_dropping_a_folder_onto_the_mediatagger_command_started_with_no_path_starts_its_slideshow_at_its_first_item`
 - Behavior: In the shipped `mediatagger` command started with no path, dropping a folder onto the window starts its slideshow at its first item
 - Predicted: passes on first run (`main()` builds `Viewer(None)`, whose `dropEvent` → `_open` already starts the slideshow, as the in-process drop tests show); otherwise an AssertionError, black centre with the launch text still showing
