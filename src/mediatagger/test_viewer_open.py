@@ -89,11 +89,14 @@ def test_the_launch_screen_text_shows_the_o_key_without_backticks(qtbot):
     assert shown_texts(viewer) == ["Drop a folder or file here, or press o to open"]
 
 
+def status_bar_texts(viewer):
+    return [label.text() for label in viewer.status_bar.findChildren(QLabel) if not label.isHidden()]
+
+
 def test_the_launch_screen_status_bar_says_no_library_is_open(qtbot):
     viewer = shown_launch_viewer(qtbot)
 
-    status_texts = [label.text() for label in viewer.status_bar.findChildren(QLabel) if label.isVisible()]
-    assert status_texts == [NO_LIBRARY_TEXT]
+    assert status_bar_texts(viewer) == [NO_LIBRARY_TEXT]
 
 
 def test_opening_a_folder_two_levels_below_a_drive_with_a_tag_library_names_that_drive_in_the_status_bar(qtbot, tmp_path):
@@ -107,8 +110,7 @@ def test_opening_a_folder_two_levels_below_a_drive_with_a_tag_library_names_that
     viewer = Viewer(folder, player_options=SILENT, is_mount_point=lambda path: path == drive)
     qtbot.addWidget(viewer)
 
-    status_texts = [label.text() for label in viewer.status_bar.findChildren(QLabel) if not label.isHidden()]
-    assert status_texts == [LIBRARY_TEXT.format("MEDIATAGGER")]
+    assert status_bar_texts(viewer) == [LIBRARY_TEXT.format("MEDIATAGGER")]
 
 
 def test_a_viewer_opened_on_a_folder_shows_its_first_item_and_not_the_launch_text(qtbot, tmp_path):
