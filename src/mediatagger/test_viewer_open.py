@@ -5,6 +5,7 @@ from PySide6.QtCore import QMimeData, QPointF, Qt, QTimer, QUrl
 from PySide6.QtGui import QColor, QDragEnterEvent, QDropEvent
 from PySide6.QtWidgets import QApplication, QFileDialog, QLabel
 
+from mediatagger.library import Library
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import (
     centre_colour, make_folder_with_no_media, make_image, shown_labels, shown_launch_viewer, shown_texts, shown_viewer_on,
@@ -236,6 +237,14 @@ def test_accepting_to_create_a_tag_library_on_a_drive_creates_it_and_names_the_d
 
     assert (drive / ".mediatagger" / "tags.db").is_file()
     assert status_bar_texts(viewer) == [LIBRARY_TEXT.format("MEDIATAGGER")]
+
+
+def test_accepting_to_create_a_tag_library_on_a_drive_creates_a_real_library_whose_tags_db_reports_a_drive_id(qtbot, tmp_path):
+    drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
+
+    viewer_on_drive(qtbot, folder, drive, lambda question: True)
+
+    assert Library.open(drive).drive_id
 
 
 def test_declining_to_create_a_tag_library_on_a_drive_leaves_the_drive_without_a_mediatagger_folder(qtbot, tmp_path):

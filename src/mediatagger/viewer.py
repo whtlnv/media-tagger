@@ -6,6 +6,7 @@ from PySide6.QtGui import QImageIOHandler, QImageReader, QPainter
 from PySide6.QtWidgets import QFileDialog, QLabel, QWidget
 
 from mediatagger.folder import is_video
+from mediatagger.library import Library
 from mediatagger.mpv_surface import MpvSurface
 from mediatagger.slideshow import Slideshow
 from mediatagger.video import VideoPlayer, new_engine
@@ -184,8 +185,7 @@ class Viewer(QWidget):
             if not self.ask_to_create_library(CREATE_LIBRARY_QUESTION.format(drive.name)):
                 self.library_label.setText(DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format(drive.name))
                 return
-            library_dir.mkdir()
-            (library_dir / "tags.db").touch()
+            Library.create(drive)
         self.read_only_banner.setVisible(not os.access(drive, os.W_OK))
         self.library_label.setText(LIBRARY_TEXT.format(drive.name))
 
