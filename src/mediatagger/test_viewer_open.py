@@ -394,6 +394,22 @@ def test_the_status_bar_text_is_shown_whole_with_room_for_its_full_height(qtbot,
     assert viewer.library_label.width() == viewer.library_label.sizeHint().width()
 
 
+def test_the_question_to_create_a_tag_library_is_asked_over_the_dropped_folders_first_image_not_a_placeholder(qtbot, tmp_path):
+    drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
+    placeholder_shown_when_asked = []
+    viewer = Viewer(
+        player_options=SILENT, is_mount_point=lambda path: path == drive,
+        ask_to_create_library=lambda question: placeholder_shown_when_asked.append(shown_texts(viewer)),
+    )
+    qtbot.addWidget(viewer)
+    viewer.show()
+    qtbot.waitExposed(viewer)
+
+    drag_and_drop_onto(viewer, folder)
+
+    assert placeholder_shown_when_asked == [[]]
+
+
 def test_the_status_bar_text_stays_on_top_of_a_playing_video(qtbot, tmp_path):
     drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
     [folder] = make_folders(drive, "Clips")

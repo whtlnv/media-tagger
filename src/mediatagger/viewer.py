@@ -207,10 +207,10 @@ class Viewer(QWidget):
             self._show_message(f"No images or videos in {path.name}")
             return
         self.placeholder.setText(UNSUPPORTED_TEXT)
-        self._open_library(path)
         if showing_info:
             self.slideshow.press("i")
         self._refresh()
+        self._open_library(path)  # after the first item is shown, so a question about the library is asked over it
 
     def _open_library(self, path):
         drive = next(folder for folder in (path, *path.parents) if self.is_mount_point(folder))
