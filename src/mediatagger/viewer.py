@@ -66,6 +66,8 @@ class LastWordCompleter(QCompleter):
         return [_last_word(path).removeprefix("-")]
 
     def eventFilter(self, watched, event):
+        if watched is self.popup() and event.type() == QEvent.Type.Move:
+            self._open_above_the_prompt()
         if event.type() != QEvent.Type.KeyPress:
             return super().eventFilter(watched, event)
         if event.key() == Qt.Key.Key_Tab:
@@ -75,6 +77,11 @@ class LastWordCompleter(QCompleter):
             self.popup().hide()
             return True
         return super().eventFilter(watched, event)
+
+    def _open_above_the_prompt(self):
+        popup = self.popup()
+        prompt_top = self.widget().mapToGlobal(QPoint(0, 0)).y()
+        popup.move(popup.x(), prompt_top - popup.height())
 
     def _accept_highlighted(self):
         prompt = self.widget()

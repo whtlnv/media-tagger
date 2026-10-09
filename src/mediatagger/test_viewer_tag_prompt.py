@@ -347,3 +347,16 @@ def test_the_suggestion_popup_over_a_white_image_shows_light_text_on_a_dark_back
     background = colour_at(first_row.right() - 4, first_row.center().y())
     assert background.lightness() < 100  # dark background
     assert any(colour.lightness() > 200 and colour.saturation() < 40 for colour in colours)  # light text
+
+
+def test_the_suggestion_popup_opens_above_the_prompt_and_lies_entirely_inside_the_window_even_with_more_suggestions_than_fit_below_the_prompt(qtbot, tmp_path):
+    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, " ".join(f"bird{number}" for number in range(30)))
+
+    type_in_tag_prompt(qtbot, viewer, "b")
+
+    [suggestions] = visible_suggestion_lists(viewer)
+    [prompt] = visible_tag_prompts(viewer)
+    popup = suggestions.window().frameGeometry()
+    window = viewer.frameGeometry()
+    prompt_top = prompt.mapToGlobal(prompt.rect().topLeft()).y()
+    assert (popup.bottom() < prompt_top, window.contains(popup)) == (True, True)

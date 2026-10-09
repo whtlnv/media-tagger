@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 17:10 · `src/mediatagger/test_viewer_tag_prompt.py::test_the_suggestion_popup_opens_above_the_prompt_and_lies_entirely_inside_the_window_even_with_more_suggestions_than_fit_below_the_prompt`
+- Behavior: The suggestion popup opens above the prompt and lies entirely inside the window, even with more suggestions than fit below the prompt
+- Predicted: none committed — the test was run before a prediction was stated (process lapse). Unstated expectation was a possible vacuous pass, since QCompleter flips its popup above the line edit when it would overflow the screen
+- Actual: AssertionError `(False, False) == (True, True)` — popup at (16,244 368x111) runs below the prompt (top y=205) and past the window's bottom (window 400x300 at origin, offscreen screen 800x800)
+- Type: right-reason mismatch
+- Resolution: QCompleter positions against the screen, not the window; under offscreen the fullscreen request leaves the viewer 400x300 on an 800x800 screen, so the popup fits below on screen and opens downward, out of the window. Right-reason failure; test kept as written.
+
 ## 2026-10-09 16:55 · `src/mediatagger/test_viewer_tag_prompt.py::test_on_a_paused_video_with_the_suggestion_popup_open_down_twice_and_up_highlight_the_first_suggestion_and_do_not_seek_the_video`
 - Behavior: On a video item with the suggestion popup open, `↓` and `↑` move the highlight and do not seek the video
 - Predicted: passes on first run — QCompleter's popup consumes `Up`/`Down` (the completer's eventFilter plus the list view), so they never reach `Viewer.keyPressEvent`, and `_tag_prompt_has_focus` already blocks arrow seeks while the prompt is open (a right-reason failure would have been AssertionError with time-pos moved ±10s from 20)
