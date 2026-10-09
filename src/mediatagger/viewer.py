@@ -200,8 +200,7 @@ class Viewer(QWidget):
         self.slideshow.press(key)
         self.video_player.press(key)
         self._refresh()
-        if self.library:
-            self._show_tag_overlay(self.library, self.slideshow.current)
+        self._show_current_tags()
 
     def _tag_prompt_has_focus(self):
         return self.focusWidget() is self.tag_input and self.tag_input.isVisible()
@@ -235,6 +234,10 @@ class Viewer(QWidget):
         self.tag_input.hide()
         self.prompt_tags.hide()
         self.setFocus()  # keys go back to the viewer, not to the hidden input
+
+    def _show_current_tags(self):
+        if self.library:
+            self._show_tag_overlay(self.library, self.slideshow.current)
 
     def _show_tag_overlay(self, library, path):
         tags = " ".join(library.tags(path))
@@ -287,8 +290,7 @@ class Viewer(QWidget):
             self.slideshow.press("i")
         self._refresh()
         self._open_library(path)  # after the first item is shown, so a question about the library is asked over it
-        if self.library:
-            self._show_tag_overlay(self.library, self.slideshow.current)
+        self._show_current_tags()
 
     def _open_library(self, path):
         self.library = None
