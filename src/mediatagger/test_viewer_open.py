@@ -99,6 +99,23 @@ def make_tag_library_drive(drive):
     return drive
 
 
+def drive_without_a_tag_library_holding_one_image(tmp_path):
+    drive = tmp_path / "MEDIATAGGER"
+    folder = drive / "Photos"
+    folder.mkdir(parents=True)
+    make_image(folder / "IMG_1.png", "red")
+    return drive, folder
+
+
+def viewer_on_drive(qtbot, folder, drive, ask_to_create_library):
+    viewer = Viewer(
+        folder, player_options=SILENT, is_mount_point=lambda path: path == drive,
+        ask_to_create_library=ask_to_create_library,
+    )
+    qtbot.addWidget(viewer)
+    return viewer
+
+
 def test_the_launch_screen_status_bar_says_no_library_is_open(qtbot):
     viewer = shown_launch_viewer(qtbot)
 
@@ -173,21 +190,14 @@ def test_opening_a_folder_on_the_system_disk_never_asks_to_create_a_library_and_
 
 
 def test_opening_a_folder_on_a_drive_without_a_tag_library_asks_to_create_one_on_that_drive_before_writing_to_it(qtbot, tmp_path):
-    drive = tmp_path / "MEDIATAGGER"
-    folder = drive / "Photos"
-    folder.mkdir(parents=True)
-    make_image(folder / "IMG_1.png", "red")
+    drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
     asked = []
 
     def decline_noting_whether_the_drive_was_written(question):
         asked.append((question, (drive / ".mediatagger").exists()))
         return False
 
-    viewer = Viewer(
-        folder, player_options=SILENT, is_mount_point=lambda path: path == drive,
-        ask_to_create_library=decline_noting_whether_the_drive_was_written,
-    )
-    qtbot.addWidget(viewer)
+    viewer_on_drive(qtbot, folder, drive, decline_noting_whether_the_drive_was_written)
 
     assert asked == [(CREATE_LIBRARY_QUESTION.format("MEDIATAGGER"), False)]
 
@@ -198,41 +208,24 @@ def test_opening_a_folder_on_a_drive_that_already_has_a_tag_library_does_not_ask
     make_image(folder / "IMG_1.png", "red")
     asked = []
 
-    viewer = Viewer(
-        folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=asked.append,
-    )
-    qtbot.addWidget(viewer)
+    viewer_on_drive(qtbot, folder, drive, asked.append)
 
     assert asked == []
 
 
 def test_accepting_to_create_a_tag_library_on_a_drive_creates_it_and_names_the_drive_as_the_open_library(qtbot, tmp_path):
-    drive = tmp_path / "MEDIATAGGER"
-    folder = drive / "Photos"
-    folder.mkdir(parents=True)
-    make_image(folder / "IMG_1.png", "red")
+    drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
 
-    viewer = Viewer(
-        folder, player_options=SILENT, is_mount_point=lambda path: path == drive,
-        ask_to_create_library=lambda question: True,
-    )
-    qtbot.addWidget(viewer)
+    viewer = viewer_on_drive(qtbot, folder, drive, lambda question: True)
 
     assert (drive / ".mediatagger" / "tags.db").is_file()
     assert status_bar_texts(viewer) == [LIBRARY_TEXT.format("MEDIATAGGER")]
 
 
 def test_declining_to_create_a_tag_library_on_a_drive_leaves_the_drive_without_a_mediatagger_folder(qtbot, tmp_path):
-    drive = tmp_path / "MEDIATAGGER"
-    folder = drive / "Photos"
-    folder.mkdir(parents=True)
-    make_image(folder / "IMG_1.png", "red")
+    drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
 
-    viewer = Viewer(
-        folder, player_options=SILENT, is_mount_point=lambda path: path == drive,
-        ask_to_create_library=lambda question: False,
-    )
-    qtbot.addWidget(viewer)
+    viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
     assert not (drive / ".mediatagger").exists()
 
