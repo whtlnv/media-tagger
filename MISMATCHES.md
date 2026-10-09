@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 02:10 · `src/mediatagger/test_viewer_open.py::test_opening_a_folder_on_the_drive_the_app_runs_from_that_already_has_a_tag_library_does_not_open_it_and_says_no_library_viewing_only`
+- Behavior: Opening a folder on the app's own drive when that drive already has `.mediatagger/tags.db` does not open that library: the status bar says no library, viewing only
+- Predicted: passes — `_open_library` checks `_never_holds_a_library` before it checks whether `.mediatagger` exists, so the previous app-drive cycle already covers this
+- Actual: passed (1 passed)
+- Type: passed unexpectedly
+- Resolution: The behavior was already delivered by a072322's early return. No rewrite can make it fail without asserting something else, so the test stays as a regression pin for an app drive that already has a library, and there's no production change for /green.
+
 ## 2026-10-09 02:01 · `src/mediatagger/test_viewer_open.py::test_opening_a_folder_that_does_not_exist_on_a_drive_without_a_tag_library_does_not_ask_to_create_one`
 - Behavior: Opening a path that can't be opened ("Can't open <name>") does not ask to create a library
 - Predicted: passes on first run — `_open` returns after `_show_cant_open` (both the `is_openable` and `OSError` branches) before reaching `_open_library`

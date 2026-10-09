@@ -235,6 +235,15 @@ def test_opening_a_folder_on_the_drive_the_app_runs_from_never_asks_to_create_a_
     assert status_bar_texts(viewer) == [NO_LIBRARY_VIEWING_ONLY_TEXT]
 
 
+def test_opening_a_folder_on_the_drive_the_app_runs_from_that_already_has_a_tag_library_does_not_open_it_and_says_no_library_viewing_only(qtbot, tmp_path, monkeypatch):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    monkeypatch.setattr(mediatagger, "__file__", str(drive / "app" / "mediatagger" / "__init__.py"))
+
+    viewer = viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    assert status_bar_texts(viewer) == [NO_LIBRARY_VIEWING_ONLY_TEXT]
+
+
 def test_opening_a_folder_on_a_drive_without_a_tag_library_asks_to_create_one_on_that_drive_before_writing_to_it(qtbot, tmp_path):
     drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
     asked = []
