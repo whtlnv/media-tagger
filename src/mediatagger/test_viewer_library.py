@@ -824,3 +824,19 @@ def test_after_the_window_is_resized_the_tag_overlay_is_still_a_corner_margin_fr
     frame = QRect(tag_overlay.mapTo(viewer, QPoint()), tag_overlay.size())
     assert frame.top() == CORNER_MARGIN
     assert frame.right() == viewer.rect().right() - CORNER_MARGIN
+
+
+def test_with_the_info_overlay_and_the_read_only_banner_showing_the_tag_overlay_overlaps_neither(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach family")
+    with made_read_only(drive):
+        viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    qtbot.keyClick(viewer, Qt.Key.Key_I)
+
+    def frame(label):
+        return QRect(label.mapTo(viewer, QPoint()), label.size())
+
+    [tag_overlay] = [label for label in shown_labels(viewer) if label.text() == "beach family"]
+    assert viewer.info.isVisible() and viewer.read_only_banner.isVisible()
+    assert not frame(tag_overlay).intersects(frame(viewer.info))
+    assert not frame(tag_overlay).intersects(frame(viewer.read_only_banner))

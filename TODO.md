@@ -53,7 +53,7 @@
 - [x] After `Space` to a file with longer tags, the tag overlay still ends `CORNER_MARGIN` from the right edge (it is re-pinned whenever its text changes)
 - [x] The tag overlay has the same look as the info overlay
 - [x] After the window is resized (e.g. leaving fullscreen with `f`), the tag overlay is still `CORNER_MARGIN` from the top and right edges
-- [ ] With the info overlay (`i`) and the read-only banner showing, the tag overlay overlaps neither
+- [x] With the info overlay (`i`) and the read-only banner showing, the tag overlay overlaps neither
 - [ ] The tag overlay stays visible on top of a video item
 - [ ] Tagging a file on a drive opened at another mount path shows the same tags as before: a viewer on a copy of the drive at a different root shows the file's tags in the overlay
 - [ ] After dropping a folder from a second drive with a tag library, tags entered in the prompt are recorded in the second drive's `tags.db`, not the first's

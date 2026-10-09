@@ -140,7 +140,10 @@ class Viewer(QWidget):
 
     def _pin_top_right(self, label):
         frame = label.geometry()
-        frame.moveTopRight(QPoint(self.rect().right() - CORNER_MARGIN, CORNER_MARGIN))
+        top = CORNER_MARGIN
+        if not self.read_only_banner.isHidden():
+            top = self.read_only_banner.geometry().bottom() + CORNER_MARGIN // 2
+        frame.moveTopRight(QPoint(self.rect().right() - CORNER_MARGIN, top))
         label.setGeometry(frame)
 
     def _pin_above(self, label, widget):
