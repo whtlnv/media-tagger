@@ -156,10 +156,13 @@ def test_running_the_mediatagger_command_on_a_path_that_does_not_exist_keeps_run
     assert result.returncode == 0, result.stderr
     assert result.stdout.splitlines() == cant_open_texts
 
-DECLINE_CREATING_A_LIBRARY_SCRIPT = (
+TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT = (
     "import os, sys\n"
     "drive = sys.argv[1]\n"
     "os.path.ismount = lambda path: os.fspath(path) == drive\n"
+)
+
+DECLINE_CREATING_A_LIBRARY_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT + (
     "from PySide6.QtCore import QTimer\n"
     "from PySide6.QtWidgets import QApplication\n"
     "from mediatagger.test_viewer import centre_colour\n"
@@ -189,10 +192,7 @@ def test_running_the_mediatagger_command_on_a_drive_without_a_tag_library_asks_a
     no_library_status = [DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format(drive.name)]
     assert result.stdout.strip() == f"asked=[True] centre={QColor('red').name()} status={no_library_status}"
 
-NOTE_WHETHER_THE_VIEWER_IS_SHOWN_WHEN_ASKED_SCRIPT = (
-    "import os, sys\n"
-    "drive = sys.argv[1]\n"
-    "os.path.ismount = lambda path: os.fspath(path) == drive\n"
+NOTE_WHETHER_THE_VIEWER_IS_SHOWN_WHEN_ASKED_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT + (
     "from PySide6.QtCore import QTimer\n"
     "from PySide6.QtWidgets import QApplication\n"
     "from mediatagger.viewer import Viewer\n"
