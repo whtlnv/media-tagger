@@ -38,6 +38,10 @@ def shows_unsupported_placeholder(viewer):
     return any("unsupported" in text.lower() for text in shown_texts)
 
 
+def wait_until_loaded(engine, clip):
+    engine.wait_for_property("path", lambda path: path == str(clip), timeout=5)
+
+
 def centre_colour(viewer):
     frame = viewer.grab().toImage()
     return frame.pixelColor(frame.width() // 2, frame.height() // 2)
@@ -67,7 +71,7 @@ def test_a_viewer_opened_on_a_folder_whose_first_item_is_a_video_shows_a_video_s
     surface = viewer.findChild(QOpenGLWidget)
     assert surface is not None and surface.isVisible()
     assert viewer.rect().contains(surface.geometry())
-    viewer.video_player.engine.wait_for_property("path", lambda path: path == str(clip), timeout=5)
+    wait_until_loaded(viewer.video_player.engine, clip)
 
 
 def test_a_viewer_opened_on_a_folder_whose_first_item_is_an_image_shows_no_video_surface_and_loads_no_clip(qtbot, tmp_path):
@@ -96,7 +100,7 @@ def test_pressing_space_in_the_viewer_on_a_video_followed_by_an_image_leaves_the
     clip = make_clip(tmp_path / "IMG_1.mp4")
     make_image(tmp_path / "IMG_2.png", "red")
     viewer = shown_viewer_on(qtbot, tmp_path)
-    viewer.video_player.engine.wait_for_property("path", lambda path: path == str(clip), timeout=5)
+    wait_until_loaded(viewer.video_player.engine, clip)
 
     qtbot.keyClick(viewer, Qt.Key.Key_Space)
 
@@ -117,7 +121,7 @@ def test_pressing_m_in_the_viewer_on_a_video_mutes_the_video_player(qtbot, tmp_p
     clip = make_clip(tmp_path / "IMG_1.mp4")
     make_image(tmp_path / "IMG_2.png", "red")
     viewer = shown_viewer_on(qtbot, tmp_path)
-    viewer.video_player.engine.wait_for_property("path", lambda path: path == str(clip), timeout=5)
+    wait_until_loaded(viewer.video_player.engine, clip)
 
     qtbot.keyClick(viewer, Qt.Key.Key_M)
 
@@ -145,7 +149,7 @@ def test_pressing_space_in_the_viewer_on_an_image_followed_by_a_video_shows_the_
 
     surface = viewer.findChild(QOpenGLWidget)
     assert surface is not None and surface.isVisible()
-    viewer.video_player.engine.wait_for_property("path", lambda path: path == str(clip), timeout=5)
+    wait_until_loaded(viewer.video_player.engine, clip)
 
 
 def test_pressing_p_in_the_viewer_on_a_video_pauses_it_and_up_seeks_it_forward(qtbot, tmp_path):
@@ -215,7 +219,7 @@ def test_closing_the_viewer_shuts_down_its_video_player(qtbot, tmp_path):
     clip = make_clip(tmp_path / "IMG_1.mp4")
     viewer = shown_viewer_on(qtbot, tmp_path)
     engine = viewer.video_player.engine
-    engine.wait_for_property("path", lambda path: path == str(clip), timeout=5)
+    wait_until_loaded(engine, clip)
 
     viewer.close()
 
@@ -384,7 +388,7 @@ def test_pressing_enter_in_the_viewer_on_a_video_toggles_its_pause(qtbot, tmp_pa
 def test_the_viewers_video_surface_renders_the_viewers_own_player(qtbot, tmp_path):
     clip = make_clip(tmp_path / "IMG_1.mp4")
     viewer = shown_viewer_on(qtbot, tmp_path)
-    viewer.video_player.engine.wait_for_property("path", lambda path: path == str(clip), timeout=5)
+    wait_until_loaded(viewer.video_player.engine, clip)
 
     surface = viewer.findChild(MpvSurface)
     assert surface is not None and surface.isVisible()
