@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-08 22:26 · `src/mediatagger/test_viewer_open.py::test_dropping_a_folder_that_does_not_exist_while_the_info_overlay_is_shown_hides_the_overlay`
+- Behavior: Dropping a folder that doesn't exist while the `i` overlay is shown hides the overlay
+- Predicted: passes — `_open`'s unreadable-path branch calls `_show_message`, which already hides `self.info`
+- Actual: passed
+- Type: passed unexpectedly
+- Resolution: The behavior already exists via the shared `_show_message`. A temporary sabotage check confirmed the test isn't vacuous: removing `self.info.hide()` fails it with the overlay text still in the shown labels. I kept the test as a regression pin rather than rewrite it to fail artificially.
+
 ## 2026-10-08 22:24 · `src/mediatagger/test_viewer_open.py::test_dropping_a_folder_that_does_not_exist_while_a_video_is_showing_stops_it_hides_its_surface_and_says_it_cant_open_it`
 - Behavior: Dropping a folder that doesn't exist while a video is showing stops the video, hides the video surface and shows "Can't open <name>"
 - Predicted: passes — `dropEvent` already stops the video and `_open`'s unreadable-path branch routes through `_show_message`, which hides the surface

@@ -367,3 +367,14 @@ def test_dropping_a_folder_that_does_not_exist_while_a_video_is_showing_stops_it
     assert viewer.video_player.engine.path is None
     assert not shows_video_surface(viewer)
     assert shown_texts(viewer) == shown_texts(shown_viewer_on(qtbot, missing))
+
+
+def test_dropping_a_folder_that_does_not_exist_while_the_info_overlay_is_shown_hides_the_overlay(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    missing = tmp_path / "Holidays"
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    qtbot.keyClick(viewer, Qt.Key.Key_I)
+
+    drag_and_drop_onto(viewer, missing)
+
+    assert shown_texts(viewer) == shown_texts(shown_viewer_on(qtbot, missing))
