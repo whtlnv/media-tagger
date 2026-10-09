@@ -236,3 +236,14 @@ def test_a_colon_namespaced_tag_of_any_depth_is_kept_whole(tmp_path):
     library.enter(photo, "place:mexico:cancun")
 
     assert library.tags(photo) == ["place:mexico:cancun"]
+
+
+def test_a_files_tags_are_reported_again_after_its_library_is_closed_and_opened_again(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "beach.jpg"
+    photo.touch()
+    library.enter(photo, "beach family")
+
+    reopened = Library.open(tmp_path)
+
+    assert reopened.tags(photo) == ["beach", "family"]

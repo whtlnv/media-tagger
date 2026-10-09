@@ -15,7 +15,7 @@
 - [x] A lone `-` in an entry is ignored (`beach -` gives exactly `beach`)
 - [x] Hyphens join words into one tag (`day-at-beach` reports exactly `day-at-beach`)
 - [x] A colon-namespaced tag of any depth is kept whole as one tag (`place:mexico:cancun` reports exactly `place:mexico:cancun`, not its parts)
-- [ ] A file's tags are reported again after its library is closed and opened again
+- [x] A file's tags are reported again after its library is closed and opened again
 - [ ] A file's tags survive the drive being mounted at a different path: after the library's `.mediatagger` folder and the file (at the same place below the root) are copied to another root, the library there reports the same tags for the file
 - [ ] A library whose `tags.db` holds only its drive id and schema version (as libraries created before tagging existed do) can record and report a file's tags
 - [ ] Opening a library whose `tags.db` records schema version 1 upgrades it in place: afterwards its `meta` table records schema version 2 and its drive id is unchanged
