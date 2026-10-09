@@ -13,7 +13,7 @@
 - [x] Declining "Create a tag library on <drive>?" leaves the drive without a `.mediatagger` folder
 - [x] Declining "Create a tag library on <drive>?" still shows the opened folder's slideshow at its first item
 - [x] After declining "Create a tag library on <drive>?", the status bar says the drive has no tag library and viewing only is available
-- [ ] A newly created library reports the same drive id after it is closed and opened again
+- [x] A newly created library reports the same drive id after it is closed and opened again
 - [ ] A newly created library records its schema version alongside its drive id
 - [ ] Two libraries created on different drives report different drive ids
 - [ ] Opening a folder on a read-only drive that has a tag library shows a banner saying tags can't be saved (the test makes the mount point read-only and restores it afterwards)
