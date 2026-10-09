@@ -82,7 +82,8 @@ Search history is remembered (`↑` in the search box).
 - Images: jpg, jpeg, png, webp, bmp, tif, tiff, heic.
 - Video (played by mpv): mp4, mov, avi, mpg, mpeg, mkv, m4v, wmv, 3gp, **gif**.
 - Ignore hidden files and macOS litter on exFAT (`._*` AppleDouble files, `.DS_Store`, `.Spotlight-V100`, `.fseventsd`, `.Trashes`).
-- Order: natural filename sort (`IMG_2` before `IMG_10`), folders first in the grid.
+- Order: natural filename sort ignoring letter case (`IMG_2` before `IMG_10`, `img_3` between them), folders first in the grid.
+- Images honour their EXIF orientation (sideways phone photos display upright).
 - Slideshow covers the current folder only (non-recursive).
 
 ## Screens and keys
@@ -105,7 +106,7 @@ Search history is remembered (`↑` in the search box).
 | `←` | previous |
 | `t` | tag prompt |
 | `i` | toggle info overlay (filename, position `233 / 1,204`) |
-| `Esc` | back to grid, cursor on the current file |
+| `Esc` | back to grid, cursor on the current file (until Phase 7 exists: quits the app) |
 | `f` | toggle fullscreen |
 | `p` / `Enter` | play/pause (video) |
 | `↑` / `↓` | seek ±10 s (video) |
