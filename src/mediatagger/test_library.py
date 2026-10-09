@@ -309,3 +309,29 @@ def test_tags_db_of_a_newly_created_library_records_each_file_and_tag_once_and_l
     assert tags == [("beach",), ("family",)]
     assert links == [("beach.jpg", "beach"), ("beach.jpg", "family")]
     assert library.tags(photo) == ["beach", "family"]
+
+
+def test_opening_a_schema_version_1_library_upgrades_its_tags_db_in_place_to_schema_version_2(tmp_path):
+    (tmp_path / ".mediatagger").mkdir()
+    tags_db = tmp_path / ".mediatagger" / "tags.db"
+    connection = sqlite3.connect(tags_db)
+    with connection:
+        connection.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
+        connection.executemany(
+            "INSERT INTO meta (key, value) VALUES (?, ?)",
+            [("drive_id", "phase-3-drive"), ("schema_version", "1")],
+        )
+    connection.close()
+
+    Library.open(tmp_path)
+
+    connection = sqlite3.connect(tags_db)
+    try:
+        meta = dict(connection.execute("SELECT key, value FROM meta"))
+        tables = {name for (name,) in connection.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
+    finally:
+        connection.close()
+
+    assert meta["schema_version"] == "2"
+    assert meta["drive_id"] == "phase-3-drive"
+    assert {"items", "tags", "item_tags"} <= tables

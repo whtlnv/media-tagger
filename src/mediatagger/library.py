@@ -69,6 +69,7 @@ class Library:
         meta = dict(connection.execute("SELECT key, value FROM meta"))
         with connection:
             connection.executescript(CREATE_TAGS_TABLES)
+            connection.execute("UPDATE meta SET value = '2' WHERE key = 'schema_version' AND value = '1'")
         connection.close()
         return cls(tags_db, meta["drive_id"], int(meta["schema_version"]))
 
