@@ -161,8 +161,9 @@ def test_a_seek_or_stop_that_mpv_never_finishes_gives_up_instead_of_blocking(pla
     player.timeout = 0.5
     monkeypatch.setattr(engine, ignored_command, lambda *args, **kwargs: None)  # mpv never confirms it
 
-    pressing = threading.Thread(target=player.press, args=(key,), daemon=True)
+    returned = []
+    pressing = threading.Thread(target=lambda: returned.append(player.press(key)), daemon=True)
     pressing.start()
     pressing.join(timeout=3)
 
-    assert not pressing.is_alive()
+    assert returned == [None]  # press came back on its own, neither stuck nor raising
