@@ -135,7 +135,7 @@ class Viewer(QWidget):
     def _open(self, path):
         if path is None:
             return
-        if not os.access(path, os.R_OK):
+        if not os.access(path, os.R_OK) or path.is_file() and not os.access(path.parent, os.R_OK):
             self.slideshow = None
             self._show_message(f"Can't open {path.name}")
             return
