@@ -177,15 +177,15 @@ class Viewer(QWidget):
         library = Library.open(self.library_drive)
         path = self.slideshow.current
         prompt = QLineEdit(self)
-        tags = QLabel(" ".join(library.tags(path)), self)
-        prompt.returnPressed.connect(lambda: self._record_tags(library, path, prompt, tags))
+        tags_label = QLabel(" ".join(library.tags(path)), self)
+        prompt.returnPressed.connect(lambda: self._record_tags(library, path, prompt, tags_label))
         prompt.show()
-        tags.show()
+        tags_label.show()
 
-    def _record_tags(self, library, path, prompt, tags):
+    def _record_tags(self, library, path, prompt, tags_label):
         library.enter(path, prompt.text())
         prompt.hide()
-        tags.hide()
+        tags_label.hide()
 
     def _toggle_fullscreen(self):
         if self.isFullScreen():
