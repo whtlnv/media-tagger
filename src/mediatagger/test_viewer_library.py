@@ -6,13 +6,12 @@ from PySide6.QtCore import QPoint, QRect
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import QLabel
 
-import mediatagger
 from mediatagger.library import Library
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import centre_colour, make_image, shown_labels, shown_launch_viewer, shown_texts, shown_viewer_on, SILENT, shows_video_surface
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger.viewer import (
-    CORNER_MARGIN, CREATE_LIBRARY_QUESTION, DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT, LIBRARY_TEXT, NO_LIBRARY_TEXT, NO_LIBRARY_VIEWING_ONLY_TEXT,
+    APP_PACKAGE, CORNER_MARGIN, CREATE_LIBRARY_QUESTION, DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT, LIBRARY_TEXT, NO_LIBRARY_TEXT, NO_LIBRARY_VIEWING_ONLY_TEXT,
     READ_ONLY_BANNER_TEXT, READ_ONLY_STATUS_TEXT, Viewer,
 )
 
@@ -46,21 +45,21 @@ def drive_with_a_tag_library_holding_one_image(tmp_path):
     return drive, folder
 
 
-def app_runs_from(drive, monkeypatch):
-    monkeypatch.setattr(mediatagger, "__file__", str(drive / "app" / "mediatagger" / "__init__.py"))
+def app_package_on(drive):
+    return drive / "mediatagger" / "app" / "mediatagger"
 
 
-def viewer_on_drives(qtbot, folder, drives, ask_to_create_library):
+def viewer_on_drives(qtbot, folder, drives, ask_to_create_library, app_location=APP_PACKAGE):
     viewer = Viewer(
         folder, player_options=SILENT, is_mount_point=lambda path: path in drives,
-        ask_to_create_library=ask_to_create_library,
+        ask_to_create_library=ask_to_create_library, app_location=app_location,
     )
     qtbot.addWidget(viewer)
     return viewer
 
 
-def viewer_on_drive(qtbot, folder, drive, ask_to_create_library):
-    return viewer_on_drives(qtbot, folder, (drive,), ask_to_create_library)
+def viewer_on_drive(qtbot, folder, drive, ask_to_create_library, app_location=APP_PACKAGE):
+    return viewer_on_drives(qtbot, folder, (drive,), ask_to_create_library, app_location)
 
 
 def shown_viewer_on_drives(qtbot, folder, drives, ask_to_create_library):
@@ -156,23 +155,21 @@ def test_opening_a_folder_on_the_system_disk_never_asks_to_create_a_library_and_
     assert status_bar_texts(viewer) == [NO_LIBRARY_VIEWING_ONLY_TEXT]
 
 
-def test_opening_a_folder_on_the_drive_the_app_runs_from_never_asks_to_create_a_library_writes_nothing_and_says_no_library_viewing_only(qtbot, tmp_path, monkeypatch):
+def test_opening_a_folder_on_the_drive_the_app_runs_from_never_asks_to_create_a_library_writes_nothing_and_says_no_library_viewing_only(qtbot, tmp_path):
     drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
-    app_runs_from(drive, monkeypatch)
     asked = []
 
-    viewer = viewer_on_drive(qtbot, folder, drive, decline_noting_the_question_in(asked))
+    viewer = viewer_on_drive(qtbot, folder, drive, decline_noting_the_question_in(asked), app_package_on(drive))
 
     assert asked == []
     assert not (drive / ".mediatagger").exists()
     assert status_bar_texts(viewer) == [NO_LIBRARY_VIEWING_ONLY_TEXT]
 
 
-def test_opening_a_folder_on_the_drive_the_app_runs_from_that_already_has_a_tag_library_does_not_open_it_and_says_no_library_viewing_only(qtbot, tmp_path, monkeypatch):
+def test_opening_a_folder_on_the_drive_the_app_runs_from_that_already_has_a_tag_library_does_not_open_it_and_says_no_library_viewing_only(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    app_runs_from(drive, monkeypatch)
 
-    viewer = viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    viewer = viewer_on_drive(qtbot, folder, drive, lambda question: False, app_package_on(drive))
 
     assert status_bar_texts(viewer) == [NO_LIBRARY_VIEWING_ONLY_TEXT]
 

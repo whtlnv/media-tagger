@@ -5,7 +5,6 @@ from PySide6.QtCore import QEventLoop, QPoint, QRect, Qt, QTimer
 from PySide6.QtGui import QImageIOHandler, QImageReader, QPainter
 from PySide6.QtWidgets import QFileDialog, QHBoxLayout, QLabel, QMessageBox, QWidget
 
-import mediatagger
 from mediatagger.folder import is_video
 from mediatagger.library import LIBRARY_FOLDER, Library
 from mediatagger.mpv_surface import MpvSurface
@@ -19,6 +18,7 @@ LABEL_STYLE = "color: white; background-color: rgba(0, 0, 0, 160); padding: 8px 
 CORNER_MARGIN = 16
 SLIDESHOW_KEYS = {Qt.Key.Key_Left: "Left", Qt.Key.Key_Right: "Right", Qt.Key.Key_Space: "Space"}
 UNSUPPORTED_TEXT = "Unsupported"
+APP_PACKAGE = Path(__file__).parent  # its drive is never written while the app runs
 FULLSCREEN_SETTLE_MS = 1000
 NO_LIBRARY_TEXT = "No library open"
 LIBRARY_TEXT = "Library: {}"
@@ -61,9 +61,12 @@ def decode_fitted(path, bounds):
 
 
 class Viewer(QWidget):
-    def __init__(self, path=None, player_options=None, folder_picker=None, is_mount_point=os.path.ismount, ask_to_create_library=None):
+    def __init__(self, path=None, player_options=None, folder_picker=None, is_mount_point=os.path.ismount, ask_to_create_library=None,
+        app_location=APP_PACKAGE,
+    ):
         super().__init__()
         self.is_mount_point = is_mount_point
+        self.app_location = app_location
         self.ask_to_create_library = ask_to_create_library or self._ask_to_create_library
         self.declined_drives = set()
         self.folder_picker = folder_picker or self._pick_folder
@@ -233,9 +236,8 @@ class Viewer(QWidget):
         self.read_only_status.setVisible(read_only)
         self.library_label.setText(text)
 
-    @staticmethod
-    def _never_holds_a_library(drive):
-        return drive == Path("/") or drive in Path(mediatagger.__file__).parents
+    def _never_holds_a_library(self, drive):
+        return drive == Path("/") or drive in self.app_location.parents
 
     def _agrees_to_create_library(self, drive):
         if drive in self.declined_drives:
