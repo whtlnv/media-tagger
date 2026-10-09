@@ -3,7 +3,7 @@ from pathlib import Path
 
 from PySide6.QtCore import QPoint, QRect, Qt
 from PySide6.QtGui import QImageIOHandler, QImageReader, QPainter
-from PySide6.QtWidgets import QFileDialog, QLabel, QWidget
+from PySide6.QtWidgets import QFileDialog, QLabel, QMessageBox, QWidget
 
 import mediatagger
 from mediatagger.folder import is_video
@@ -58,7 +58,7 @@ class Viewer(QWidget):
     def __init__(self, path=None, player_options=None, folder_picker=None, is_mount_point=os.path.ismount, ask_to_create_library=None):
         super().__init__()
         self.is_mount_point = is_mount_point
-        self.ask_to_create_library = ask_to_create_library
+        self.ask_to_create_library = ask_to_create_library or self._ask_to_create_library
         self.declined_drives = set()
         self.folder_picker = folder_picker or self._pick_folder
         self.slideshow = None
@@ -152,6 +152,9 @@ class Viewer(QWidget):
             self.showNormal()
         else:
             self.showFullScreen()
+
+    def _ask_to_create_library(self, question):
+        return QMessageBox(QMessageBox.Icon.Question, "", question, QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, self).exec() == QMessageBox.StandardButton.Yes
 
     def _pick_folder(self):
         picker = QFileDialog(self)

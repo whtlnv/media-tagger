@@ -5,6 +5,8 @@ from pathlib import Path
 from PySide6.QtGui import QColor
 
 from mediatagger.test_viewer import make_image, offscreen_environment, run_python_offscreen, shown_launch_viewer, shown_texts, shown_viewer_on
+from mediatagger.test_viewer_open import drive_without_a_tag_library_holding_one_image
+from mediatagger.viewer import DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT
 
 RUN_MEDIATAGGER_COMMAND = (
     "from importlib.metadata import entry_points\n"
@@ -153,3 +155,36 @@ def test_running_the_mediatagger_command_on_a_path_that_does_not_exist_keeps_run
     result = run_python_offscreen(REPORT_SHOWN_TEXTS_SCRIPT, str(missing))
     assert result.returncode == 0, result.stderr
     assert result.stdout.splitlines() == cant_open_texts
+
+DECLINE_CREATING_A_LIBRARY_SCRIPT = (
+    "import os, sys\n"
+    "drive = sys.argv[1]\n"
+    "os.path.ismount = lambda path: os.fspath(path) == drive\n"
+    "from PySide6.QtCore import QTimer\n"
+    "from PySide6.QtWidgets import QApplication\n"
+    "from mediatagger.test_viewer import centre_colour\n"
+    "from mediatagger.test_viewer_open import status_bar_texts\n"
+    "app = QApplication([])\n"
+    "asked = []\n"
+    "def decline():\n"
+    "    question = QApplication.activeModalWidget()\n"
+    "    asked.append(question is not None)\n"
+    "    if question is not None:\n"
+    "        question.reject()\n"
+    "def report():\n"
+    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    print(f'asked={asked} centre={centre_colour(window).name()} status={status_bar_texts(window)}', flush=True)\n"
+    "    QApplication.closeAllWindows()\n"
+    "    QApplication.quit()\n"
+    "QTimer.singleShot(500, decline)\n"
+    "QTimer.singleShot(1500, report)\n"
+    "sys.argv = ['mediatagger', sys.argv[2]]\n"
+) + RUN_MEDIATAGGER_COMMAND
+
+
+def test_running_the_mediatagger_command_on_a_drive_without_a_tag_library_asks_and_declining_keeps_the_slideshow_saying_the_drive_has_no_tag_library(tmp_path):
+    drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
+    result = run_python_offscreen(DECLINE_CREATING_A_LIBRARY_SCRIPT, str(drive), str(folder))
+    assert result.returncode == 0, result.stderr
+    no_library_status = [DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format(drive.name)]
+    assert result.stdout.strip() == f"asked=[True] centre={QColor('red').name()} status={no_library_status}"
