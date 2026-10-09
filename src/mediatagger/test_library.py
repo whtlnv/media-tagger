@@ -1,3 +1,5 @@
+import shutil
+
 from mediatagger.library import Library
 
 
@@ -34,3 +36,18 @@ def test_two_libraries_created_on_different_drives_report_different_drive_ids(tm
     second = Library.create(second_drive)
 
     assert first.drive_id != second.drive_id
+
+
+def test_a_library_reports_the_same_drive_id_when_its_drive_is_mounted_at_a_different_path(tmp_path):
+    original_mount = tmp_path / "original"
+    new_mount = tmp_path / "new"
+    original_mount.mkdir()
+    new_mount.mkdir()
+    created = Library.create(original_mount)
+    drive_id = created.drive_id
+    created.close()
+    shutil.copytree(original_mount / ".mediatagger", new_mount / ".mediatagger")
+
+    remounted = Library.open(new_mount)
+
+    assert remounted.drive_id == drive_id
