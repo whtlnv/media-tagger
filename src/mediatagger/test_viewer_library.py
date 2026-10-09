@@ -49,13 +49,17 @@ def app_runs_from(drive, monkeypatch):
     monkeypatch.setattr(mediatagger, "__file__", str(drive / "app" / "mediatagger" / "__init__.py"))
 
 
-def viewer_on_drive(qtbot, folder, drive, ask_to_create_library):
+def viewer_on_drives(qtbot, folder, drives, ask_to_create_library):
     viewer = Viewer(
-        folder, player_options=SILENT, is_mount_point=lambda path: path == drive,
+        folder, player_options=SILENT, is_mount_point=lambda path: path in drives,
         ask_to_create_library=ask_to_create_library,
     )
     qtbot.addWidget(viewer)
     return viewer
+
+
+def viewer_on_drive(qtbot, folder, drive, ask_to_create_library):
+    return viewer_on_drives(qtbot, folder, (drive,), ask_to_create_library)
 
 
 def shown_viewer_on_drive(qtbot, folder, drive, ask_to_create_library):
@@ -128,8 +132,7 @@ def test_dropping_a_folder_from_a_different_drive_while_viewing_switches_the_sta
     [dropped] = make_folders(second_drive, "Videos")
     make_image(viewed / "IMG_1.png", "red")
     make_image(dropped / "IMG_1.png", "green")
-    viewer = Viewer(viewed, player_options=SILENT, is_mount_point=lambda path: path in (first_drive, second_drive))
-    qtbot.addWidget(viewer)
+    viewer = viewer_on_drives(qtbot, viewed, (first_drive, second_drive), lambda question: False)
 
     drag_and_drop_onto(viewer, dropped)
 
@@ -396,11 +399,7 @@ def test_after_viewing_a_read_only_drive_dropping_a_folder_from_a_writable_drive
     [dropped] = make_folders(writable_drive, "Videos")
     make_image(dropped / "IMG_1.png", "green")
     with made_read_only(read_only_drive):
-        viewer = Viewer(
-            viewed, player_options=SILENT, is_mount_point=lambda path: path in (read_only_drive, writable_drive),
-            ask_to_create_library=lambda question: False,
-        )
-        qtbot.addWidget(viewer)
+        viewer = viewer_on_drives(qtbot, viewed, (read_only_drive, writable_drive), lambda question: False)
         viewer.resize(400, 300)
         viewer.show()
         qtbot.waitExposed(viewer)
@@ -419,11 +418,7 @@ def test_after_viewing_a_drive_with_a_tag_library_opening_a_folder_on_a_read_onl
     make_image(viewed / "IMG_1.png", "green")
     read_only_drive, dropped = drive_without_a_tag_library_holding_one_image(tmp_path)
     with made_read_only(read_only_drive):
-        viewer = Viewer(
-            viewed, player_options=SILENT, is_mount_point=lambda path: path in (viewed_drive, read_only_drive),
-            ask_to_create_library=lambda question: False,
-        )
-        qtbot.addWidget(viewer)
+        viewer = viewer_on_drives(qtbot, viewed, (viewed_drive, read_only_drive), lambda question: False)
 
         drag_and_drop_onto(viewer, dropped)
         status = status_bar_texts(viewer)
