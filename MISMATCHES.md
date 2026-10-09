@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 05:24 · `src/mediatagger/test_library.py::test_an_entry_of_only_spaces_leaves_the_files_tags_unchanged`
+- Behavior: An entry of only spaces leaves the file's tags unchanged
+- Predicted: passes on first run — `Library.enter` tokenizes with a no-argument `str.split()`, so `"   "` yields no words and nothing is added or removed
+- Actual: 1 passed
+- Type: passed unexpectedly
+- Resolution: Nothing is missing, because whitespace-only input already turns into an empty add/remove set; the test can't fail without breaking working behavior, so it stays as a test-after pin and there's nothing for `/green` to implement.
+
 ## 2026-10-09 05:20 · `src/mediatagger/test_library.py::test_extra_spaces_around_and_between_entered_tags_are_ignored`
 - Behavior: Extra spaces around and between entered tags are ignored (`  beach   family ` gives exactly `beach` and `family`)
 - Predicted: passes on first run — `Library.enter` already tokenizes with a no-argument `str.split()`, which drops leading, trailing and repeated whitespace

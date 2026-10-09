@@ -195,3 +195,14 @@ def test_extra_spaces_around_and_between_entered_tags_are_ignored(tmp_path):
     library.enter(photo, "  beach   family ")
 
     assert library.tags(photo) == ["beach", "family"]
+
+
+def test_an_entry_of_only_spaces_leaves_the_files_tags_unchanged(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "beach.jpg"
+    photo.touch()
+    library.enter(photo, "beach family")
+
+    library.enter(photo, "   ")
+
+    assert library.tags(photo) == ["beach", "family"]
