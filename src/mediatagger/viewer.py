@@ -279,7 +279,8 @@ class Viewer(QWidget):
         self.prompt_tags.setText(tags)
         self.prompt_tags.adjustSize()
         self.tag_input.clear()
-        self.tag_input.completer().model().setStringList([tag for tag in library.all_tags() if tag not in item_tags])
+        suggestions = [tag for tag in library.all_tags() if tag not in item_tags]
+        self.tag_input.completer().model().setStringList(suggestions)
         self.tag_input.resize(min(TAG_PROMPT_WIDTH, self.width() - 2 * CORNER_MARGIN), self.tag_input.sizeHint().height())
         self._pin_bottom_centre(self.tag_input)
         self._pin_above(self.prompt_tags, self.tag_input)
