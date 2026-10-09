@@ -42,7 +42,7 @@ class Library:
         return cls(meta["drive_id"], int(meta["schema_version"]))
 
     def enter(self, path, text):
-        self._tags[path] = text.split()
+        self._tags[path] = sorted(text.split())
 
     def tags(self, path):
         return self._tags.get(path, [])

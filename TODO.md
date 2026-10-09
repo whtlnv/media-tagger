@@ -3,7 +3,7 @@
 - [x] A file in a library that was never tagged reports no tags
 - [x] Entering `beach family` for a file in a library gives that file the tags `beach` and `family`
 - [x] Tags entered for one file are not reported for another file in the same library
-- [ ] A file's tags are reported in alphabetical order, whatever order they were entered in (`family beach` reports `beach`, `family`)
+- [x] A file's tags are reported in alphabetical order, whatever order they were entered in (`family beach` reports `beach`, `family`)
 - [ ] Entering a tag a file already has does not report it twice
 - [ ] Entering `-sunset` for a file tagged `beach` and `sunset` leaves it tagged only `beach`
 - [ ] Entering `-sunset` for a file not tagged `sunset` leaves its tags unchanged

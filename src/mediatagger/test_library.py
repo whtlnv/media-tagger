@@ -111,3 +111,13 @@ def test_tags_entered_for_one_file_are_not_reported_for_another_file_in_the_same
     library.enter(tagged, "beach family")
 
     assert library.tags(untagged) == []
+
+
+def test_a_files_tags_are_reported_in_alphabetical_order_whatever_order_they_were_entered_in(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "beach.jpg"
+    photo.touch()
+
+    library.enter(photo, "family beach")
+
+    assert library.tags(photo) == ["beach", "family"]
