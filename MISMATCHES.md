@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 04:50 · `src/mediatagger/test_library.py::test_tags_entered_for_one_file_are_not_reported_for_another_file_in_the_same_library`
+- Behavior: Tags entered for one file are not reported for another file in the same library
+- Predicted: pass (no right-reason failure available) — `Library._tags` is already a dict keyed by path, so an untagged file falls through to `[]`
+- Actual: passed
+- Type: passed unexpectedly
+- Resolution: The previous green step's per-path dict already delivers this isolation; no honest rewrite of this behavior can fail, so the test is kept as a regression pin and the TODO item needs no production change.
+
 ## 2026-10-09 02:10 · `src/mediatagger/test_viewer_open.py::test_opening_a_folder_on_the_drive_the_app_runs_from_that_already_has_a_tag_library_does_not_open_it_and_says_no_library_viewing_only`
 - Behavior: Opening a folder on the app's own drive when that drive already has `.mediatagger/tags.db` does not open that library: the status bar says no library, viewing only
 - Predicted: passes — `_open_library` checks `_never_holds_a_library` before it checks whether `.mediatagger` exists, so the previous app-drive cycle already covers this

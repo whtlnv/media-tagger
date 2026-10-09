@@ -99,3 +99,15 @@ def test_entering_beach_family_for_a_file_in_a_library_gives_that_file_the_tags_
     library.enter(photo, "beach family")
 
     assert sorted(library.tags(photo)) == ["beach", "family"]
+
+
+def test_tags_entered_for_one_file_are_not_reported_for_another_file_in_the_same_library(tmp_path):
+    library = Library.create(tmp_path)
+    tagged = tmp_path / "beach.jpg"
+    untagged = tmp_path / "office.jpg"
+    tagged.touch()
+    untagged.touch()
+
+    library.enter(tagged, "beach family")
+
+    assert library.tags(untagged) == []
