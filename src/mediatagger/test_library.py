@@ -2,6 +2,8 @@ import shutil
 import sqlite3
 from contextlib import contextmanager
 
+import pytest
+
 from mediatagger.library import Library
 
 
@@ -130,14 +132,24 @@ def test_a_file_in_a_library_that_was_never_tagged_reports_no_tags(tmp_path):
     assert library.tags(photo) == []
 
 
-def test_entering_beach_family_for_a_file_in_a_library_gives_that_file_the_tags_beach_and_family(tmp_path):
+@pytest.mark.parametrize("entry, tags", [
+    pytest.param("beach family", ["beach", "family"], id="beach family gives the tags beach and family"),
+    pytest.param("family beach", ["beach", "family"], id="tags reported in alphabetical order whatever order entered"),
+    pytest.param("beach beach", ["beach"], id="a tag entered twice is reported once"),
+    pytest.param("Beach", ["beach"], id="entered tags are lowercased"),
+    pytest.param("  beach   family ", ["beach", "family"], id="extra spaces around and between tags are ignored"),
+    pytest.param("beach -", ["beach"], id="a lone dash is ignored"),
+    pytest.param("day-at-beach", ["day-at-beach"], id="hyphens join words into one tag"),
+    pytest.param("place:mexico:cancun", ["place:mexico:cancun"], id="a colon-namespaced tag of any depth is kept whole"),
+])
+def test_an_entry_for_an_untagged_file_in_a_library_gives_that_file_its_tags(tmp_path, entry, tags):
     library = Library.create(tmp_path)
     photo = tmp_path / "beach.jpg"
     photo.touch()
 
-    library.enter(photo, "beach family")
+    library.enter(photo, entry)
 
-    assert sorted(library.tags(photo)) == ["beach", "family"]
+    assert library.tags(photo) == tags
 
 
 def test_tags_entered_for_one_file_are_not_reported_for_another_file_in_the_same_library(tmp_path):
@@ -150,26 +162,6 @@ def test_tags_entered_for_one_file_are_not_reported_for_another_file_in_the_same
     library.enter(tagged, "beach family")
 
     assert library.tags(untagged) == []
-
-
-def test_a_files_tags_are_reported_in_alphabetical_order_whatever_order_they_were_entered_in(tmp_path):
-    library = Library.create(tmp_path)
-    photo = tmp_path / "beach.jpg"
-    photo.touch()
-
-    library.enter(photo, "family beach")
-
-    assert library.tags(photo) == ["beach", "family"]
-
-
-def test_entering_a_tag_a_file_already_has_does_not_report_it_twice(tmp_path):
-    library = Library.create(tmp_path)
-    photo = tmp_path / "beach.jpg"
-    photo.touch()
-
-    library.enter(photo, "beach beach")
-
-    assert library.tags(photo) == ["beach"]
 
 
 def test_entering_minus_sunset_for_a_file_tagged_beach_and_sunset_leaves_it_tagged_only_beach(tmp_path):
@@ -205,16 +197,6 @@ def test_one_entry_can_both_add_and_remove_tags(tmp_path):
     assert library.tags(photo) == ["pool"]
 
 
-def test_entered_tags_are_lowercased(tmp_path):
-    library = Library.create(tmp_path)
-    photo = tmp_path / "beach.jpg"
-    photo.touch()
-
-    library.enter(photo, "Beach")
-
-    assert library.tags(photo) == ["beach"]
-
-
 def test_removing_is_case_insensitive(tmp_path):
     library = Library.create(tmp_path)
     photo = tmp_path / "beach.jpg"
@@ -226,16 +208,6 @@ def test_removing_is_case_insensitive(tmp_path):
     assert library.tags(photo) == ["beach"]
 
 
-def test_extra_spaces_around_and_between_entered_tags_are_ignored(tmp_path):
-    library = Library.create(tmp_path)
-    photo = tmp_path / "beach.jpg"
-    photo.touch()
-
-    library.enter(photo, "  beach   family ")
-
-    assert library.tags(photo) == ["beach", "family"]
-
-
 def test_an_entry_of_only_spaces_leaves_the_files_tags_unchanged(tmp_path):
     library = Library.create(tmp_path)
     photo = tmp_path / "beach.jpg"
@@ -245,36 +217,6 @@ def test_an_entry_of_only_spaces_leaves_the_files_tags_unchanged(tmp_path):
     library.enter(photo, "   ")
 
     assert library.tags(photo) == ["beach", "family"]
-
-
-def test_a_lone_dash_in_an_entry_is_ignored(tmp_path):
-    library = Library.create(tmp_path)
-    photo = tmp_path / "beach.jpg"
-    photo.touch()
-
-    library.enter(photo, "beach -")
-
-    assert library.tags(photo) == ["beach"]
-
-
-def test_hyphens_join_words_into_one_tag(tmp_path):
-    library = Library.create(tmp_path)
-    photo = tmp_path / "beach.jpg"
-    photo.touch()
-
-    library.enter(photo, "day-at-beach")
-
-    assert library.tags(photo) == ["day-at-beach"]
-
-
-def test_a_colon_namespaced_tag_of_any_depth_is_kept_whole(tmp_path):
-    library = Library.create(tmp_path)
-    photo = tmp_path / "beach.jpg"
-    photo.touch()
-
-    library.enter(photo, "place:mexico:cancun")
-
-    assert library.tags(photo) == ["place:mexico:cancun"]
 
 
 def test_a_files_tags_are_reported_again_after_its_library_is_closed_and_opened_again(tmp_path):
