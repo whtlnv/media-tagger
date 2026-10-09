@@ -10,7 +10,7 @@ Note for every cycle: put new tag-prompt and autocomplete viewer tests in `src/m
 - [x] Suggestions with the same item count are listed alphabetically: with `bird` and `beach` on 2 items each, typing `b` lists `beach` above `bird`
 - [x] Suggestion matching ignores case: typing `BE` lists `beach`
 - [x] Suggestions complete the last space-separated word: typing `beach fam` with `family` in the library lists `family`
-- [ ] Typing a namespace prefix lists every tag under it at any depth: typing `people:` lists `people:ana` and `people:luis:jr`, and not `place:mexico`
+- [x] Typing a namespace prefix lists every tag under it at any depth: typing `people:` lists `people:ana` and `people:luis:jr`, and not `place:mexico`
 - [ ] Tags the current item already has are not suggested for adding: on an item tagged `sunset`, with `summer` also in the library, typing `s` lists `summer` and not `sunset`
 - [ ] A word starting with `-` suggests from the current item's own tags: on an item tagged `sunset`, with `summer` also in the library, typing `-s` lists `sunset` and not `summer`
 - [ ] Words already entered in the prompt are not suggested again: typing `beach b` lists `bird` and not `beach`

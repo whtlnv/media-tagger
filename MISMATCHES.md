@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 15:20 · `src/mediatagger/test_viewer_tag_prompt.py::test_typing_a_namespace_prefix_people_colon_lists_every_tag_under_it_at_any_depth_and_not_place_mexico`
+- Behavior: Typing a namespace prefix lists every tag under it at any depth: `people:` lists `people:ana` and `people:luis:jr`, not `place:mexico`
+- Predicted: passes on first run — tags are stored whole, and LastWordCompleter's prefix match already treats `people:` as a plain string prefix
+- Actual: passed (1 passed)
+- Type: passed unexpectedly (predicted pass)
+- Resolution: The behavior already falls out of the prefix completion built in earlier cycles, so no failing test can drive it. Kept the test as a characterization pin rather than inventing a different behavior.
+
 ## 2026-10-09 15:08 · `src/mediatagger/test_viewer_tag_prompt.py::test_suggestions_with_the_same_item_count_are_listed_alphabetically_with_bird_and_beach_on_2_items_each_typing_b_lists_beach_above_bird`
 - Behavior: Suggestions with the same item count are listed alphabetically: with `bird` and `beach` on 2 items each, typing `b` lists `beach` above `bird`
 - Predicted: pass. `all_tags` already sorts by `COUNT(*) DESC, tags.name` (since 1a2cc3a), so ties already break by name and there is no honest failing version

@@ -124,3 +124,15 @@ def test_suggestions_complete_the_last_space_separated_word_typing_beach_fam_wit
 
     [suggestions] = visible_suggestion_lists(viewer)
     assert listed(suggestions) == ["family"]
+
+
+def test_typing_a_namespace_prefix_people_colon_lists_every_tag_under_it_at_any_depth_and_not_place_mexico(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    Library.open(drive).enter(folder / "IMG_2.png", "people:ana people:luis:jr place:mexico")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    type_in_tag_prompt(qtbot, viewer, "people:")
+
+    [suggestions] = visible_suggestion_lists(viewer)
+    assert listed(suggestions) == ["people:ana", "people:luis:jr"]
