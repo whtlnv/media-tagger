@@ -34,6 +34,7 @@ CREATE_LIBRARY_QUESTION = "Create a tag library on {}?"
 READ_ONLY_BANNER_TEXT = "This drive is read-only — tags can't be saved"
 READ_ONLY_STATUS_TEXT = "Read-only — tags can't be saved"
 TAGS_CANT_BE_SAVED_HERE_TEXT = "Tags can't be saved here"
+COULDNT_SAVE_TAGS_TEXT = "Couldn't save tags"
 CANT_SAVE_MESSAGE_MS = 3000
 GARBAGE_COLLECTION_MS = 500
 
@@ -179,11 +180,14 @@ class Viewer(QWidget):
         self.read_only_status.hide()
         self.cant_save_status = overlay_label(TAGS_CANT_BE_SAVED_HERE_TEXT, self.status_bar)
         self.cant_save_status.hide()
+        self.couldnt_save_status = overlay_label(COULDNT_SAVE_TAGS_TEXT, self.status_bar)
+        self.couldnt_save_status.hide()
         status_layout = QHBoxLayout(self.status_bar)
         status_layout.setContentsMargins(CORNER_MARGIN, 0, CORNER_MARGIN, CORNER_MARGIN)
         status_layout.addWidget(self.library_label)
         status_layout.addWidget(self.read_only_status)
         status_layout.addWidget(self.cant_save_status)
+        status_layout.addWidget(self.couldnt_save_status)
         status_layout.addStretch()
 
     def closeEvent(self, event):
@@ -331,7 +335,11 @@ class Viewer(QWidget):
 
     def _record_tags(self):
         library, path = self._tagging
-        library.enter(path, self.tag_input.text())
+        try:
+            library.enter(path, self.tag_input.text())
+        except sqlite3.Error:
+            self.couldnt_save_status.show()
+            return
         self._close_tag_prompt()
 
     def _close_tag_prompt(self):

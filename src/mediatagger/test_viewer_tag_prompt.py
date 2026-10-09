@@ -1,3 +1,4 @@
+import sqlite3
 import time
 
 import pytest
@@ -8,7 +9,8 @@ from mediatagger.library import Library
 from mediatagger.test_video import wait_until_playing
 from mediatagger.test_viewer import light_theme, make_image, make_surface_ready
 from mediatagger.test_viewer_library import (
-    drive_with_a_tag_library_holding_one_clip, drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, make_tag_library_drive, shown_viewer_on_drive, shown_viewer_on_drives, visible_tag_prompt_texts, visible_tag_prompts,
+    drive_with_a_tag_library_holding_one_clip, drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, make_tag_library_drive, shown_viewer_on_drive, shown_viewer_on_drives, status_bar_texts, visible_tag_prompt_texts,
+    visible_tag_prompts,
 )
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 
@@ -378,3 +380,18 @@ def test_with_5000_tags_in_the_library_each_keystroke_after_the_popup_opens_upda
 
     [suggestions] = visible_suggestion_lists(viewer)
     assert (max(keystroke_times) < 0.050, listed(suggestions)[:2]) == (True, ["tag1200", "tag1201"])
+
+
+def test_when_saving_the_prompt_fails_with_a_sqlite_error_the_prompt_stays_open_with_its_text_and_the_status_bar_says_it_couldnt_save_tags(qtbot, tmp_path, monkeypatch):
+    from mediatagger.viewer import COULDNT_SAVE_TAGS_TEXT
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    def enter_on_an_unplugged_drive(self, path, text):
+        raise sqlite3.OperationalError("disk I/O error")
+
+    monkeypatch.setattr(Library, "enter", enter_on_an_unplugged_drive)
+
+    enter_in_tag_prompt(qtbot, viewer, "beach")
+
+    assert (visible_tag_prompt_texts(viewer), COULDNT_SAVE_TAGS_TEXT in status_bar_texts(viewer)) == (["beach"], True)
