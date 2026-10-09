@@ -58,7 +58,7 @@ def _collect_due_generation():
 
 class LastWordCompleter(QCompleter):
     def splitPath(self, path):
-        return [path.split(" ")[-1]]
+        return [path.split(" ")[-1].removeprefix("-")]
 
 
 class TagInput(QLineEdit):
@@ -119,6 +119,7 @@ class Viewer(QWidget):
         self.tag_input = TagInput(self)
         self.tag_input.setStyleSheet(TAG_INPUT_STYLE)
         self.tag_input.returnPressed.connect(self._record_tags)
+        self.tag_input.textEdited.connect(self._offer_suggestions)
         self.tag_input.setCompleter(LastWordCompleter([], self.tag_input))
         self.tag_input.completer().setCaseSensitivity(Qt.CaseInsensitive)
         self.tag_input.hide()
@@ -279,8 +280,8 @@ class Viewer(QWidget):
         self.prompt_tags.setText(tags)
         self.prompt_tags.adjustSize()
         self.tag_input.clear()
-        suggestions = [tag for tag in library.all_tags() if tag not in item_tags]
-        self.tag_input.completer().model().setStringList(suggestions)
+        self._suggestions = ([tag for tag in library.all_tags() if tag not in item_tags], item_tags)
+        self._offer_suggestions("")
         self.tag_input.resize(min(TAG_PROMPT_WIDTH, self.width() - 2 * CORNER_MARGIN), self.tag_input.sizeHint().height())
         self._pin_bottom_centre(self.tag_input)
         self._pin_above(self.prompt_tags, self.tag_input)
@@ -289,6 +290,11 @@ class Viewer(QWidget):
         self.prompt_tags.setVisible(bool(tags))
         self.prompt_tags.raise_()
         self.tag_input.setFocus()
+
+    def _offer_suggestions(self, text):
+        to_add, to_remove = self._suggestions
+        removing = text.split(" ")[-1].startswith("-")
+        self.tag_input.completer().model().setStringList(to_remove if removing else to_add)
 
     def _record_tags(self):
         library, path = self._tagging
