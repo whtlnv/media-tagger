@@ -29,6 +29,12 @@ READ_ONLY_BANNER_TEXT = "This drive is read-only — tags can't be saved"
 READ_ONLY_STATUS_TEXT = "Read-only — tags can't be saved"
 
 
+def overlay_label(text, parent):
+    label = QLabel(text, parent)
+    label.setStyleSheet(LABEL_STYLE)
+    return label
+
+
 def fitted_rect(size, bounds):
     target = QRect(QPoint(), size.scaled(bounds.size(), Qt.AspectRatioMode.KeepAspectRatio))
     target.moveCenter(bounds.center())
@@ -65,12 +71,10 @@ class Viewer(QWidget):
         self.video_player = VideoPlayer(new_engine(**{**PLAYER_OPTIONS, **(player_options or {})}))
         self.surface = None
         self._decoded_key = self._decoded = None
-        self.info = QLabel(self)
-        self.info.setStyleSheet(LABEL_STYLE)
+        self.info = overlay_label("", self)
         self.info.move(CORNER_MARGIN, CORNER_MARGIN)
         self.info.hide()
-        self.placeholder = QLabel(UNSUPPORTED_TEXT, self)
-        self.placeholder.setStyleSheet(LABEL_STYLE)
+        self.placeholder = overlay_label(UNSUPPORTED_TEXT, self)
         self._build_status_bar()
         self.read_only_banner = QLabel(READ_ONLY_BANNER_TEXT, self)
         self.read_only_banner.hide()
@@ -83,10 +87,8 @@ class Viewer(QWidget):
 
     def _build_status_bar(self):
         self.status_bar = QWidget(self)
-        self.library_label = QLabel(NO_LIBRARY_TEXT, self.status_bar)
-        self.library_label.setStyleSheet(LABEL_STYLE)
-        self.read_only_status = QLabel(READ_ONLY_STATUS_TEXT, self.status_bar)
-        self.read_only_status.setStyleSheet(LABEL_STYLE)
+        self.library_label = overlay_label(NO_LIBRARY_TEXT, self.status_bar)
+        self.read_only_status = overlay_label(READ_ONLY_STATUS_TEXT, self.status_bar)
         self.read_only_status.hide()
         status_layout = QHBoxLayout(self.status_bar)
         status_layout.setContentsMargins(CORNER_MARGIN, 0, CORNER_MARGIN, CORNER_MARGIN)
