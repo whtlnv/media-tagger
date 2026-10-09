@@ -5,7 +5,7 @@
 - [x] Tags entered for one file are not reported for another file in the same library
 - [x] A file's tags are reported in alphabetical order, whatever order they were entered in (`family beach` reports `beach`, `family`)
 - [x] Entering a tag a file already has does not report it twice
-- [ ] Entering `-sunset` for a file tagged `beach` and `sunset` leaves it tagged only `beach`
+- [x] Entering `-sunset` for a file tagged `beach` and `sunset` leaves it tagged only `beach`
 - [ ] Entering `-sunset` for a file not tagged `sunset` leaves its tags unchanged
 - [ ] One entry can both add and remove (`pool -sunset` on a file tagged `sunset` leaves it tagged only `pool`)
 - [ ] Entered tags are lowercased (`Beach` is stored as `beach`)

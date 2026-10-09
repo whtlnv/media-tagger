@@ -42,6 +42,9 @@ class Library:
         return cls(meta["drive_id"], int(meta["schema_version"]))
 
     def enter(self, path, text):
+        if text.startswith("-"):
+            self._tags[path].remove(text[1:])
+            return
         self._tags[path] = sorted(set(text.split()))
 
     def tags(self, path):
