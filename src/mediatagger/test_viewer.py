@@ -450,3 +450,13 @@ def test_leaving_a_video_before_its_surface_can_render_never_loads_it(qtbot, tmp
 
     qtbot.wait(300)
     assert viewer.video_player.engine.path is None
+
+
+def test_the_unsupported_placeholder_sits_at_the_centre_of_the_window_and_stays_there_on_resize(qtbot, tmp_path):
+    (tmp_path / "IMG_1.png").write_bytes(b"not really a png")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    viewer.resize(600, 500)
+    qtbot.waitUntil(lambda: viewer.width() == 600)
+
+    offset = viewer.placeholder.geometry().center() - viewer.rect().center()
+    assert offset.manhattanLength() <= 2

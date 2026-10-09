@@ -40,6 +40,13 @@ class Viewer(QWidget):
     def resizeEvent(self, event):
         if self.surface:
             self.surface.setGeometry(self.rect())
+        self._centre(self.placeholder)
+
+    def _centre(self, label):
+        label.adjustSize()
+        frame = label.geometry()
+        frame.moveCenter(self.rect().center())
+        label.setGeometry(frame)
 
     def paintEvent(self, event):
         painter = QPainter(self)
