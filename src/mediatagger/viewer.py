@@ -9,6 +9,7 @@ from mediatagger.video import VideoPlayer, new_engine
 
 PLAYER_OPTIONS = {"vo": "libmpv"}
 VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up"}
+SLIDESHOW_KEYS = {Qt.Key.Key_Left: "Left", Qt.Key.Key_Right: "Space", Qt.Key.Key_Space: "Space"}
 
 
 def fitted_rect(size, bounds):
@@ -55,7 +56,9 @@ class Viewer(QWidget):
         if event.key() in VIDEO_KEYS:
             self.video_player.press(VIDEO_KEYS[event.key()])
             return
-        key = "Left" if event.key() == Qt.Key.Key_Left else "Space"
+        if event.key() not in SLIDESHOW_KEYS:
+            return
+        key = SLIDESHOW_KEYS[event.key()]
         self.slideshow.press(key)
         self.video_player.press(key)
         self._show_current()

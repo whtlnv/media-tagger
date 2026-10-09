@@ -342,3 +342,14 @@ def test_a_viewer_opened_on_a_folder_whose_first_item_is_a_corrupt_video_shows_t
     qtbot.waitUntil(lambda: shows_unsupported_placeholder(viewer), timeout=5000)
     surface = viewer.findChild(QOpenGLWidget)
     assert surface is None or not surface.isVisible()
+
+
+def test_pressing_a_key_the_viewer_does_not_use_on_a_red_image_followed_by_a_blue_image_keeps_painting_red(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    make_image(tmp_path / "IMG_2.png", "blue")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_X)
+
+    frame = viewer.grab().toImage()
+    assert frame.pixelColor(frame.width() // 2, frame.height() // 2) == QColor("red")
