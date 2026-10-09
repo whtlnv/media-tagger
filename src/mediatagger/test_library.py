@@ -5,12 +5,16 @@ from contextlib import contextmanager
 from mediatagger.library import Library
 
 
-def _read_meta(root):
+def _query(root, sql):
     connection = sqlite3.connect(root / ".mediatagger" / "tags.db")
     try:
-        return dict(connection.execute("SELECT key, value FROM meta"))
+        return connection.execute(sql).fetchall()
     finally:
         connection.close()
+
+
+def _read_meta(root):
+    return dict(_query(root, "SELECT key, value FROM meta"))
 
 
 @contextmanager
@@ -315,18 +319,15 @@ def test_tags_db_of_a_newly_created_library_records_each_file_and_tag_once_and_l
 
     library.enter(photo, "beach family")
 
-    connection = sqlite3.connect(tmp_path / ".mediatagger" / "tags.db")
-    try:
-        items = connection.execute("SELECT rel_path FROM items").fetchall()
-        tags = connection.execute("SELECT name FROM tags ORDER BY name").fetchall()
-        links = connection.execute(
-            "SELECT items.rel_path, tags.name FROM item_tags"
-            " JOIN items ON items.id = item_tags.item_id"
-            " JOIN tags ON tags.id = item_tags.tag_id"
-            " ORDER BY tags.name"
-        ).fetchall()
-    finally:
-        connection.close()
+    items = _query(tmp_path, "SELECT rel_path FROM items")
+    tags = _query(tmp_path, "SELECT name FROM tags ORDER BY name")
+    links = _query(
+        tmp_path,
+        "SELECT items.rel_path, tags.name FROM item_tags"
+        " JOIN items ON items.id = item_tags.item_id"
+        " JOIN tags ON tags.id = item_tags.tag_id"
+        " ORDER BY tags.name",
+    )
 
     assert items == [("beach.jpg",)]
     assert tags == [("beach",), ("family",)]
@@ -336,16 +337,11 @@ def test_tags_db_of_a_newly_created_library_records_each_file_and_tag_once_and_l
 
 def test_opening_a_schema_version_1_library_upgrades_its_tags_db_in_place_to_schema_version_2(tmp_path):
     _create_schema_version_1_library(tmp_path, "phase-3-drive")
-    tags_db = tmp_path / ".mediatagger" / "tags.db"
 
     Library.open(tmp_path)
 
-    connection = sqlite3.connect(tags_db)
-    try:
-        meta = dict(connection.execute("SELECT key, value FROM meta"))
-        tables = {name for (name,) in connection.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
-    finally:
-        connection.close()
+    meta = _read_meta(tmp_path)
+    tables = {name for (name,) in _query(tmp_path, "SELECT name FROM sqlite_master WHERE type = 'table'")}
 
     assert meta["schema_version"] == "2"
     assert meta["drive_id"] == "phase-3-drive"
@@ -408,11 +404,7 @@ def test_a_library_whose_tags_db_was_left_in_wal_mode_uses_the_rollback_journal_
 
     Library.open(tmp_path)
 
-    observer = sqlite3.connect(tags_db)
-    try:
-        (journal_mode,) = observer.execute("PRAGMA journal_mode").fetchone()
-    finally:
-        observer.close()
+    [(journal_mode,)] = _query(tmp_path, "PRAGMA journal_mode")
 
     assert journal_mode == "delete"
 
@@ -425,11 +417,7 @@ def test_removing_a_files_last_tag_removes_the_files_row_from_items(tmp_path):
 
     library.enter(photo, "-beach")
 
-    connection = sqlite3.connect(tmp_path / ".mediatagger" / "tags.db")
-    try:
-        items = connection.execute("SELECT rel_path FROM items").fetchall()
-    finally:
-        connection.close()
+    items = _query(tmp_path, "SELECT rel_path FROM items")
 
     assert items == []
 
@@ -441,10 +429,6 @@ def test_a_tagged_files_row_in_items_records_its_kind_as_file(tmp_path):
 
     library.enter(photo, "beach")
 
-    connection = sqlite3.connect(tmp_path / ".mediatagger" / "tags.db")
-    try:
-        items = connection.execute("SELECT rel_path, kind FROM items").fetchall()
-    finally:
-        connection.close()
+    items = _query(tmp_path, "SELECT rel_path, kind FROM items")
 
     assert items == [("beach.jpg", "file")]
