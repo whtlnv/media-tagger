@@ -125,6 +125,19 @@ def drop_onto(viewer, dragged):
     QApplication.sendEvent(viewer, drop)
 
 
+def viewer_past_its_first_item_beside_a_green_then_yellow_folder(qtbot, tmp_path):
+    viewed, dropped = tmp_path / "viewed", tmp_path / "dropped"
+    viewed.mkdir()
+    dropped.mkdir()
+    make_image(viewed / "IMG_1.png", "red")
+    make_image(viewed / "IMG_2.png", "blue")
+    make_image(dropped / "IMG_1.png", "green")
+    make_image(dropped / "IMG_2.png", "yellow")
+    viewer = shown_viewer_on(qtbot, viewed)
+    qtbot.keyClick(viewer, Qt.Key.Key_Right)
+    return viewer, dropped
+
+
 def shows_unsupported_placeholder(viewer):
     return any("unsupported" in text.lower() for text in shown_texts(viewer))
 
@@ -760,15 +773,7 @@ def test_dropping_a_file_onto_the_launch_screen_starts_its_folders_slideshow_at_
 
 
 def test_dropping_a_folder_while_viewing_another_folder_replaces_the_slideshow_with_the_dropped_folders_at_its_first_item(qtbot, tmp_path):
-    viewed, dropped = tmp_path / "viewed", tmp_path / "dropped"
-    viewed.mkdir()
-    dropped.mkdir()
-    make_image(viewed / "IMG_1.png", "red")
-    make_image(viewed / "IMG_2.png", "blue")
-    make_image(dropped / "IMG_1.png", "green")
-    make_image(dropped / "IMG_2.png", "yellow")
-    viewer = shown_viewer_on(qtbot, viewed)
-    qtbot.keyClick(viewer, Qt.Key.Key_Right)
+    viewer, dropped = viewer_past_its_first_item_beside_a_green_then_yellow_folder(qtbot, tmp_path)
     dragged = dragged_local_path(dropped)
     drag_enter_over(viewer, dragged)
 
@@ -779,15 +784,7 @@ def test_dropping_a_folder_while_viewing_another_folder_replaces_the_slideshow_w
 
 
 def test_dropping_a_file_while_viewing_another_folder_replaces_the_slideshow_with_that_files_folder_at_that_file(qtbot, tmp_path):
-    viewed, dropped = tmp_path / "viewed", tmp_path / "dropped"
-    viewed.mkdir()
-    dropped.mkdir()
-    make_image(viewed / "IMG_1.png", "red")
-    make_image(viewed / "IMG_2.png", "blue")
-    make_image(dropped / "IMG_1.png", "green")
-    make_image(dropped / "IMG_2.png", "yellow")
-    viewer = shown_viewer_on(qtbot, viewed)
-    qtbot.keyClick(viewer, Qt.Key.Key_Right)
+    viewer, dropped = viewer_past_its_first_item_beside_a_green_then_yellow_folder(qtbot, tmp_path)
     dragged = dragged_local_path(dropped / "IMG_2.png")
     drag_enter_over(viewer, dragged)
 
