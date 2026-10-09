@@ -7,3 +7,4 @@
 - [x] When a tag is removed from the last item that has it, its row in `tags` is deleted too
 - [x] Opening a folder on a drive whose `tags.db` is garbage bytes (so the library can't be opened) still shows the slideshow, and the status bar says "Library on <DRIVE> can't be opened — viewing only"
 - [x] On a drive whose library can't be opened, pressing `t` opens no tag prompt, shows "Tags can't be saved here", and leaves the drive's files unchanged
+- [ ] When opening the drive's library fails with an `OSError` (e.g. the drive was unplugged; the test patches `Library.open` to raise it), the viewer still shows the slideshow and the status bar says "Library on <DRIVE> can't be opened — viewing only"
