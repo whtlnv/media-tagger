@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 17:13 · `src/mediatagger/test_viewer_tag_prompt.py::test_with_5000_tags_in_the_library_each_keystroke_in_the_tag_prompt_updates_the_suggestions_in_under_50_ms`
+- Behavior: With 5,000 tags in the library, each keystroke in the tag prompt updates the suggestions in under 50 ms
+- Predicted: AssertionError — slowest keystroke ≥ 50 ms, since every keystroke rebuilds the 5,000-entry string list and the completer refilters and redraws its popup
+- Actual: passed. Measured keystrokes on the dev Mac (offscreen): 22.6 ms for the first (popup first shown), then about 0.5 ms each; the popup lists `tag1200`, `tag1201`, … (100 rows)
+- Type: passed unexpectedly
+- Resolution: The behavior already holds. `all_tags()` is queried once when the prompt opens (`_open_tag_prompt`), and each keystroke only filters a cached Python list. The test isn't vacuous — it really drives 5,000 tags through the prompt and times each keystroke. So I kept it as a regression guard and didn't rewrite it into an artificial failure. The first keystroke leaves only about 2.2× headroom under the budget, and slower hardware (the Pi) is unmeasured.
+
 ## 2026-10-09 17:10 · `src/mediatagger/test_viewer_tag_prompt.py::test_the_suggestion_popup_opens_above_the_prompt_and_lies_entirely_inside_the_window_even_with_more_suggestions_than_fit_below_the_prompt`
 - Behavior: The suggestion popup opens above the prompt and lies entirely inside the window, even with more suggestions than fit below the prompt
 - Predicted: none committed — the test was run before a prediction was stated (process lapse). Unstated expectation was a possible vacuous pass, since QCompleter flips its popup above the line edit when it would overflow the screen

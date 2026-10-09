@@ -1,3 +1,5 @@
+import time
+
 import pytest
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QAbstractItemView, QApplication
@@ -360,3 +362,19 @@ def test_the_suggestion_popup_opens_above_the_prompt_and_lies_entirely_inside_th
     window = viewer.frameGeometry()
     prompt_top = prompt.mapToGlobal(prompt.rect().topLeft()).y()
     assert (popup.bottom() < prompt_top, window.contains(popup)) == (True, True)
+
+
+def test_with_5000_tags_in_the_library_each_keystroke_after_the_popup_opens_updates_the_suggestions_in_under_50_ms(qtbot, tmp_path):
+    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, " ".join(f"tag{number:04}" for number in range(5000)))
+    type_in_tag_prompt(qtbot, viewer, "")
+    [prompt] = visible_tag_prompts(viewer)
+
+    qtbot.keyClick(prompt, "t")  # the first keystroke also builds and shows the popup, a one-off cost
+    keystroke_times = []
+    for key in "ag12":
+        started = time.perf_counter()
+        qtbot.keyClick(prompt, key)
+        keystroke_times.append(time.perf_counter() - started)
+
+    [suggestions] = visible_suggestion_lists(viewer)
+    assert (max(keystroke_times) < 0.050, listed(suggestions)[:2]) == (True, ["tag1200", "tag1201"])

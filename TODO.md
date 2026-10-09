@@ -28,7 +28,7 @@ Note for every cycle: put new tag-prompt and autocomplete viewer tests in `src/m
 - [x] On a video item with the suggestion popup open, `↓` and `↑` move the highlight and do not seek the video
 - [x] The suggestion popup over a white image shows light text on a dark background, as the overlays do
 - [x] The suggestion popup opens above the prompt and lies entirely inside the window, even with more suggestions than fit below the prompt
-- [ ] With 5,000 tags in the library, each keystroke in the tag prompt updates the suggestions in under 50 ms
+- [x] With 5,000 tags in the library, each keystroke in the tag prompt updates the suggestions in under 50 ms
 - [ ] When saving the prompt fails with `sqlite3.Error` from the library, the prompt stays open with its text and the status bar says "Couldn't save tags — is the drive still connected?"
 - [ ] When saving the prompt fails with `OSError` from the library, the prompt stays open with its text and the status bar says "Couldn't save tags — is the drive still connected?"
 - [ ] Running the shipped `mediatagger <folder>` command on a drive whose library has `beach`, pressing `t` and typing `b` shows the suggestion popup listing `beach` (the test's driver script treats a temp folder as the mount point)
