@@ -28,7 +28,8 @@ Why not web/Electron/Wails: browsers can't play AVI/MPEG-2/DivX, and dropped fol
 
 - The **library root** is the mount point of the drive containing whatever was opened (walk up from the path until a mount point).
 - Library data lives on the drive: `<root>/.mediatagger/tags.db`. Paths are stored **relative to the root**, so the same drive works on the Mac and the Pi.
-- First time on a drive: ask "Create a tag library on <drive>?" before writing anything.
+- First time on a drive: ask "Create a tag library on <drive>?" before writing anything. A declined drive is not asked again for the rest of the session.
+- The system disk (mount point `/`) never holds a library: media there is viewing only.
 - Read-only drive: browsing and viewing work; tagging is disabled, with a banner saying so.
 - Each library has a unique `drive_id` stored in its DB. One drive at a time.
 - **Only tagged items are stored.** Untagged directories are never indexed. Browsing reads the filesystem live.
@@ -136,6 +137,8 @@ Search history is remembered (`↑` in the search box).
 - Selected item's full tags shown in the status bar.
 
 ### Status bar (always visible)
+
+It names the open library (`Library: MEDIATAGGER`) or says there is none (viewing only), and on a read-only drive adds `Read-only — tags can't be saved`.
 
 Any background work is announced and its completion shown, e.g. `⟳ Generating thumbnails 132 / 1,204` → `✓ Thumbnails ready`, `⟳ Backing up database…` → `✓ Backed up`. Nothing runs silently.
 
