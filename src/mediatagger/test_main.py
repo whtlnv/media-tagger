@@ -83,7 +83,7 @@ def test_pressing_esc_in_the_mediatagger_command_makes_it_exit_cleanly(tmp_path)
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == "exited"
 
-REPORT_SHOWN_TEXTS_WITH_NO_PATH_SCRIPT = (
+REPORT_SHOWN_TEXTS_ON_TIMER = (
     "import sys\n"
     "from PySide6.QtCore import QTimer\n"
     "from PySide6.QtWidgets import QApplication\n"
@@ -97,8 +97,13 @@ REPORT_SHOWN_TEXTS_WITH_NO_PATH_SCRIPT = (
     "    QApplication.closeAllWindows()\n"
     "    QApplication.quit()\n"
     "QTimer.singleShot(1000, report)\n"
-    "sys.argv = ['mediatagger']\n"
-) + RUN_MEDIATAGGER_COMMAND
+)
+
+REPORT_SHOWN_TEXTS_WITH_NO_PATH_SCRIPT = (
+    REPORT_SHOWN_TEXTS_ON_TIMER
+    + "sys.argv = ['mediatagger']\n"
+    + RUN_MEDIATAGGER_COMMAND
+)
 
 
 def test_running_the_mediatagger_command_with_no_path_opens_the_window_showing_the_launch_text(qtbot):
@@ -136,21 +141,10 @@ def test_dropping_a_folder_onto_the_mediatagger_command_started_with_no_path_sta
     assert result.stdout.strip() == f"centre={QColor('red').name()} texts=[]"
 
 REPORT_SHOWN_TEXTS_SCRIPT = (
-    "import sys\n"
-    "from PySide6.QtCore import QTimer\n"
-    "from PySide6.QtWidgets import QApplication\n"
-    "from mediatagger.test_viewer import shown_texts\n"
-    "app = QApplication([])\n"
-    "def report():\n"
-    "    for window in QApplication.topLevelWidgets():\n"
-    "        if window.isVisible():\n"
-    "            for text in shown_texts(window):\n"
-    "                print(text, flush=True)\n"
-    "    QApplication.closeAllWindows()\n"
-    "    QApplication.quit()\n"
-    "QTimer.singleShot(1000, report)\n"
-    "sys.argv = ['mediatagger', sys.argv[1]]\n"
-) + RUN_MEDIATAGGER_COMMAND
+    REPORT_SHOWN_TEXTS_ON_TIMER
+    + "sys.argv = ['mediatagger', sys.argv[1]]\n"
+    + RUN_MEDIATAGGER_COMMAND
+)
 
 
 def test_running_the_mediatagger_command_on_a_path_that_does_not_exist_keeps_running_and_says_it_cant_open_it(qtbot):
