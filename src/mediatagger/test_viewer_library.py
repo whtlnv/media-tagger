@@ -74,8 +74,19 @@ def shown_viewer_on_drive(qtbot, folder, drive, ask_to_create_library):
     return shown_viewer_on_drives(qtbot, folder, (drive,), ask_to_create_library)
 
 
+def visible_tag_prompts(viewer):
+    return [prompt for prompt in viewer.findChildren(QLineEdit) if prompt.isVisible()]
+
+
 def visible_tag_prompt_texts(viewer):
-    return [prompt.text() for prompt in viewer.findChildren(QLineEdit) if prompt.isVisible()]
+    return [prompt.text() for prompt in visible_tag_prompts(viewer)]
+
+
+def enter_in_tag_prompt(qtbot, viewer, text):
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+    [prompt] = visible_tag_prompts(viewer)
+    qtbot.keyClicks(prompt, text)
+    qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
 
 def decline_noting_the_question_in(asked):
@@ -470,11 +481,8 @@ def test_typing_beach_family_in_the_tag_prompt_and_pressing_enter_closes_it_and_
     make_image(folder / "IMG_1.png", "red")
     Library.create(drive)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
-    qtbot.keyClick(viewer, Qt.Key.Key_T)
-    [prompt] = [prompt for prompt in viewer.findChildren(QLineEdit) if prompt.isVisible()]
 
-    qtbot.keyClicks(prompt, "beach family")
-    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+    enter_in_tag_prompt(qtbot, viewer, "beach family")
 
     assert visible_tag_prompt_texts(viewer) == []
     assert Library.open(drive).tags(folder / "IMG_1.png") == ["beach", "family"]
@@ -486,10 +494,7 @@ def test_on_a_file_tagged_beach_family_typing_minus_family_in_the_tag_prompt_and
     make_image(folder / "IMG_1.png", "red")
     Library.create(drive).enter(folder / "IMG_1.png", "beach family")
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
-    qtbot.keyClick(viewer, Qt.Key.Key_T)
-    [prompt] = [prompt for prompt in viewer.findChildren(QLineEdit) if prompt.isVisible()]
 
-    qtbot.keyClicks(prompt, "-family")
-    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+    enter_in_tag_prompt(qtbot, viewer, "-family")
 
     assert Library.open(drive).tags(folder / "IMG_1.png") == ["beach"]
