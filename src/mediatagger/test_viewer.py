@@ -89,7 +89,8 @@ def shown_viewer_on(qtbot, folder):
 
 
 def shown_labels(viewer):
-    return [label for label in viewer.findChildren(QLabel) if label.isVisible()]
+    """Labels shown over the media area; the status bar's own labels are checked separately."""
+    return [label for label in viewer.findChildren(QLabel) if label.isVisible() and not viewer.status_bar.isAncestorOf(label)]
 
 
 def shown_texts(viewer):
