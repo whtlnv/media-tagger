@@ -165,7 +165,7 @@ exFAT has no symlinks and no Unix permissions, so **no virtualenv on the drive**
 - `lib-linux-aarch64-cp313/` and `debs/` are populated **in the VM** (same OS and architecture as the Pi). The Mac uses its own local `.venv` for development.
 - Updating the app = copy new `app/` onto the drive. No install step.
 - The menu entry depends on the drive mounting at the same path (`/media/<user>/MEDIATAGGER`), so the label must stay fixed.
-- The app may live on the same drive as the media or on a separate stick; the library is always found from the opened media's drive.
+- **The app's own drive is never written while the app runs.** No library is ever created on it (media stored there is viewing only), Python bytecode is precompiled when the drive is built and `PYTHONDONTWRITEBYTECODE=1` is set, and backups/thumbnails go to the Pi's home folder. Libraries live only on media drives.
 
 ### Spike results (2026-10-08)
 
