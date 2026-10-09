@@ -62,12 +62,16 @@ def viewer_on_drive(qtbot, folder, drive, ask_to_create_library):
     return viewer_on_drives(qtbot, folder, (drive,), ask_to_create_library)
 
 
-def shown_viewer_on_drive(qtbot, folder, drive, ask_to_create_library):
-    viewer = viewer_on_drive(qtbot, folder, drive, ask_to_create_library)
+def shown_viewer_on_drives(qtbot, folder, drives, ask_to_create_library):
+    viewer = viewer_on_drives(qtbot, folder, drives, ask_to_create_library)
     viewer.resize(400, 300)
     viewer.show()
     qtbot.waitExposed(viewer)
     return viewer
+
+
+def shown_viewer_on_drive(qtbot, folder, drive, ask_to_create_library):
+    return shown_viewer_on_drives(qtbot, folder, (drive,), ask_to_create_library)
 
 
 def decline_noting_the_question_in(asked):
@@ -396,10 +400,7 @@ def test_after_viewing_a_read_only_drive_dropping_a_folder_from_a_writable_drive
     [dropped] = make_folders(writable_drive, "Videos")
     make_image(dropped / "IMG_1.png", "green")
     with made_read_only(read_only_drive):
-        viewer = viewer_on_drives(qtbot, viewed, (read_only_drive, writable_drive), lambda question: False)
-        viewer.resize(400, 300)
-        viewer.show()
-        qtbot.waitExposed(viewer)
+        viewer = shown_viewer_on_drives(qtbot, viewed, (read_only_drive, writable_drive), lambda question: False)
 
         drag_and_drop_onto(viewer, dropped)
         shown = shown_texts(viewer)
