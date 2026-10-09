@@ -61,8 +61,8 @@ def unready_viewer_on(qtbot, folder):
     return viewer
 
 
-def shown_launch_viewer(qtbot):
-    viewer = Viewer(player_options=SILENT)
+def shown_launch_viewer(qtbot, folder_picker=None):
+    viewer = Viewer(player_options=SILENT, folder_picker=folder_picker)
     qtbot.addWidget(viewer)
     viewer.show()
     qtbot.waitExposed(viewer)
@@ -700,10 +700,7 @@ def test_pressing_a_key_other_than_o_on_the_launch_screen_opens_no_folder_picker
 def test_choosing_a_folder_in_the_o_picker_starts_that_folders_slideshow_at_its_first_item(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red")
     make_image(tmp_path / "IMG_2.png", "blue")
-    viewer = Viewer(player_options=SILENT, folder_picker=lambda: tmp_path)
-    qtbot.addWidget(viewer)
-    viewer.show()
-    qtbot.waitExposed(viewer)
+    viewer = shown_launch_viewer(qtbot, folder_picker=lambda: tmp_path)
 
     qtbot.keyClick(viewer, Qt.Key.Key_O)
 
@@ -745,10 +742,7 @@ def test_choosing_a_folder_with_no_media_in_the_o_picker_says_so_like_opening_th
     folder = tmp_path / "Holidays"
     folder.mkdir()
     (folder / "notes.txt").write_text("hi")
-    viewer = Viewer(player_options=SILENT, folder_picker=lambda: folder)
-    qtbot.addWidget(viewer)
-    viewer.show()
-    qtbot.waitExposed(viewer)
+    viewer = shown_launch_viewer(qtbot, folder_picker=lambda: folder)
 
     qtbot.keyClick(viewer, Qt.Key.Key_O)
 
