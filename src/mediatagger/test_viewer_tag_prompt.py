@@ -106,32 +106,31 @@ def test_suggestions_are_ordered_by_item_count_and_then_alphabetically_typing_b_
     assert listed(suggestions) == expected
 
 
-def test_tags_the_viewed_item_already_has_are_not_suggested_on_an_item_tagged_sunset_with_summer_in_the_library_typing_s_lists_summer_and_not_sunset(qtbot, tmp_path):
+@pytest.mark.parametrize(
+    "viewed_item_tags, other_item_tags, typed, expected",
+    [
+        ("sunset", "summer", "s", ["summer"]),
+        ("sunset", "summer", "-s", ["sunset"]),
+        ("sunset sky", "", "-sunset -s", ["sky"]),
+    ],
+    ids=[
+        "tags_the_viewed_item_already_has_are_not_suggested_typing_s_lists_summer_and_not_sunset",
+        "a_word_starting_with_minus_suggests_from_the_viewed_items_own_tags_typing_minus_s_lists_sunset_and_not_summer",
+        "a_removal_already_entered_is_not_suggested_again_typing_minus_sunset_minus_s_lists_sky_only",
+    ],
+)
+def test_suggestions_depend_on_the_viewed_items_own_tags(qtbot, tmp_path, viewed_item_tags, other_item_tags, typed, expected):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     make_image(folder / "IMG_2.png", "blue")
     library = Library.open(drive)
-    library.enter(folder / "IMG_1.png", "sunset")
-    library.enter(folder / "IMG_2.png", "summer")
+    library.enter(folder / "IMG_1.png", viewed_item_tags)
+    library.enter(folder / "IMG_2.png", other_item_tags)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
-    type_in_tag_prompt(qtbot, viewer, "s")
+    type_in_tag_prompt(qtbot, viewer, typed)
 
     [suggestions] = visible_suggestion_lists()
-    assert listed(suggestions) == ["summer"]
-
-
-def test_a_word_starting_with_minus_suggests_from_the_viewed_items_own_tags_on_an_item_tagged_sunset_with_summer_in_the_library_typing_minus_s_lists_sunset_and_not_summer(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    make_image(folder / "IMG_2.png", "blue")
-    library = Library.open(drive)
-    library.enter(folder / "IMG_1.png", "sunset")
-    library.enter(folder / "IMG_2.png", "summer")
-    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
-
-    type_in_tag_prompt(qtbot, viewer, "-s")
-
-    [suggestions] = visible_suggestion_lists()
-    assert listed(suggestions) == ["sunset"]
+    assert listed(suggestions) == expected
 
 
 def test_suggestions_come_from_the_current_drives_library_after_dropping_a_folder_from_a_second_drive_with_only_zebra_typing_b_shows_no_popup_and_z_lists_zebra(qtbot, tmp_path):
@@ -387,13 +386,3 @@ def test_after_a_failed_save_a_successful_save_takes_the_couldnt_save_message_of
 
     assert (Library.open(drive).tags(folder / "IMG_1.png"), "Couldn't save tags — is the drive still connected?" in status_bar_texts(viewer)) == (["beach"], False)
 
-
-def test_a_removal_already_entered_is_not_suggested_again_on_an_item_tagged_sunset_and_sky_typing_minus_sunset_minus_s_lists_sky_only(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    Library.open(drive).enter(folder / "IMG_1.png", "sunset sky")
-    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
-
-    type_in_tag_prompt(qtbot, viewer, "-sunset -s")
-
-    [suggestions] = visible_suggestion_lists()
-    assert listed(suggestions) == ["sky"]
