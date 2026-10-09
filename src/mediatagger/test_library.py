@@ -71,3 +71,13 @@ def test_a_library_created_removed_and_created_again_at_the_same_mount_point_rep
     second = Library.create(tmp_path)
 
     assert second.drive_id != first.drive_id
+
+
+def test_an_opened_library_reports_the_schema_version_recorded_in_its_tags_db(tmp_path):
+    Library.create(tmp_path)
+    connection = sqlite3.connect(tmp_path / ".mediatagger" / "tags.db")
+    with connection:
+        connection.execute("UPDATE meta SET value = '0' WHERE key = 'schema_version'")
+    connection.close()
+
+    assert Library.open(tmp_path).schema_version == 0

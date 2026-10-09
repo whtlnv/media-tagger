@@ -2,9 +2,6 @@
 
 ## Out of Scope
 
-- **[src/mediatagger/test_library.py:17] Schema-version round-trip test compares a class attribute with itself** (added: 2026-10-09)
-  `reopened.schema_version == schema_version` always holds because `schema_version` is a `Library` class attribute that `Library.open` never reads from `tags.db`; making the test observe the recorded version through the public API needs `Library.open` to read it back, a production change this pass may not make (the stored value is covered by the meta-table test at line 54).
-
 - **[src/mediatagger/test_main.py:53] Standalone executable test asserts only that the process is still alive** (added: 2026-10-08)
   `assert still_running` checks the process did not exit but not the "viewer open" its name promises; observing the viewer of an independently launched `mediatagger` process needs a production-side report hook, which this pass may not add.
 

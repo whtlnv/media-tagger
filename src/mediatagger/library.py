@@ -19,10 +19,11 @@ def _write_meta(tags_db, **meta):
 
 
 class Library:
-    schema_version = 1
+    schema_version = 1  # the version this code writes; an opened library reports the version its tags.db records
 
-    def __init__(self, drive_id):
+    def __init__(self, drive_id, schema_version=schema_version):
         self.drive_id = drive_id
+        self.schema_version = schema_version
 
     @classmethod
     def create(cls, root):
@@ -35,8 +36,6 @@ class Library:
     @classmethod
     def open(cls, root):
         connection = sqlite3.connect(_tags_db(root))
-        (drive_id,) = connection.execute(
-            "SELECT value FROM meta WHERE key = 'drive_id'"
-        ).fetchone()
+        meta = dict(connection.execute("SELECT key, value FROM meta"))
         connection.close()
-        return cls(drive_id)
+        return cls(meta["drive_id"], int(meta["schema_version"]))
