@@ -1007,3 +1007,19 @@ def test_pressing_t_on_a_drive_whose_library_cant_be_opened_opens_no_tag_prompt_
     assert visible_tag_prompts(viewer) == []
     assert TAGS_CANT_BE_SAVED_HERE_TEXT in status_bar_texts(viewer)
     assert file_contents_under(drive) == before
+
+
+def test_opening_a_folder_on_a_drive_whose_library_open_fails_with_an_os_error_still_shows_the_slideshow_and_says_the_library_cant_be_opened_viewing_only(qtbot, tmp_path, monkeypatch):
+    from mediatagger.viewer import LIBRARY_CANT_BE_OPENED_TEXT
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+
+    def open_on_an_unplugged_drive(root):
+        raise OSError("drive was unplugged")
+
+    monkeypatch.setattr(Library, "open", open_on_an_unplugged_drive)
+
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    assert centre_colour(viewer) == QColor("red")
+    assert status_bar_texts(viewer) == [LIBRARY_CANT_BE_OPENED_TEXT.format("MEDIATAGGER")]

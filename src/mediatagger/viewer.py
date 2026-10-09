@@ -348,7 +348,7 @@ class Viewer(QWidget):
         else:
             try:
                 self.library = Library.open(drive)
-            except sqlite3.DatabaseError:
+            except (sqlite3.DatabaseError, OSError):
                 self._show_library_status(LIBRARY_CANT_BE_OPENED_TEXT.format(drive.name), read_only=False)
                 return
         self._show_library_status(LIBRARY_TEXT.format(drive.name), read_only)
