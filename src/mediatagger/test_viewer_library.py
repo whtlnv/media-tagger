@@ -629,3 +629,19 @@ def test_arrow_keys_in_the_tag_prompt_open_over_a_paused_video_neither_move_the_
 
         assert viewer.slideshow.current == folder / "IMG_1.mp4"
         assert engine.time_pos == pytest.approx(20, abs=1)
+
+
+def test_pressing_esc_in_the_tag_prompt_closes_it_leaving_the_viewer_open_and_the_files_tags_unchanged(qtbot, tmp_path):
+    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    Library.create(drive).enter(folder / "IMG_1.png", "beach family")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+    qtbot.keyClicks(viewer.focusWidget(), "-family sunset")
+
+    qtbot.keyClick(viewer.focusWidget(), Qt.Key.Key_Escape)
+
+    assert visible_tag_prompt_texts(viewer) == []
+    assert Library.open(drive).tags(folder / "IMG_1.png") == ["beach", "family"]
+    assert viewer.isVisible()

@@ -152,6 +152,9 @@ class Viewer(QWidget):
         self.video_player.press("Right")  # leaving the current item is what stops its video
 
     def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Escape and isinstance(self.focusWidget(), QLineEdit):
+            self.focusWidget().hide()
+            return
         if event.key() == Qt.Key.Key_Escape:  # interim: quits until the grid (Phase 7) makes Esc "back to grid"
             self.close()
             return
