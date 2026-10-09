@@ -36,7 +36,7 @@ class Viewer(QWidget):
     def __init__(self, folder=None, player_options=None, folder_picker=None):
         super().__init__()
         self.folder_picker = folder_picker or self._pick_folder
-        self.slideshow = folder and Slideshow.open(folder)
+        self.slideshow = None
         self.video_player = VideoPlayer(new_engine(**{**PLAYER_OPTIONS, **(player_options or {})}))
         self.surface = None
         self._decoded_key = self._decoded = None
@@ -50,10 +50,7 @@ class Viewer(QWidget):
         if folder is None:
             self.placeholder.setText("Drop a folder or file here, or press `o` to open")
             return
-        if self.slideshow is None:
-            self.placeholder.setText(f"No images or videos in {folder.name}")
-            return
-        self._show_current()
+        self._open(folder)
 
     def closeEvent(self, event):
         if self.surface:
