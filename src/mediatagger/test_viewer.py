@@ -278,37 +278,21 @@ def test_the_viewers_i_overlay_is_corner_text_with_the_filename_and_position_tha
     assert centre == QColor("blue")
 
 
-def test_a_viewer_opened_on_a_folder_and_shown_is_fullscreen(qtbot, tmp_path):
-    make_image(tmp_path / "IMG_1.png", "red")
-    viewer = viewer_on(qtbot, tmp_path)
-
-    viewer.show()
-    qtbot.waitExposed(viewer)
-
-    assert viewer.isFullScreen()
-
-
-def test_pressing_f_in_the_fullscreen_viewer_leaves_fullscreen(qtbot, tmp_path):
+@pytest.mark.parametrize("presses, fullscreen", [
+    pytest.param(0, True, id="a viewer opened on a folder and shown is fullscreen"),
+    pytest.param(1, False, id="f in the fullscreen viewer leaves fullscreen"),
+    pytest.param(2, True, id="f when the viewer is not fullscreen enters fullscreen"),
+])
+def test_a_shown_viewer_opens_fullscreen_and_each_f_press_toggles_it(qtbot, tmp_path, presses, fullscreen):
     make_image(tmp_path / "IMG_1.png", "red")
     viewer = viewer_on(qtbot, tmp_path)
     viewer.show()
     qtbot.waitExposed(viewer)
 
-    qtbot.keyClick(viewer, Qt.Key.Key_F)
+    for _ in range(presses):
+        qtbot.keyClick(viewer, Qt.Key.Key_F)
 
-    assert not viewer.isFullScreen()
-
-
-def test_pressing_f_when_the_viewer_is_not_fullscreen_enters_fullscreen(qtbot, tmp_path):
-    make_image(tmp_path / "IMG_1.png", "red")
-    viewer = viewer_on(qtbot, tmp_path)
-    viewer.show()
-    qtbot.waitExposed(viewer)
-    qtbot.keyClick(viewer, Qt.Key.Key_F)
-
-    qtbot.keyClick(viewer, Qt.Key.Key_F)
-
-    assert viewer.isFullScreen()
+    assert viewer.isFullScreen() is fullscreen
 
 
 def test_a_viewer_opened_on_a_folder_whose_first_item_cannot_be_decoded_shows_an_unsupported_placeholder(qtbot, tmp_path):
