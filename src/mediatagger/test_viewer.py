@@ -42,6 +42,11 @@ def shows_unsupported_placeholder(viewer):
     return any("unsupported" in text.lower() for text in shown_texts)
 
 
+def shows_video_surface(viewer):
+    surface = viewer.findChild(QOpenGLWidget)
+    return surface is not None and surface.isVisible()
+
+
 def wait_until_loaded(engine, clip):
     engine.wait_for_property("path", lambda path: path == str(clip), timeout=5)
 
@@ -83,8 +88,7 @@ def test_a_viewer_opened_on_a_folder_whose_first_item_is_an_image_shows_no_video
     make_clip(tmp_path / "IMG_2.mp4")
     viewer = shown_viewer_on(qtbot, tmp_path)
 
-    surface = viewer.findChild(QOpenGLWidget)
-    assert surface is None or not surface.isVisible()
+    assert not shows_video_surface(viewer)
     assert viewer.video_player.engine.path is None
 
 
@@ -95,8 +99,7 @@ def test_pressing_space_in_the_viewer_on_a_video_followed_by_a_red_image_hides_t
 
     qtbot.keyClick(viewer, Qt.Key.Key_Space)
 
-    surface = viewer.findChild(QOpenGLWidget)
-    assert surface is None or not surface.isVisible()
+    assert not shows_video_surface(viewer)
     assert centre_colour(viewer) == QColor("red")
 
 
@@ -151,8 +154,7 @@ def test_pressing_space_in_the_viewer_on_an_image_followed_by_a_video_shows_the_
 
     qtbot.keyClick(viewer, Qt.Key.Key_Space)
 
-    surface = viewer.findChild(QOpenGLWidget)
-    assert surface is not None and surface.isVisible()
+    assert shows_video_surface(viewer)
     wait_until_loaded(viewer.video_player.engine, clip)
 
 
@@ -346,8 +348,7 @@ def test_a_viewer_opened_on_a_folder_whose_first_item_is_a_corrupt_video_shows_t
     viewer = shown_viewer_on(qtbot, tmp_path)
 
     qtbot.waitUntil(lambda: shows_unsupported_placeholder(viewer), timeout=5000)
-    surface = viewer.findChild(QOpenGLWidget)
-    assert surface is None or not surface.isVisible()
+    assert not shows_video_surface(viewer)
 
 
 def test_pressing_a_key_the_viewer_does_not_use_on_a_red_image_followed_by_a_blue_image_keeps_painting_red(qtbot, tmp_path):
