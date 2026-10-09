@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-08 20:13 · `src/mediatagger/test_viewer.py::test_cancelling_the_o_picker_leaves_the_launch_text_showing`
+- Behavior: Cancelling the `o` picker leaves the launch screen showing its "Drop a folder or file here" text
+- Predicted: passes on first run — `Viewer._open` already returns early on `None`, and the real `_pick_folder` returns `None`
+- Actual: passed (1 passed)
+- Type: passed unexpectedly
+- Resolution: the cancel behavior already shipped with the previous green step's `None` guard, so no failing rewrite exists without changing the behavior under test. The test is kept as a guard driven through the real rejected dialog, because the next item (wiring the dialog's choice back) could regress it.
+
 ## 2026-10-08 20:03 · `src/mediatagger/test_viewer.py::test_pressing_a_key_other_than_o_on_the_launch_screen_opens_no_folder_picker_and_keeps_the_launch_text`
 - Behavior: a key other than `o` (e.g. `x`) on the launch screen opens no folder picker and leaves the launch text showing
 - Predicted: passes on first run — the launch-screen branch of `keyPressEvent` already guards `_pick_folder` behind `Key_O` and returns for every other key

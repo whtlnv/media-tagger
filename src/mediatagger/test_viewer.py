@@ -626,3 +626,12 @@ def test_choosing_a_folder_in_the_o_picker_starts_that_folders_slideshow_at_its_
 
     assert shown_labels(viewer) == []
     assert centre_colour(viewer) == QColor("red")
+
+
+def test_cancelling_the_o_picker_leaves_the_launch_text_showing(qtbot):
+    viewer = shown_launch_viewer(qtbot)
+    launch_text = shown_texts(viewer)
+
+    modal_opened_by_key(qtbot, viewer, Qt.Key.Key_O)
+
+    assert shown_texts(viewer) == launch_text
