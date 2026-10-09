@@ -39,3 +39,6 @@ class Library:
         meta = dict(connection.execute("SELECT key, value FROM meta"))
         connection.close()
         return cls(meta["drive_id"], int(meta["schema_version"]))
+
+    def tags(self, path):
+        return []

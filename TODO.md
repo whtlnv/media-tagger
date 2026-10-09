@@ -1,6 +1,6 @@
 # TODO
 
-- [ ] A file in a library that was never tagged reports no tags
+- [x] A file in a library that was never tagged reports no tags
 - [ ] Entering `beach family` for a file in a library gives that file the tags `beach` and `family`
 - [ ] Tags entered for one file are not reported for another file in the same library
 - [ ] A file's tags are reported in alphabetical order, whatever order they were entered in (`family beach` reports `beach`, `family`)

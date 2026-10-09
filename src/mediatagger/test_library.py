@@ -81,3 +81,11 @@ def test_an_opened_library_reports_the_schema_version_recorded_in_its_tags_db(tm
     connection.close()
 
     assert Library.open(tmp_path).schema_version == 0
+
+
+def test_a_file_in_a_library_that_was_never_tagged_reports_no_tags(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "beach.jpg"
+    photo.touch()
+
+    assert library.tags(photo) == []
