@@ -82,6 +82,8 @@ class Viewer(QWidget):
         if video:
             self.surface = self.surface or QOpenGLWidget(self)
             self.surface.show()
-            self.video_player.show(self.slideshow.current)
+            if not self.video_player.show(self.slideshow.current):
+                self.surface.hide()
+                self.placeholder.show()
         elif self.surface:
             self.surface.hide()

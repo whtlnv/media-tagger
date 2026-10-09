@@ -332,3 +332,13 @@ def test_a_viewer_opened_on_a_folder_whose_first_item_is_a_video_fills_its_windo
 
     assert not shows_unsupported_placeholder(viewer)
     assert viewer.findChild(QOpenGLWidget).geometry() == viewer.rect()
+
+
+def test_a_viewer_opened_on_a_folder_whose_first_item_is_a_corrupt_video_shows_the_unsupported_placeholder_instead_of_a_video_surface(qtbot, tmp_path):
+    (tmp_path / "IMG_1.mp4").write_bytes(b"not really an mp4")
+    make_image(tmp_path / "IMG_2.png", "red")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+
+    qtbot.waitUntil(lambda: shows_unsupported_placeholder(viewer), timeout=5000)
+    surface = viewer.findChild(QOpenGLWidget)
+    assert surface is None or not surface.isVisible()

@@ -15,9 +15,11 @@ class VideoPlayer:
 
     def show(self, path):
         self.engine.loop_file = "inf"
-        self.engine.play(str(path))
+        with self.engine.prepare_and_wait_for_event("file_loaded", "end_file", cond=lambda event: event.event_id.value) as loaded:
+            self.engine.play(str(path))
         self.engine.pause = False
         self.engine.mute = False
+        return loaded.result() == mpv.MpvEventID.FILE_LOADED
 
     def press(self, key):
         if key in ("Space", "Right", "Left"):
