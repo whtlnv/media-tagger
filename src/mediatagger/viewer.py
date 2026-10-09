@@ -143,14 +143,12 @@ class Viewer(QWidget):
         if path is None:
             return
         if not is_openable(path):
-            self.slideshow = None
             self._show_cant_open(path)
             return
         showing_info = self.slideshow is not None and self.slideshow.overlay
         try:
             self.slideshow = Slideshow.open(path)
         except OSError:
-            self.slideshow = None
             self._show_cant_open(path)
             return
         if self.slideshow is None:
@@ -162,6 +160,7 @@ class Viewer(QWidget):
         self._refresh()
 
     def _show_cant_open(self, path):
+        self.slideshow = None
         self._show_message(f"Can't open {path.name}")
 
     def _show_message(self, text):
