@@ -25,6 +25,11 @@ class Viewer(QWidget):
         self.surface = None
         self._show_current()
 
+    def closeEvent(self, event):
+        if self.video_player.engine.handle is not None:  # a second close must not call into a destroyed mpv handle
+            self.video_player.engine.terminate()
+        super().closeEvent(event)
+
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.fillRect(self.rect(), Qt.GlobalColor.black)

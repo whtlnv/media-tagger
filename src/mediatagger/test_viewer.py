@@ -202,3 +202,14 @@ def test_a_viewer_given_null_audio_player_options_plays_its_video_silently_but_s
     engine = viewer.video_player.engine
     assert [output["name"] for output in engine.ao] == ["null"]
     assert [output["name"] for output in engine.vo] == ["libmpv"]
+
+
+def test_closing_the_viewer_shuts_down_its_video_player(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    engine = viewer.video_player.engine
+    engine.wait_for_property("path", lambda path: path == str(clip), timeout=5)
+
+    viewer.close()
+
+    assert engine.handle is None
