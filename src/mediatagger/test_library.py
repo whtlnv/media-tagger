@@ -4,6 +4,14 @@ import sqlite3
 from mediatagger.library import Library
 
 
+def _read_meta(root):
+    connection = sqlite3.connect(root / ".mediatagger" / "tags.db")
+    try:
+        return dict(connection.execute("SELECT key, value FROM meta"))
+    finally:
+        connection.close()
+
+
 def test_a_newly_created_library_reports_the_same_drive_id_after_it_is_closed_and_opened_again(tmp_path):
     created = Library.create(tmp_path)
     drive_id = created.drive_id
@@ -54,11 +62,7 @@ def test_a_library_reports_the_same_drive_id_when_its_drive_is_mounted_at_a_diff
 def test_tags_db_of_a_newly_created_library_is_an_sqlite_database_whose_meta_table_holds_the_drive_id_and_schema_version(tmp_path):
     created = Library.create(tmp_path)
 
-    connection = sqlite3.connect(tmp_path / ".mediatagger" / "tags.db")
-    try:
-        meta = dict(connection.execute("SELECT key, value FROM meta"))
-    finally:
-        connection.close()
+    meta = _read_meta(tmp_path)
 
     assert meta["drive_id"] == created.drive_id
     assert int(meta["schema_version"]) == Library.schema_version
@@ -340,10 +344,6 @@ def test_opening_a_schema_version_1_library_upgrades_its_tags_db_in_place_to_sch
 def test_a_newly_created_library_records_schema_version_2_in_its_tags_db(tmp_path):
     Library.create(tmp_path)
 
-    connection = sqlite3.connect(tmp_path / ".mediatagger" / "tags.db")
-    try:
-        meta = dict(connection.execute("SELECT key, value FROM meta"))
-    finally:
-        connection.close()
+    meta = _read_meta(tmp_path)
 
     assert meta["schema_version"] == "2"
