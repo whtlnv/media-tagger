@@ -438,3 +438,15 @@ def test_pressing_t_in_the_viewer_on_a_writable_drive_with_a_tag_library_opens_a
     qtbot.keyClick(viewer, Qt.Key.Key_T)
 
     assert [prompt.text() for prompt in viewer.findChildren(QLineEdit) if prompt.isVisible()] == ["beach family"]
+
+
+def test_pressing_t_in_the_viewer_on_a_file_with_no_tags_opens_the_tag_prompt_showing_no_tags(qtbot, tmp_path):
+    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    Library.create(drive)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    assert [prompt.text() for prompt in viewer.findChildren(QLineEdit) if prompt.isVisible()] == [""]

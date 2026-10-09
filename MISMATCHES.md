@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 07:28 · `src/mediatagger/test_viewer_library.py::test_pressing_t_in_the_viewer_on_a_file_with_no_tags_opens_the_tag_prompt_showing_no_tags`
+- Behavior: In the viewer, pressing `t` on a file with no tags opens the tag prompt showing no tags
+- Predicted: passes on first run (no right-reason failure available) — `_open_tag_prompt` joins `Library.tags`, which already returns `[]` for an untagged file
+- Actual: passed (1 passed)
+- Type: passed unexpectedly
+- Resolution: The previous cycle (cf7c735) already implemented this. The test isn't vacuous, because it uses the real library and the rendered prompt, and no honest rewrite can make it fail. It's kept as a characterization test, and the TODO item doesn't need a /green step.
+
 ## 2026-10-09 07:10 · `src/mediatagger/test_library.py::test_a_tag_change_is_visible_to_a_separate_connection_to_tags_db_as_soon_as_it_is_entered`
 - Behavior: A tag change is visible to a separate connection to `tags.db` as soon as it is entered, while the library stays open (each change is committed at once)
 - Predicted: passes on first run — `Library.enter` opens its own connection, commits it with `with connection:` and closes it for each entry
