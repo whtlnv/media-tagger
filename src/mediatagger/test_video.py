@@ -137,3 +137,11 @@ def test_moving_from_a_video_with_right_or_left_stops_its_playback_and_sound(pla
         path_after_each_press.append(engine.path)
 
     assert path_after_each_press == [None, None]
+
+
+def test_showing_a_good_clip_in_place_of_a_playing_one_reports_it_loaded(playing_video, tmp_path):
+    player, engine = playing_video
+    other = make_clip(tmp_path / "other.mp4")
+
+    assert player.show(other) is True
+    assert engine.path == str(other)

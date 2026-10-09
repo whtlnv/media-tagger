@@ -14,8 +14,9 @@ class VideoPlayer:
         self.engine = engine
 
     def show(self, path):
+        """Load and play path; True once it has loaded, False if mpv ended it without loading it."""
         self.engine.loop_file = "inf"
-        with self.engine.prepare_and_wait_for_event("file_loaded", "end_file", cond=lambda event: event.event_id.value) as outcome:
+        with self.engine.prepare_and_wait_for_event("start_file", "file_loaded", "end_file", cond=_outcome_of_this_load()) as outcome:
             self.engine.play(str(path))
         self.engine.pause = False
         self.engine.mute = False
@@ -41,3 +42,20 @@ class VideoPlayer:
     def _seek(self, seconds):
         with self.engine.prepare_and_wait_for_event("playback_restart"):
             self.engine.seek(seconds, precision="exact")
+
+
+def _outcome_of_this_load():
+    """Event filter that ignores the end-file of the clip being replaced: only an end after our start counts."""
+    started = False
+
+    def outcome(event):
+        nonlocal started
+        event_id = event.event_id.value
+        if event_id == mpv.MpvEventID.START_FILE:
+            started = True
+            return False
+        if event_id == mpv.MpvEventID.FILE_LOADED or (started and event_id == mpv.MpvEventID.END_FILE):
+            return event_id
+        return False
+
+    return outcome
