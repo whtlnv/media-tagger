@@ -7,8 +7,7 @@ def touch(folder, *names):
 
 
 def test_opening_a_folder_lists_its_images_in_natural_filename_order(tmp_path):
-    for name in ["IMG_10.jpg", "IMG_2.jpg", "IMG_1.jpg"]:
-        (tmp_path / name).touch()
+    touch(tmp_path, "IMG_10.jpg", "IMG_2.jpg", "IMG_1.jpg")
 
     assert media_files(tmp_path) == [
         tmp_path / "IMG_1.jpg",
@@ -18,8 +17,7 @@ def test_opening_a_folder_lists_its_images_in_natural_filename_order(tmp_path):
 
 
 def test_opening_a_folder_lists_its_videos_alongside_its_images_in_natural_order(tmp_path):
-    for name in ["clip_10.mp4", "IMG_3.jpg", "clip_2.mov", "anim_1.gif", "IMG_20.jpg", "old_5.avi", "old_7.mpg"]:
-        (tmp_path / name).touch()
+    touch(tmp_path, "clip_10.mp4", "IMG_3.jpg", "clip_2.mov", "anim_1.gif", "IMG_20.jpg", "old_5.avi", "old_7.mpg")
 
     assert media_files(tmp_path) == [
         tmp_path / "IMG_3.jpg",
@@ -33,8 +31,7 @@ def test_opening_a_folder_lists_its_videos_alongside_its_images_in_natural_order
 
 
 def test_a_non_media_file_in_the_folder_is_not_in_the_slideshow(tmp_path):
-    for name in ["IMG_1.jpg", "notes.txt", "clip_2.mp4"]:
-        (tmp_path / name).touch()
+    touch(tmp_path, "IMG_1.jpg", "notes.txt", "clip_2.mp4")
 
     assert media_files(tmp_path) == [
         tmp_path / "IMG_1.jpg",
@@ -43,8 +40,7 @@ def test_a_non_media_file_in_the_folder_is_not_in_the_slideshow(tmp_path):
 
 
 def test_media_extensions_are_matched_regardless_of_case(tmp_path):
-    for name in ["IMG_1.JPG", "clip_2.Mp4"]:
-        (tmp_path / name).touch()
+    touch(tmp_path, "IMG_1.JPG", "clip_2.Mp4")
 
     assert media_files(tmp_path) == [
         tmp_path / "IMG_1.JPG",
@@ -53,15 +49,13 @@ def test_media_extensions_are_matched_regardless_of_case(tmp_path):
 
 
 def test_a_hidden_file_with_a_media_extension_is_not_in_the_slideshow(tmp_path):
-    for name in ["IMG_1.jpg", ".hidden.jpg"]:
-        (tmp_path / name).touch()
+    touch(tmp_path, "IMG_1.jpg", ".hidden.jpg")
 
     assert media_files(tmp_path) == [tmp_path / "IMG_1.jpg"]
 
 
 def test_macos_litter_is_not_in_the_slideshow(tmp_path):
-    for name in ["IMG_1.jpg", "._IMG_1.jpg", ".DS_Store"]:
-        (tmp_path / name).touch()
+    touch(tmp_path, "IMG_1.jpg", "._IMG_1.jpg", ".DS_Store")
 
     assert media_files(tmp_path) == [tmp_path / "IMG_1.jpg"]
 
@@ -79,8 +73,7 @@ def test_every_image_and_video_extension_in_the_design_is_in_the_slideshow(tmp_p
     extensions = ["jpg", "jpeg", "png", "webp", "bmp", "tif", "tiff", "heic",
                   "mp4", "mov", "avi", "mpg", "mpeg", "mkv", "m4v", "wmv", "3gp", "gif"]
     names = [f"item_{i}.{ext}" for i, ext in enumerate(extensions, start=1)]
-    for name in names:
-        (tmp_path / name).touch()
+    touch(tmp_path, *names)
 
     assert media_files(tmp_path) == [tmp_path / name for name in names]
 
