@@ -1,4 +1,4 @@
-from PySide6.QtCore import QMimeData, Qt, QTimer, QUrl
+from PySide6.QtCore import QMimeData, QPointF, Qt, QTimer, QUrl
 from PySide6.QtGui import QColor, QDragEnterEvent, QDropEvent
 from PySide6.QtWidgets import QApplication, QFileDialog
 
@@ -49,7 +49,7 @@ def dragged_local_path(path):
 
 def drag_enter_over(viewer, dragged):
     drag_enter = QDragEnterEvent(
-        viewer.rect().center(), Qt.DropAction.CopyAction, dragged, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier,
+        QPointF(viewer.rect().center()), Qt.DropAction.CopyAction, dragged, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier,
     )
     QApplication.sendEvent(viewer, drag_enter)
     return drag_enter
@@ -57,7 +57,7 @@ def drag_enter_over(viewer, dragged):
 
 def drop_onto(viewer, dragged):
     drop = QDropEvent(
-        viewer.rect().center(), Qt.DropAction.CopyAction, dragged, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier,
+        QPointF(viewer.rect().center()), Qt.DropAction.CopyAction, dragged, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier,
     )
     QApplication.sendEvent(viewer, drop)
 
