@@ -71,9 +71,9 @@ class Library:
     def open(cls, root):
         tags_db = _tags_db(root)
         connection = sqlite3.connect(tags_db)
-        meta = dict(connection.execute("SELECT key, value FROM meta"))
         with connection:
             _migrate_to_schema_version_2(connection)
+        meta = dict(connection.execute("SELECT key, value FROM meta"))
         connection.close()
         return cls(tags_db, meta["drive_id"], int(meta["schema_version"]))
 
