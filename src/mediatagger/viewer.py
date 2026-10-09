@@ -126,6 +126,12 @@ class Viewer(QWidget):
         frame.moveTop(CORNER_MARGIN)
         label.setGeometry(frame)
 
+    def _pin_bottom_centre(self, widget):
+        frame = widget.geometry()
+        frame.moveCenter(self.rect().center())
+        frame.moveBottom(self.status_bar.geometry().top() - 1)
+        widget.setGeometry(frame)
+
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.fillRect(self.rect(), Qt.GlobalColor.black)
@@ -179,10 +185,7 @@ class Viewer(QWidget):
         prompt = QLineEdit(self)
         tags_label = QLabel(" ".join(library.tags(path)), self)
         prompt.returnPressed.connect(lambda: self._record_tags(library, path, prompt, tags_label))
-        frame = prompt.geometry()
-        frame.moveCenter(self.rect().center())
-        frame.moveBottom(self.status_bar.geometry().top() - 1)
-        prompt.setGeometry(frame)
+        self._pin_bottom_centre(prompt)
         prompt.show()
         tags_label.show()
 
