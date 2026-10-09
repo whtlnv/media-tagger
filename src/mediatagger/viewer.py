@@ -44,6 +44,9 @@ class Viewer(QWidget):
             self.slideshow.press("i")
             self._show_info()
             return
+        if event.key() == Qt.Key.Key_F:
+            self.showNormal()
+            return
         if event.key() in VIDEO_KEYS:
             self.video_player.press(VIDEO_KEYS[event.key()])
             return

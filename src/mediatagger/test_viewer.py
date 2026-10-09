@@ -263,3 +263,15 @@ def test_a_viewer_opened_on_a_folder_and_shown_is_fullscreen(qtbot, tmp_path):
     qtbot.waitExposed(viewer)
 
     assert viewer.isFullScreen()
+
+
+def test_pressing_f_in_the_fullscreen_viewer_leaves_fullscreen(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    viewer = Viewer(tmp_path, player_options=SILENT)
+    qtbot.addWidget(viewer)
+    viewer.show()
+    qtbot.waitExposed(viewer)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_F)
+
+    assert not viewer.isFullScreen()
