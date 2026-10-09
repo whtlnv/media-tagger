@@ -297,3 +297,14 @@ def test_a_viewer_opened_on_a_folder_whose_first_item_cannot_be_decoded_shows_an
 
     shown_texts = [label.text() for label in viewer.findChildren(QLabel) if label.isVisible()]
     assert any("unsupported" in text.lower() for text in shown_texts)
+
+
+def test_a_viewer_opened_on_a_folder_whose_first_item_is_a_decodable_image_shows_that_image_and_no_unsupported_placeholder(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    (tmp_path / "IMG_2.png").write_bytes(b"not really a png")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+
+    shown_texts = [label.text() for label in viewer.findChildren(QLabel) if label.isVisible()]
+    assert not any("unsupported" in text.lower() for text in shown_texts)
+    frame = viewer.grab().toImage()
+    assert frame.pixelColor(frame.width() // 2, frame.height() // 2) == QColor("red")

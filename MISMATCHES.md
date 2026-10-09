@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-08 18:24 · `src/mediatagger/test_viewer.py::test_a_viewer_opened_on_a_folder_whose_first_item_is_a_decodable_image_shows_that_image_and_no_unsupported_placeholder`
+- Behavior: A decodable image shows the image, not the "unsupported" placeholder
+- Predicted: passes on first run — `_show_current` already sets the placeholder visible only when `QImage(...).isNull()`
+- Actual: passed (1 passed)
+- Type: passed unexpectedly
+- Resolution: the previous green step toggled the placeholder on `isNull()` instead of always showing it, so this behavior arrived with it; no rewrite can make it fail without asserting something false, so the test stays as a pin that catches a regression to an always-visible placeholder
+
 ## 2026-10-08 16:53 · `src/mediatagger/test_video.py::test_pressing_enter_toggles_a_video_between_playing_and_paused`
 - Behavior: Pressing `Enter` toggles a video between playing and paused
 - Predicted: passes on first run — `VideoPlayer.press` ignores the key and toggles pause on any key

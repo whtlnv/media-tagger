@@ -58,7 +58,7 @@
 - [x] Pressing `f` in fullscreen leaves fullscreen
 - [x] Pressing `f` when not fullscreen enters fullscreen
 - [x] A media file that can't be decoded shows an "unsupported" placeholder instead of crashing
-- [ ] A decodable image shows the image, not the "unsupported" placeholder
+- [x] A decodable image shows the image, not the "unsupported" placeholder
 - [ ] Pressing `Space` on an "unsupported" placeholder shows the next item
 - [ ] A video item fills the viewer window with its video surface, with no "unsupported" placeholder text shown for it
 - [ ] A video file that can't be played (a corrupt `.mp4`) shows the "unsupported" placeholder instead of an empty video surface
