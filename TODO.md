@@ -34,5 +34,5 @@
 - [x] After viewing a read-only drive, dropping a folder from a writable drive without a tag library (declining the question) hides the read-only banner and the read-only status
 - [x] Opening a folder on a read-only drive with no tag library makes the status bar say tags can't be saved, and no longer name a library from a previously viewed drive
 - [x] On a read-only drive with a tag library, the status bar's two texts sit side by side inside the window, at least `CORNER_MARGIN` from its left and bottom edges, and do not overlap one another
-- [ ] Each status bar text uses the same look as the info overlay (white text on a translucent black panel)
+- [x] Each status bar text uses the same look as the info overlay (white text on a translucent black panel)
 - [ ] The read-only banner is styled like the info overlay and sits centred horizontally along the top edge of the window, clear of the info overlay

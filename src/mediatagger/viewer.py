@@ -84,7 +84,9 @@ class Viewer(QWidget):
     def _build_status_bar(self):
         self.status_bar = QWidget(self)
         self.library_label = QLabel(NO_LIBRARY_TEXT, self.status_bar)
+        self.library_label.setStyleSheet(LABEL_STYLE)
         self.read_only_status = QLabel(READ_ONLY_STATUS_TEXT, self.status_bar)
+        self.read_only_status.setStyleSheet(LABEL_STYLE)
         self.read_only_status.hide()
         status_layout = QHBoxLayout(self.status_bar)
         status_layout.setContentsMargins(CORNER_MARGIN, 0, CORNER_MARGIN, CORNER_MARGIN)
