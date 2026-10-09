@@ -136,3 +136,17 @@ def test_typing_a_namespace_prefix_people_colon_lists_every_tag_under_it_at_any_
 
     [suggestions] = visible_suggestion_lists(viewer)
     assert listed(suggestions) == ["people:ana", "people:luis:jr"]
+
+
+def test_tags_the_viewed_item_already_has_are_not_suggested_on_an_item_tagged_sunset_with_summer_in_the_library_typing_s_lists_summer_and_not_sunset(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    library = Library.open(drive)
+    library.enter(folder / "IMG_1.png", "sunset")
+    library.enter(folder / "IMG_2.png", "summer")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    type_in_tag_prompt(qtbot, viewer, "s")
+
+    [suggestions] = visible_suggestion_lists(viewer)
+    assert listed(suggestions) == ["summer"]
