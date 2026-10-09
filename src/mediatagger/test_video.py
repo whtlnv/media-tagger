@@ -1,5 +1,6 @@
 import subprocess
 import threading
+from contextlib import contextmanager
 
 import pytest
 
@@ -19,45 +20,45 @@ def wait_until_playing(engine):
     engine.wait_for_property("time-pos", lambda pos: pos is not None and pos > 0, timeout=5)
 
 
-@pytest.fixture
-def playing_video(tmp_path):
-    clip = make_clip(tmp_path / "clip.mp4", duration=30)
-    engine = new_engine(vo="null", ao="null")
+@contextmanager
+def silent_engine(**options):
+    engine = new_engine(vo="null", ao="null", **options)
     try:
-        player = VideoPlayer(engine)
-        player.show(clip)
-        wait_until_playing(engine)
-        yield player, engine
+        yield engine
     finally:
         engine.terminate()
 
 
+@pytest.fixture
+def playing_video(tmp_path):
+    clip = make_clip(tmp_path / "clip.mp4", duration=30)
+    with silent_engine() as engine:
+        player = VideoPlayer(engine)
+        player.show(clip)
+        wait_until_playing(engine)
+        yield player, engine
+
+
 def test_showing_a_video_starts_it_playing_unpaused_and_unmuted(tmp_path):
     clip = make_clip(tmp_path / "clip.mp4")
-    engine = new_engine(vo="null", ao="null", pause=True, mute=True)
-    try:
+    with silent_engine(pause=True, mute=True) as engine:
         VideoPlayer(engine).show(clip)
 
         wait_until_playing(engine)
         assert engine.path == str(clip)
         assert engine.pause is False
         assert engine.mute is False
-    finally:
-        engine.terminate()
 
 
 def test_a_playing_video_restarts_from_the_beginning_when_it_reaches_the_end(tmp_path):
     clip = make_clip(tmp_path / "clip.mp4")
-    engine = new_engine(vo="null", ao="null")
-    try:
+    with silent_engine() as engine:
         VideoPlayer(engine).show(clip)
 
         engine.wait_for_property("time-pos", lambda pos: pos is not None and pos > 1.5, timeout=5)
         engine.wait_for_property("time-pos", lambda pos: pos is None or pos < 1.0, timeout=5)
         assert engine.path == str(clip)
         assert engine.time_pos < 1.0
-    finally:
-        engine.terminate()
 
 
 @pytest.mark.parametrize("keys, setting, value", [
@@ -150,11 +151,8 @@ def test_showing_a_good_clip_in_place_of_a_playing_one_reports_it_loaded(playing
 
 def test_a_clip_that_does_not_load_within_the_time_limit_is_reported_unplayable_instead_of_blocking(tmp_path):
     clip = make_clip(tmp_path / "clip.mp4")
-    engine = new_engine(vo="null", ao="null")
-    try:
+    with silent_engine() as engine:
         assert VideoPlayer(engine, timeout=0.000001).show(clip) is False
-    finally:
-        engine.terminate()
 
 
 @pytest.mark.parametrize("key, ignored_command", [("Up", "seek"), ("Down", "seek"), ("Space", "stop")])
