@@ -10,6 +10,7 @@ from mediatagger.test_viewer import (
     centre_colour, make_folder_with_no_media, make_image, shown_labels, shown_launch_viewer, shown_texts, shown_viewer_on,
     SILENT, shows_unsupported_placeholder, shows_video_surface, wait_until_loaded,
 )
+from mediatagger import viewer as viewer_module
 from mediatagger.viewer import LIBRARY_TEXT, NO_LIBRARY_TEXT, Viewer
 
 
@@ -155,6 +156,21 @@ def test_dropping_a_folder_from_a_different_drive_while_viewing_switches_the_sta
     drag_and_drop_onto(viewer, dropped)
 
     assert status_bar_texts(viewer) == [LIBRARY_TEXT.format("BACKUP")]
+
+
+def test_opening_a_folder_on_the_system_disk_never_asks_to_create_a_library_and_the_status_bar_says_no_library_viewing_only(qtbot, tmp_path):
+    folder = tmp_path / "Photos"
+    folder.mkdir()
+    make_image(folder / "IMG_1.png", "red")
+    asked = []
+
+    viewer = Viewer(
+        folder, player_options=SILENT, is_mount_point=lambda path: path == Path("/"), ask_to_create_library=asked.append,
+    )
+    qtbot.addWidget(viewer)
+
+    assert asked == []
+    assert status_bar_texts(viewer) == [viewer_module.NO_LIBRARY_VIEWING_ONLY_TEXT]
 
 
 def test_a_viewer_opened_on_a_folder_shows_its_first_item_and_not_the_launch_text(qtbot, tmp_path):
