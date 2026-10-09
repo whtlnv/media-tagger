@@ -11,6 +11,7 @@
 - [x] Choosing a folder with no images or videos in the `o` picker shows "No images or videos in <folder>" instead of crashing
 - [x] Dragging a folder or file from the file manager over the window is accepted as a drop
 - [x] Dragging something that is not a local file or folder (e.g. plain text) over the window is refused
+- [ ] Dragging a web link (an `https://` URL, not a local file) over the window is refused
 - [ ] Dropping a folder onto the launch screen starts that folder's slideshow at its first item
 - [ ] Dropping a file onto the launch screen starts its folder's slideshow at that file
 - [ ] Dropping a folder while viewing another folder replaces the slideshow with the dropped folder's, starting at its first item
