@@ -62,7 +62,7 @@ class Library:
     @classmethod
     def create(cls, root):
         tags_db = _tags_db(root)
-        tags_db.parent.mkdir()
+        tags_db.parent.mkdir(exist_ok=True)
         drive_id = str(uuid.uuid4())
         _init_tags_db(tags_db, drive_id=drive_id, schema_version=str(cls.schema_version))
         return cls(tags_db, drive_id)

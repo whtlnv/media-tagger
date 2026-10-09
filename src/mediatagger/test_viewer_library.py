@@ -219,6 +219,16 @@ def test_accepting_to_create_a_tag_library_on_a_drive_creates_it_and_names_the_d
     assert status_bar_texts(viewer) == [LIBRARY_TEXT.format("MEDIATAGGER")]
 
 
+def test_accepting_to_create_a_tag_library_on_a_drive_whose_mediatagger_folder_holds_no_tags_db_creates_it_there_and_names_the_drive(qtbot, tmp_path):
+    drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
+    (drive / ".mediatagger").mkdir()
+
+    viewer = viewer_on_drive(qtbot, folder, drive, lambda question: True)
+
+    assert (drive / ".mediatagger" / "tags.db").is_file()
+    assert status_bar_texts(viewer) == [LIBRARY_TEXT.format("MEDIATAGGER")]
+
+
 def test_accepting_to_create_a_tag_library_on_a_drive_creates_a_real_library_whose_tags_db_reports_a_drive_id(qtbot, tmp_path):
     drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
 
