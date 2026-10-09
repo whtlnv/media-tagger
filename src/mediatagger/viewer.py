@@ -337,7 +337,7 @@ class Viewer(QWidget):
         library, path = self._tagging
         try:
             library.enter(path, self.tag_input.text())
-        except sqlite3.Error:
+        except (sqlite3.Error, OSError):
             self.couldnt_save_status.show()
             return
         self._close_tag_prompt()
