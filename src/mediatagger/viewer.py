@@ -347,6 +347,7 @@ class Viewer(QWidget):
         self._tagging = None
         self.tag_input.hide()
         self.prompt_tags.hide()
+        self.couldnt_save_status.hide()  # it was about this prompt's entry
         self.setFocus()  # keys go back to the viewer, not to the hidden input
 
     def _show_current_tags(self):

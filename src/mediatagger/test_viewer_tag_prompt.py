@@ -415,3 +415,16 @@ def test_tab_with_the_popup_showing_but_no_suggestion_highlighted_leaves_the_pro
     qtbot.keyClick(suggestions, Qt.Key.Key_Tab)
 
     assert visible_tag_prompt_texts(viewer) == ["b"]
+
+
+def test_after_a_failed_save_a_successful_save_takes_the_couldnt_save_message_off_the_status_bar(qtbot, tmp_path, monkeypatch):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    with monkeypatch.context() as unplugged:
+        unplugged.setattr(Library, "enter", lambda self, path, text: (_ for _ in ()).throw(OSError(5, "Input/output error")))
+        enter_in_tag_prompt(qtbot, viewer, "beach")
+    [prompt] = visible_tag_prompts(viewer)
+
+    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+
+    assert (Library.open(drive).tags(folder / "IMG_1.png"), "Couldn't save tags — is the drive still connected?" in status_bar_texts(viewer)) == (["beach"], False)
