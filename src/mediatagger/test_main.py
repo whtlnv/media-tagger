@@ -6,9 +6,14 @@ from PySide6.QtGui import QColor
 
 from mediatagger.test_viewer import make_image, offscreen_environment, run_python_offscreen, shown_launch_viewer, shown_texts
 
+RUN_MEDIATAGGER_COMMAND = (
+    "from importlib.metadata import entry_points\n"
+    "(command,) = entry_points(group='console_scripts', name='mediatagger')\n"
+    "command.load()()\n"
+)
+
 REPORT_SHOWN_WINDOW_SCRIPT = (
     "import sys\n"
-    "from importlib.metadata import entry_points\n"
     "from PySide6.QtCore import QTimer\n"
     "from PySide6.QtWidgets import QApplication\n"
     "app = QApplication([])\n"
@@ -21,10 +26,8 @@ REPORT_SHOWN_WINDOW_SCRIPT = (
     "    QApplication.closeAllWindows()\n"
     "    QApplication.quit()\n"
     "QTimer.singleShot(1000, report)\n"
-    "(command,) = entry_points(group='console_scripts', name='mediatagger')\n"
     "sys.argv = ['mediatagger', sys.argv[1]]\n"
-    "command.load()()\n"
-)
+) + RUN_MEDIATAGGER_COMMAND
 
 
 def test_running_the_mediatagger_command_on_a_folder_opens_the_fullscreen_viewer_on_its_first_item(tmp_path):
@@ -63,7 +66,6 @@ def test_running_the_mediatagger_command_on_a_file_opens_the_fullscreen_viewer_o
 
 PRESS_ESC_SCRIPT = (
     "import sys\n"
-    "from importlib.metadata import entry_points\n"
     "from PySide6.QtCore import Qt, QTimer\n"
     "from PySide6.QtTest import QTest\n"
     "from PySide6.QtWidgets import QApplication\n"
@@ -72,11 +74,8 @@ PRESS_ESC_SCRIPT = (
     "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
     "    QTest.keyClick(window, Qt.Key.Key_Escape)\n"
     "QTimer.singleShot(1000, press_esc)\n"
-    "(command,) = entry_points(group='console_scripts', name='mediatagger')\n"
     "sys.argv = ['mediatagger', sys.argv[1]]\n"
-    "command.load()()\n"
-    "print('exited', flush=True)\n"
-)
+) + RUN_MEDIATAGGER_COMMAND + "print('exited', flush=True)\n"
 
 
 def test_pressing_esc_in_the_mediatagger_command_makes_it_exit_cleanly(tmp_path):
@@ -87,7 +86,6 @@ def test_pressing_esc_in_the_mediatagger_command_makes_it_exit_cleanly(tmp_path)
 
 REPORT_SHOWN_TEXTS_WITH_NO_PATH_SCRIPT = (
     "import sys\n"
-    "from importlib.metadata import entry_points\n"
     "from PySide6.QtCore import QTimer\n"
     "from PySide6.QtWidgets import QApplication, QLabel\n"
     "app = QApplication([])\n"
@@ -100,10 +98,8 @@ REPORT_SHOWN_TEXTS_WITH_NO_PATH_SCRIPT = (
     "    QApplication.closeAllWindows()\n"
     "    QApplication.quit()\n"
     "QTimer.singleShot(1000, report)\n"
-    "(command,) = entry_points(group='console_scripts', name='mediatagger')\n"
     "sys.argv = ['mediatagger']\n"
-    "command.load()()\n"
-)
+) + RUN_MEDIATAGGER_COMMAND
 
 
 def test_running_the_mediatagger_command_with_no_path_opens_the_window_showing_the_launch_text(qtbot):
@@ -114,7 +110,6 @@ def test_running_the_mediatagger_command_with_no_path_opens_the_window_showing_t
 
 DROP_FOLDER_WITH_NO_PATH_SCRIPT = (
     "import sys\n"
-    "from importlib.metadata import entry_points\n"
     "from PySide6.QtCore import QMimeData, Qt, QTimer, QUrl\n"
     "from PySide6.QtGui import QDragEnterEvent, QDropEvent\n"
     "from PySide6.QtWidgets import QApplication, QLabel\n"
@@ -138,10 +133,8 @@ DROP_FOLDER_WITH_NO_PATH_SCRIPT = (
     "    QApplication.closeAllWindows()\n"
     "    QApplication.quit()\n"
     "QTimer.singleShot(1000, drop_then_report)\n"
-    "(command,) = entry_points(group='console_scripts', name='mediatagger')\n"
     "sys.argv = ['mediatagger']\n"
-    "command.load()()\n"
-)
+) + RUN_MEDIATAGGER_COMMAND
 
 
 def test_dropping_a_folder_onto_the_mediatagger_command_started_with_no_path_starts_its_slideshow_at_its_first_item(tmp_path):
