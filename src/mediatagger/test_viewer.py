@@ -1,4 +1,3 @@
-import gc
 import os
 import struct
 import subprocess
