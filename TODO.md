@@ -44,7 +44,7 @@
 - [x] Pressing `Esc` in the tag prompt leaves the viewer open (only `Esc` with no prompt open closes the viewer) (Esc is sent to the focused prompt input; a line edit does not use Esc, so it passes on to the viewer)
 - [x] After `Esc` closes the tag prompt, no part of it stays on screen (the text showing the current tags is hidden too)
 - [x] Pressing `t` on a video item shows the tag prompt above the video surface
-- [ ] After typing `beach family` in the tag prompt and pressing `Enter`, a tag overlay — its own label in a corner of the viewer, not part of the tag prompt — shows `beach family` while the prompt is closed (opening the prompt again hides the overlay, so the tags still appear on screen only once while the prompt is open)
+- [x] After typing `beach family` in the tag prompt and pressing `Enter`, a tag overlay — its own label in a corner of the viewer, not part of the tag prompt — shows `beach family` while the prompt is closed (opening the prompt again hides the overlay, so the tags still appear on screen only once while the prompt is open)
 - [ ] After `Esc` closes the tag prompt on a file tagged `beach family`, the tag overlay shows `beach family` again
 - [ ] The tag overlay is hidden on a file with no tags
 - [ ] Moving with `Space` from a tagged file to an untagged one hides the tag overlay, and `←` back shows that file's tags again

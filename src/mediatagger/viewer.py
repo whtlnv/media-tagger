@@ -193,6 +193,8 @@ class Viewer(QWidget):
         path = self.slideshow.current
         prompt = QLineEdit(self)
         prompt.setStyleSheet(LABEL_STYLE)
+        if hasattr(self, "_tags_label"):
+            self._tags_label.hide()
         tags_label = overlay_label(" ".join(library.tags(path)), self)
         self._tags_label = tags_label
         prompt.returnPressed.connect(lambda: self._record_tags(library, path, prompt, tags_label))
@@ -204,6 +206,8 @@ class Viewer(QWidget):
     def _record_tags(self, library, path, prompt, tags_label):
         library.enter(path, prompt.text())
         self._close_tag_prompt(prompt, tags_label)
+        tags_label.setText(" ".join(library.tags(path)))
+        tags_label.show()
 
     def _close_tag_prompt(self, prompt, tags_label):
         prompt.hide()

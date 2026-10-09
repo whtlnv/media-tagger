@@ -688,3 +688,16 @@ def test_pressing_t_on_a_video_shows_the_tag_prompt_and_its_shown_tags_above_the
     [tags] = [label for label in shown_labels(viewer) if label.text() == "beach family"]
     assert viewer.childAt(prompt.geometry().center()) is prompt
     assert viewer.childAt(tags.geometry().center()) is tags
+
+
+def test_after_entering_beach_family_in_the_tag_prompt_a_tag_overlay_shows_beach_family_while_the_prompt_is_closed(qtbot, tmp_path):
+    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    Library.create(drive)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    enter_in_tag_prompt(qtbot, viewer, "beach family")
+
+    assert visible_tag_prompts(viewer) == []
+    assert shown_texts(viewer) == ["beach family"]
