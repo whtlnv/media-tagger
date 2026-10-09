@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 00:58 · `src/mediatagger/test_viewer_open.py::test_opening_a_folder_on_a_writable_drive_that_has_a_tag_library_shows_no_read_only_banner`
+- Behavior: Opening a folder on a writable drive that has a tag library shows no read-only banner
+- Predicted: passes on first run — the previous green already sets the banner's visibility from `os.access(drive, os.W_OK)` rather than always showing it
+- Actual: passed on first run; the assertion has teeth (a banner shown unconditionally would put `READ_ONLY_BANNER_TEXT` among the shown labels)
+- Type: passed unexpectedly
+- Resolution: The behavior was already delivered as part of the read-only banner cycle, so a failing rewrite would have to assert some other behavior. Kept the test as the negative pin for that cycle, and `/green` has nothing to implement.
+
 ## 2026-10-09 00:30 · `src/mediatagger/test_viewer_open.py::test_declining_to_create_a_tag_library_on_a_drive_still_shows_the_opened_folders_slideshow_at_its_first_item`
 - Behavior: Declining "Create a tag library on <drive>?" still shows the opened folder's slideshow at its first item
 - Predicted: passes on first run — `_open_library` only returns early on decline, and `_open` calls `_refresh()` afterwards regardless

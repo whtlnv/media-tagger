@@ -270,6 +270,18 @@ def test_opening_a_folder_on_a_read_only_drive_that_has_a_tag_library_shows_a_ba
     assert shown_texts(viewer) == [READ_ONLY_BANNER_TEXT]
 
 
+def test_opening_a_folder_on_a_writable_drive_that_has_a_tag_library_shows_no_read_only_banner(qtbot, tmp_path):
+    drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    viewer = viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    viewer.resize(400, 300)
+    viewer.show()
+    qtbot.waitExposed(viewer)
+
+    assert READ_ONLY_BANNER_TEXT not in shown_texts(viewer)
+
+
 def test_a_viewer_opened_on_a_folder_shows_its_first_item_and_not_the_launch_text(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red")
     make_image(tmp_path / "IMG_2.png", "blue")
