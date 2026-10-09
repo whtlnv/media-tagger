@@ -163,6 +163,8 @@ TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT = (
     "os.path.ismount = lambda path: os.fspath(path) == drive\n"
 )
 
+RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT = "sys.argv = ['mediatagger', sys.argv[2]]\n" + RUN_MEDIATAGGER_COMMAND
+
 # The question comes up only once the viewer has settled fullscreen, so poll for it rather than guess when.
 DECLINE_THE_QUESTION_ONCE_ASKED = (
     "polling = QTimer()\n"
@@ -193,8 +195,7 @@ DECLINE_CREATING_A_LIBRARY_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT + (
     "    QApplication.closeAllWindows()\n"
     "    QApplication.quit()\n"
     + DECLINE_THE_QUESTION_ONCE_ASKED
-    + "sys.argv = ['mediatagger', sys.argv[2]]\n"
-) + RUN_MEDIATAGGER_COMMAND
+) + RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT
 
 
 def test_running_the_mediatagger_command_on_a_drive_without_a_tag_library_asks_and_declining_keeps_the_slideshow_saying_the_drive_has_no_tag_library(tmp_path):
@@ -221,8 +222,7 @@ NOTE_WHETHER_THE_VIEWER_IS_SHOWN_WHEN_ASKED_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_M
     "    QApplication.closeAllWindows()\n"
     "    QApplication.quit()\n"
     + DECLINE_THE_QUESTION_ONCE_ASKED
-    + "sys.argv = ['mediatagger', sys.argv[2]]\n"
-) + RUN_MEDIATAGGER_COMMAND
+) + RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT
 
 
 def test_running_the_mediatagger_command_on_a_drive_without_a_tag_library_asks_to_create_one_over_the_already_shown_viewer(tmp_path):
@@ -245,14 +245,12 @@ ENTER_TAGS_IN_THE_TAG_PROMPT_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT + (
     "    QApplication.closeAllWindows()\n"
     "    QApplication.quit()\n"
     "QTimer.singleShot(1000, enter_tags)\n"
-    "sys.argv = ['mediatagger', sys.argv[2]]\n"
-) + RUN_MEDIATAGGER_COMMAND
+) + RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT
 
 REPORT_SHOWN_TEXTS_ON_A_DRIVE_SCRIPT = (
     TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT
     + REPORT_SHOWN_TEXTS_ON_TIMER
-    + "sys.argv = ['mediatagger', sys.argv[2]]\n"
-    + RUN_MEDIATAGGER_COMMAND
+    + RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT
 )
 
 
