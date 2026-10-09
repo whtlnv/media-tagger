@@ -25,6 +25,13 @@ def fitted_rect(size, bounds):
     return target
 
 
+def is_openable(path):
+    """A file is opened with its folder, so the folder must be listable too."""
+    if not os.access(path, os.R_OK):
+        return False
+    return not path.is_file() or os.access(path.parent, os.R_OK)
+
+
 def decode_fitted(path, bounds):
     """Decode an image no larger than bounds, so a 12 MP photo is never fully decoded just to be shrunk."""
     reader = QImageReader(str(path))
@@ -135,7 +142,7 @@ class Viewer(QWidget):
     def _open(self, path):
         if path is None:
             return
-        if not os.access(path, os.R_OK) or path.is_file() and not os.access(path.parent, os.R_OK):
+        if not is_openable(path):
             self.slideshow = None
             self._show_message(f"Can't open {path.name}")
             return
