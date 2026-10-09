@@ -4,7 +4,7 @@ import sys
 
 import pytest
 from PySide6.QtCore import QMimeData, QRect, QSize, Qt, QTimer, QUrl
-from PySide6.QtGui import QColor, QDragEnterEvent, QImage
+from PySide6.QtGui import QColor, QDragEnterEvent, QDropEvent, QImage
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QApplication, QFileDialog, QLabel
 
@@ -719,3 +719,20 @@ def test_dragging_a_web_link_over_the_viewer_is_refused(qtbot):
     drag_enter = drag_enter_over(viewer, dragged)
 
     assert not drag_enter.isAccepted()
+
+
+def test_dropping_a_folder_onto_the_launch_screen_starts_that_folders_slideshow_at_its_first_item(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    make_image(tmp_path / "IMG_2.png", "blue")
+    viewer = shown_launch_viewer(qtbot)
+    dragged = QMimeData()
+    dragged.setUrls([QUrl.fromLocalFile(str(tmp_path))])
+    drag_enter_over(viewer, dragged)
+
+    drop = QDropEvent(
+        viewer.rect().center(), Qt.DropAction.CopyAction, dragged, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier,
+    )
+    QApplication.sendEvent(viewer, drop)
+
+    assert shown_labels(viewer) == []
+    assert centre_colour(viewer) == QColor("red")

@@ -83,6 +83,9 @@ class Viewer(QWidget):
         if any(url.isLocalFile() for url in event.mimeData().urls()):
             event.acceptProposedAction()
 
+    def dropEvent(self, event):
+        self._open(Path(event.mimeData().urls()[0].toLocalFile()))
+
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Escape:  # interim: quits until the grid (Phase 7) makes Esc "back to grid"
             self.close()
