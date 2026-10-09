@@ -7,7 +7,7 @@ Note for every cycle: put new tag-prompt and autocomplete viewer tests in `src/m
 - [x] In the tag prompt on a drive whose library has the tags `beach` and `bird`, typing `be` lists `beach` and not `bird`
 - [x] Suggestions are ordered by how many items carry the tag: with `bird` on 3 items and `beach` on 1, typing `b` lists `bird` above `beach`
 - [x] Suggestions are ordered by how many items carry the tag: with `beach` on 3 items and `bird` on 1, typing `b` lists `beach` above `bird`
-- [ ] Suggestions with the same item count are listed alphabetically: with `bird` and `beach` on 2 items each, typing `b` lists `beach` above `bird`
+- [x] Suggestions with the same item count are listed alphabetically: with `bird` and `beach` on 2 items each, typing `b` lists `beach` above `bird`
 - [ ] Suggestion matching ignores case: typing `BE` lists `beach`
 - [ ] Suggestions complete the last space-separated word: typing `beach fam` with `family` in the library lists `family`
 - [ ] Typing a namespace prefix lists every tag under it at any depth: typing `people:` lists `people:ana` and `people:luis:jr`, and not `place:mexico`

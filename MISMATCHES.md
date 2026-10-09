@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 15:08 · `src/mediatagger/test_viewer_tag_prompt.py::test_suggestions_with_the_same_item_count_are_listed_alphabetically_with_bird_and_beach_on_2_items_each_typing_b_lists_beach_above_bird`
+- Behavior: Suggestions with the same item count are listed alphabetically: with `bird` and `beach` on 2 items each, typing `b` lists `beach` above `bird`
+- Predicted: pass. `all_tags` already sorts by `COUNT(*) DESC, tags.name` (since 1a2cc3a), so ties already break by name and there is no honest failing version
+- Actual: passed (1 passed)
+- Type: passed unexpectedly (by the skill's standard; matched my prediction)
+- Resolution: Kept as a regression pin. The test enters `bird` first so it gets the lower tag id, which means removing the name tiebreaker (and falling back to id or insertion order) would list `bird` first and fail. Nothing for /green to build
+
 ## 2026-10-09 15:05 · `src/mediatagger/test_viewer_tag_prompt.py::test_suggestions_are_ordered_by_item_count_with_beach_on_3_items_and_bird_on_1_typing_b_lists_beach_above_bird`
 - Behavior: with `beach` on 3 items and `bird` on 1, typing `b` lists `beach` above `bird`
 - Predicted: pass. The prior green (1a2cc3a) already sorts `all_tags` by `COUNT(*) DESC, name`, so the general rule is in place and no right-reason failure was available
