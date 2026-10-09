@@ -183,8 +183,6 @@ class Viewer(QWidget):
             event.acceptProposedAction()
 
     def dropEvent(self, event):
-        if self._tagging:
-            self._close_tag_prompt()
         self._stop_video()
         self._open(Path(event.mimeData().urls()[0].toLocalFile()))
 
@@ -307,6 +305,8 @@ class Viewer(QWidget):
     def _open(self, path):
         if path is None:
             return
+        if self._tagging:  # whatever opens next, the prompt must not go on targeting the previous item
+            self._close_tag_prompt()
         if not is_openable(path):
             self._show_cant_open(path)
             return
