@@ -196,7 +196,7 @@ class Viewer(QWidget):
             self._show_info()
             return
         if event.key() == Qt.Key.Key_T:
-            if not self._drive_is_read_only():
+            if self.library is not None and not self._drive_is_read_only():
                 self._open_tag_prompt()
             return
         if self._tag_prompt_has_focus():
