@@ -94,6 +94,16 @@ def modal_opened_by_key(qtbot, viewer, key):
     return modals[0]
 
 
+def finish_o_dialog_pointed_at(qtbot, viewer, folder, finish):
+    def point_and_finish():
+        dialog = QApplication.activeModalWidget()
+        dialog.setDirectory(str(folder))
+        getattr(dialog, finish)()
+
+    QTimer.singleShot(200, point_and_finish)
+    qtbot.keyClick(viewer, Qt.Key.Key_O)
+
+
 def shows_unsupported_placeholder(viewer):
     return any("unsupported" in text.lower() for text in shown_texts(viewer))
 
@@ -642,13 +652,7 @@ def test_accepting_the_viewers_own_o_dialog_pointed_at_a_folder_starts_that_fold
     make_image(tmp_path / "IMG_2.png", "blue")
     viewer = shown_launch_viewer(qtbot)
 
-    def accept_pointed_at_folder():
-        dialog = QApplication.activeModalWidget()
-        dialog.setDirectory(str(tmp_path))
-        dialog.accept()
-
-    QTimer.singleShot(200, accept_pointed_at_folder)
-    qtbot.keyClick(viewer, Qt.Key.Key_O)
+    finish_o_dialog_pointed_at(qtbot, viewer, tmp_path, "accept")
 
     assert shown_labels(viewer) == []
     assert centre_colour(viewer) == QColor("red")
@@ -659,12 +663,6 @@ def test_rejecting_the_viewers_own_o_dialog_pointed_at_a_folder_leaves_the_launc
     viewer = shown_launch_viewer(qtbot)
     launch_text = shown_texts(viewer)
 
-    def reject_pointed_at_folder():
-        dialog = QApplication.activeModalWidget()
-        dialog.setDirectory(str(tmp_path))
-        dialog.reject()
-
-    QTimer.singleShot(200, reject_pointed_at_folder)
-    qtbot.keyClick(viewer, Qt.Key.Key_O)
+    finish_o_dialog_pointed_at(qtbot, viewer, tmp_path, "reject")
 
     assert shown_texts(viewer) == launch_text
