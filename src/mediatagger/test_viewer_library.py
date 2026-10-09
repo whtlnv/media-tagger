@@ -746,3 +746,17 @@ def test_moving_with_space_from_a_file_tagged_beach_family_to_an_untagged_one_hi
 
     qtbot.keyClick(viewer, Qt.Key.Key_Left)
     assert shown_texts(viewer) == ["beach family"]
+
+
+def test_opening_a_folder_whose_first_file_was_tagged_beach_family_in_an_earlier_viewer_shows_beach_family_in_the_tag_overlay(qtbot, tmp_path):
+    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    Library.create(drive)
+    earlier = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    enter_in_tag_prompt(qtbot, earlier, "beach family")
+    earlier.close()
+
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    assert shown_texts(viewer) == ["beach family"]

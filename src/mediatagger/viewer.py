@@ -287,6 +287,8 @@ class Viewer(QWidget):
             self.slideshow.press("i")
         self._refresh()
         self._open_library(path)  # after the first item is shown, so a question about the library is asked over it
+        if self.library:
+            self._show_tag_overlay(self.library, self.slideshow.current)
 
     def _open_library(self, path):
         self.library = None

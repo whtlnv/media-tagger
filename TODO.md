@@ -48,7 +48,7 @@
 - [x] After `Esc` closes the tag prompt on a file tagged `beach family`, the tag overlay shows `beach family` again
 - [x] The tag overlay is hidden on a file with no tags
 - [x] Moving with `Space` from a tagged file to an untagged one hides the tag overlay, and `←` back shows that file's tags again
-- [ ] Opening a folder whose first file was tagged in an earlier session shows that file's tags in the tag overlay (a new viewer on the same drive)
+- [x] Opening a folder whose first file was tagged in an earlier session shows that file's tags in the tag overlay (a new viewer on the same drive)
 - [ ] The tag overlay sits in the top-right corner, `CORNER_MARGIN` from the top and right edges, with the same look as the info overlay, and does not overlap the info overlay or the read-only banner
 - [ ] The tag overlay stays visible on top of a video item
 - [ ] Tagging a file on a drive opened at another mount path shows the same tags as before: a viewer on a copy of the drive at a different root shows the file's tags in the overlay
