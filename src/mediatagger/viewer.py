@@ -76,7 +76,7 @@ class Viewer(QWidget):
         self.info.hide()
         self.placeholder = overlay_label(UNSUPPORTED_TEXT, self)
         self._build_status_bar()
-        self.read_only_banner = QLabel(READ_ONLY_BANNER_TEXT, self)
+        self.read_only_banner = overlay_label(READ_ONLY_BANNER_TEXT, self)
         self.read_only_banner.hide()
         self.setWindowState(Qt.WindowState.WindowFullScreen)
         self.setAcceptDrops(True)

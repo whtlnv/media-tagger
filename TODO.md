@@ -35,5 +35,5 @@
 - [x] Opening a folder on a read-only drive with no tag library makes the status bar say tags can't be saved, and no longer name a library from a previously viewed drive
 - [x] On a read-only drive with a tag library, the status bar's two texts sit side by side inside the window, at least `CORNER_MARGIN` from its left and bottom edges, and do not overlap one another
 - [x] Each status bar text uses the same look as the info overlay (white text on a translucent black panel)
-- [ ] The read-only banner uses the same look as the info overlay (white text on a translucent black panel)
+- [x] The read-only banner uses the same look as the info overlay (white text on a translucent black panel)
 - [ ] The read-only banner sits centred horizontally, `CORNER_MARGIN` below the top edge of the window (tested in a window wide enough that it cannot meet the info overlay in the top-left corner)

@@ -395,6 +395,16 @@ def test_on_a_read_only_drive_with_a_tag_library_each_status_bar_text_is_styled_
     assert [label.styleSheet() for label in shown] == [viewer.info.styleSheet()] * 2
 
 
+def test_on_a_read_only_drive_with_a_tag_library_the_read_only_banner_is_styled_like_the_info_overlay(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    with made_read_only(drive):
+        viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    [banner] = shown_labels(viewer)
+    assert banner.text() == READ_ONLY_BANNER_TEXT
+    assert banner.styleSheet() == viewer.info.styleSheet()
+
+
 def test_opening_a_folder_on_a_read_only_drive_without_a_tag_library_shows_the_read_only_banner_instead_of_asking_to_create_one(qtbot, tmp_path):
     drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
     asked = []
