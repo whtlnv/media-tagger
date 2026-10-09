@@ -26,6 +26,10 @@ def status_bar_texts(viewer):
     return [label.text() for label in status_bar_labels(viewer)]
 
 
+def frame_in(viewer, widget):
+    return QRect(widget.mapTo(viewer, QPoint()), widget.size())
+
+
 def make_tag_library_drive(drive):
     drive.mkdir(parents=True)
     Library.create(drive)
@@ -337,7 +341,7 @@ def test_on_a_read_only_drive_with_a_tag_library_the_status_bar_texts_sit_side_b
         viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
     shown = status_bar_labels(viewer)
-    left, right = sorted((QRect(label.mapTo(viewer, QPoint()), label.size()) for label in shown), key=lambda frame: frame.left())
+    left, right = sorted((frame_in(viewer, label) for label in shown), key=lambda frame: frame.left())
     assert len(shown) == 2
     assert viewer.rect().contains(left) and viewer.rect().contains(right)
     assert left.left() >= CORNER_MARGIN
@@ -410,7 +414,7 @@ def test_on_a_read_only_drive_with_a_tag_library_the_read_only_banner_sits_centr
     qtbot.waitUntil(lambda: viewer.width() == 1600)
 
     [banner] = shown_labels(viewer)
-    frame = QRect(banner.mapTo(viewer, QPoint()), banner.size())
+    frame = frame_in(viewer, banner)
     assert frame.top() == CORNER_MARGIN
     assert abs(frame.center().x() - viewer.rect().center().x()) <= 1
 
@@ -526,7 +530,7 @@ def test_the_tag_prompt_is_drawn_inside_the_viewer_window_centred_horizontally_n
     qtbot.keyClick(viewer, Qt.Key.Key_T)
 
     [prompt] = visible_tag_prompts(viewer)
-    frame = QRect(prompt.mapTo(viewer, QPoint()), prompt.size())
+    frame = frame_in(viewer, prompt)
     assert prompt.window() is viewer
     assert abs(frame.center().x() - viewer.rect().center().x()) <= 1
     assert viewer.height() * 3 // 4 <= frame.bottom() < viewer.status_bar.geometry().top()
@@ -743,7 +747,7 @@ def test_the_tag_overlay_sits_in_the_top_right_corner_a_corner_margin_from_the_t
     qtbot.waitUntil(lambda: viewer.width() == 1600)
 
     [tag_overlay] = shown_labels(viewer)
-    frame = QRect(tag_overlay.mapTo(viewer, QPoint()), tag_overlay.size())
+    frame = frame_in(viewer, tag_overlay)
     assert frame.top() == CORNER_MARGIN
     assert frame.right() == viewer.rect().right() - CORNER_MARGIN
 
@@ -761,7 +765,7 @@ def test_after_space_to_a_file_with_longer_tags_the_tag_overlay_still_ends_a_cor
     qtbot.keyClick(viewer, Qt.Key.Key_Space)
 
     [tag_overlay] = shown_labels(viewer)
-    frame = QRect(tag_overlay.mapTo(viewer, QPoint()), tag_overlay.size())
+    frame = frame_in(viewer, tag_overlay)
     assert frame.right() == viewer.rect().right() - CORNER_MARGIN
 
 
@@ -786,7 +790,7 @@ def test_after_the_window_is_resized_the_tag_overlay_is_still_a_corner_margin_fr
     qtbot.waitUntil(lambda: viewer.width() == 1000)
 
     [tag_overlay] = shown_labels(viewer)
-    frame = QRect(tag_overlay.mapTo(viewer, QPoint()), tag_overlay.size())
+    frame = frame_in(viewer, tag_overlay)
     assert frame.top() == CORNER_MARGIN
     assert frame.right() == viewer.rect().right() - CORNER_MARGIN
 
@@ -798,13 +802,10 @@ def test_with_the_info_overlay_and_the_read_only_banner_showing_the_tag_overlay_
         viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     qtbot.keyClick(viewer, Qt.Key.Key_I)
 
-    def frame(label):
-        return QRect(label.mapTo(viewer, QPoint()), label.size())
-
     [tag_overlay] = [label for label in shown_labels(viewer) if label.text() == "beach family"]
     assert viewer.info.isVisible() and viewer.read_only_banner.isVisible()
-    assert not frame(tag_overlay).intersects(frame(viewer.info))
-    assert not frame(tag_overlay).intersects(frame(viewer.read_only_banner))
+    assert not frame_in(viewer, tag_overlay).intersects(frame_in(viewer, viewer.info))
+    assert not frame_in(viewer, tag_overlay).intersects(frame_in(viewer, viewer.read_only_banner))
 
 
 def test_moving_with_space_from_an_image_to_a_video_tagged_beach_family_shows_the_tag_overlay_on_top_of_the_video(qtbot, tmp_path):
