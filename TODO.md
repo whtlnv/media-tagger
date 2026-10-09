@@ -53,7 +53,7 @@
 - [x] In the viewer, pressing `p` on a video item pauses it, and `↑` on a video item seeks it forward
 - [x] In the viewer, an image is drawn fitted to the window with its aspect ratio kept and black around it (a wide red image in a square window leaves black above and below it)
 - [x] In the viewer, pressing `i` draws the info overlay (filename and `1 / N`) on top of the shown item, and pressing `i` again removes it
-- [ ] In the viewer, the `i` overlay is text in a corner showing the filename and position (e.g. `IMG_1.png` and `1 / 2`), updates after `Space`, and leaves the image visible at the centre of the window
+- [x] In the viewer, the `i` overlay is text in a corner showing the filename and position (e.g. `IMG_1.png` and `1 / 2`), updates after `Space`, and leaves the image visible at the centre of the window
 - [ ] The viewer opens fullscreen
 - [ ] Pressing `f` in fullscreen leaves fullscreen
 - [ ] Pressing `f` when not fullscreen enters fullscreen

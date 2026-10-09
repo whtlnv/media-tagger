@@ -1,7 +1,7 @@
 from PySide6.QtCore import QPoint, QRect, Qt
 from PySide6.QtGui import QImage, QPainter
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QLabel, QWidget
 
 from mediatagger.folder import is_video
 from mediatagger.slideshow import Slideshow
@@ -23,7 +23,8 @@ class Viewer(QWidget):
         self.slideshow = Slideshow.open(folder)
         self.video_player = VideoPlayer(new_engine(**{**PLAYER_OPTIONS, **(player_options or {})}))
         self.surface = None
-        self.info_shown = False
+        self.info = QLabel(self)
+        self.info.hide()
         self._show_current()
 
     def closeEvent(self, event):
@@ -36,13 +37,11 @@ class Viewer(QWidget):
         painter.fillRect(self.rect(), Qt.GlobalColor.black)
         image = QImage(str(self.slideshow.current))
         painter.drawImage(fitted_rect(image.size(), self.rect()), image)
-        if self.info_shown:
-            painter.fillRect(self.rect(), Qt.GlobalColor.darkGray)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_I:
-            self.info_shown = not self.info_shown
-            self.update()
+            self.slideshow.press("i")
+            self._show_info()
             return
         if event.key() in VIDEO_KEYS:
             self.video_player.press(VIDEO_KEYS[event.key()])
@@ -51,7 +50,13 @@ class Viewer(QWidget):
         self.slideshow.press(key)
         self.video_player.press(key)
         self._show_current()
+        self._show_info()
         self.update()
+
+    def _show_info(self):
+        self.info.setText(self.slideshow.overlay or "")
+        self.info.adjustSize()
+        self.info.setVisible(bool(self.slideshow.overlay))
 
     def _show_current(self):
         if is_video(self.slideshow.current):

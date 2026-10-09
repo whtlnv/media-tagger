@@ -3,9 +3,10 @@ import subprocess
 import sys
 
 import pytest
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QRect, Qt
 from PySide6.QtGui import QColor, QImage
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
+from PySide6.QtWidgets import QLabel
 
 from mediatagger.test_video import make_clip
 
@@ -226,3 +227,28 @@ def test_pressing_i_in_the_viewer_draws_the_info_overlay_over_the_shown_image_an
 
     qtbot.keyClick(viewer, Qt.Key.Key_I)
     assert viewer.grab().toImage() == plain
+
+
+def test_the_viewers_i_overlay_is_corner_text_with_the_filename_and_position_that_follows_space_and_leaves_the_image_visible(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    make_image(tmp_path / "IMG_2.png", "blue")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    half_width, half_height = viewer.width() // 2, viewer.height() // 2
+    corners = [QRect(x, y, half_width, half_height) for x in (0, half_width) for y in (0, half_height)]
+
+    def shown_overlay_and_centre_colour():
+        labels = [label for label in viewer.findChildren(QLabel) if label.isVisible()]
+        assert len(labels) == 1
+        assert any(corner.contains(labels[0].geometry()) for corner in corners)
+        frame = viewer.grab().toImage()
+        return labels[0].text(), frame.pixelColor(frame.width() // 2, frame.height() // 2)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_I)
+    text, centre = shown_overlay_and_centre_colour()
+    assert "IMG_1.png" in text and "1 / 2" in text
+    assert centre == QColor("red")
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Space)
+    text, centre = shown_overlay_and_centre_colour()
+    assert "IMG_2.png" in text and "2 / 2" in text
+    assert centre == QColor("blue")
