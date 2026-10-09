@@ -33,5 +33,6 @@
 - [x] When "Create a tag library on <drive>?" is asked, the viewer window is already shown, so the question appears over it rather than before any window exists (the test's injected question records whether the viewer is visible when asked)
 - [x] After viewing a read-only drive, dropping a folder from a writable drive without a tag library (declining the question) hides the read-only banner and the read-only status
 - [x] Opening a folder on a read-only drive with no tag library makes the status bar say tags can't be saved, and no longer name a library from a previously viewed drive
-- [ ] The status bar's texts are styled like the info overlay (white on translucent black) and sit side by side inside the window, at least `CORNER_MARGIN` from its left and bottom edges, never overlapping one another
+- [ ] On a read-only drive with a tag library, the status bar's two texts sit side by side inside the window, at least `CORNER_MARGIN` from its left and bottom edges, and do not overlap one another
+- [ ] Each status bar text uses the same look as the info overlay (white text on a translucent black panel)
 - [ ] The read-only banner is styled like the info overlay and sits centred horizontally along the top edge of the window, clear of the info overlay
