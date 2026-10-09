@@ -20,7 +20,6 @@ CORNER_MARGIN = 16
 SLIDESHOW_KEYS = {Qt.Key.Key_Left: "Left", Qt.Key.Key_Right: "Right", Qt.Key.Key_Space: "Space"}
 UNSUPPORTED_TEXT = "Unsupported"
 FULLSCREEN_SETTLE_MS = 1000
-STATUS_BAR_HEIGHT = 32
 NO_LIBRARY_TEXT = "No library open"
 LIBRARY_TEXT = "Library: {}"
 NO_LIBRARY_VIEWING_ONLY_TEXT = "No library — viewing only"
@@ -95,6 +94,7 @@ class Viewer(QWidget):
         status_layout.setContentsMargins(CORNER_MARGIN, 0, CORNER_MARGIN, CORNER_MARGIN)
         status_layout.addWidget(self.library_label)
         status_layout.addWidget(self.read_only_status)
+        status_layout.addStretch()
 
     def closeEvent(self, event):
         if self.surface:
@@ -106,7 +106,8 @@ class Viewer(QWidget):
     def resizeEvent(self, event):
         if self.surface:
             self.surface.setGeometry(self.rect())
-        self.status_bar.setGeometry(0, self.height() - STATUS_BAR_HEIGHT, self.width(), STATUS_BAR_HEIGHT)
+        status_bar_height = self.status_bar.sizeHint().height()
+        self.status_bar.setGeometry(0, self.height() - status_bar_height, self.width(), status_bar_height)
         self._centre(self.placeholder)
         self._pin_top_centre(self.read_only_banner)
 

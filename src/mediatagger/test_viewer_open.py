@@ -385,6 +385,15 @@ def test_on_a_read_only_drive_with_a_tag_library_the_status_bar_texts_sit_side_b
     assert left.right() < right.left()
 
 
+def test_the_status_bar_text_is_shown_whole_with_room_for_its_full_height(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    assert viewer.library_label.height() >= viewer.library_label.sizeHint().height()
+    assert viewer.library_label.width() == viewer.library_label.sizeHint().width()
+
+
 def test_on_a_read_only_drive_with_a_tag_library_each_status_bar_text_is_styled_like_the_info_overlay(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     with made_read_only(drive):
