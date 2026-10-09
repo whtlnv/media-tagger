@@ -139,9 +139,9 @@ Search history is remembered (`↑` in the search box).
 
 ### Status bar (always visible)
 
-It names the open library (`Library: MEDIATAGGER`) or says there is none (viewing only), and on a read-only drive adds `Read-only — tags can't be saved`.
+It names the open library (`Library: MEDIATAGGER`) or says there is none (viewing only), says `Library on <drive> can't be opened — viewing only` when the drive's `tags.db` can't be opened, and on a read-only drive adds `Read-only — tags can't be saved`.
 
-Pressing `t` where tags can't be saved (no library, declined, read-only, system disk, the app's own drive) briefly shows `Tags can't be saved here`.
+Pressing `t` where tags can't be saved (no library, declined, can't be opened, read-only, system disk, the app's own drive) briefly shows `Tags can't be saved here`.
 
 Any background work is announced and its completion shown, e.g. `⟳ Generating thumbnails 132 / 1,204` → `✓ Thumbnails ready`, `⟳ Backing up database…` → `✓ Backed up`. Nothing runs silently.
 
