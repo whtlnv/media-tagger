@@ -107,15 +107,18 @@ class Viewer(QWidget):
             self.surface.setGeometry(self.rect())
         self.status_bar.setGeometry(0, self.height() - STATUS_BAR_HEIGHT, self.width(), STATUS_BAR_HEIGHT)
         self._centre(self.placeholder)
-        frame = self.read_only_banner.geometry()
-        frame.moveCenter(self.rect().center())
-        frame.moveTop(CORNER_MARGIN)
-        self.read_only_banner.setGeometry(frame)
+        self._pin_top_centre(self.read_only_banner)
 
     def _centre(self, label):
         label.adjustSize()
         frame = label.geometry()
         frame.moveCenter(self.rect().center())
+        label.setGeometry(frame)
+
+    def _pin_top_centre(self, label):
+        frame = label.geometry()
+        frame.moveCenter(self.rect().center())
+        frame.moveTop(CORNER_MARGIN)
         label.setGeometry(frame)
 
     def paintEvent(self, event):
