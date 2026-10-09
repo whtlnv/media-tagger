@@ -32,7 +32,7 @@
 - [x] Typing `beach family` in the tag prompt and pressing `Enter` closes the prompt and records both tags for the current file in the drive's `tags.db` (opening that library afterwards reports them)
 - [x] On a file tagged `beach family`, typing `-family` in the tag prompt and pressing `Enter` leaves the file tagged only `beach`: the prompt's input starts empty and the current tags are shown beside it as text, not as editable input
   - predicted-contradiction: `src/mediatagger/test_viewer_library.py::test_pressing_t_in_the_viewer_on_a_writable_drive_with_a_tag_library_opens_a_tag_prompt_showing_the_current_files_tags` — asserts: on a file tagged `beach family`, the tag prompt's editable input holds `beach family` — retired-by: "the prompt's input starts empty and the current tags are shown beside it as text, not as editable input"
-- [ ] Pressing `t` on a file tagged `beach family` shows `beach family` as visible text in the tag prompt, beside its empty input
+- [x] Pressing `t` on a file tagged `beach family` shows `beach family` as visible text in the tag prompt, beside its empty input
 - [ ] Pressing `t` again after closing the tag prompt leaves only one tag prompt in the viewer (prompts do not pile up)
 - [ ] The tag prompt is drawn inside the viewer window (not a separate dialog), centred near the bottom above the status bar, with the overlays' look (white text on a dark translucent background) and its input focused
 - [ ] While the tag prompt is open, typing a space, `i`, `p`, `f` or `m` goes into the prompt: the slideshow stays on the same item, the info overlay does not toggle, and a video is not paused or muted

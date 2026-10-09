@@ -475,6 +475,19 @@ def test_pressing_t_in_the_viewer_on_a_file_with_no_tags_opens_the_tag_prompt_sh
     assert visible_tag_prompt_texts(viewer) == [""]
 
 
+def test_pressing_t_on_a_file_tagged_beach_family_shows_beach_family_as_text_beside_the_tag_prompts_empty_input(qtbot, tmp_path):
+    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    Library.create(drive).enter(folder / "IMG_1.png", "family beach")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    assert visible_tag_prompt_texts(viewer) == [""]
+    assert "beach family" in shown_texts(viewer)
+
+
 def test_typing_beach_family_in_the_tag_prompt_and_pressing_enter_closes_it_and_records_both_tags_in_the_drives_tags_db(qtbot, tmp_path):
     [drive] = make_folders(tmp_path, "MEDIATAGGER")
     [folder] = make_folders(drive, "Photos")

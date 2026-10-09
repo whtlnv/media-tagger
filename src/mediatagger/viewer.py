@@ -179,6 +179,7 @@ class Viewer(QWidget):
         prompt = QLineEdit(self)
         prompt.returnPressed.connect(lambda: self._record_tags(library, path, prompt))
         prompt.show()
+        QLabel(" ".join(library.tags(path)), self).show()
 
     def _record_tags(self, library, path, prompt):
         library.enter(path, prompt.text())
