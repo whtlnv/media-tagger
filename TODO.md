@@ -1,7 +1,7 @@
 # TODO
 
 - [x] Opening the viewer on a folder path that doesn't exist shows a centred "Can't open <name>" message instead of crashing
-- [ ] Opening the viewer on a file path that doesn't exist (e.g. `does_not_exist.jpg` in a missing folder) shows "Can't open does_not_exist.jpg" instead of crashing
+- [x] Opening the viewer on a file path that doesn't exist (e.g. `does_not_exist.jpg` in a missing folder) shows "Can't open does_not_exist.jpg" instead of crashing
 - [ ] Opening the viewer on a folder that can't be read (permission denied; the test chmods a temp folder to 000 and restores it afterwards) shows "Can't open <name>" instead of crashing
 - [ ] Dropping a folder that doesn't exist while a video is showing stops the video, hides the video surface and shows "Can't open <name>"
 - [ ] Dropping a folder that doesn't exist while the `i` overlay is shown hides the overlay

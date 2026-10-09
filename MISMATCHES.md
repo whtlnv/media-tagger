@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-08 22:18 · `src/mediatagger/test_viewer_open.py::test_a_viewer_opened_on_a_file_in_a_missing_folder_shows_a_cant_open_message_naming_the_file`
+- Behavior: Opening the viewer on a file path that doesn't exist (in a missing folder) shows "Can't open does_not_exist.jpg" instead of crashing
+- Predicted: pass — the previous cycle's `if not path.exists()` guard in `Viewer._open` covers both files and folders
+- Actual: passed (1 passed)
+- Type: passed unexpectedly
+- Resolution: The test isn't vacuous: it drives the real viewer and checks the rendered label. The previous cycle's guard already provides the behavior, so I kept the test as a regression pin and didn't invent a failing assertion. There's nothing for /green to do.
+
 ## 2026-10-08 21:40 · `src/mediatagger/test_viewer.py::test_the_no_media_text_shown_after_dropping_an_empty_folder_onto_the_launch_screen_is_centred_in_the_window`
 - Behavior: the "No images or videos in <folder>" text after dropping an empty folder onto the launch screen is centred in the window
 - Predicted: AssertionError — the label keeps the longer launch text's width, so the shorter text is drawn left of centre
