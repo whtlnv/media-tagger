@@ -104,6 +104,12 @@ def finish_o_dialog_pointed_at(qtbot, viewer, folder, finish):
     qtbot.keyClick(viewer, Qt.Key.Key_O)
 
 
+def dragged_local_path(path):
+    dragged = QMimeData()
+    dragged.setUrls([QUrl.fromLocalFile(str(path))])
+    return dragged
+
+
 def drag_enter_over(viewer, dragged):
     drag_enter = QDragEnterEvent(
         viewer.rect().center(), Qt.DropAction.CopyAction, dragged, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier,
@@ -700,8 +706,7 @@ def test_choosing_a_folder_with_no_media_in_the_o_picker_says_so_like_opening_th
 def test_dragging_a_folder_from_the_file_manager_over_the_viewer_is_accepted_as_a_drop(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red")
     viewer = shown_launch_viewer(qtbot)
-    dragged = QMimeData()
-    dragged.setUrls([QUrl.fromLocalFile(str(tmp_path))])
+    dragged = dragged_local_path(tmp_path)
 
     drag_enter = drag_enter_over(viewer, dragged)
 
@@ -732,8 +737,7 @@ def test_dropping_a_folder_onto_the_launch_screen_starts_that_folders_slideshow_
     make_image(tmp_path / "IMG_1.png", "red")
     make_image(tmp_path / "IMG_2.png", "blue")
     viewer = shown_launch_viewer(qtbot)
-    dragged = QMimeData()
-    dragged.setUrls([QUrl.fromLocalFile(str(tmp_path))])
+    dragged = dragged_local_path(tmp_path)
     drag_enter_over(viewer, dragged)
 
     drop_onto(viewer, dragged)
@@ -746,8 +750,7 @@ def test_dropping_a_file_onto_the_launch_screen_starts_its_folders_slideshow_at_
     make_image(tmp_path / "IMG_1.png", "red")
     make_image(tmp_path / "IMG_2.png", "blue")
     viewer = shown_launch_viewer(qtbot)
-    dragged = QMimeData()
-    dragged.setUrls([QUrl.fromLocalFile(str(tmp_path / "IMG_2.png"))])
+    dragged = dragged_local_path(tmp_path / "IMG_2.png")
     drag_enter_over(viewer, dragged)
 
     drop_onto(viewer, dragged)
