@@ -29,7 +29,7 @@
 - [x] In the viewer, pressing `t` on a file with no tags opens the tag prompt showing no tags
 - [x] Opening a folder on a drive whose `.mediatagger` folder exists but holds no `tags.db` asks before creating the library (having a library means having `tags.db`)
 - [x] Agreeing to create a library on a drive whose `.mediatagger` folder exists but holds no `tags.db` creates the library there (the status bar names the drive)
-- [ ] Typing `beach family` in the tag prompt and pressing `Enter` closes the prompt and records both tags for the current file in the drive's `tags.db` (opening that library afterwards reports them)
+- [x] Typing `beach family` in the tag prompt and pressing `Enter` closes the prompt and records both tags for the current file in the drive's `tags.db` (opening that library afterwards reports them)
 - [ ] While the tag prompt is open, typing a space, `i`, `p`, `f` or `m` goes into the prompt: the slideshow stays on the same item, the info overlay does not toggle, and a video is not paused or muted
 - [ ] While the tag prompt is open, `←`, `→`, `↑` and `↓` do not move the slideshow or seek a video
 - [ ] Pressing `Esc` in the tag prompt closes it without changing the file's tags

@@ -174,8 +174,10 @@ class Viewer(QWidget):
         self._refresh()
 
     def _open_tag_prompt(self):
-        tags = Library.open(self.library_drive).tags(self.slideshow.current)
-        prompt = QLineEdit(" ".join(tags), self)
+        library = Library.open(self.library_drive)
+        path = self.slideshow.current
+        prompt = QLineEdit(" ".join(library.tags(path)), self)
+        prompt.returnPressed.connect(lambda: (library.enter(path, prompt.text()), prompt.hide()))
         prompt.show()
 
     def _toggle_fullscreen(self):
