@@ -4,7 +4,7 @@ from pathlib import Path
 
 from PySide6.QtGui import QColor
 
-from mediatagger.test_viewer import make_image, offscreen_environment, run_python_offscreen
+from mediatagger.test_viewer import make_image, offscreen_environment, run_python_offscreen, shown_launch_viewer, shown_texts
 
 REPORT_SHOWN_WINDOW_SCRIPT = (
     "import sys\n"
@@ -84,3 +84,34 @@ def test_pressing_esc_in_the_mediatagger_command_makes_it_exit_cleanly(tmp_path)
     result = run_python_offscreen(PRESS_ESC_SCRIPT, str(tmp_path))
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == "exited"
+
+REPORT_SHOWN_TEXTS_WITH_NO_PATH_SCRIPT = (
+    "import sys\n"
+    "from importlib.metadata import entry_points\n"
+    "from PySide6.QtCore import QTimer\n"
+    "from PySide6.QtWidgets import QApplication, QLabel\n"
+    "app = QApplication([])\n"
+    "def report():\n"
+    "    for window in QApplication.topLevelWidgets():\n"
+    "        if window.isVisible():\n"
+    "            for label in window.findChildren(QLabel):\n"
+    "                if label.isVisible():\n"
+    "                    print(label.text(), flush=True)\n"
+    "    QApplication.closeAllWindows()\n"
+    "    QApplication.quit()\n"
+    "QTimer.singleShot(1000, report)\n"
+    "(command,) = entry_points(group='console_scripts', name='mediatagger')\n"
+    "sys.argv = ['mediatagger']\n"
+    "command.load()()\n"
+)
+
+
+def test_running_the_mediatagger_command_with_no_path_opens_the_window_showing_the_launch_text(qtbot):
+    launch_texts = shown_texts(shown_launch_viewer(qtbot))
+    result = subprocess.run(
+        [sys.executable, "-c", REPORT_SHOWN_TEXTS_WITH_NO_PATH_SCRIPT],
+        capture_output=True, text=True, timeout=30,
+        env=offscreen_environment(),
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.splitlines() == launch_texts
