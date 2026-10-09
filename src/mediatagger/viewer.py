@@ -7,6 +7,7 @@ from mediatagger.folder import is_video
 from mediatagger.slideshow import Slideshow
 from mediatagger.video import VideoPlayer, new_engine
 
+PLAYER_OPTIONS = {"vo": "libmpv"}
 VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up"}
 
 
@@ -17,10 +18,10 @@ def fitted_rect(size, bounds):
 
 
 class Viewer(QWidget):
-    def __init__(self, folder):
+    def __init__(self, folder, player_options=None):
         super().__init__()
         self.slideshow = Slideshow.open(folder)
-        self.video_player = VideoPlayer(new_engine(vo="libmpv"))
+        self.video_player = VideoPlayer(new_engine(**{**PLAYER_OPTIONS, **(player_options or {})}))
         self.surface = None
         self._show_current()
 

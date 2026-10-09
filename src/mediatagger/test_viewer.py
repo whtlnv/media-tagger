@@ -19,8 +19,11 @@ def make_image(path, color):
     return path
 
 
+SILENT = {"ao": "null"}
+
+
 def shown_viewer_on(qtbot, folder):
-    viewer = Viewer(folder)
+    viewer = Viewer(folder, player_options=SILENT)
     qtbot.addWidget(viewer)
     viewer.resize(400, 300)
     viewer.show()
@@ -92,8 +95,9 @@ def test_pressing_space_in_the_viewer_on_a_video_followed_by_an_image_leaves_the
 
 
 def test_the_viewers_video_player_renders_through_libmpv_into_the_surface_and_plays_sound_on_the_default_audio_output(qtbot, tmp_path):
-    make_clip(tmp_path / "IMG_1.mp4")
-    viewer = shown_viewer_on(qtbot, tmp_path)
+    make_image(tmp_path / "IMG_1.png", "red")
+    viewer = Viewer(tmp_path)
+    qtbot.addWidget(viewer)
 
     engine = viewer.video_player.engine
     assert [output["name"] for output in engine.vo] == ["libmpv"]
@@ -188,3 +192,13 @@ def test_a_viewer_created_while_the_numeric_locale_is_not_c_still_gets_a_working
     )
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == "None"
+
+
+def test_a_viewer_given_null_audio_player_options_plays_its_video_silently_but_still_through_libmpv(qtbot, tmp_path):
+    make_clip(tmp_path / "IMG_1.mp4")
+    viewer = Viewer(tmp_path, player_options=SILENT)
+    qtbot.addWidget(viewer)
+
+    engine = viewer.video_player.engine
+    assert [output["name"] for output in engine.ao] == ["null"]
+    assert [output["name"] for output in engine.vo] == ["libmpv"]
