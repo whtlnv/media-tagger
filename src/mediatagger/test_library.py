@@ -216,3 +216,13 @@ def test_a_lone_dash_in_an_entry_is_ignored(tmp_path):
     library.enter(photo, "beach -")
 
     assert library.tags(photo) == ["beach"]
+
+
+def test_hyphens_join_words_into_one_tag(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "beach.jpg"
+    photo.touch()
+
+    library.enter(photo, "day-at-beach")
+
+    assert library.tags(photo) == ["day-at-beach"]

@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 05:30 · `src/mediatagger/test_library.py::test_hyphens_join_words_into_one_tag`
+- Behavior: Hyphens join words into one tag (`day-at-beach` reports exactly `day-at-beach`)
+- Predicted: passes on first run — `Library.enter` splits only on whitespace and treats only a leading `-` as removal, so an inner hyphen stays inside the word
+- Actual: 1 passed
+- Type: passed unexpectedly
+- Resolution: The behavior already falls out of the whitespace tokenizing; kept as a test-after pin, and there's nothing for `/green` to implement.
+
 ## 2026-10-09 05:28 · `src/mediatagger/test_library.py::test_a_lone_dash_in_an_entry_is_ignored`
 - Behavior: A lone `-` in an entry is ignored (`beach -` gives exactly `beach`)
 - Predicted: passes on first run — a lone `-` becomes a removal of the empty string `""`, and `str.split()` never produces an empty tag to remove
