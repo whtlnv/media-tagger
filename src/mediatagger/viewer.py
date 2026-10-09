@@ -249,6 +249,7 @@ class Viewer(QWidget):
         tags = " ".join(library.tags(path))
         self.tag_overlay.setText(tags)
         self.tag_overlay.adjustSize()
+        self._pin_top_right(self.tag_overlay)
         self.tag_overlay.setVisible(bool(tags))
         self.tag_overlay.raise_()
 

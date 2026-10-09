@@ -50,7 +50,7 @@
 - [x] Moving with `Space` from a tagged file to an untagged one hides the tag overlay, and `←` back shows that file's tags again
 - [x] Opening a folder whose first file was tagged in an earlier session shows that file's tags in the tag overlay (a new viewer on the same drive)
 - [x] The tag overlay sits in the top-right corner, `CORNER_MARGIN` from the top and right edges
-- [ ] After `Space` to a file with longer tags, the tag overlay still ends `CORNER_MARGIN` from the right edge (it is re-pinned whenever its text changes)
+- [x] After `Space` to a file with longer tags, the tag overlay still ends `CORNER_MARGIN` from the right edge (it is re-pinned whenever its text changes)
 - [ ] The tag overlay has the same look as the info overlay
 - [ ] With the info overlay (`i`) and the read-only banner showing, the tag overlay overlaps neither
 - [ ] The tag overlay stays visible on top of a video item

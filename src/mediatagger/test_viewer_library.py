@@ -775,3 +775,22 @@ def test_the_tag_overlay_sits_in_the_top_right_corner_a_corner_margin_from_the_t
     frame = QRect(tag_overlay.mapTo(viewer, QPoint()), tag_overlay.size())
     assert frame.top() == CORNER_MARGIN
     assert frame.right() == viewer.rect().right() - CORNER_MARGIN
+
+
+def test_after_space_to_a_file_with_longer_tags_the_tag_overlay_still_ends_a_corner_margin_from_the_right_edge(qtbot, tmp_path):
+    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    make_image(folder / "IMG_2.png", "blue")
+    library = Library.create(drive)
+    library.enter(folder / "IMG_1.png", "beach")
+    library.enter(folder / "IMG_2.png", "beach family holiday grandparents sunset")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    viewer.resize(1600, 900)
+    qtbot.waitUntil(lambda: viewer.width() == 1600)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Space)
+
+    [tag_overlay] = shown_labels(viewer)
+    frame = QRect(tag_overlay.mapTo(viewer, QPoint()), tag_overlay.size())
+    assert frame.right() == viewer.rect().right() - CORNER_MARGIN
