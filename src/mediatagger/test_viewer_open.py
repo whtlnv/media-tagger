@@ -8,8 +8,9 @@ from PySide6.QtWidgets import QApplication, QFileDialog
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import (
     centre_colour, make_folder_with_no_media, make_image, shown_labels, shown_launch_viewer, shown_texts, shown_viewer_on,
-    shows_unsupported_placeholder, shows_video_surface, wait_until_loaded,
+    shows_video_surface, wait_until_loaded,
 )
+from mediatagger.viewer import UNSUPPORTED_TEXT
 
 
 def make_folders(parent, *names):
@@ -222,12 +223,10 @@ def test_dropping_a_folder_whose_first_item_cannot_be_decoded_onto_the_launch_sc
     (tmp_path / "IMG_1.png").write_bytes(b"not really a png")
     make_image(tmp_path / "IMG_2.png", "red")
     viewer = shown_launch_viewer(qtbot)
-    launch_text = shown_texts(viewer)
 
     drag_and_drop_onto(viewer, tmp_path)
 
-    assert shown_texts(viewer) != launch_text
-    assert shows_unsupported_placeholder(viewer)
+    assert shown_texts(viewer) == [UNSUPPORTED_TEXT]
 
 
 def test_dropping_a_folder_with_no_media_while_an_image_is_showing_says_so_and_no_longer_paints_that_image(qtbot, tmp_path):
