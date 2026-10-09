@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 08:56 · `src/mediatagger/test_viewer_library.py::test_typing_p_and_m_in_the_tag_prompt_open_over_a_playing_video_neither_pauses_nor_mutes_it`
+- Behavior: While the tag prompt is open over a playing video, typing `p` and `m` into the prompt neither pauses nor mutes the video
+- Predicted: passes on first run — the focused `QLineEdit` takes printable `p`/`m`, so they never reach `Viewer.keyPressEvent`
+- Actual: first two runs failed for the wrong reason (`wait_until_playing` TimeoutError because the drive viewer's mpv surface was never readied; then `sqlite3.OperationalError: no such table: meta` from `make_tag_library_drive`'s schema-less stub library). After the setup fixes: 1 passed
+- Type: passed unexpectedly
+- Resolution: Added `make_surface_ready(viewer)` and switched to `Library.create(drive)` (tag-prompt tests need a real library). The pass comes from the earlier focus cycle. The test isn't vacuous: sending the keys to the viewer instead of `viewer.focusWidget()` makes it fail. It's kept as a characterization test, and the item doesn't need a /green step.
+
 ## 2026-10-09 08:30 · `src/mediatagger/test_viewer_library.py::test_typing_space_i_p_f_m_in_the_open_tag_prompt_goes_into_it_and_leaves_the_slideshow_and_info_overlay_unchanged`
 - Behavior: While the tag prompt is open, typing a space, `i`, `p`, `f` or `m` goes into the prompt: the slideshow stays on the same item, the info overlay does not toggle and the window state does not change
 - Predicted: passes on first run — the focused `QLineEdit` accepts printable keys (space included), so they never reach `Viewer.keyPressEvent`

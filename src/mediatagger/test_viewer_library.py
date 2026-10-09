@@ -7,8 +7,8 @@ from PySide6.QtGui import QColor
 from PySide6.QtWidgets import QLabel, QLineEdit
 
 from mediatagger.library import Library
-from mediatagger.test_video import make_clip
-from mediatagger.test_viewer import centre_colour, make_image, shown_labels, shown_launch_viewer, shown_texts, shown_viewer_on, SILENT, shows_video_surface
+from mediatagger.test_video import make_clip, wait_until_playing
+from mediatagger.test_viewer import centre_colour, make_image, make_surface_ready, shown_labels, shown_launch_viewer, shown_texts, shown_viewer_on, SILENT, shows_video_surface
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger.viewer import (
     APP_PACKAGE, CORNER_MARGIN, CREATE_LIBRARY_QUESTION, DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT, LIBRARY_TEXT, NO_LIBRARY_TEXT, NO_LIBRARY_VIEWING_ONLY_TEXT,
@@ -588,3 +588,20 @@ def test_typing_space_i_p_f_m_in_the_open_tag_prompt_goes_into_it_and_leaves_the
     assert viewer.slideshow.current == folder / "IMG_1.png"
     assert not viewer.info.isVisible()
     assert viewer.windowState() == window_state
+
+
+def test_typing_p_and_m_in_the_tag_prompt_open_over_a_playing_video_neither_pauses_nor_mutes_it(qtbot, tmp_path):
+    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    [folder] = make_folders(drive, "Clips")
+    make_clip(folder / "IMG_1.mp4", duration=30)
+    Library.create(drive)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    make_surface_ready(viewer)
+    engine = viewer.video_player.engine
+    wait_until_playing(engine)
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    qtbot.keyClicks(viewer.focusWidget(), "pm")
+
+    assert visible_tag_prompt_texts(viewer) == ["pm"]
+    assert [engine.pause, engine.mute] == [False, False]
