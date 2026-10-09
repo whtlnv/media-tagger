@@ -80,7 +80,8 @@ class Viewer(QWidget):
         painter.drawImage(fitted_rect(image.size(), self.rect()), image)
 
     def dragEnterEvent(self, event):
-        event.acceptProposedAction()
+        if event.mimeData().hasUrls():
+            event.acceptProposedAction()
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Escape:  # interim: quits until the grid (Phase 7) makes Esc "back to grid"

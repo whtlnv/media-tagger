@@ -694,3 +694,16 @@ def test_dragging_a_folder_from_the_file_manager_over_the_viewer_is_accepted_as_
     QApplication.sendEvent(viewer, drag_enter)
 
     assert drag_enter.isAccepted()
+
+
+def test_dragging_plain_text_over_the_viewer_is_refused(qtbot):
+    viewer = shown_launch_viewer(qtbot)
+    dragged = QMimeData()
+    dragged.setText("just some words")
+    drag_enter = QDragEnterEvent(
+        viewer.rect().center(), Qt.DropAction.CopyAction, dragged, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier,
+    )
+
+    QApplication.sendEvent(viewer, drag_enter)
+
+    assert not drag_enter.isAccepted()

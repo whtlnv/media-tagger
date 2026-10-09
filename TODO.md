@@ -10,7 +10,7 @@
 - [x] With no stand-in picker, pressing `o` and rejecting the viewer's own folder dialog after it is pointed at a folder of images (`setDirectory(folder)` then `reject()`) leaves the launch screen showing its "Drop a folder or file here" text, not that folder's slideshow
 - [x] Choosing a folder with no images or videos in the `o` picker shows "No images or videos in <folder>" instead of crashing
 - [x] Dragging a folder or file from the file manager over the window is accepted as a drop
-- [ ] Dragging something that is not a local file or folder (e.g. plain text) over the window is refused
+- [x] Dragging something that is not a local file or folder (e.g. plain text) over the window is refused
 - [ ] Dropping a folder onto the launch screen starts that folder's slideshow at its first item
 - [ ] Dropping a file onto the launch screen starts its folder's slideshow at that file
 - [ ] Dropping a folder while viewing another folder replaces the slideshow with the dropped folder's, starting at its first item
