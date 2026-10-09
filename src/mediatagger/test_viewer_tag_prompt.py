@@ -315,3 +315,17 @@ def test_esc_after_the_suggestion_popup_has_been_closed_cancels_the_prompt_leavi
     qtbot.keyClick(viewer.focusWidget(), Qt.Key.Key_Escape)
 
     assert (visible_tag_prompt_texts(viewer), Library.open(drive).tags(folder / "IMG_1.png"), viewer.isVisible()) == ([], ["beach"], True)
+
+
+def test_enter_with_no_suggestion_popup_showing_saves_the_prompts_text_beach_fam_esc_enter_adds_beach_and_fam_to_the_item(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    Library.open(drive).enter(folder / "IMG_2.png", "family")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    type_in_tag_prompt(qtbot, viewer, "beach fam")
+    [suggestions] = visible_suggestion_lists(viewer)
+    qtbot.keyClick(suggestions, Qt.Key.Key_Escape)
+
+    qtbot.keyClick(viewer.focusWidget(), Qt.Key.Key_Return)
+
+    assert (visible_tag_prompt_texts(viewer), sorted(Library.open(drive).tags(folder / "IMG_1.png"))) == ([], ["beach", "fam"])

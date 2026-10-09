@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 16:48 · `src/mediatagger/test_viewer_tag_prompt.py::test_enter_with_no_suggestion_popup_showing_saves_the_prompts_text_beach_fam_esc_enter_adds_beach_and_fam_to_the_item`
+- Behavior: `Enter` with no suggestion popup showing saves the prompt's text: `beach fam`, `Esc`, `Enter` adds `beach` and `fam` to the item
+- Predicted: passes on first run — `LastWordCompleter.eventFilter` only intercepts `Return` when the popup is the watched object, so once `Esc` hides the popup, `Return` reaches the prompt's existing save path (a right-reason failure would have been AssertionError with the prompt still open on `beach fam` and IMG_1 untagged)
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: The behavior already exists. The test is not vacuous: it confirms the popup was showing before `Esc`, and the sibling test with Enter while the popup is open shows that the item's tags stay unchanged in that case. So this test passes only if `Return` with the popup hidden saves `beach` and `fam`. Kept as a regression pin.
+
 ## 2026-10-09 16:44 · `src/mediatagger/test_viewer_tag_prompt.py::test_esc_after_the_suggestion_popup_has_been_closed_cancels_the_prompt_leaving_the_items_tags_unchanged`
 - Behavior: `Esc` after the popup has been closed cancels the prompt, leaving the item's tags unchanged
 - Predicted: passes on first run — once the popup hides, focus is back on the prompt, so `Viewer.keyPressEvent`'s existing "Esc with the tag prompt focused closes it" branch handles the second Esc (a right-reason failure would have been AssertionError with the prompt still showing `['fam']`)

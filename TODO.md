@@ -24,7 +24,7 @@ Note for every cycle: put new tag-prompt and autocomplete viewer tests in `src/m
 - [x] `Esc` with the suggestion popup open closes only the popup: the prompt stays open with its text and the app keeps running
 - [x] Accepting a suggestion for the only word in the prompt leaves no leading space: `fam`, `↓`, `Tab` leaves exactly `family` in the prompt
 - [x] `Esc` after the popup has been closed cancels the prompt, leaving the item's tags unchanged
-- [ ] `Enter` with no suggestion popup showing saves the prompt's text: `beach fam`, `Esc`, `Enter` adds `beach` and `fam` to the item
+- [x] `Enter` with no suggestion popup showing saves the prompt's text: `beach fam`, `Esc`, `Enter` adds `beach` and `fam` to the item
 - [ ] On a video item with the suggestion popup open, `↓` and `↑` move the highlight and do not seek the video
 - [ ] The suggestion popup over a white image shows light text on a dark background, as the overlays do
 - [ ] The suggestion popup opens above the prompt and lies entirely inside the window, even with more suggestions than fit below the prompt
