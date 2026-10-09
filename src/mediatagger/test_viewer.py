@@ -32,6 +32,11 @@ def shown_viewer_on(qtbot, folder):
     return viewer
 
 
+def shows_unsupported_placeholder(viewer):
+    shown_texts = [label.text() for label in viewer.findChildren(QLabel) if label.isVisible()]
+    return any("unsupported" in text.lower() for text in shown_texts)
+
+
 def centre_colour_of_viewer_on(qtbot, folder):
     viewer = shown_viewer_on(qtbot, folder)
     frame = viewer.grab().toImage()
@@ -295,8 +300,7 @@ def test_a_viewer_opened_on_a_folder_whose_first_item_cannot_be_decoded_shows_an
     make_image(tmp_path / "IMG_2.png", "red")
     viewer = shown_viewer_on(qtbot, tmp_path)
 
-    shown_texts = [label.text() for label in viewer.findChildren(QLabel) if label.isVisible()]
-    assert any("unsupported" in text.lower() for text in shown_texts)
+    assert shows_unsupported_placeholder(viewer)
 
 
 def test_a_viewer_opened_on_a_folder_whose_first_item_is_a_decodable_image_shows_that_image_and_no_unsupported_placeholder(qtbot, tmp_path):
@@ -304,7 +308,6 @@ def test_a_viewer_opened_on_a_folder_whose_first_item_is_a_decodable_image_shows
     (tmp_path / "IMG_2.png").write_bytes(b"not really a png")
     viewer = shown_viewer_on(qtbot, tmp_path)
 
-    shown_texts = [label.text() for label in viewer.findChildren(QLabel) if label.isVisible()]
-    assert not any("unsupported" in text.lower() for text in shown_texts)
+    assert not shows_unsupported_placeholder(viewer)
     frame = viewer.grab().toImage()
     assert frame.pixelColor(frame.width() // 2, frame.height() // 2) == QColor("red")
