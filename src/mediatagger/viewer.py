@@ -124,6 +124,7 @@ class Viewer(QWidget):
         self.status_bar.setGeometry(0, self.height() - status_bar_height, self.width(), status_bar_height)
         self._centre(self.placeholder)
         self._pin_top_centre(self.read_only_banner)
+        self._pin_top_right(self.tag_overlay)
 
     def _centre(self, label):
         label.adjustSize()
@@ -135,6 +136,11 @@ class Viewer(QWidget):
         frame = label.geometry()
         frame.moveCenter(self.rect().center())
         frame.moveTop(CORNER_MARGIN)
+        label.setGeometry(frame)
+
+    def _pin_top_right(self, label):
+        frame = label.geometry()
+        frame.moveTopRight(QPoint(self.rect().right() - CORNER_MARGIN, CORNER_MARGIN))
         label.setGeometry(frame)
 
     def _pin_above(self, label, widget):

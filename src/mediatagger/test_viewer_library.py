@@ -760,3 +760,18 @@ def test_opening_a_folder_whose_first_file_was_tagged_beach_family_in_an_earlier
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
     assert shown_texts(viewer) == ["beach family"]
+
+
+def test_the_tag_overlay_sits_in_the_top_right_corner_a_corner_margin_from_the_top_and_right_edges(qtbot, tmp_path):
+    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    Library.create(drive).enter(folder / "IMG_1.png", "beach family")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    viewer.resize(1600, 900)
+    qtbot.waitUntil(lambda: viewer.width() == 1600)
+
+    [tag_overlay] = shown_labels(viewer)
+    frame = QRect(tag_overlay.mapTo(viewer, QPoint()), tag_overlay.size())
+    assert frame.top() == CORNER_MARGIN
+    assert frame.right() == viewer.rect().right() - CORNER_MARGIN
