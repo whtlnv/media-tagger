@@ -43,7 +43,7 @@ class Library:
 
     def enter(self, path, text):
         if text.startswith("-"):
-            self._tags[path].remove(text[1:])
+            self._tags[path] = [tag for tag in self._tags[path] if tag != text[1:]]
             return
         self._tags[path] = sorted(set(text.split()))
 

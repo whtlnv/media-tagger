@@ -142,3 +142,14 @@ def test_entering_minus_sunset_for_a_file_tagged_beach_and_sunset_leaves_it_tagg
     library.enter(photo, "-sunset")
 
     assert library.tags(photo) == ["beach"]
+
+
+def test_entering_minus_sunset_for_a_file_not_tagged_sunset_leaves_its_tags_unchanged(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "beach.jpg"
+    photo.touch()
+    library.enter(photo, "beach family")
+
+    library.enter(photo, "-sunset")
+
+    assert library.tags(photo) == ["beach", "family"]
