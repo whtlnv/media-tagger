@@ -112,6 +112,13 @@ def drag_enter_over(viewer, dragged):
     return drag_enter
 
 
+def drop_onto(viewer, dragged):
+    drop = QDropEvent(
+        viewer.rect().center(), Qt.DropAction.CopyAction, dragged, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier,
+    )
+    QApplication.sendEvent(viewer, drop)
+
+
 def shows_unsupported_placeholder(viewer):
     return any("unsupported" in text.lower() for text in shown_texts(viewer))
 
@@ -729,10 +736,7 @@ def test_dropping_a_folder_onto_the_launch_screen_starts_that_folders_slideshow_
     dragged.setUrls([QUrl.fromLocalFile(str(tmp_path))])
     drag_enter_over(viewer, dragged)
 
-    drop = QDropEvent(
-        viewer.rect().center(), Qt.DropAction.CopyAction, dragged, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier,
-    )
-    QApplication.sendEvent(viewer, drop)
+    drop_onto(viewer, dragged)
 
     assert shown_labels(viewer) == []
     assert centre_colour(viewer) == QColor("red")
