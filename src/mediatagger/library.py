@@ -24,6 +24,7 @@ class Library:
     def __init__(self, drive_id, schema_version=schema_version):
         self.drive_id = drive_id
         self.schema_version = schema_version
+        self._tags = {}
 
     @classmethod
     def create(cls, root):
@@ -40,5 +41,8 @@ class Library:
         connection.close()
         return cls(meta["drive_id"], int(meta["schema_version"]))
 
+    def enter(self, path, text):
+        self._tags[path] = text.split()
+
     def tags(self, path):
-        return []
+        return self._tags.get(path, [])

@@ -89,3 +89,13 @@ def test_a_file_in_a_library_that_was_never_tagged_reports_no_tags(tmp_path):
     photo.touch()
 
     assert library.tags(photo) == []
+
+
+def test_entering_beach_family_for_a_file_in_a_library_gives_that_file_the_tags_beach_and_family(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "beach.jpg"
+    photo.touch()
+
+    library.enter(photo, "beach family")
+
+    assert sorted(library.tags(photo)) == ["beach", "family"]
