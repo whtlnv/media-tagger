@@ -22,6 +22,13 @@ def make_image(path, color, width=64, height=48):
     return path
 
 
+def make_folders(parent, *names):
+    folders = [parent / name for name in names]
+    for folder in folders:
+        folder.mkdir()
+    return folders
+
+
 def make_folder_with_no_media(path):
     path.mkdir()
     (path / "notes.txt").write_text("hi")
@@ -149,9 +156,7 @@ def drag_and_drop_onto(viewer, path):
 
 
 def viewer_past_its_first_item_beside_a_green_then_yellow_folder(qtbot, tmp_path):
-    viewed, dropped = tmp_path / "viewed", tmp_path / "dropped"
-    viewed.mkdir()
-    dropped.mkdir()
+    viewed, dropped = make_folders(tmp_path, "viewed", "dropped")
     make_image(viewed / "IMG_1.png", "red")
     make_image(viewed / "IMG_2.png", "blue")
     make_image(dropped / "IMG_1.png", "green")
@@ -862,9 +867,7 @@ def test_dropping_a_file_while_viewing_another_folder_replaces_the_slideshow_wit
 
 
 def test_dropping_a_folder_while_the_i_overlay_is_shown_shows_the_dropped_folders_first_filename_and_position(qtbot, tmp_path):
-    viewed, dropped = tmp_path / "viewed", tmp_path / "dropped"
-    viewed.mkdir()
-    dropped.mkdir()
+    viewed, dropped = make_folders(tmp_path, "viewed", "dropped")
     make_image(viewed / "IMG_1.png", "red")
     make_image(viewed / "IMG_2.png", "blue")
     for n in (1, 2, 3):
@@ -881,9 +884,7 @@ def test_dropping_a_folder_while_the_i_overlay_is_shown_shows_the_dropped_folder
 
 
 def test_dropping_a_folder_while_a_video_is_playing_stops_that_videos_playback_and_sound(qtbot, tmp_path):
-    viewed, dropped = tmp_path / "viewed", tmp_path / "dropped"
-    viewed.mkdir()
-    dropped.mkdir()
+    viewed, dropped = make_folders(tmp_path, "viewed", "dropped")
     clip = make_clip(viewed / "IMG_1.mp4")
     make_image(dropped / "IMG_1.png", "green")
     viewer = shown_viewer_on(qtbot, viewed)
