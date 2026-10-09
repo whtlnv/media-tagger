@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 07:10 · `src/mediatagger/test_library.py::test_a_tag_change_is_visible_to_a_separate_connection_to_tags_db_as_soon_as_it_is_entered`
+- Behavior: A tag change is visible to a separate connection to `tags.db` as soon as it is entered, while the library stays open (each change is committed at once)
+- Predicted: passes on first run — `Library.enter` opens its own connection, commits it with `with connection:` and closes it for each entry
+- Actual: 1 passed
+- Type: passed unexpectedly
+- Resolution: Committing each change at once already follows from opening one connection per entry; kept as a test-after pin, and there's nothing for `/green` to implement.
+
 ## 2026-10-09 05:40 · `src/mediatagger/test_library.py::test_a_colon_namespaced_tag_of_any_depth_is_kept_whole`
 - Behavior: A colon-namespaced tag of any depth is kept whole as one tag (`place:mexico:cancun` reports exactly `place:mexico:cancun`, not its parts)
 - Predicted: passes on first run — `Library.enter` splits only on whitespace, so colons never break a token

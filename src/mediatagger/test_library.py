@@ -382,3 +382,18 @@ def test_opening_a_schema_version_1_library_on_a_read_only_drive_writes_nothing_
     assert tags == []
     assert tags_db.read_bytes() == before
     assert sorted(path.name for path in library_folder.iterdir()) == ["tags.db"]
+
+
+def test_a_tag_change_is_visible_to_a_separate_connection_to_tags_db_as_soon_as_it_is_entered(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "beach.jpg"
+    photo.touch()
+    observer = sqlite3.connect(tmp_path / ".mediatagger" / "tags.db")
+    try:
+        library.enter(photo, "beach family")
+
+        tags = observer.execute("SELECT name FROM tags ORDER BY name").fetchall()
+    finally:
+        observer.close()
+
+    assert tags == [("beach",), ("family",)]

@@ -23,7 +23,7 @@
 - [x] A newly created library records schema version 2 in its `tags.db`
 - [x] A schema-version-1 library reports schema version 2 once it has been opened (and upgraded)
 - [x] Opening a schema-version-1 library on a read-only drive does not fail: nothing is written and its files report no tags
-- [ ] A tag change is visible to a separate connection to `tags.db` as soon as it is entered, while the library stays open (each change is committed at once)
+- [x] A tag change is visible to a separate connection to `tags.db` as soon as it is entered, while the library stays open (each change is committed at once)
 - [ ] A library's `tags.db` uses SQLite's rollback journal, not WAL (it lives on removable exFAT media)
 - [ ] In the viewer on a writable drive with a tag library, pressing `t` opens a tag prompt that shows the current file's tags (e.g. `beach family`)
 - [ ] In the viewer, pressing `t` on a file with no tags opens the tag prompt showing no tags
