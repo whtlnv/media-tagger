@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-08 23:45 · `src/mediatagger/test_viewer_open.py::test_opening_a_file_on_a_drive_names_the_same_library_in_the_status_bar_as_opening_its_folder`
+- Behavior: Opening a file on a drive names the same library in the status bar as opening its folder does
+- Predicted: passes on first run — `Viewer._open` already searches `(path, *path.parents)` for the mount point, so a file path finds the same drive as its folder
+- Actual: passed on first run; the assertion has teeth (folder viewer shows `Library: MEDIATAGGER`, not the no-library text), the behavior simply already exists from the prior cycle's parent walk
+- Type: passed unexpectedly
+- Resolution: no rewrite can make it fail without inventing new behavior; kept as a characterization pin for the file-path case and flagged that this TODO item needs no green step
+
 ## 2026-10-08 22:36 · `src/mediatagger/test_main.py::test_running_the_mediatagger_command_on_a_path_that_does_not_exist_keeps_running_and_says_it_cant_open_it`
 - Behavior: Running the shipped `mediatagger /no/such/path` command keeps running and shows "Can't open path" instead of exiting with an error
 - Predicted: passes on first run (wrong-reason) — `main()` already forwards `Path(sys.argv[1])` to `Viewer`, whose `_open` already shows the Can't-open message for unreadable paths

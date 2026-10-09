@@ -127,6 +127,21 @@ def test_opening_a_folder_that_is_itself_a_drives_mount_point_with_a_tag_library
     assert status_bar_texts(viewer) == [LIBRARY_TEXT.format("MEDIATAGGER")]
 
 
+def test_opening_a_file_on_a_drive_names_the_same_library_in_the_status_bar_as_opening_its_folder(qtbot, tmp_path):
+    drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
+    folder = drive / "Photos" / "2024"
+    folder.mkdir(parents=True)
+    make_image(folder / "IMG_1.png", "red")
+    make_image(folder / "IMG_2.png", "blue")
+    folder_viewer = Viewer(folder, player_options=SILENT, is_mount_point=lambda path: path == drive)
+    qtbot.addWidget(folder_viewer)
+
+    file_viewer = Viewer(folder / "IMG_2.png", player_options=SILENT, is_mount_point=lambda path: path == drive)
+    qtbot.addWidget(file_viewer)
+
+    assert status_bar_texts(file_viewer) == status_bar_texts(folder_viewer)
+
+
 def test_a_viewer_opened_on_a_folder_shows_its_first_item_and_not_the_launch_text(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red")
     make_image(tmp_path / "IMG_2.png", "blue")
