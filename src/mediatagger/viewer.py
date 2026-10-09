@@ -86,6 +86,7 @@ class Viewer(QWidget):
         self.placeholder.setVisible(not video and self._current_image().isNull())
         if video:
             self.surface = self.surface or MpvSurface(self.video_player.engine, self, on_ready=self._show_current)
+            self.surface.setGeometry(self.rect())
             self.surface.show()
             if not self.video_player.show(self.slideshow.current):
                 self.surface.hide()

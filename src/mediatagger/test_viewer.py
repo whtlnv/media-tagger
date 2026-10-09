@@ -393,3 +393,13 @@ def test_the_viewers_video_surface_renders_the_viewers_own_player(qtbot, tmp_pat
     surface = viewer.findChild(MpvSurface)
     assert surface is not None and surface.isVisible()
     assert surface.engine is viewer.video_player.engine
+
+
+def test_a_video_reached_from_an_image_fills_the_viewer_window(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    make_clip(tmp_path / "IMG_2.mp4")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Space)
+
+    assert viewer.findChild(MpvSurface).geometry() == viewer.rect()
