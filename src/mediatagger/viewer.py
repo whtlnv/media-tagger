@@ -138,6 +138,7 @@ class Viewer(QWidget):
         self.slideshow = Slideshow.open(folder)
         if self.slideshow is None:
             self.placeholder.setText(f"No images or videos in {folder.name}")
+            self.placeholder.show()
             return
         self.placeholder.setText(UNSUPPORTED_TEXT)
         if showing_info:

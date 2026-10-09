@@ -819,6 +819,22 @@ def test_dropping_a_folder_whose_first_item_cannot_be_decoded_onto_the_launch_sc
     assert shows_unsupported_placeholder(viewer)
 
 
+def test_dropping_a_folder_with_no_media_while_an_image_is_showing_says_so_and_no_longer_paints_that_image(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    empty = tmp_path / "Holidays"
+    empty.mkdir()
+    (empty / "notes.txt").write_text("hi")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    dragged = dragged_local_path(empty)
+    drag_enter_over(viewer, dragged)
+
+    drop_onto(viewer, dragged)
+
+    assert shown_texts(viewer) == shown_texts(shown_viewer_on(qtbot, empty))
+    frame = viewer.grab().toImage()
+    assert frame.pixelColor(10, frame.height() // 2) == QColor("black")
+
+
 def test_dropping_a_folder_while_viewing_another_folder_replaces_the_slideshow_with_the_dropped_folders_at_its_first_item(qtbot, tmp_path):
     viewer, dropped = viewer_past_its_first_item_beside_a_green_then_yellow_folder(qtbot, tmp_path)
     dragged = dragged_local_path(dropped)
