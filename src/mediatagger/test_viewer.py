@@ -403,3 +403,14 @@ def test_a_video_reached_from_an_image_fills_the_viewer_window(qtbot, tmp_path):
     qtbot.keyClick(viewer, Qt.Key.Key_Space)
 
     assert viewer.findChild(MpvSurface).geometry() == viewer.rect()
+
+
+def test_the_info_overlay_stays_on_top_of_a_video(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    make_clip(tmp_path / "IMG_2.mp4")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_I)
+    qtbot.keyClick(viewer, Qt.Key.Key_Space)
+
+    assert viewer.childAt(viewer.info.geometry().center()) is viewer.info
