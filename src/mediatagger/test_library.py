@@ -66,3 +66,13 @@ def test_tags_db_of_a_newly_created_library_is_an_sqlite_database_whose_meta_tab
 
     assert meta["drive_id"] == created.drive_id
     assert int(meta["schema_version"]) == Library.schema_version
+
+
+def test_a_library_created_removed_and_created_again_at_the_same_mount_point_reports_a_different_drive_id(tmp_path):
+    first = Library.create(tmp_path)
+    first.close()
+    shutil.rmtree(tmp_path / ".mediatagger")
+
+    second = Library.create(tmp_path)
+
+    assert second.drive_id != first.drive_id
