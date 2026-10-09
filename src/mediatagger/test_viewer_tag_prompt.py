@@ -340,8 +340,10 @@ def test_the_suggestion_popup_over_a_white_image_shows_light_text_on_a_dark_back
     [suggestions] = visible_suggestion_lists(viewer)
     frame = suggestions.viewport().grab().toImage()
     ratio = frame.devicePixelRatio()
+    def colour_at(x, y):
+        return frame.pixelColor(int(x * ratio), int(y * ratio))
     first_row = suggestions.visualRect(suggestions.model().index(0, 0))
-    colours = [frame.pixelColor(int(x * ratio), int(y * ratio)) for x in range(first_row.left(), first_row.right()) for y in range(first_row.top(), first_row.bottom())]
-    background = frame.pixelColor(int((first_row.right() - 4) * ratio), int(first_row.center().y() * ratio))
+    colours = [colour_at(x, y) for x in range(first_row.left(), first_row.right()) for y in range(first_row.top(), first_row.bottom())]
+    background = colour_at(first_row.right() - 4, first_row.center().y())
     assert background.lightness() < 100  # dark background
     assert any(colour.lightness() > 200 and colour.saturation() < 40 for colour in colours)  # light text
