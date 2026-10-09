@@ -56,6 +56,10 @@ def drive_with_a_tag_library_holding_one_image(tmp_path):
     return drive, folder
 
 
+def overwrite_tags_db_with_garbage(drive):
+    tags_db_path(drive).write_bytes(b"this is not a database" * 100)
+
+
 def drive_with_a_tag_library_holding_one_clip(tmp_path, **clip_options):
     drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
     [folder] = make_folders(drive, "Clips")
@@ -984,7 +988,7 @@ def test_opening_a_folder_on_a_drive_whose_tags_db_is_garbage_still_shows_the_sl
     from mediatagger.viewer import LIBRARY_CANT_BE_OPENED_TEXT
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     make_image(folder / "IMG_2.png", "blue")
-    tags_db_path(drive).write_bytes(b"this is not a database" * 100)
+    overwrite_tags_db_with_garbage(drive)
 
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
@@ -994,7 +998,7 @@ def test_opening_a_folder_on_a_drive_whose_tags_db_is_garbage_still_shows_the_sl
 
 def test_pressing_t_on_a_drive_whose_library_cant_be_opened_opens_no_tag_prompt_says_tags_cant_be_saved_here_and_leaves_the_drive_unchanged(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    tags_db_path(drive).write_bytes(b"this is not a database" * 100)
+    overwrite_tags_db_with_garbage(drive)
     before = file_contents_under(drive)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
