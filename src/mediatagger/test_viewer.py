@@ -1,7 +1,10 @@
+import gc
 import os
 import struct
 import subprocess
 import sys
+import threading
+import weakref
 
 import pytest
 from PySide6.QtCore import QRect, QSize, Qt
@@ -378,3 +381,24 @@ def test_a_slideshow_shows_a_status_bar_across_the_bottom_edge_of_the_window_ove
     assert bar.geometry().bottom() == viewer.rect().bottom()
     assert bar.height() < viewer.height() // 4
     assert centre_colour(viewer) == QColor("red")
+
+
+def test_once_a_viewer_exists_garbage_is_collected_on_the_gui_thread_never_on_a_background_thread_such_as_mpvs_event_thread(qtbot):
+    """A widget freed by the garbage collector on another thread is destroyed there while the GUI thread may be painting it."""
+    viewer = Viewer(player_options=SILENT)
+    qtbot.addWidget(viewer)
+    collected_on = []
+
+    class Cycle:
+        pass
+
+    garbage = Cycle()
+    garbage.itself = garbage
+    weakref.finalize(garbage, lambda: collected_on.append(threading.current_thread()))
+    del garbage
+    busy = threading.Thread(target=lambda: [[] for _ in range(100_000)])  # enough allocations to trigger a collection
+    busy.start()
+    busy.join()
+    qtbot.waitUntil(lambda: bool(collected_on))
+
+    assert collected_on == [threading.main_thread()]

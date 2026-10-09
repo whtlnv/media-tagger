@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 13:54 · `src/mediatagger/test_viewer_tag_prompt.py::test_in_the_tag_prompt_on_a_drive_whose_library_has_beach_and_bird_typing_be_lists_beach_and_not_bird`
+- Behavior: In the tag prompt on a drive whose library has `beach` and `bird`, typing `be` lists `beach` and not `bird`
+- Predicted: pass — 5015f4a hardcoded `QCompleter(["beach", "bird"])`, and QCompleter's default prefix filtering already narrows `be` to `beach`
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: Not rewritten — with `beach`/`bird` as the fixture no version can go red against the hardcoded list, and switching tags would duplicate the library-sourced items ("no tags yet → no popup", "second drive → `zebra`") that will drive the hardcode out; kept as a pin on prefix filtering that will keep holding once the list comes from the library
+
 ## 2026-10-09 13:25 · `src/mediatagger/test_viewer_library.py::test_pressing_t_on_a_drive_whose_library_cant_be_opened_opens_no_tag_prompt_says_tags_cant_be_saved_here_and_leaves_the_drive_unchanged`
 - Behavior: On a drive whose library can't be opened, pressing `t` opens no tag prompt, shows "Tags can't be saved here", and leaves the drive's files unchanged
 - Predicted: pass — 2a89c1b's `except sqlite3.DatabaseError` returns with `self.library = None`, so `_tags_can_be_saved_here()` is False and `t` takes the existing cant-save branch
