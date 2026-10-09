@@ -570,3 +570,21 @@ def test_the_tag_prompts_input_and_its_shown_tags_are_styled_like_the_info_overl
     [prompt] = visible_tag_prompts(viewer)
     [tags] = [label for label in shown_labels(viewer) if label.text() == "beach family"]
     assert [prompt.styleSheet(), tags.styleSheet()] == [viewer.info.styleSheet()] * 2
+
+
+def test_typing_space_i_p_f_m_in_the_open_tag_prompt_goes_into_it_and_leaves_the_slideshow_and_info_overlay_unchanged(qtbot, tmp_path):
+    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    make_image(folder / "IMG_2.png", "blue")
+    Library.create(drive)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+    window_state = viewer.windowState()
+
+    qtbot.keyClicks(viewer.focusWidget(), " ipfm")
+
+    assert visible_tag_prompt_texts(viewer) == [" ipfm"]
+    assert viewer.slideshow.current == folder / "IMG_1.png"
+    assert not viewer.info.isVisible()
+    assert viewer.windowState() == window_state

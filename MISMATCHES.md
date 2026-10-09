@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 08:30 · `src/mediatagger/test_viewer_library.py::test_typing_space_i_p_f_m_in_the_open_tag_prompt_goes_into_it_and_leaves_the_slideshow_and_info_overlay_unchanged`
+- Behavior: While the tag prompt is open, typing a space, `i`, `p`, `f` or `m` goes into the prompt: the slideshow stays on the same item, the info overlay does not toggle and the window state does not change
+- Predicted: passes on first run — the focused `QLineEdit` accepts printable keys (space included), so they never reach `Viewer.keyPressEvent`
+- Actual: 1 passed
+- Type: passed unexpectedly
+- Resolution: The previous cycle (focus on the prompt's input) already gives this behavior. The test isn't vacuous: it sends keys to `viewer.focusWidget()` as the keyboard would, so it would fail if focus stayed on the viewer. It's kept as a characterization test, and the item doesn't need a /green step. The video pause/mute clause isn't covered here.
+
 ## 2026-10-09 08:16 · `src/mediatagger/test_viewer_library.py::test_pressing_t_gives_the_tag_prompt_keyboard_focus_so_typed_keys_go_into_it`
 - Behavior: Pressing `t` gives the tag prompt's input keyboard focus, so typed keys go into it straight away
 - Predicted: AssertionError — prompt text is `''` not `'beach'` (no focus, keys go to the viewer)
