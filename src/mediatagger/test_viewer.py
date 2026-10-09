@@ -63,8 +63,12 @@ def shown_viewer_on(qtbot, folder):
     return viewer
 
 
+def shown_labels(viewer):
+    return [label for label in viewer.findChildren(QLabel) if label.isVisible()]
+
+
 def shows_unsupported_placeholder(viewer):
-    shown_texts = [label.text() for label in viewer.findChildren(QLabel) if label.isVisible()]
+    shown_texts = [label.text() for label in shown_labels(viewer)]
     return any("unsupported" in text.lower() for text in shown_texts)
 
 
@@ -274,7 +278,7 @@ def test_the_viewers_i_overlay_is_corner_text_with_the_filename_and_position_tha
     corners = [QRect(x, y, half_width, half_height) for x in (0, half_width) for y in (0, half_height)]
 
     def shown_overlay_and_centre_colour():
-        labels = [label for label in viewer.findChildren(QLabel) if label.isVisible()]
+        labels = shown_labels(viewer)
         assert len(labels) == 1
         assert any(corner.contains(labels[0].geometry()) for corner in corners)
         return labels[0].text(), centre_colour(viewer)
@@ -505,7 +509,7 @@ def test_a_viewer_opened_on_a_folder_with_no_media_says_so_at_the_centre_and_ign
     for key in (Qt.Key.Key_Space, Qt.Key.Key_Left, Qt.Key.Key_I, Qt.Key.Key_P):
         qtbot.keyClick(viewer, key)
 
-    shown = [label for label in viewer.findChildren(QLabel) if label.isVisible()]
+    shown = shown_labels(viewer)
     assert [label.text() for label in shown] == ["No images or videos in Holidays"]
     assert (shown[0].geometry().center() - viewer.rect().center()).manhattanLength() <= 2
 
