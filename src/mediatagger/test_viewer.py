@@ -45,9 +45,9 @@ def offscreen_environment():
     return {**os.environ, "QT_QPA_PLATFORM": "offscreen"}
 
 
-def run_python_offscreen(script, argument):
+def run_python_offscreen(script, *arguments):
     return subprocess.run(
-        [sys.executable, "-c", script, argument],
+        [sys.executable, "-c", script, *arguments],
         capture_output=True, text=True, timeout=30,
         env=offscreen_environment(),
     )

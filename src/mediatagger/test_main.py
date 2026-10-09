@@ -108,11 +108,7 @@ REPORT_SHOWN_TEXTS_WITH_NO_PATH_SCRIPT = (
 
 def test_running_the_mediatagger_command_with_no_path_opens_the_window_showing_the_launch_text(qtbot):
     launch_texts = shown_texts(shown_launch_viewer(qtbot))
-    result = subprocess.run(
-        [sys.executable, "-c", REPORT_SHOWN_TEXTS_WITH_NO_PATH_SCRIPT],
-        capture_output=True, text=True, timeout=30,
-        env=offscreen_environment(),
-    )
+    result = run_python_offscreen(REPORT_SHOWN_TEXTS_WITH_NO_PATH_SCRIPT)
     assert result.returncode == 0, result.stderr
     assert result.stdout.splitlines() == launch_texts
 
