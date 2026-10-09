@@ -14,7 +14,7 @@
 - [x] Dragging a web link (an `https://` URL, not a local file) over the window is refused
 - [x] Dropping a folder onto the launch screen starts that folder's slideshow at its first item (the test first drag-enters over the window with the folder's mime data via the `drag_enter_over` helper so Qt accepts the drag, then drops the same mime data; a drop with no accepted drag-enter is discarded by Qt before the window sees it)
 - [x] Dropping a file onto the launch screen starts its folder's slideshow at that file
-- [ ] Dropping a folder while viewing another folder replaces the slideshow with the dropped folder's, starting at its first item
+- [x] Dropping a folder while viewing another folder replaces the slideshow with the dropped folder's, starting at its first item
 - [ ] Dropping a file while viewing another folder replaces the slideshow with that file's folder, starting at that file
 - [ ] Dropping a folder while a video is playing stops that video's playback and sound
 - [ ] Running the shipped `mediatagger` command with no path opens the window showing "Drop a folder or file here, or press `o` to open" instead of exiting with an error

@@ -757,3 +757,22 @@ def test_dropping_a_file_onto_the_launch_screen_starts_its_folders_slideshow_at_
 
     assert shown_labels(viewer) == []
     assert centre_colour(viewer) == QColor("blue")
+
+
+def test_dropping_a_folder_while_viewing_another_folder_replaces_the_slideshow_with_the_dropped_folders_at_its_first_item(qtbot, tmp_path):
+    viewed, dropped = tmp_path / "viewed", tmp_path / "dropped"
+    viewed.mkdir()
+    dropped.mkdir()
+    make_image(viewed / "IMG_1.png", "red")
+    make_image(viewed / "IMG_2.png", "blue")
+    make_image(dropped / "IMG_1.png", "green")
+    make_image(dropped / "IMG_2.png", "yellow")
+    viewer = shown_viewer_on(qtbot, viewed)
+    qtbot.keyClick(viewer, Qt.Key.Key_Right)
+    dragged = dragged_local_path(dropped)
+    drag_enter_over(viewer, dragged)
+
+    drop_onto(viewer, dragged)
+
+    assert shown_labels(viewer) == []
+    assert centre_colour(viewer) == QColor("green")
