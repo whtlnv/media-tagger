@@ -2,6 +2,7 @@ import sqlite3
 import uuid
 
 LIBRARY_FOLDER = ".mediatagger"
+CREATE_TAGS_TABLE = "CREATE TABLE IF NOT EXISTS tags (path TEXT, tag TEXT)"
 
 
 def _tags_db(root):
@@ -15,7 +16,7 @@ def _init_tags_db(tags_db, **meta):
         connection.executemany(
             "INSERT INTO meta (key, value) VALUES (?, ?)", meta.items()
         )
-        connection.execute("CREATE TABLE tags (path TEXT, tag TEXT)")
+        connection.execute(CREATE_TAGS_TABLE)
     connection.close()
 
 
@@ -41,7 +42,7 @@ class Library:
         connection = sqlite3.connect(tags_db)
         meta = dict(connection.execute("SELECT key, value FROM meta"))
         with connection:
-            connection.execute("CREATE TABLE IF NOT EXISTS tags (path TEXT, tag TEXT)")
+            connection.execute(CREATE_TAGS_TABLE)
         connection.close()
         return cls(tags_db, meta["drive_id"], int(meta["schema_version"]))
 
