@@ -79,7 +79,8 @@ class LastWordCompleter(QCompleter):
         prompt = self.widget()
         highlighted = self.popup().currentIndex().data()
         typed = prompt.text()
-        prompt.setText(typed.removesuffix(self.splitPath(typed)[0]) + highlighted)
+        [word_being_completed] = self.splitPath(typed)
+        prompt.setText(typed.removesuffix(word_being_completed) + highlighted)
 
 
 class TagInput(QLineEdit):
