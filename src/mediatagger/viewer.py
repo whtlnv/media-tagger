@@ -54,7 +54,7 @@ class Viewer(QWidget):
         self.setWindowState(Qt.WindowState.WindowFullScreen)
         self.setAcceptDrops(True)
         if path is None:
-            self.placeholder.setText("Drop a folder or file here, or press `o` to open")
+            self.placeholder.setText("Drop a folder or file here, or press o to open")
             return
         self._open(path)
 

@@ -79,10 +79,10 @@ def viewer_past_its_first_item_beside_a_green_then_yellow_folder(qtbot, tmp_path
     return viewer, dropped
 
 
-def test_a_viewer_opened_with_no_path_shows_only_the_launch_text(qtbot):
+def test_the_launch_screen_text_shows_the_o_key_without_backticks(qtbot):
     viewer = shown_launch_viewer(qtbot)
 
-    assert shown_texts(viewer) == ["Drop a folder or file here, or press `o` to open"]
+    assert shown_texts(viewer) == ["Drop a folder or file here, or press o to open"]
 
 
 def test_a_viewer_opened_on_a_folder_shows_its_first_item_and_not_the_launch_text(qtbot, tmp_path):
