@@ -5,7 +5,7 @@ from pathlib import Path
 from PySide6.QtGui import QColor
 
 from mediatagger.test_viewer import make_image, offscreen_environment, run_python_offscreen, shown_launch_viewer, shown_texts, shown_viewer_on
-from mediatagger.test_viewer_open import drive_without_a_tag_library_holding_one_image
+from mediatagger.test_viewer_library import drive_without_a_tag_library_holding_one_image
 from mediatagger.viewer import DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT
 
 RUN_MEDIATAGGER_COMMAND = (
@@ -177,7 +177,7 @@ DECLINE_CREATING_A_LIBRARY_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT + (
     "from PySide6.QtCore import QTimer\n"
     "from PySide6.QtWidgets import QApplication\n"
     "from mediatagger.test_viewer import centre_colour\n"
-    "from mediatagger.test_viewer_open import status_bar_texts\n"
+    "from mediatagger.test_viewer_library import status_bar_texts\n"
     "app = QApplication([])\n"
     "asked = []\n"
     "def decline():\n"
