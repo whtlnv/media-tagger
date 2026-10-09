@@ -145,10 +145,7 @@ def test_opening_a_folder_on_the_system_disk_never_asks_to_create_a_library_and_
     make_image(folder / "IMG_1.png", "red")
     asked = []
 
-    viewer = Viewer(
-        folder, player_options=SILENT, is_mount_point=lambda path: path == Path("/"), ask_to_create_library=asked.append,
-    )
-    qtbot.addWidget(viewer)
+    viewer = viewer_on_drive(qtbot, folder, Path("/"), asked.append)
 
     assert asked == []
     assert status_bar_texts(viewer) == [NO_LIBRARY_VIEWING_ONLY_TEXT]
