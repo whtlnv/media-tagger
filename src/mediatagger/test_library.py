@@ -12,6 +12,18 @@ def _read_meta(root):
         connection.close()
 
 
+def _create_schema_version_1_library(root, drive_id):
+    (root / ".mediatagger").mkdir()
+    connection = sqlite3.connect(root / ".mediatagger" / "tags.db")
+    with connection:
+        connection.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
+        connection.executemany(
+            "INSERT INTO meta (key, value) VALUES (?, ?)",
+            [("drive_id", drive_id), ("schema_version", "1")],
+        )
+    connection.close()
+
+
 def test_a_newly_created_library_reports_the_same_drive_id_after_it_is_closed_and_opened_again(tmp_path):
     created = Library.create(tmp_path)
     drive_id = created.drive_id
@@ -271,15 +283,7 @@ def test_a_files_tags_survive_the_drive_being_mounted_at_a_different_path(tmp_pa
 
 
 def test_a_library_whose_tags_db_holds_only_its_drive_id_and_schema_version_can_record_and_report_a_files_tags(tmp_path):
-    (tmp_path / ".mediatagger").mkdir()
-    connection = sqlite3.connect(tmp_path / ".mediatagger" / "tags.db")
-    with connection:
-        connection.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
-        connection.executemany(
-            "INSERT INTO meta (key, value) VALUES (?, ?)",
-            [("drive_id", "pre-tagging-drive"), ("schema_version", "1")],
-        )
-    connection.close()
+    _create_schema_version_1_library(tmp_path, "pre-tagging-drive")
     photo = tmp_path / "beach.jpg"
     photo.touch()
     library = Library.open(tmp_path)
@@ -316,16 +320,8 @@ def test_tags_db_of_a_newly_created_library_records_each_file_and_tag_once_and_l
 
 
 def test_opening_a_schema_version_1_library_upgrades_its_tags_db_in_place_to_schema_version_2(tmp_path):
-    (tmp_path / ".mediatagger").mkdir()
+    _create_schema_version_1_library(tmp_path, "phase-3-drive")
     tags_db = tmp_path / ".mediatagger" / "tags.db"
-    connection = sqlite3.connect(tags_db)
-    with connection:
-        connection.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
-        connection.executemany(
-            "INSERT INTO meta (key, value) VALUES (?, ?)",
-            [("drive_id", "phase-3-drive"), ("schema_version", "1")],
-        )
-    connection.close()
 
     Library.open(tmp_path)
 
@@ -350,15 +346,7 @@ def test_a_newly_created_library_records_schema_version_2_in_its_tags_db(tmp_pat
 
 
 def test_a_schema_version_1_library_reports_schema_version_2_once_it_has_been_opened(tmp_path):
-    (tmp_path / ".mediatagger").mkdir()
-    connection = sqlite3.connect(tmp_path / ".mediatagger" / "tags.db")
-    with connection:
-        connection.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
-        connection.executemany(
-            "INSERT INTO meta (key, value) VALUES (?, ?)",
-            [("drive_id", "phase-3-drive"), ("schema_version", "1")],
-        )
-    connection.close()
+    _create_schema_version_1_library(tmp_path, "phase-3-drive")
 
     opened = Library.open(tmp_path)
 
