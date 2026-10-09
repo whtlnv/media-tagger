@@ -23,7 +23,7 @@ Note for every cycle: put new tag-prompt and autocomplete viewer tests in `src/m
 - [x] Accepting a removal suggestion keeps the `-`: on an item tagged `sunset`, `-s`, `↓`, `Tab` leaves `-sunset` in the prompt
 - [x] `Esc` with the suggestion popup open closes only the popup: the prompt stays open with its text and the app keeps running
 - [x] Accepting a suggestion for the only word in the prompt leaves no leading space: `fam`, `↓`, `Tab` leaves exactly `family` in the prompt
-- [ ] `Esc` after the popup has been closed cancels the prompt, leaving the item's tags unchanged
+- [x] `Esc` after the popup has been closed cancels the prompt, leaving the item's tags unchanged
 - [ ] `Enter` with no suggestion popup showing saves the prompt's text: `beach fam`, `Esc`, `Enter` adds `beach` and `fam` to the item
 - [ ] On a video item with the suggestion popup open, `↓` and `↑` move the highlight and do not seek the video
 - [ ] The suggestion popup over a white image shows light text on a dark background, as the overlays do

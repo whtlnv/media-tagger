@@ -300,3 +300,18 @@ def test_accepting_a_suggestion_for_the_only_word_in_the_prompt_leaves_no_leadin
     qtbot.keyClick(suggestions, Qt.Key.Key_Tab)
 
     assert visible_tag_prompt_texts(viewer) == ["family"]
+
+
+def test_esc_after_the_suggestion_popup_has_been_closed_cancels_the_prompt_leaving_the_items_tags_unchanged(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    make_image(folder / "IMG_2.png", "blue")
+    Library.open(drive).enter(folder / "IMG_2.png", "family")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    type_in_tag_prompt(qtbot, viewer, "fam")
+    [suggestions] = visible_suggestion_lists(viewer)
+    qtbot.keyClick(suggestions, Qt.Key.Key_Escape)
+
+    qtbot.keyClick(viewer.focusWidget(), Qt.Key.Key_Escape)
+
+    assert (visible_tag_prompt_texts(viewer), Library.open(drive).tags(folder / "IMG_1.png"), viewer.isVisible()) == ([], ["beach"], True)
