@@ -152,7 +152,7 @@ class Viewer(QWidget):
         self.video_player.press("Right")  # leaving the current item is what stops its video
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key.Key_Escape and isinstance(self.focusWidget(), QLineEdit):
+        if event.key() == Qt.Key.Key_Escape and self._tag_prompt_has_focus():
             self.focusWidget().hide()
             return
         if event.key() == Qt.Key.Key_Escape:  # interim: quits until the grid (Phase 7) makes Esc "back to grid"
@@ -172,7 +172,7 @@ class Viewer(QWidget):
         if event.key() == Qt.Key.Key_T:
             self._open_tag_prompt()
             return
-        if isinstance(self.focusWidget(), QLineEdit):
+        if self._tag_prompt_has_focus():
             return  # keys the open tag prompt ignores must not reach the slideshow or video
         if event.key() in VIDEO_KEYS:
             self.video_player.press(VIDEO_KEYS[event.key()])
@@ -183,6 +183,9 @@ class Viewer(QWidget):
         self.slideshow.press(key)
         self.video_player.press(key)
         self._refresh()
+
+    def _tag_prompt_has_focus(self):
+        return isinstance(self.focusWidget(), QLineEdit)
 
     def _open_tag_prompt(self):
         library = Library.open(self.library_drive)
