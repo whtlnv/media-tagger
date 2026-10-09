@@ -39,7 +39,7 @@
 - [x] The tag prompt has the overlays' look: white text on a dark translucent background (the same style as the info overlay)
 - [x] While the tag prompt is open, typing a space, `i`, `p`, `f` or `m` goes into the prompt: the slideshow stays on the same item, the info overlay does not toggle, and a video is not paused or muted (keys are sent to the focused prompt input, as the keyboard would; any it does not use pass on to the viewer)
 - [x] While the tag prompt is open over a playing video, typing `p` and `m` into the prompt neither pauses nor mutes the video
-- [ ] While the tag prompt is open, `←`, `→`, `↑` and `↓` do not move the slideshow or seek a video (keys are sent to the focused prompt input; `↑`/`↓` are not used by a line edit and pass on to the viewer, which must ignore them while the prompt is open)
+- [x] While the tag prompt is open, `←`, `→`, `↑` and `↓` do not move the slideshow or seek a video (keys are sent to the focused prompt input; `↑`/`↓` are not used by a line edit and pass on to the viewer, which must ignore them while the prompt is open)
 - [ ] Pressing `Esc` in the tag prompt closes it without changing the file's tags (Esc is sent to the focused prompt input)
 - [ ] Pressing `Esc` in the tag prompt leaves the viewer open (only `Esc` with no prompt open closes the viewer) (Esc is sent to the focused prompt input; a line edit does not use Esc, so it passes on to the viewer)
 - [ ] Pressing `t` on a video item shows the tag prompt above the video surface

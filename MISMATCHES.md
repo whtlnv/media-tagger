@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 08:59 · `src/mediatagger/test_viewer_library.py::test_arrow_keys_in_the_tag_prompt_open_over_a_paused_video_neither_move_the_slideshow_nor_seek_it`
+- Behavior: While the tag prompt is open, `←`, `→`, `↑` and `↓` do not move the slideshow or seek a video
+- Predicted: AssertionError on the `↑` iteration — the line edit ignores `↑`, so it reaches `Viewer.keyPressEvent` and seeks the paused video from 20 s to ~30 s
+- Actual: AssertionError on the `↑` iteration, but `time_pos` was 0.0, not ~30
+- Type: right-reason mismatch
+- Resolution: The seek did happen, but +10 s from 20 s hit the end of the 30 s clip, which wrapped it to 0. Lengthened the clip to 60 s, so the failure now reads `29.6 == 20 ± 1` as predicted. `←`/`→` already pass because the focused line edit takes them.
+
 ## 2026-10-09 08:56 · `src/mediatagger/test_viewer_library.py::test_typing_p_and_m_in_the_tag_prompt_open_over_a_playing_video_neither_pauses_nor_mutes_it`
 - Behavior: While the tag prompt is open over a playing video, typing `p` and `m` into the prompt neither pauses nor mutes the video
 - Predicted: passes on first run — the focused `QLineEdit` takes printable `p`/`m`, so they never reach `Viewer.keyPressEvent`

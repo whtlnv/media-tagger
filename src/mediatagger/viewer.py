@@ -169,6 +169,8 @@ class Viewer(QWidget):
         if event.key() == Qt.Key.Key_T:
             self._open_tag_prompt()
             return
+        if isinstance(self.focusWidget(), QLineEdit):
+            return  # keys the open tag prompt ignores must not reach the slideshow or video
         if event.key() in VIDEO_KEYS:
             self.video_player.press(VIDEO_KEYS[event.key()])
             return
