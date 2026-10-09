@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 02:01 · `src/mediatagger/test_viewer_open.py::test_opening_a_folder_that_does_not_exist_on_a_drive_without_a_tag_library_does_not_ask_to_create_one`
+- Behavior: Opening a path that can't be opened ("Can't open <name>") does not ask to create a library
+- Predicted: passes on first run — `_open` returns after `_show_cant_open` (both the `is_openable` and `OSError` branches) before reaching `_open_library`
+- Actual: passed, as predicted
+- Type: passed unexpectedly (relative to Red's contract; the TODO item's premise is already satisfied by existing code)
+- Resolution: no failing test is possible without contriving one; kept the test as a regression pin and flagged that the TODO item needs no `/green`
+
 ## 2026-10-09 01:24 · `src/mediatagger/test_viewer_open.py::test_opening_a_folder_on_a_read_only_drive_still_shows_its_slideshow_at_the_first_item`
 - Behavior: Opening a folder on a read-only drive still shows its slideshow at the first item
 - Predicted: passes on first run — `_open` builds the slideshow before `_open_library` checks `os.access(drive, os.W_OK)`, and the banner is a corner label that doesn't cover the centre
