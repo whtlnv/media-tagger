@@ -1,3 +1,5 @@
+import pytest
+
 from mediatagger.folder import is_video, media_files
 
 
@@ -78,23 +80,13 @@ def test_every_image_and_video_extension_in_the_design_is_in_the_slideshow(tmp_p
     assert media_files(tmp_path) == [tmp_path / name for name in names]
 
 
-def test_a_gif_item_is_played_as_a_video_not_shown_as_a_still_image(tmp_path):
-    assert is_video(tmp_path / "dance.gif")
-
-
-def test_a_still_image_is_shown_as_an_image_while_mp4_avi_mpg_are_played_as_video(tmp_path):
-    names = ["IMG_1.jpg", "IMG_2.png", "IMG_3.heic", "clip_4.mp4", "old_5.avi", "old_6.mpg"]
-
-    assert {name: is_video(tmp_path / name) for name in names} == {
-        "IMG_1.jpg": False,
-        "IMG_2.png": False,
-        "IMG_3.heic": False,
-        "clip_4.mp4": True,
-        "old_5.avi": True,
-        "old_6.mpg": True,
-    }
-
-
-def test_every_video_extension_design_md_lists_is_played_as_video_regardless_of_case(tmp_path):
-    names = ["a.mp4", "b.MOV", "c.avi", "d.mpg", "e.MPEG", "f.mkv", "g.m4v", "h.wmv", "i.3gp", "j.GIF", "k.MP4"]
-    assert [name for name in names if not is_video(tmp_path / name)] == []
+@pytest.mark.parametrize("name, played_as_video", [
+    ("dance.gif", True),
+    ("IMG_1.jpg", False), ("IMG_2.png", False), ("IMG_3.heic", False),
+    ("clip_4.mp4", True), ("old_5.avi", True), ("old_6.mpg", True),
+    ("a.mp4", True), ("b.MOV", True), ("c.avi", True), ("d.mpg", True), ("e.MPEG", True), ("f.mkv", True),
+    ("g.m4v", True), ("h.wmv", True), ("i.3gp", True), ("j.GIF", True), ("k.MP4", True),
+])
+def test_a_still_image_is_shown_as_an_image_while_every_video_extension_and_gif_is_played_as_video_in_any_case(
+        tmp_path, name, played_as_video):
+    assert is_video(tmp_path / name) is played_as_video
