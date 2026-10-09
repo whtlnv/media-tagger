@@ -50,6 +50,14 @@ def unready_viewer_on(qtbot, folder):
     return viewer
 
 
+def shown_launch_viewer(qtbot):
+    viewer = Viewer(player_options=SILENT)
+    qtbot.addWidget(viewer)
+    viewer.show()
+    qtbot.waitExposed(viewer)
+    return viewer
+
+
 def make_surface_ready(viewer):
     """The offscreen platform has no OpenGL, so stand in for the video surface's render context being created."""
     surface = viewer.findChild(MpvSurface)
@@ -67,9 +75,27 @@ def shown_labels(viewer):
     return [label for label in viewer.findChildren(QLabel) if label.isVisible()]
 
 
+def shown_texts(viewer):
+    return [label.text() for label in shown_labels(viewer)]
+
+
+def modal_opened_by_key(qtbot, viewer, key):
+    modals = []
+
+    def close_whatever_is_open():
+        modal = QApplication.activeModalWidget()
+        modals.append(modal)
+        if modal is not None:
+            modal.reject()
+
+    QTimer.singleShot(200, close_whatever_is_open)
+    qtbot.keyClick(viewer, key)
+    qtbot.waitUntil(lambda: len(modals) == 1)
+    return modals[0]
+
+
 def shows_unsupported_placeholder(viewer):
-    shown_texts = [label.text() for label in shown_labels(viewer)]
-    return any("unsupported" in text.lower() for text in shown_texts)
+    return any("unsupported" in text.lower() for text in shown_texts(viewer))
 
 
 def shows_video_surface(viewer):
@@ -555,12 +581,9 @@ def test_pressing_esc_closes_the_viewer_and_shuts_down_its_video_player(qtbot, t
 
 
 def test_a_viewer_opened_with_no_path_shows_only_the_launch_text(qtbot):
-    viewer = Viewer(player_options=SILENT)
-    qtbot.addWidget(viewer)
-    viewer.show()
-    qtbot.waitExposed(viewer)
+    viewer = shown_launch_viewer(qtbot)
 
-    assert [label.text() for label in shown_labels(viewer)] == ["Drop a folder or file here, or press `o` to open"]
+    assert shown_texts(viewer) == ["Drop a folder or file here, or press `o` to open"]
 
 
 def test_a_viewer_opened_on_a_folder_shows_its_first_item_and_not_the_launch_text(qtbot, tmp_path):
@@ -573,43 +596,19 @@ def test_a_viewer_opened_on_a_folder_shows_its_first_item_and_not_the_launch_tex
 
 
 def test_pressing_o_on_the_launch_screen_opens_a_folder_picker(qtbot):
-    viewer = Viewer(player_options=SILENT)
-    qtbot.addWidget(viewer)
-    viewer.show()
-    qtbot.waitExposed(viewer)
-    pickers = []
+    viewer = shown_launch_viewer(qtbot)
 
-    def close_whatever_is_open():
-        picker = QApplication.activeModalWidget()
-        pickers.append(picker)
-        if picker is not None:
-            picker.reject()
+    picker = modal_opened_by_key(qtbot, viewer, Qt.Key.Key_O)
 
-    QTimer.singleShot(200, close_whatever_is_open)
-    qtbot.keyClick(viewer, Qt.Key.Key_O)
-    qtbot.waitUntil(lambda: len(pickers) == 1)
-
-    assert isinstance(pickers[0], QFileDialog)
-    assert pickers[0].fileMode() == QFileDialog.FileMode.Directory
+    assert isinstance(picker, QFileDialog)
+    assert picker.fileMode() == QFileDialog.FileMode.Directory
 
 
 def test_pressing_a_key_other_than_o_on_the_launch_screen_opens_no_folder_picker_and_keeps_the_launch_text(qtbot):
-    viewer = Viewer(player_options=SILENT)
-    qtbot.addWidget(viewer)
-    viewer.show()
-    qtbot.waitExposed(viewer)
-    launch_text = [label.text() for label in shown_labels(viewer)]
-    modals = []
+    viewer = shown_launch_viewer(qtbot)
+    launch_text = shown_texts(viewer)
 
-    def close_whatever_is_open():
-        modal = QApplication.activeModalWidget()
-        modals.append(modal)
-        if modal is not None:
-            modal.reject()
+    modal = modal_opened_by_key(qtbot, viewer, Qt.Key.Key_X)
 
-    QTimer.singleShot(200, close_whatever_is_open)
-    qtbot.keyClick(viewer, Qt.Key.Key_X)
-    qtbot.waitUntil(lambda: len(modals) == 1)
-
-    assert modals == [None]
-    assert [label.text() for label in shown_labels(viewer)] == launch_text
+    assert modal is None
+    assert shown_texts(viewer) == launch_text
