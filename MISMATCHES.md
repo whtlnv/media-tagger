@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 05:28 · `src/mediatagger/test_library.py::test_a_lone_dash_in_an_entry_is_ignored`
+- Behavior: A lone `-` in an entry is ignored (`beach -` gives exactly `beach`)
+- Predicted: passes on first run — a lone `-` becomes a removal of the empty string `""`, and `str.split()` never produces an empty tag to remove
+- Actual: 1 passed
+- Type: passed unexpectedly
+- Resolution: The behavior already falls out of the existing tokenizing, so no input can make this test fail without breaking working code; it stays as a test-after pin and there's nothing for `/green` to implement.
+
 ## 2026-10-09 05:24 · `src/mediatagger/test_library.py::test_an_entry_of_only_spaces_leaves_the_files_tags_unchanged`
 - Behavior: An entry of only spaces leaves the file's tags unchanged
 - Predicted: passes on first run — `Library.enter` tokenizes with a no-argument `str.split()`, so `"   "` yields no words and nothing is added or removed

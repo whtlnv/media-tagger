@@ -12,7 +12,7 @@
 - [x] Removing is case-insensitive (`-Sunset` removes `sunset`)
 - [x] Extra spaces around and between entered tags are ignored (`  beach   family ` gives exactly `beach` and `family`)
 - [x] An entry of only spaces leaves the file's tags unchanged
-- [ ] A lone `-` in an entry is ignored (`beach -` gives exactly `beach`)
+- [x] A lone `-` in an entry is ignored (`beach -` gives exactly `beach`)
 - [ ] Hyphens join words into one tag (`day-at-beach` reports exactly `day-at-beach`)
 - [ ] A colon-namespaced tag of any depth is kept whole as one tag (`place:mexico:cancun` reports exactly `place:mexico:cancun`, not its parts)
 - [ ] A file's tags are reported again after its library is closed and opened again

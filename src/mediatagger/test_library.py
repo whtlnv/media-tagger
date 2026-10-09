@@ -206,3 +206,13 @@ def test_an_entry_of_only_spaces_leaves_the_files_tags_unchanged(tmp_path):
     library.enter(photo, "   ")
 
     assert library.tags(photo) == ["beach", "family"]
+
+
+def test_a_lone_dash_in_an_entry_is_ignored(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "beach.jpg"
+    photo.touch()
+
+    library.enter(photo, "beach -")
+
+    assert library.tags(photo) == ["beach"]
