@@ -1,5 +1,6 @@
 import shutil
 import sqlite3
+from contextlib import contextmanager
 
 from mediatagger.library import Library
 
@@ -10,6 +11,20 @@ def _read_meta(root):
         return dict(connection.execute("SELECT key, value FROM meta"))
     finally:
         connection.close()
+
+
+@contextmanager
+def _read_only_drive(root):
+    tags_db = root / ".mediatagger" / "tags.db"
+    tags_db.chmod(0o444)
+    tags_db.parent.chmod(0o555)
+    root.chmod(0o555)
+    try:
+        yield
+    finally:
+        root.chmod(0o755)
+        tags_db.parent.chmod(0o755)
+        tags_db.chmod(0o644)
 
 
 def _create_schema_version_1_library(root, drive_id):
@@ -360,16 +375,9 @@ def test_opening_a_schema_version_1_library_on_a_read_only_drive_writes_nothing_
     library_folder = tmp_path / ".mediatagger"
     tags_db = library_folder / "tags.db"
     before = tags_db.read_bytes()
-    tags_db.chmod(0o444)
-    library_folder.chmod(0o555)
-    tmp_path.chmod(0o555)
-    try:
+    with _read_only_drive(tmp_path):
         library = Library.open(tmp_path)
         tags = library.tags(photo)
-    finally:
-        tmp_path.chmod(0o755)
-        library_folder.chmod(0o755)
-        tags_db.chmod(0o644)
 
     assert tags == []
     assert tags_db.read_bytes() == before
