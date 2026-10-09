@@ -220,20 +220,18 @@ class Viewer(QWidget):
         read_only = not os.access(drive, os.W_OK)
         if not (drive / LIBRARY_FOLDER).exists():
             if read_only:
-                self._show_read_only(True)
-                self.library_label.setText(NO_LIBRARY_TEXT)
+                self._show_library_status(NO_LIBRARY_TEXT, read_only=True)
                 return
             if not self._agrees_to_create_library(drive):
-                self._show_read_only(False)
-                self.library_label.setText(DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format(drive.name))
+                self._show_library_status(DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format(drive.name), read_only=False)
                 return
             Library.create(drive)
-        self._show_read_only(read_only)
-        self.library_label.setText(LIBRARY_TEXT.format(drive.name))
+        self._show_library_status(LIBRARY_TEXT.format(drive.name), read_only)
 
-    def _show_read_only(self, read_only):
+    def _show_library_status(self, text, read_only):
         self.read_only_banner.setVisible(read_only)
         self.read_only_status.setVisible(read_only)
+        self.library_label.setText(text)
 
     @staticmethod
     def _never_holds_a_library(drive):
