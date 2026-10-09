@@ -37,7 +37,7 @@ def decode_fitted(path, bounds):
 
 
 class Viewer(QWidget):
-    def __init__(self, folder=None, player_options=None, folder_picker=None):
+    def __init__(self, path=None, player_options=None, folder_picker=None):
         super().__init__()
         self.folder_picker = folder_picker or self._pick_folder
         self.slideshow = None
@@ -52,10 +52,10 @@ class Viewer(QWidget):
         self.placeholder.setStyleSheet(LABEL_STYLE)
         self.setWindowState(Qt.WindowState.WindowFullScreen)
         self.setAcceptDrops(True)
-        if folder is None:
+        if path is None:
             self.placeholder.setText("Drop a folder or file here, or press `o` to open")
             return
-        self._open(folder)
+        self._open(path)
 
     def closeEvent(self, event):
         if self.surface:
