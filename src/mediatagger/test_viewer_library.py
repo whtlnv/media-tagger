@@ -8,7 +8,7 @@ from PySide6.QtCore import QPoint, QRect, Qt
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import QLabel, QLineEdit
 
-from mediatagger.library import Library
+from mediatagger.library import Library, tags_db_path
 from mediatagger.test_video import make_clip, wait_until_playing
 from mediatagger.test_viewer import centre_colour, make_image, make_surface_ready, shown_labels, shown_launch_viewer, shown_texts, shown_viewer_on, SILENT, shows_video_surface
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
@@ -978,3 +978,15 @@ def test_the_tags_cant_be_saved_here_message_leaves_the_status_bar_a_few_seconds
     qtbot.waitUntil(lambda: TAGS_CANT_BE_SAVED_HERE_TEXT not in status_bar_texts(viewer), timeout=10000)
 
     assert status_bar_texts(viewer) == [DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format("MEDIATAGGER")]
+
+
+def test_opening_a_folder_on_a_drive_whose_tags_db_is_garbage_still_shows_the_slideshow_and_says_the_library_cant_be_opened_viewing_only(qtbot, tmp_path):
+    from mediatagger.viewer import LIBRARY_CANT_BE_OPENED_TEXT
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    tags_db_path(drive).write_bytes(b"this is not a database" * 100)
+
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    assert centre_colour(viewer) == QColor("red")
+    assert status_bar_texts(viewer) == [LIBRARY_CANT_BE_OPENED_TEXT.format("MEDIATAGGER")]

@@ -1,4 +1,5 @@
 import os
+import sqlite3
 from pathlib import Path
 
 from PySide6.QtCore import QEventLoop, QPoint, QRect, Qt, QTimer
@@ -26,6 +27,7 @@ NO_LIBRARY_TEXT = "No library open"
 LIBRARY_TEXT = "Library: {}"
 NO_LIBRARY_VIEWING_ONLY_TEXT = "No library — viewing only"
 DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT = "{} has no tag library — viewing only"
+LIBRARY_CANT_BE_OPENED_TEXT = "Library on {} can't be opened — viewing only"
 CREATE_LIBRARY_QUESTION = "Create a tag library on {}?"
 READ_ONLY_BANNER_TEXT = "This drive is read-only — tags can't be saved"
 READ_ONLY_STATUS_TEXT = "Read-only — tags can't be saved"
@@ -344,7 +346,11 @@ class Viewer(QWidget):
                 return
             self.library = Library.create(drive)
         else:
-            self.library = Library.open(drive)
+            try:
+                self.library = Library.open(drive)
+            except sqlite3.DatabaseError:
+                self._show_library_status(LIBRARY_CANT_BE_OPENED_TEXT.format(drive.name), read_only=False)
+                return
         self._show_library_status(LIBRARY_TEXT.format(drive.name), read_only)
 
     def _show_library_status(self, text, read_only):
