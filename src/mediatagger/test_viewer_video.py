@@ -6,10 +6,10 @@ from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from mediatagger.mpv_surface import MpvSurface
 from mediatagger.test_video import make_clip, wait_until_playing
 from mediatagger.test_viewer import (
-    centre_colour, make_image, make_surface_ready, run_python_offscreen, shown_viewer_on, shows_unsupported_placeholder,
+    centre_colour, make_image, make_surface_ready, run_python_offscreen, shown_texts, shown_viewer_on, shows_unsupported_placeholder,
     shows_video_surface, SILENT, unready_viewer_on, wait_until_loaded,
 )
-from mediatagger.viewer import Viewer
+from mediatagger.viewer import UNSUPPORTED_TEXT, Viewer
 
 
 def test_a_viewer_opened_on_a_folder_whose_first_item_is_a_video_shows_a_video_surface_loaded_with_that_clip(qtbot, tmp_path):
@@ -156,7 +156,7 @@ def test_a_viewer_opened_on_a_folder_whose_first_item_is_a_corrupt_video_shows_t
     make_image(tmp_path / "IMG_2.png", "red")
     viewer = shown_viewer_on(qtbot, tmp_path)
 
-    qtbot.waitUntil(lambda: shows_unsupported_placeholder(viewer), timeout=5000)
+    qtbot.waitUntil(lambda: shown_texts(viewer) == [UNSUPPORTED_TEXT], timeout=5000)
     assert not shows_video_surface(viewer)
 
 
