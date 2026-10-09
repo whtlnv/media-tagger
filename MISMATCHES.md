@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 09:24 · `src/mediatagger/test_viewer_library.py::test_pressing_t_on_a_video_shows_the_tag_prompt_and_its_shown_tags_above_the_video_surface`
+- Behavior: Pressing `t` on a video item shows the tag prompt above the video surface
+- Predicted: AssertionError — `childAt` at the prompt's centre returns the `MpvSurface` (low confidence: the prompt is created after the surface)
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: The test is not vacuous. Lowering the prompt and its tags label below the surface makes it fail with `childAt` returning `MpvSurface`. The behavior already holds because `_open_tag_prompt` creates the prompt and its tags label as new children after the surface exists, and Qt stacks newer siblings on top. No failing test is possible without contriving one, so the test stays as a passing pin and the TODO item needs no production change.
+
 ## 2026-10-09 08:59 · `src/mediatagger/test_viewer_library.py::test_arrow_keys_in_the_tag_prompt_open_over_a_paused_video_neither_move_the_slideshow_nor_seek_it`
 - Behavior: While the tag prompt is open, `←`, `→`, `↑` and `↓` do not move the slideshow or seek a video
 - Predicted: AssertionError on the `↑` iteration — the line edit ignores `↑`, so it reaches `Viewer.keyPressEvent` and seeks the paused video from 20 s to ~30 s

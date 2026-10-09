@@ -672,3 +672,19 @@ def test_pressing_esc_in_the_tag_prompt_also_hides_its_shown_tags(qtbot, tmp_pat
     qtbot.keyClick(viewer.focusWidget(), Qt.Key.Key_Escape)
 
     assert shown_labels(viewer) == []
+
+
+def test_pressing_t_on_a_video_shows_the_tag_prompt_and_its_shown_tags_above_the_video_surface(qtbot, tmp_path):
+    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    [folder] = make_folders(drive, "Clips")
+    make_clip(folder / "IMG_1.mp4")
+    Library.create(drive).enter(folder / "IMG_1.mp4", "beach family")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    qtbot.waitUntil(lambda: shows_video_surface(viewer))
+
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    [prompt] = visible_tag_prompts(viewer)
+    [tags] = [label for label in shown_labels(viewer) if label.text() == "beach family"]
+    assert viewer.childAt(prompt.geometry().center()) is prompt
+    assert viewer.childAt(tags.geometry().center()) is tags
