@@ -645,3 +645,17 @@ def test_pressing_esc_in_the_tag_prompt_closes_it_leaving_the_viewer_open_and_th
     assert visible_tag_prompt_texts(viewer) == []
     assert Library.open(drive).tags(folder / "IMG_1.png") == ["beach", "family"]
     assert viewer.isVisible()
+
+
+def test_pressing_esc_after_esc_has_closed_the_tag_prompt_closes_the_viewer(qtbot, tmp_path):
+    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    Library.create(drive)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+    qtbot.keyClick(viewer.focusWidget(), Qt.Key.Key_Escape)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Escape)
+
+    assert not viewer.isVisible()
