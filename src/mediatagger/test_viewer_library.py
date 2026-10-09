@@ -565,6 +565,29 @@ def test_the_tag_prompts_shown_tags_are_styled_like_the_info_overlay(qtbot, tmp_
     assert tags.styleSheet() == viewer.info.styleSheet()
 
 
+def test_the_tag_prompts_input_reads_as_a_text_box_with_a_light_border_and_a_lighter_background_than_its_shown_tags(qtbot, tmp_path):
+    drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "black")
+    Library.open(drive).enter(folder / "IMG_1.png", "beach family")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    [prompt] = visible_tag_prompts(viewer)
+    [tags] = [label for label in shown_labels(viewer) if label.text() == "beach family"]
+    frame = viewer.grab().toImage()
+    ratio = frame.devicePixelRatio()
+    def colour_at(widget, x, y):
+        point = widget.mapTo(viewer, QPoint(x, y))
+        return frame.pixelColor(int(point.x() * ratio), int(point.y() * ratio))
+    border = colour_at(prompt, prompt.width() // 2, 0)
+    input_background = colour_at(prompt, prompt.width() - 4, prompt.height() // 2)
+    tags_background = colour_at(tags, tags.width() - 4, tags.height() // 2)
+    assert border.lightness() > 150
+    assert input_background.lightness() > tags_background.lightness()
+
+
 def test_typing_space_i_p_f_m_in_the_open_tag_prompt_goes_into_it_and_leaves_the_slideshow_and_info_overlay_unchanged(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     make_image(folder / "IMG_2.png", "blue")

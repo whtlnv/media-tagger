@@ -15,6 +15,7 @@ PLAYER_OPTIONS = {"vo": "libmpv"}
 VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up", Qt.Key.Key_Down: "Down", Qt.Key.Key_Return: "Enter"}
 # Explicit colours: the desktop theme's default text colour may be black, which vanishes on a black background.
 LABEL_STYLE = "color: white; background-color: rgba(0, 0, 0, 160); padding: 8px 12px; border-radius: 6px; font-size: 18px;"
+TAG_INPUT_STYLE = "color: white; background-color: rgba(64, 64, 64, 220); border: 1px solid rgb(200, 200, 200); padding: 8px 12px; border-radius: 6px; font-size: 18px;"
 CORNER_MARGIN = 16
 TAG_PROMPT_WIDTH = 600
 SLIDESHOW_KEYS = {Qt.Key.Key_Left: "Left", Qt.Key.Key_Right: "Right", Qt.Key.Key_Space: "Space"}
@@ -87,7 +88,7 @@ class Viewer(QWidget):
         self._decoded_key = self._decoded = None
         self._tagging = None  # (library, path) of the item being tagged while the tag prompt is open
         self.tag_input = TagInput(self)
-        self.tag_input.setStyleSheet(LABEL_STYLE)
+        self.tag_input.setStyleSheet(TAG_INPUT_STYLE)
         self.tag_input.returnPressed.connect(self._record_tags)
         self.tag_input.hide()
         self.prompt_tags = overlay_label("", self)
