@@ -1,9 +1,11 @@
 import sqlite3
 import uuid
 
+LIBRARY_FOLDER = ".mediatagger"
+
 
 def _tags_db(root):
-    return root / ".mediatagger" / "tags.db"
+    return root / LIBRARY_FOLDER / "tags.db"
 
 
 def _write_meta(tags_db, **meta):
