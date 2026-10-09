@@ -181,16 +181,33 @@ def test_in_the_suggestion_popup_down_twice_highlights_the_second_suggestion_and
     assert (highlighted_after_down_twice, suggestions.currentIndex().data()) == (second, first)
 
 
-def test_tab_accepts_the_highlighted_suggestion_replacing_only_the_word_being_typed_beach_fam_down_tab_leaves_beach_family_and_closes_the_popup(qtbot, tmp_path):
-    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach family")
-    type_in_tag_prompt(qtbot, viewer, "beach fam")
+@pytest.mark.parametrize(
+    "viewed_item_tags, other_item_tags, typed, expected",
+    [
+        ("", "beach family", "beach fam", "beach family"),
+        ("sunset", "", "-s", "-sunset"),
+        ("", "family", "fam", "family"),
+    ],
+    ids=[
+        "replacing_only_the_word_being_typed_beach_fam_down_tab_leaves_beach_family",
+        "a_removal_suggestion_keeps_the_minus_on_an_item_tagged_sunset_minus_s_down_tab_leaves_minus_sunset",
+        "the_only_word_in_the_prompt_leaves_no_leading_space_fam_down_tab_leaves_exactly_family",
+    ],
+)
+def test_tab_accepts_the_highlighted_suggestion_into_the_prompt_and_closes_the_popup(qtbot, tmp_path, viewed_item_tags, other_item_tags, typed, expected):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    library = Library.open(drive)
+    library.enter(folder / "IMG_1.png", viewed_item_tags)
+    library.enter(folder / "IMG_2.png", other_item_tags)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    type_in_tag_prompt(qtbot, viewer, typed)
     [suggestions] = visible_suggestion_lists()
 
     qtbot.keyClick(suggestions, Qt.Key.Key_Down)
     qtbot.keyClick(suggestions, Qt.Key.Key_Tab)
 
-    [prompt] = visible_tag_prompts(viewer)
-    assert (prompt.text(), visible_suggestion_lists()) == ("beach family", [])
+    assert (visible_tag_prompt_texts(viewer), visible_suggestion_lists()) == ([expected], [])
 
 
 def test_enter_accepts_the_highlighted_suggestion_without_saving_beach_fam_down_enter_leaves_beach_family_in_the_open_prompt_and_the_items_tags_unchanged(qtbot, tmp_path):
@@ -204,20 +221,6 @@ def test_enter_accepts_the_highlighted_suggestion_without_saving_beach_fam_down_
     assert (visible_tag_prompt_texts(viewer), Library.open(drive).tags(folder / "IMG_1.png")) == (["beach family"], [])
 
 
-def test_accepting_a_removal_suggestion_keeps_the_minus_on_an_item_tagged_sunset_minus_s_down_tab_leaves_minus_sunset_in_the_prompt(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    Library.open(drive).enter(folder / "IMG_1.png", "sunset")
-    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
-    type_in_tag_prompt(qtbot, viewer, "-s")
-    [suggestions] = visible_suggestion_lists()
-
-    qtbot.keyClick(suggestions, Qt.Key.Key_Down)
-    qtbot.keyClick(suggestions, Qt.Key.Key_Tab)
-
-    [prompt] = visible_tag_prompts(viewer)
-    assert prompt.text() == "-sunset"
-
-
 def test_esc_with_the_suggestion_popup_open_closes_only_the_popup_leaving_the_prompt_open_with_its_text_and_the_viewer_running(qtbot, tmp_path):
     drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach family")
     type_in_tag_prompt(qtbot, viewer, "beach fam")
@@ -226,17 +229,6 @@ def test_esc_with_the_suggestion_popup_open_closes_only_the_popup_leaving_the_pr
     qtbot.keyClick(suggestions, Qt.Key.Key_Escape)
 
     assert (visible_suggestion_lists(), visible_tag_prompt_texts(viewer), viewer.isVisible()) == ([], ["beach fam"], True)
-
-
-def test_accepting_a_suggestion_for_the_only_word_in_the_prompt_leaves_no_leading_space_fam_down_tab_leaves_exactly_family(qtbot, tmp_path):
-    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "family")
-    type_in_tag_prompt(qtbot, viewer, "fam")
-    [suggestions] = visible_suggestion_lists()
-
-    qtbot.keyClick(suggestions, Qt.Key.Key_Down)
-    qtbot.keyClick(suggestions, Qt.Key.Key_Tab)
-
-    assert visible_tag_prompt_texts(viewer) == ["family"]
 
 
 def test_esc_after_the_suggestion_popup_has_been_closed_cancels_the_prompt_leaving_the_items_tags_unchanged(qtbot, tmp_path):
