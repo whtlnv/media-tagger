@@ -1,3 +1,5 @@
+import pytest
+
 from mediatagger.slideshow import Slideshow
 from mediatagger.test_folder import touch
 
@@ -14,31 +16,19 @@ def test_opening_a_file_path_shows_that_file(tmp_path):
     assert Slideshow.open(tmp_path / "IMG_2.jpg").current == tmp_path / "IMG_2.jpg"
 
 
-def test_pressing_space_shows_the_next_item(tmp_path):
+@pytest.mark.parametrize("opened, key, shown", [
+    pytest.param("", "Space", "IMG_2.jpg", id="space shows the next item"),
+    pytest.param("", "Right", "IMG_2.jpg", id="right arrow shows the next item"),
+    pytest.param("IMG_2.jpg", "Left", "IMG_1.jpg", id="left arrow shows the previous item"),
+    pytest.param("", "Left", "IMG_1.jpg", id="stepping back on the first item keeps showing it"),
+])
+def test_pressing_a_navigation_key_steps_through_the_slideshow(tmp_path, opened, key, shown):
     touch(tmp_path, "IMG_1.jpg", "IMG_2.jpg", "IMG_3.jpg")
-    slideshow = Slideshow.open(tmp_path)
+    slideshow = Slideshow.open(tmp_path / opened)
 
-    slideshow.press("Space")
+    slideshow.press(key)
 
-    assert slideshow.current == tmp_path / "IMG_2.jpg"
-
-
-def test_pressing_right_arrow_shows_the_next_item(tmp_path):
-    touch(tmp_path, "IMG_1.jpg", "IMG_2.jpg", "IMG_3.jpg")
-    slideshow = Slideshow.open(tmp_path)
-
-    slideshow.press("Right")
-
-    assert slideshow.current == tmp_path / "IMG_2.jpg"
-
-
-def test_pressing_left_arrow_shows_the_previous_item(tmp_path):
-    touch(tmp_path, "IMG_1.jpg", "IMG_2.jpg", "IMG_3.jpg")
-    slideshow = Slideshow.open(tmp_path / "IMG_2.jpg")
-
-    slideshow.press("Left")
-
-    assert slideshow.current == tmp_path / "IMG_1.jpg"
+    assert slideshow.current == tmp_path / shown
 
 
 def test_stepping_from_an_opened_file_moves_relative_to_that_file(tmp_path):
@@ -62,15 +52,6 @@ def test_stepping_forward_on_the_last_item_keeps_showing_it(tmp_path):
 
     slideshow.press("Right")
     assert slideshow.current == tmp_path / "IMG_3.jpg"
-
-
-def test_stepping_back_on_the_first_item_keeps_showing_it(tmp_path):
-    touch(tmp_path, "IMG_1.jpg", "IMG_2.jpg", "IMG_3.jpg")
-    slideshow = Slideshow.open(tmp_path)
-
-    slideshow.press("Left")
-
-    assert slideshow.current == tmp_path / "IMG_1.jpg"
 
 
 def test_the_info_overlay_is_hidden_when_the_viewer_opens(tmp_path):
