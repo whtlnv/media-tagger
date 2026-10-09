@@ -428,3 +428,12 @@ def test_after_a_failed_save_a_successful_save_takes_the_couldnt_save_message_of
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
     assert (Library.open(drive).tags(folder / "IMG_1.png"), "Couldn't save tags — is the drive still connected?" in status_bar_texts(viewer)) == (["beach"], False)
+
+
+def test_a_word_already_entered_in_upper_case_is_not_suggested_again_typing_upper_case_beach_b_lists_bird_and_not_beach(qtbot, tmp_path):
+    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach bird")
+
+    type_in_tag_prompt(qtbot, viewer, "BEACH b")
+
+    [suggestions] = visible_suggestion_lists(viewer)
+    assert listed(suggestions) == ["bird"]
