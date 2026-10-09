@@ -5,6 +5,16 @@ def _tags_db(root):
     return root / ".mediatagger" / "tags.db"
 
 
+def _write_meta(tags_db, **meta):
+    connection = sqlite3.connect(tags_db)
+    with connection:
+        connection.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
+        connection.executemany(
+            "INSERT INTO meta (key, value) VALUES (?, ?)", meta.items()
+        )
+    connection.close()
+
+
 class Library:
     schema_version = 1
 
@@ -16,14 +26,7 @@ class Library:
         tags_db = _tags_db(root)
         tags_db.parent.mkdir()
         drive_id = str(root)
-        connection = sqlite3.connect(tags_db)
-        with connection:
-            connection.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
-            connection.executemany(
-                "INSERT INTO meta (key, value) VALUES (?, ?)",
-                [("drive_id", drive_id), ("schema_version", str(cls.schema_version))],
-            )
-        connection.close()
+        _write_meta(tags_db, drive_id=drive_id, schema_version=str(cls.schema_version))
         return cls(drive_id)
 
     @classmethod
