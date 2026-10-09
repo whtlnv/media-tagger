@@ -22,3 +22,15 @@ def test_a_newly_created_library_records_its_schema_version_alongside_its_drive_
     assert schema_version
     assert reopened.schema_version == schema_version
     assert reopened.drive_id == created.drive_id
+
+
+def test_two_libraries_created_on_different_drives_report_different_drive_ids(tmp_path):
+    first_drive = tmp_path / "first"
+    second_drive = tmp_path / "second"
+    first_drive.mkdir()
+    second_drive.mkdir()
+
+    first = Library.create(first_drive)
+    second = Library.create(second_drive)
+
+    assert first.drive_id != second.drive_id
