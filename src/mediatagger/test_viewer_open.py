@@ -394,6 +394,29 @@ def test_opening_a_folder_on_a_writable_drive_that_has_a_tag_library_shows_no_re
     assert READ_ONLY_BANNER_TEXT not in shown_texts(viewer)
 
 
+def test_after_viewing_a_read_only_drive_dropping_a_folder_from_a_writable_drive_without_a_tag_library_and_declining_hides_the_read_only_banner_and_status(qtbot, tmp_path):
+    read_only_drive, viewed = drive_with_a_tag_library_holding_one_image(tmp_path)
+    [writable_drive] = make_folders(tmp_path, "BACKUP")
+    [dropped] = make_folders(writable_drive, "Videos")
+    make_image(dropped / "IMG_1.png", "green")
+    with made_read_only(read_only_drive):
+        viewer = Viewer(
+            viewed, player_options=SILENT, is_mount_point=lambda path: path in (read_only_drive, writable_drive),
+            ask_to_create_library=lambda question: False,
+        )
+        qtbot.addWidget(viewer)
+        viewer.resize(400, 300)
+        viewer.show()
+        qtbot.waitExposed(viewer)
+
+        drag_and_drop_onto(viewer, dropped)
+        shown = shown_texts(viewer)
+        status = status_bar_texts(viewer)
+
+    assert READ_ONLY_BANNER_TEXT not in shown
+    assert READ_ONLY_STATUS_TEXT not in status
+
+
 def test_a_viewer_opened_on_a_folder_shows_its_first_item_and_not_the_launch_text(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red")
     make_image(tmp_path / "IMG_2.png", "blue")

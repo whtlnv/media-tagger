@@ -195,6 +195,8 @@ class Viewer(QWidget):
                 self.read_only_banner.show()
                 return
             if not self._agrees_to_create_library(drive):
+                self.read_only_banner.hide()
+                self.read_only_status.hide()
                 self.library_label.setText(DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format(drive.name))
                 return
             Library.create(drive)
