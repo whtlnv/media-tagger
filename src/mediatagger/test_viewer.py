@@ -3,7 +3,7 @@ import subprocess
 import sys
 
 import pytest
-from PySide6.QtCore import QRect, Qt
+from PySide6.QtCore import QRect, QSize, Qt
 from PySide6.QtGui import QColor, QImage
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QLabel
@@ -11,7 +11,7 @@ from PySide6.QtWidgets import QLabel
 from mediatagger.test_video import make_clip, wait_until_playing
 
 from mediatagger.mpv_surface import MpvSurface
-from mediatagger.viewer import Viewer
+from mediatagger.viewer import Viewer, decode_fitted
 
 
 def make_image(path, color):
@@ -512,3 +512,13 @@ def test_a_viewer_opened_on_a_folder_with_no_media_says_so_at_the_centre_and_ign
     shown = [label for label in viewer.findChildren(QLabel) if label.isVisible()]
     assert [label.text() for label in shown] == ["No images or videos in Holidays"]
     assert (shown[0].geometry().center() - viewer.rect().center()).manhattanLength() <= 2
+
+
+def test_an_image_larger_than_the_window_is_decoded_at_most_at_the_window_size_keeping_its_shape(tmp_path):
+    big = QImage(4000, 3000, QImage.Format.Format_RGB32)
+    big.fill(QColor("red"))
+    big.save(str(tmp_path / "IMG_1.jpg"))
+
+    decoded = decode_fitted(tmp_path / "IMG_1.jpg", QSize(400, 400))
+
+    assert decoded.size() == QSize(400, 300)

@@ -1,5 +1,5 @@
 from PySide6.QtCore import QPoint, QRect, Qt
-from PySide6.QtGui import QImage, QPainter
+from PySide6.QtGui import QImage, QImageReader, QPainter
 from PySide6.QtWidgets import QLabel, QWidget
 
 from mediatagger.folder import is_video
@@ -19,6 +19,15 @@ def fitted_rect(size, bounds):
     target = QRect(QPoint(), size.scaled(bounds.size(), Qt.AspectRatioMode.KeepAspectRatio))
     target.moveCenter(bounds.center())
     return target
+
+
+def decode_fitted(path, bounds):
+    """Decode an image no larger than bounds, so a 12 MP photo is never fully decoded just to be shrunk."""
+    reader = QImageReader(str(path))
+    size = reader.size()
+    if size.isValid() and (size.width() > bounds.width() or size.height() > bounds.height()):
+        reader.setScaledSize(size.scaled(bounds, Qt.AspectRatioMode.KeepAspectRatio))
+    return reader.read()
 
 
 class Viewer(QWidget):
