@@ -87,9 +87,7 @@ class Viewer(QWidget):
             return
         if self.slideshow is None:
             if event.key() == Qt.Key.Key_O:
-                picker = QFileDialog(self)
-                picker.setFileMode(QFileDialog.FileMode.Directory)
-                picker.exec()
+                self._pick_folder()
             return
         if event.key() == Qt.Key.Key_I:
             self.slideshow.press("i")
@@ -112,6 +110,11 @@ class Viewer(QWidget):
             self.showNormal()
         else:
             self.showFullScreen()
+
+    def _pick_folder(self):
+        picker = QFileDialog(self)
+        picker.setFileMode(QFileDialog.FileMode.Directory)
+        picker.exec()
 
     def _show_info(self):
         self.info.setText(self.slideshow.overlay or "")
