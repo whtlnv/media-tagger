@@ -67,5 +67,5 @@
 - [x] In the viewer, pressing `Enter` on a video toggles its pause
 - [x] Running the shipped `mediatagger <folder>` command opens the fullscreen viewer on that folder's first item
 - [x] The installed `mediatagger <folder>` executable, started on its own from a shell (no QApplication created beforehand), keeps running with its viewer open instead of crashing or exiting
-- [ ] Running the shipped `mediatagger <file>` command opens the fullscreen viewer on that file
+- [x] Running the shipped `mediatagger <file>` command opens the fullscreen viewer on that file
 - [ ] Acceptance: a screenshot of `mediatagger <folder>` on the Mac shows an image fitted to the screen with the `i` overlay reading `1 / N`
