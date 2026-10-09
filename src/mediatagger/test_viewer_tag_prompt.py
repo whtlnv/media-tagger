@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QAbstractItemView, QApplication
 
 from mediatagger.library import Library
 from mediatagger.test_video import wait_until_playing
-from mediatagger.test_viewer import make_image, make_surface_ready
+from mediatagger.test_viewer import light_theme, make_image, make_surface_ready
 from mediatagger.test_viewer_library import (
     drive_with_a_tag_library_holding_one_clip, drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, make_tag_library_drive, shown_viewer_on_drive, shown_viewer_on_drives, visible_tag_prompt_texts, visible_tag_prompts,
 )
@@ -324,3 +324,24 @@ def test_on_a_paused_video_with_the_suggestion_popup_open_down_twice_and_up_high
     qtbot.wait(300)  # mpv seeks asynchronously, so give a stray seek time to land
 
     assert (suggestions.currentIndex().data(), engine.time_pos) == (first, pytest.approx(20, abs=1))
+
+
+def test_the_suggestion_popup_over_a_white_image_shows_light_text_on_a_dark_background_as_the_overlays_do(qtbot, tmp_path):
+    drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_image(folder / "IMG_1.png", "white")
+    make_image(folder / "IMG_2.png", "blue")
+    Library.open(drive).enter(folder / "IMG_2.png", "beach bird")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    light_theme(viewer)
+
+    type_in_tag_prompt(qtbot, viewer, "b")
+
+    [suggestions] = visible_suggestion_lists(viewer)
+    frame = suggestions.viewport().grab().toImage()
+    ratio = frame.devicePixelRatio()
+    first_row = suggestions.visualRect(suggestions.model().index(0, 0))
+    colours = [frame.pixelColor(int(x * ratio), int(y * ratio)) for x in range(first_row.left(), first_row.right()) for y in range(first_row.top(), first_row.bottom())]
+    background = frame.pixelColor(int((first_row.right() - 4) * ratio), int(first_row.center().y() * ratio))
+    assert background.lightness() < 100  # dark background
+    assert any(colour.lightness() > 200 and colour.saturation() < 40 for colour in colours)  # light text

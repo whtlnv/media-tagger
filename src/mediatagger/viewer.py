@@ -17,6 +17,7 @@ PLAYER_OPTIONS = {"vo": "libmpv"}
 VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up", Qt.Key.Key_Down: "Down", Qt.Key.Key_Return: "Enter"}
 # Explicit colours: the desktop theme's default text colour may be black, which vanishes on a black background.
 LABEL_STYLE = "color: white; background-color: rgba(0, 0, 0, 160); padding: 8px 12px; border-radius: 6px; font-size: 18px;"
+SUGGESTION_POPUP_STYLE = "color: white; background-color: rgb(64, 64, 64);"
 TAG_INPUT_STYLE = "color: white; background-color: rgba(64, 64, 64, 220); border: 1px solid rgb(200, 200, 200); padding: 8px 12px; border-radius: 6px; font-size: 18px;"
 CORNER_MARGIN = 16
 TAG_PROMPT_WIDTH = 600
@@ -144,6 +145,7 @@ class Viewer(QWidget):
         self.tag_input.textEdited.connect(self._offer_suggestions)
         self.tag_input.setCompleter(LastWordCompleter([], self.tag_input))
         self.tag_input.completer().setCaseSensitivity(Qt.CaseInsensitive)
+        self.tag_input.completer().popup().setStyleSheet(SUGGESTION_POPUP_STYLE)
         self.tag_input.hide()
         self.prompt_tags = overlay_label("", self)
         self.prompt_tags.hide()
