@@ -18,7 +18,8 @@
 - [x] A file's tags are reported again after its library is closed and opened again
 - [x] A file's tags survive the drive being mounted at a different path: after the library's `.mediatagger` folder and the file (at the same place below the root) are copied to another root, the library there reports the same tags for the file
 - [x] A library whose `tags.db` holds only its drive id and schema version (as libraries created before tagging existed do) can record and report a file's tags
-- [ ] Opening a library whose `tags.db` records schema version 1 upgrades it in place: afterwards its `meta` table records schema version 2 and its drive id is unchanged
+- [ ] Opening a library whose `tags.db` records schema version 1 (a `meta` table only, as Phase 3 created) upgrades it in place to schema version 2: afterwards `meta` records schema version 2, the drive id is unchanged, and `tags.db` holds the tables `items` (id, rel_path unique, kind), `tags` (id, name unique) and `item_tags` (item_id, tag_id); a newly created library is created at schema version 2 with the same tables
+- [ ] Opening a schema-version-1 library on a read-only drive does not fail: nothing is written and its files report no tags
 - [ ] A tag change is visible to a separate connection to `tags.db` as soon as it is entered, while the library stays open (each change is committed at once)
 - [ ] A library's `tags.db` uses SQLite's rollback journal, not WAL (it lives on removable exFAT media)
 - [ ] In the viewer on a writable drive with a tag library, pressing `t` opens a tag prompt that shows the current file's tags (e.g. `beach family`)
