@@ -17,6 +17,7 @@ LABEL_STYLE = "color: white; background-color: rgba(0, 0, 0, 160); padding: 8px 
 CORNER_MARGIN = 16
 SLIDESHOW_KEYS = {Qt.Key.Key_Left: "Left", Qt.Key.Key_Right: "Right", Qt.Key.Key_Space: "Space"}
 UNSUPPORTED_TEXT = "Unsupported"
+STATUS_BAR_HEIGHT = 32
 
 
 def fitted_rect(size, bounds):
@@ -58,6 +59,7 @@ class Viewer(QWidget):
         self.info.hide()
         self.placeholder = QLabel(UNSUPPORTED_TEXT, self)
         self.placeholder.setStyleSheet(LABEL_STYLE)
+        self.status_bar = QWidget(self)
         self.setWindowState(Qt.WindowState.WindowFullScreen)
         self.setAcceptDrops(True)
         if path is None:
@@ -75,6 +77,7 @@ class Viewer(QWidget):
     def resizeEvent(self, event):
         if self.surface:
             self.surface.setGeometry(self.rect())
+        self.status_bar.setGeometry(0, self.height() - STATUS_BAR_HEIGHT, self.width(), STATUS_BAR_HEIGHT)
         self._centre(self.placeholder)
 
     def _centre(self, label):

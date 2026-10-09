@@ -600,3 +600,15 @@ def test_pressing_esc_closes_the_viewer_and_shuts_down_its_video_player(qtbot, t
 
     assert not viewer.isVisible()
     assert engine.handle is None
+
+
+def test_a_slideshow_shows_a_status_bar_across_the_bottom_edge_of_the_window_over_an_image_that_still_fills_the_window(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+
+    bar = viewer.childAt(viewer.width() // 2, viewer.height() - 2)
+    assert bar is not None and bar.isVisible()
+    assert bar.geometry().left() == 0 and bar.geometry().right() == viewer.rect().right()
+    assert bar.geometry().bottom() == viewer.rect().bottom()
+    assert bar.height() < viewer.height() // 4
+    assert centre_colour(viewer) == QColor("red")
