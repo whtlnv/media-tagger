@@ -109,9 +109,7 @@ class Viewer(QWidget):
         key = SLIDESHOW_KEYS[event.key()]
         self.slideshow.press(key)
         self.video_player.press(key)
-        self._show_current()
-        self._show_info()
-        self.update()
+        self._refresh()
 
     def _toggle_fullscreen(self):
         if self.isFullScreen():
@@ -135,6 +133,9 @@ class Viewer(QWidget):
             return
         if showing_info:
             self.slideshow.press("i")
+        self._refresh()
+
+    def _refresh(self):
         self._show_current()
         self._show_info()
         self.update()
