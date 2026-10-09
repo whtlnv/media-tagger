@@ -1,5 +1,5 @@
 from PySide6.QtCore import QPoint, QRect, Qt
-from PySide6.QtGui import QImage, QImageReader, QPainter
+from PySide6.QtGui import QImageReader, QPainter
 from PySide6.QtWidgets import QLabel, QWidget
 
 from mediatagger.folder import is_video
@@ -36,6 +36,7 @@ class Viewer(QWidget):
         self.slideshow = Slideshow.open(folder)
         self.video_player = VideoPlayer(new_engine(**{**PLAYER_OPTIONS, **(player_options or {})}))
         self.surface = None
+        self._decoded_key = self._decoded = None
         self.info = QLabel(self)
         self.info.setStyleSheet(LABEL_STYLE)
         self.info.move(CORNER_MARGIN, CORNER_MARGIN)
@@ -108,7 +109,11 @@ class Viewer(QWidget):
         self.info.setVisible(bool(self.slideshow.overlay))
 
     def _current_image(self):
-        return QImage(str(self.slideshow.current))
+        """The current item decoded to fit the window: once per item and window size, not on every paint."""
+        key = (self.slideshow.current, self.size())
+        if self._decoded_key != key:
+            self._decoded_key, self._decoded = key, decode_fitted(self.slideshow.current, self.size())
+        return self._decoded
 
     def _play(self, clip):
         if not self.video_player.show(clip):

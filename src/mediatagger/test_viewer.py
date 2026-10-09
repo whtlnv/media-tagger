@@ -522,3 +522,23 @@ def test_an_image_larger_than_the_window_is_decoded_at_most_at_the_window_size_k
     decoded = decode_fitted(tmp_path / "IMG_1.jpg", QSize(400, 400))
 
     assert decoded.size() == QSize(400, 300)
+
+
+def test_the_viewer_decodes_the_shown_image_once_however_often_it_repaints(qtbot, tmp_path, monkeypatch):
+    make_image(tmp_path / "IMG_1.png", "red")
+    decodes = []
+
+    def counted_decode_fitted(path, bounds):
+        decodes.append((path, bounds))
+        return decode_fitted(path, bounds)
+
+    monkeypatch.setattr("mediatagger.viewer.decode_fitted", counted_decode_fitted)
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    assert decodes and all(path == tmp_path / "IMG_1.png" for path, _ in decodes)
+    decodes.clear()
+
+    for _ in range(3):
+        viewer.repaint()
+
+    assert decodes == []
+    assert centre_colour(viewer) == QColor("red")
