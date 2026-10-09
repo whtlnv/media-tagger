@@ -146,3 +146,18 @@ def test_pressing_p_in_the_viewer_on_a_video_pauses_it_and_up_seeks_it_forward(q
     before = engine.time_pos
     qtbot.keyClick(viewer, Qt.Key.Key_Up)
     assert engine.time_pos == pytest.approx(before + 10, abs=1)
+
+
+def test_a_viewer_draws_a_wide_red_image_fitted_to_a_square_window_with_black_above_and_below_it(qtbot, tmp_path):
+    image = QImage(200, 100, QImage.Format.Format_RGB32)
+    image.fill(QColor("red"))
+    image.save(str(tmp_path / "IMG_1.png"))
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    viewer.resize(300, 300)
+    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+
+    frame = viewer.grab().toImage()
+    middle = frame.width() // 2
+    assert frame.pixelColor(middle, frame.height() // 2) == QColor("red")
+    assert frame.pixelColor(middle, 10) == QColor("black")
+    assert frame.pixelColor(middle, frame.height() - 10) == QColor("black")

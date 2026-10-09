@@ -51,7 +51,7 @@
 - [x] In the viewer, pressing `→` on a red image followed by a blue image paints blue at the centre, and `←` from there paints red again
 - [x] In the viewer, pressing `Space` on an image followed by a video shows the video surface and plays that clip
 - [x] In the viewer, pressing `p` on a video item pauses it, and `↑` on a video item seeks it forward
-- [ ] In the viewer, an image is drawn fitted to the window with its aspect ratio kept and black around it (a wide red image in a square window leaves black above and below it)
+- [x] In the viewer, an image is drawn fitted to the window with its aspect ratio kept and black around it (a wide red image in a square window leaves black above and below it)
 - [ ] In the viewer, pressing `i` draws the info overlay (filename and `1 / N`) on top of the shown item, and pressing `i` again removes it
 - [ ] The viewer opens fullscreen
 - [ ] Pressing `f` in fullscreen leaves fullscreen

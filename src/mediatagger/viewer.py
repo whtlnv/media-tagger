@@ -1,5 +1,5 @@
 import mpv
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QPoint, QRect, Qt
 from PySide6.QtGui import QImage, QPainter
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QWidget
@@ -20,7 +20,12 @@ class Viewer(QWidget):
         self._show_current()
 
     def paintEvent(self, event):
-        QPainter(self).drawImage(self.rect(), QImage(str(self.slideshow.current)))
+        painter = QPainter(self)
+        painter.fillRect(self.rect(), Qt.GlobalColor.black)
+        image = QImage(str(self.slideshow.current))
+        target = QRect(QPoint(), image.size().scaled(self.size(), Qt.AspectRatioMode.KeepAspectRatio))
+        target.moveCenter(self.rect().center())
+        painter.drawImage(target, image)
 
     def keyPressEvent(self, event):
         if event.key() in VIDEO_KEYS:
