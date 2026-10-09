@@ -842,6 +842,24 @@ def test_after_dropping_a_folder_from_a_second_drive_with_a_tag_library_tags_ent
     assert Library.open(first_drive).tags(viewed / "IMG_1.png") == []
 
 
+def test_dropping_a_folder_while_the_tag_prompt_is_open_closes_it_without_saving_what_was_typed(qtbot, tmp_path):
+    first_drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
+    second_drive = make_tag_library_drive(tmp_path / "BACKUP")
+    [viewed] = make_folders(first_drive, "Photos")
+    [dropped] = make_folders(second_drive, "Photos")
+    make_image(viewed / "IMG_1.png", "red")
+    make_image(dropped / "IMG_1.png", "green")
+    viewer = shown_viewer_on_drives(qtbot, viewed, (first_drive, second_drive), lambda question: False)
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+    [prompt] = visible_tag_prompts(viewer)
+    qtbot.keyClicks(prompt, "beach")
+
+    drag_and_drop_onto(viewer, dropped)
+
+    assert visible_tag_prompt_texts(viewer) == []
+    assert Library.open(first_drive).tags(viewed / "IMG_1.png") == []
+
+
 def test_pressing_t_on_a_read_only_drive_with_a_tag_library_opens_no_tag_prompt(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     with made_read_only(drive):

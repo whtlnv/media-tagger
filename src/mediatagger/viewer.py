@@ -183,6 +183,8 @@ class Viewer(QWidget):
             event.acceptProposedAction()
 
     def dropEvent(self, event):
+        if self._tagging:
+            self._close_tag_prompt()
         self._stop_video()
         self._open(Path(event.mimeData().urls()[0].toLocalFile()))
 
