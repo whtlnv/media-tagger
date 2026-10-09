@@ -396,3 +396,13 @@ def test_when_saving_the_prompt_fails_with_a_drive_error_the_prompt_stays_open_w
     enter_in_tag_prompt(qtbot, viewer, "beach")
 
     assert (visible_tag_prompt_texts(viewer), COULDNT_SAVE_TAGS_TEXT in status_bar_texts(viewer)) == (["beach"], True)
+
+
+def test_enter_with_the_popup_showing_but_no_suggestion_highlighted_saves_the_prompts_text_typing_sunset_then_enter_tags_the_item_sunset(qtbot, tmp_path):
+    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "sunset")
+    type_in_tag_prompt(qtbot, viewer, "sunset")
+    [suggestions] = visible_suggestion_lists(viewer)
+
+    qtbot.keyClick(suggestions, Qt.Key.Key_Return)
+
+    assert (visible_tag_prompt_texts(viewer), Library.open(drive).tags(folder / "IMG_1.png")) == ([], ["sunset"])

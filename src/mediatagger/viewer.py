@@ -73,7 +73,7 @@ class LastWordCompleter(QCompleter):
             return super().eventFilter(watched, event)
         if event.key() == Qt.Key.Key_Tab:
             self._accept_highlighted()
-        if watched is self.popup() and event.key() == Qt.Key.Key_Return:
+        if watched is self.popup() and event.key() == Qt.Key.Key_Return and self.popup().currentIndex().isValid():
             self._accept_highlighted()
             self.popup().hide()
             return True
