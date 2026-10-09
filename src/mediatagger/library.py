@@ -75,8 +75,10 @@ class Library:
             connection.execute("PRAGMA journal_mode = DELETE")
             with connection:
                 _migrate_to_schema_version_2(connection)
-        except sqlite3.OperationalError:
-            pass  # read-only drive: leave the library at its recorded schema version
+        except sqlite3.OperationalError as error:
+            if "locked" in str(error):
+                raise
+            # read-only drive: leave the library at its recorded schema version
         meta = dict(connection.execute("SELECT key, value FROM meta"))
         connection.close()
         return cls(tags_db, meta["drive_id"], int(meta["schema_version"]))

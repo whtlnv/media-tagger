@@ -289,6 +289,18 @@ def test_opening_a_schema_version_1_library_on_a_read_only_drive_writes_nothing_
     assert sorted(path.name for path in library_folder.iterdir()) == ["tags.db"]
 
 
+def test_opening_a_schema_version_1_library_whose_upgrade_is_blocked_by_a_lock_on_tags_db_raises_the_error(tmp_path):
+    _create_schema_version_1_library(tmp_path, "locked-drive")
+    locker = sqlite3.connect(_tags_db(tmp_path))
+    locker.execute("BEGIN IMMEDIATE")
+    try:
+        with pytest.raises(sqlite3.OperationalError, match="locked"):
+            Library.open(tmp_path)
+    finally:
+        locker.rollback()
+        locker.close()
+
+
 def test_a_tag_change_is_visible_to_a_separate_connection_to_tags_db_as_soon_as_it_is_entered(tmp_path):
     library = Library.create(tmp_path)
     photo = tmp_path / "beach.jpg"
