@@ -1,3 +1,4 @@
+import shutil
 import sqlite3
 from contextlib import contextmanager
 from pathlib import Path
@@ -853,3 +854,18 @@ def test_moving_with_space_from_an_image_to_a_video_tagged_beach_family_shows_th
 
     [tag_overlay] = [label for label in shown_labels(viewer) if label.text() == "beach family"]
     assert viewer.childAt(tag_overlay.geometry().center()) is tag_overlay
+
+
+def test_a_file_tagged_beach_family_in_a_viewer_shows_beach_family_in_the_tag_overlay_of_a_viewer_on_a_copy_of_the_drive_at_another_root(qtbot, tmp_path):
+    [original_drive, other_drive] = make_folders(tmp_path, "MEDIATAGGER", "ELSEWHERE")
+    [folder] = make_folders(original_drive, "Photos")
+    make_image(folder / "IMG_1.png", "red")
+    Library.create(original_drive)
+    earlier = shown_viewer_on_drive(qtbot, folder, original_drive, lambda question: False)
+    enter_in_tag_prompt(qtbot, earlier, "beach family")
+    earlier.close()
+    shutil.copytree(original_drive, other_drive, dirs_exist_ok=True)
+
+    viewer = shown_viewer_on_drive(qtbot, other_drive / "Photos", other_drive, lambda question: False)
+
+    assert shown_texts(viewer) == ["beach family"]

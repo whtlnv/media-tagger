@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 10:50 · `src/mediatagger/test_viewer_library.py::test_a_file_tagged_beach_family_in_a_viewer_shows_beach_family_in_the_tag_overlay_of_a_viewer_on_a_copy_of_the_drive_at_another_root`
+- Behavior: Tagging a file on a drive opened at another mount path shows the same tags as before: a viewer on a copy of the drive at a different root shows the file's tags in the overlay
+- Predicted: pass — `Library._key` stores paths relative to the drive root and the viewer opens the library at the drive it views (no right-reason failure available)
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: the behavior already exists (the library-level mount-path item made keys root-relative, and the viewer only passes absolute paths through); a mutation check keying by absolute path turned the test red (`[] == ['beach family']`), so it is a real end-to-end pin and was kept as-is rather than rewritten into a contrived failure
+
 ## 2026-10-09 10:44 · `src/mediatagger/test_viewer_library.py::test_moving_with_space_from_an_image_to_a_video_tagged_beach_family_shows_the_tag_overlay_on_top_of_the_video`
 - Behavior: The tag overlay stays visible on top of a video item
 - Predicted: none recorded — the test was run before a prediction was stated (process slip)
