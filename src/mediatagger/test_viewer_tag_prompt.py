@@ -13,7 +13,6 @@ from mediatagger.test_viewer_library import (
     visible_tag_prompts,
 )
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
-from mediatagger.viewer import COULDNT_SAVE_TAGS_TEXT
 
 
 def visible_suggestion_lists(viewer):
@@ -395,7 +394,7 @@ def test_when_saving_the_prompt_fails_with_a_drive_error_the_prompt_stays_open_w
 
     enter_in_tag_prompt(qtbot, viewer, "beach")
 
-    assert (visible_tag_prompt_texts(viewer), COULDNT_SAVE_TAGS_TEXT in status_bar_texts(viewer)) == (["beach"], True)
+    assert (visible_tag_prompt_texts(viewer), "Couldn't save tags — is the drive still connected?" in status_bar_texts(viewer)) == (["beach"], True)
 
 
 def test_enter_with_the_popup_showing_but_no_suggestion_highlighted_saves_the_prompts_text_typing_sunset_then_enter_tags_the_item_sunset(qtbot, tmp_path):

@@ -34,7 +34,7 @@ CREATE_LIBRARY_QUESTION = "Create a tag library on {}?"
 READ_ONLY_BANNER_TEXT = "This drive is read-only — tags can't be saved"
 READ_ONLY_STATUS_TEXT = "Read-only — tags can't be saved"
 TAGS_CANT_BE_SAVED_HERE_TEXT = "Tags can't be saved here"
-COULDNT_SAVE_TAGS_TEXT = "Couldn't save tags"
+COULDNT_SAVE_TAGS_TEXT = "Couldn't save tags — is the drive still connected?"
 CANT_SAVE_MESSAGE_MS = 3000
 GARBAGE_COLLECTION_MS = 500
 
