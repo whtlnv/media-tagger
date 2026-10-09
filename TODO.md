@@ -35,6 +35,8 @@
 - [x] Pressing `t` on a file tagged `beach family` shows `beach family` as visible text in the tag prompt, beside its empty input
 - [x] Pressing `t` again after closing the tag prompt leaves only one tag prompt in the viewer (prompts do not pile up)
 - [x] The tag prompt is drawn inside the viewer window (not a separate dialog), centred near the bottom above the status bar, with the overlays' look (white text on a dark translucent background) and its input focused
+- [ ] Pressing `t` gives the tag prompt's input keyboard focus, so typed keys go into it straight away
+- [ ] The tag prompt has the overlays' look: white text on a dark translucent background (the same style as the info overlay)
 - [ ] While the tag prompt is open, typing a space, `i`, `p`, `f` or `m` goes into the prompt: the slideshow stays on the same item, the info overlay does not toggle, and a video is not paused or muted
 - [ ] While the tag prompt is open, `←`, `→`, `↑` and `↓` do not move the slideshow or seek a video
 - [ ] Pressing `Esc` in the tag prompt closes it without changing the file's tags
