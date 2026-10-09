@@ -1,10 +1,12 @@
+import pytest
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QAbstractItemView, QApplication
 
 from mediatagger.library import Library
-from mediatagger.test_viewer import make_image
+from mediatagger.test_video import wait_until_playing
+from mediatagger.test_viewer import make_image, make_surface_ready
 from mediatagger.test_viewer_library import (
-    drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, make_tag_library_drive, shown_viewer_on_drive, shown_viewer_on_drives, visible_tag_prompt_texts, visible_tag_prompts,
+    drive_with_a_tag_library_holding_one_clip, drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, make_tag_library_drive, shown_viewer_on_drive, shown_viewer_on_drives, visible_tag_prompt_texts, visible_tag_prompts,
 )
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 
@@ -300,3 +302,25 @@ def test_enter_with_no_suggestion_popup_showing_saves_the_prompts_text_beach_fam
     qtbot.keyClick(viewer.focusWidget(), Qt.Key.Key_Return)
 
     assert (visible_tag_prompt_texts(viewer), sorted(Library.open(drive).tags(folder / "IMG_1.png"))) == ([], ["beach", "fam"])
+
+
+def test_on_a_paused_video_with_the_suggestion_popup_open_down_twice_and_up_highlight_the_first_suggestion_and_do_not_seek_the_video(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=60)
+    make_image(folder / "IMG_2.png", "red")
+    Library.open(drive).enter(folder / "IMG_2.png", "beach bird")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    make_surface_ready(viewer)
+    engine = viewer.video_player.engine
+    wait_until_playing(engine)
+    qtbot.keyClick(viewer, Qt.Key.Key_P)
+    engine.time_pos = 20
+    engine.wait_for_property("time-pos", lambda time_pos: time_pos == pytest.approx(20, abs=1), timeout=5)
+    type_in_tag_prompt(qtbot, viewer, "b")
+    [suggestions] = visible_suggestion_lists(viewer)
+    first, second = listed(suggestions)
+
+    for key in (Qt.Key.Key_Down, Qt.Key.Key_Down, Qt.Key.Key_Up):
+        qtbot.keyClick(suggestions, key)
+    qtbot.wait(300)  # mpv seeks asynchronously, so give a stray seek time to land
+
+    assert (suggestions.currentIndex().data(), engine.time_pos) == (first, pytest.approx(20, abs=1))

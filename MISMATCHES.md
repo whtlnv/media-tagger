@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 16:55 · `src/mediatagger/test_viewer_tag_prompt.py::test_on_a_paused_video_with_the_suggestion_popup_open_down_twice_and_up_highlight_the_first_suggestion_and_do_not_seek_the_video`
+- Behavior: On a video item with the suggestion popup open, `↓` and `↑` move the highlight and do not seek the video
+- Predicted: passes on first run — QCompleter's popup consumes `Up`/`Down` (the completer's eventFilter plus the list view), so they never reach `Viewer.keyPressEvent`, and `_tag_prompt_has_focus` already blocks arrow seeks while the prompt is open (a right-reason failure would have been AssertionError with time-pos moved ±10s from 20)
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: The behavior already exists. The test is not vacuous: it uses the same paused-at-20s setup as `test_pressing_down_in_the_viewer_on_a_paused_video_seeks_it_ten_seconds_back`, where `Down` does seek, and it checks both the highlight and the position. No rewrite can make it fail without contriving it, so it is kept as a regression pin.
+
 ## 2026-10-09 16:48 · `src/mediatagger/test_viewer_tag_prompt.py::test_enter_with_no_suggestion_popup_showing_saves_the_prompts_text_beach_fam_esc_enter_adds_beach_and_fam_to_the_item`
 - Behavior: `Enter` with no suggestion popup showing saves the prompt's text: `beach fam`, `Esc`, `Enter` adds `beach` and `fam` to the item
 - Predicted: passes on first run — `LastWordCompleter.eventFilter` only intercepts `Return` when the popup is the watched object, so once `Esc` hides the popup, `Return` reaches the prompt's existing save path (a right-reason failure would have been AssertionError with the prompt still open on `beach fam` and IMG_1 untagged)
