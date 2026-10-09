@@ -1,6 +1,6 @@
 from PySide6.QtCore import QPoint, QRect, Qt
 from PySide6.QtGui import QImageReader, QPainter
-from PySide6.QtWidgets import QLabel, QWidget
+from PySide6.QtWidgets import QFileDialog, QLabel, QWidget
 
 from mediatagger.folder import is_video
 from mediatagger.mpv_surface import MpvSurface
@@ -86,6 +86,10 @@ class Viewer(QWidget):
             self._toggle_fullscreen()
             return
         if self.slideshow is None:
+            if event.key() == Qt.Key.Key_O:
+                picker = QFileDialog(self)
+                picker.setFileMode(QFileDialog.FileMode.Directory)
+                picker.exec()
             return
         if event.key() == Qt.Key.Key_I:
             self.slideshow.press("i")

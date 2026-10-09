@@ -3,10 +3,10 @@ import subprocess
 import sys
 
 import pytest
-from PySide6.QtCore import QRect, QSize, Qt
+from PySide6.QtCore import QRect, QSize, Qt, QTimer
 from PySide6.QtGui import QColor, QImage
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
-from PySide6.QtWidgets import QLabel
+from PySide6.QtWidgets import QApplication, QFileDialog, QLabel
 
 from mediatagger.test_video import make_clip, wait_until_playing
 
@@ -570,3 +570,24 @@ def test_a_viewer_opened_on_a_folder_shows_its_first_item_and_not_the_launch_tex
 
     assert shown_labels(viewer) == []
     assert centre_colour(viewer) == QColor("red")
+
+
+def test_pressing_o_on_the_launch_screen_opens_a_folder_picker(qtbot):
+    viewer = Viewer(player_options=SILENT)
+    qtbot.addWidget(viewer)
+    viewer.show()
+    qtbot.waitExposed(viewer)
+    pickers = []
+
+    def close_whatever_is_open():
+        picker = QApplication.activeModalWidget()
+        pickers.append(picker)
+        if picker is not None:
+            picker.reject()
+
+    QTimer.singleShot(200, close_whatever_is_open)
+    qtbot.keyClick(viewer, Qt.Key.Key_O)
+    qtbot.waitUntil(lambda: len(pickers) == 1)
+
+    assert isinstance(pickers[0], QFileDialog)
+    assert pickers[0].fileMode() == QFileDialog.FileMode.Directory
