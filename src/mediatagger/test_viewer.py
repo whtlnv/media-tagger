@@ -12,7 +12,7 @@ from PySide6.QtWidgets import QLabel
 from mediatagger.test_video import make_clip
 
 from mediatagger.mpv_surface import MpvSurface
-from mediatagger.viewer import Viewer, decode_fitted
+from mediatagger.viewer import UNSUPPORTED_TEXT, Viewer, decode_fitted
 
 
 def make_image(path, color, width=64, height=48):
@@ -215,7 +215,7 @@ def test_a_viewer_opened_on_a_folder_whose_first_item_cannot_be_decoded_shows_an
     make_image(tmp_path / "IMG_2.png", "red")
     viewer = shown_viewer_on(qtbot, tmp_path)
 
-    assert shows_unsupported_placeholder(viewer)
+    assert shown_texts(viewer) == [UNSUPPORTED_TEXT]
 
 
 def test_a_viewer_opened_on_a_folder_whose_first_item_is_a_decodable_image_shows_that_image_and_no_unsupported_placeholder(qtbot, tmp_path):
