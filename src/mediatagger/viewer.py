@@ -25,6 +25,7 @@ NO_LIBRARY_VIEWING_ONLY_TEXT = "No library — viewing only"
 DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT = "{} has no tag library — viewing only"
 CREATE_LIBRARY_QUESTION = "Create a tag library on {}?"
 READ_ONLY_BANNER_TEXT = "This drive is read-only — tags can't be saved"
+READ_ONLY_STATUS_TEXT = "Read-only — tags can't be saved"
 
 
 def fitted_rect(size, bounds):
@@ -72,6 +73,8 @@ class Viewer(QWidget):
         self.library_label = QLabel(NO_LIBRARY_TEXT, self.status_bar)
         self.read_only_banner = QLabel(READ_ONLY_BANNER_TEXT, self)
         self.read_only_banner.hide()
+        self.read_only_status = QLabel(READ_ONLY_STATUS_TEXT, self.status_bar)
+        self.read_only_status.hide()
         self.setWindowState(Qt.WindowState.WindowFullScreen)
         self.setAcceptDrops(True)
         if path is None:
@@ -186,6 +189,7 @@ class Viewer(QWidget):
                 return
             Library.create(drive)
         self.read_only_banner.setVisible(not os.access(drive, os.W_OK))
+        self.read_only_status.setVisible(not os.access(drive, os.W_OK))
         self.library_label.setText(LIBRARY_TEXT.format(drive.name))
 
     def _show_cant_open(self, path):

@@ -14,7 +14,7 @@ from mediatagger.test_viewer import (
 )
 from mediatagger.viewer import (
     CREATE_LIBRARY_QUESTION, DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT, LIBRARY_TEXT, NO_LIBRARY_TEXT, NO_LIBRARY_VIEWING_ONLY_TEXT,
-    READ_ONLY_BANNER_TEXT, Viewer,
+    READ_ONLY_BANNER_TEXT, READ_ONLY_STATUS_TEXT, Viewer,
 )
 
 
@@ -301,6 +301,14 @@ def test_opening_a_folder_on_a_read_only_drive_still_shows_its_slideshow_at_the_
 
     assert shown == [READ_ONLY_BANNER_TEXT]
     assert colour == QColor("red")
+
+
+def test_opening_a_folder_on_a_read_only_drive_that_has_a_tag_library_says_tags_cant_be_saved_in_the_status_bar(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    with made_read_only(drive):
+        viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    assert READ_ONLY_STATUS_TEXT in status_bar_texts(viewer)
 
 
 def test_opening_a_folder_on_a_writable_drive_that_has_a_tag_library_shows_no_read_only_banner(qtbot, tmp_path):
