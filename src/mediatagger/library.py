@@ -8,7 +8,7 @@ def _tags_db(root):
     return root / LIBRARY_FOLDER / "tags.db"
 
 
-def _write_meta(tags_db, **meta):
+def _init_tags_db(tags_db, **meta):
     connection = sqlite3.connect(tags_db)
     with connection:
         connection.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
@@ -32,7 +32,7 @@ class Library:
         tags_db = _tags_db(root)
         tags_db.parent.mkdir()
         drive_id = str(uuid.uuid4())
-        _write_meta(tags_db, drive_id=drive_id, schema_version=str(cls.schema_version))
+        _init_tags_db(tags_db, drive_id=drive_id, schema_version=str(cls.schema_version))
         return cls(tags_db, drive_id)
 
     @classmethod
