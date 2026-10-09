@@ -12,7 +12,7 @@
 - [x] Dragging a folder or file from the file manager over the window is accepted as a drop
 - [x] Dragging something that is not a local file or folder (e.g. plain text) over the window is refused
 - [x] Dragging a web link (an `https://` URL, not a local file) over the window is refused
-- [ ] Dropping a folder onto the launch screen starts that folder's slideshow at its first item
+- [ ] Dropping a folder onto the launch screen starts that folder's slideshow at its first item (the test first drag-enters over the window with the folder's mime data via the `drag_enter_over` helper so Qt accepts the drag, then drops the same mime data; a drop with no accepted drag-enter is discarded by Qt before the window sees it)
 - [ ] Dropping a file onto the launch screen starts its folder's slideshow at that file
 - [ ] Dropping a folder while viewing another folder replaces the slideshow with the dropped folder's, starting at its first item
 - [ ] Dropping a file while viewing another folder replaces the slideshow with that file's folder, starting at that file
