@@ -15,7 +15,7 @@ from mediatagger.test_viewer_library import (
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 
 
-def visible_suggestion_lists(viewer):
+def visible_suggestion_lists():
     return [widget for widget in QApplication.allWidgets() if isinstance(widget, QAbstractItemView) and widget.isVisible()]
 
 
@@ -42,7 +42,7 @@ def test_in_the_tag_prompt_on_a_drive_whose_library_has_beach_and_bird_typing_b_
 
     type_in_tag_prompt(qtbot, viewer, "b")
 
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
     assert sorted(listed(suggestions)) == ["beach", "bird"]
 
 
@@ -52,7 +52,7 @@ def test_in_the_tag_prompt_on_a_drive_whose_library_has_no_tags_yet_typing_b_sho
 
     type_in_tag_prompt(qtbot, viewer, "b")
 
-    assert visible_suggestion_lists(viewer) == []
+    assert visible_suggestion_lists() == []
 
 
 def test_in_the_tag_prompt_on_a_drive_whose_library_has_beach_and_bird_typing_be_lists_beach_and_not_bird(qtbot, tmp_path):
@@ -60,7 +60,7 @@ def test_in_the_tag_prompt_on_a_drive_whose_library_has_beach_and_bird_typing_be
 
     type_in_tag_prompt(qtbot, viewer, "be")
 
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
     assert listed(suggestions) == ["beach"]
 
 
@@ -76,7 +76,7 @@ def test_suggestions_are_ordered_by_item_count_with_bird_on_3_items_and_beach_on
 
     type_in_tag_prompt(qtbot, viewer, "b")
 
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
     assert listed(suggestions) == ["bird", "beach"]
 
 
@@ -92,7 +92,7 @@ def test_suggestions_are_ordered_by_item_count_with_beach_on_3_items_and_bird_on
 
     type_in_tag_prompt(qtbot, viewer, "b")
 
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
     assert listed(suggestions) == ["beach", "bird"]
 
 
@@ -108,7 +108,7 @@ def test_suggestions_with_the_same_item_count_are_listed_alphabetically_with_bir
 
     type_in_tag_prompt(qtbot, viewer, "b")
 
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
     assert listed(suggestions) == ["beach", "bird"]
 
 
@@ -117,7 +117,7 @@ def test_suggestion_matching_ignores_case_typing_upper_case_be_lists_beach(qtbot
 
     type_in_tag_prompt(qtbot, viewer, "BE")
 
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
     assert listed(suggestions) == ["beach"]
 
 
@@ -126,7 +126,7 @@ def test_suggestions_complete_the_last_space_separated_word_typing_beach_fam_wit
 
     type_in_tag_prompt(qtbot, viewer, "beach fam")
 
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
     assert listed(suggestions) == ["family"]
 
 
@@ -135,7 +135,7 @@ def test_typing_a_namespace_prefix_people_colon_lists_every_tag_under_it_at_any_
 
     type_in_tag_prompt(qtbot, viewer, "people:")
 
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
     assert listed(suggestions) == ["people:ana", "people:luis:jr"]
 
 
@@ -149,7 +149,7 @@ def test_tags_the_viewed_item_already_has_are_not_suggested_on_an_item_tagged_su
 
     type_in_tag_prompt(qtbot, viewer, "s")
 
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
     assert listed(suggestions) == ["summer"]
 
 
@@ -163,7 +163,7 @@ def test_a_word_starting_with_minus_suggests_from_the_viewed_items_own_tags_on_a
 
     type_in_tag_prompt(qtbot, viewer, "-s")
 
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
     assert listed(suggestions) == ["sunset"]
 
 
@@ -172,7 +172,7 @@ def test_words_already_entered_in_the_prompt_are_not_suggested_again_typing_beac
 
     type_in_tag_prompt(qtbot, viewer, "beach b")
 
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
     assert listed(suggestions) == ["bird"]
 
 
@@ -188,12 +188,12 @@ def test_suggestions_come_from_the_current_drives_library_after_dropping_a_folde
     drag_and_drop_onto(viewer, dropped)
 
     type_in_tag_prompt(qtbot, viewer, "b")
-    assert visible_suggestion_lists(viewer) == []
+    assert visible_suggestion_lists() == []
 
     [prompt] = visible_tag_prompts(viewer)
     qtbot.keyClick(prompt, Qt.Key.Key_Backspace)
     qtbot.keyClicks(prompt, "z")
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
     assert listed(suggestions) == ["zebra"]
 
 
@@ -206,14 +206,14 @@ def test_a_tag_saved_from_the_prompt_is_suggested_the_next_time_the_prompt_opens
 
     type_in_tag_prompt(qtbot, viewer, "z")
 
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
     assert listed(suggestions) == ["zebra"]
 
 
 def test_in_the_suggestion_popup_down_twice_highlights_the_second_suggestion_and_up_then_highlights_the_first(qtbot, tmp_path):
     drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach bird")
     type_in_tag_prompt(qtbot, viewer, "b")
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
     first, second = listed(suggestions)
 
     qtbot.keyClick(suggestions, Qt.Key.Key_Down)
@@ -227,19 +227,19 @@ def test_in_the_suggestion_popup_down_twice_highlights_the_second_suggestion_and
 def test_tab_accepts_the_highlighted_suggestion_replacing_only_the_word_being_typed_beach_fam_down_tab_leaves_beach_family_and_closes_the_popup(qtbot, tmp_path):
     drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach family")
     type_in_tag_prompt(qtbot, viewer, "beach fam")
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
 
     qtbot.keyClick(suggestions, Qt.Key.Key_Down)
     qtbot.keyClick(suggestions, Qt.Key.Key_Tab)
 
     [prompt] = visible_tag_prompts(viewer)
-    assert (prompt.text(), visible_suggestion_lists(viewer)) == ("beach family", [])
+    assert (prompt.text(), visible_suggestion_lists()) == ("beach family", [])
 
 
 def test_enter_accepts_the_highlighted_suggestion_without_saving_beach_fam_down_enter_leaves_beach_family_in_the_open_prompt_and_the_items_tags_unchanged(qtbot, tmp_path):
     drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach family")
     type_in_tag_prompt(qtbot, viewer, "beach fam")
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
 
     qtbot.keyClick(suggestions, Qt.Key.Key_Down)
     qtbot.keyClick(suggestions, Qt.Key.Key_Return)
@@ -252,7 +252,7 @@ def test_accepting_a_removal_suggestion_keeps_the_minus_on_an_item_tagged_sunset
     Library.open(drive).enter(folder / "IMG_1.png", "sunset")
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     type_in_tag_prompt(qtbot, viewer, "-s")
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
 
     qtbot.keyClick(suggestions, Qt.Key.Key_Down)
     qtbot.keyClick(suggestions, Qt.Key.Key_Tab)
@@ -264,17 +264,17 @@ def test_accepting_a_removal_suggestion_keeps_the_minus_on_an_item_tagged_sunset
 def test_esc_with_the_suggestion_popup_open_closes_only_the_popup_leaving_the_prompt_open_with_its_text_and_the_viewer_running(qtbot, tmp_path):
     drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach family")
     type_in_tag_prompt(qtbot, viewer, "beach fam")
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
 
     qtbot.keyClick(suggestions, Qt.Key.Key_Escape)
 
-    assert (visible_suggestion_lists(viewer), visible_tag_prompt_texts(viewer), viewer.isVisible()) == ([], ["beach fam"], True)
+    assert (visible_suggestion_lists(), visible_tag_prompt_texts(viewer), viewer.isVisible()) == ([], ["beach fam"], True)
 
 
 def test_accepting_a_suggestion_for_the_only_word_in_the_prompt_leaves_no_leading_space_fam_down_tab_leaves_exactly_family(qtbot, tmp_path):
     drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "family")
     type_in_tag_prompt(qtbot, viewer, "fam")
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
 
     qtbot.keyClick(suggestions, Qt.Key.Key_Down)
     qtbot.keyClick(suggestions, Qt.Key.Key_Tab)
@@ -289,7 +289,7 @@ def test_esc_after_the_suggestion_popup_has_been_closed_cancels_the_prompt_leavi
     Library.open(drive).enter(folder / "IMG_2.png", "family")
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     type_in_tag_prompt(qtbot, viewer, "fam")
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
     qtbot.keyClick(suggestions, Qt.Key.Key_Escape)
 
     qtbot.keyClick(viewer.focusWidget(), Qt.Key.Key_Escape)
@@ -300,7 +300,7 @@ def test_esc_after_the_suggestion_popup_has_been_closed_cancels_the_prompt_leavi
 def test_enter_with_no_suggestion_popup_showing_saves_the_prompts_text_beach_fam_esc_enter_adds_beach_and_fam_to_the_item(qtbot, tmp_path):
     drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "family")
     type_in_tag_prompt(qtbot, viewer, "beach fam")
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
     qtbot.keyClick(suggestions, Qt.Key.Key_Escape)
 
     qtbot.keyClick(viewer.focusWidget(), Qt.Key.Key_Return)
@@ -320,7 +320,7 @@ def test_on_a_paused_video_with_the_suggestion_popup_open_down_twice_and_up_high
     engine.time_pos = 20
     engine.wait_for_property("time-pos", lambda time_pos: time_pos == pytest.approx(20, abs=1), timeout=5)
     type_in_tag_prompt(qtbot, viewer, "b")
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
     first, second = listed(suggestions)
 
     for key in (Qt.Key.Key_Down, Qt.Key.Key_Down, Qt.Key.Key_Up):
@@ -341,7 +341,7 @@ def test_the_suggestion_popup_over_a_white_image_shows_light_text_on_a_dark_back
 
     type_in_tag_prompt(qtbot, viewer, "b")
 
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
     frame = suggestions.viewport().grab().toImage()
     ratio = frame.devicePixelRatio()
     def colour_at(x, y):
@@ -358,7 +358,7 @@ def test_the_suggestion_popup_opens_above_the_prompt_and_lies_entirely_inside_th
 
     type_in_tag_prompt(qtbot, viewer, "b")
 
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
     [prompt] = visible_tag_prompts(viewer)
     popup = suggestions.window().frameGeometry()
     window = viewer.frameGeometry()
@@ -378,7 +378,7 @@ def test_with_5000_tags_in_the_library_each_keystroke_after_the_popup_opens_upda
         qtbot.keyClick(prompt, key)
         keystroke_times.append(time.perf_counter() - started)
 
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
     assert (max(keystroke_times) < 0.050, listed(suggestions)[:2]) == (True, ["tag1200", "tag1201"])
 
 
@@ -400,7 +400,7 @@ def test_when_saving_the_prompt_fails_with_a_drive_error_the_prompt_stays_open_w
 def test_enter_with_the_popup_showing_but_no_suggestion_highlighted_saves_the_prompts_text_typing_sunset_then_enter_tags_the_item_sunset(qtbot, tmp_path):
     drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "sunset")
     type_in_tag_prompt(qtbot, viewer, "sunset")
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
 
     qtbot.keyClick(suggestions, Qt.Key.Key_Return)
 
@@ -410,7 +410,7 @@ def test_enter_with_the_popup_showing_but_no_suggestion_highlighted_saves_the_pr
 def test_tab_with_the_popup_showing_but_no_suggestion_highlighted_leaves_the_prompts_text_as_typed(qtbot, tmp_path):
     drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach bird")
     type_in_tag_prompt(qtbot, viewer, "b")
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
 
     qtbot.keyClick(suggestions, Qt.Key.Key_Tab)
 
@@ -435,7 +435,7 @@ def test_a_word_already_entered_in_upper_case_is_not_suggested_again_typing_uppe
 
     type_in_tag_prompt(qtbot, viewer, "BEACH b")
 
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
     assert listed(suggestions) == ["bird"]
 
 
@@ -446,5 +446,5 @@ def test_a_removal_already_entered_is_not_suggested_again_on_an_item_tagged_suns
 
     type_in_tag_prompt(qtbot, viewer, "-sunset -s")
 
-    [suggestions] = visible_suggestion_lists(viewer)
+    [suggestions] = visible_suggestion_lists()
     assert listed(suggestions) == ["sky"]

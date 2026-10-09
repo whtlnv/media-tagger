@@ -276,7 +276,7 @@ REPORT_SUGGESTIONS_AFTER_TYPING_IN_THE_TAG_PROMPT_SCRIPT = TREAT_FIRST_ARGUMENT_
     "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
     "    QTest.keyClick(window, Qt.Key.Key_T)\n"
     "    QTest.keyClicks(window.focusWidget(), typed)\n"
-    "    print(f'suggestions={[listed(suggestions) for suggestions in visible_suggestion_lists(window)]}', flush=True)\n"
+    "    print(f'suggestions={[listed(suggestions) for suggestions in visible_suggestion_lists()]}', flush=True)\n"
     "    QApplication.closeAllWindows()\n"
     "    QApplication.quit()\n"
     "QTimer.singleShot(1000, type_then_report)\n"
