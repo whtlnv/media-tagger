@@ -25,6 +25,7 @@ class Viewer(QWidget):
         self.surface = None
         self.info = QLabel(self)
         self.info.hide()
+        self.setWindowState(Qt.WindowState.WindowFullScreen)
         self._show_current()
 
     def closeEvent(self, event):

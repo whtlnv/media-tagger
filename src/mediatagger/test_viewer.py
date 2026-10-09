@@ -252,3 +252,14 @@ def test_the_viewers_i_overlay_is_corner_text_with_the_filename_and_position_tha
     text, centre = shown_overlay_and_centre_colour()
     assert "IMG_2.png" in text and "2 / 2" in text
     assert centre == QColor("blue")
+
+
+def test_a_viewer_opened_on_a_folder_and_shown_is_fullscreen(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    viewer = Viewer(tmp_path, player_options=SILENT)
+    qtbot.addWidget(viewer)
+
+    viewer.show()
+    qtbot.waitExposed(viewer)
+
+    assert viewer.isFullScreen()
