@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-08 20:24 · `src/mediatagger/test_viewer.py::test_rejecting_the_viewers_own_o_dialog_pointed_at_a_folder_leaves_the_launch_text_showing`
+- Behavior: rejecting the viewer's own `o` dialog after `setDirectory(folder)` leaves the "Drop a folder or file here" launch text showing
+- Predicted: passes on first run — `_pick_folder`'s `if picker.exec():` guard (added in the accept cycle, 6874ea8) already returns `None` on reject
+- Actual: passes on first run
+- Type: passed unexpectedly
+- Resolution: behavior already shipped as a side effect of the accept cycle; kept the test as a regression guard after a mutation check (dropping the `exec()` guard makes it fail with `assert [] == ['Drop a fold...']`), production restored untouched.
+
 ## 2026-10-08 20:13 · `src/mediatagger/test_viewer.py::test_cancelling_the_o_picker_leaves_the_launch_text_showing`
 - Behavior: Cancelling the `o` picker leaves the launch screen showing its "Drop a folder or file here" text
 - Predicted: passes on first run — `Viewer._open` already returns early on `None`, and the real `_pick_folder` returns `None`

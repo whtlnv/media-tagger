@@ -652,3 +652,19 @@ def test_accepting_the_viewers_own_o_dialog_pointed_at_a_folder_starts_that_fold
 
     assert shown_labels(viewer) == []
     assert centre_colour(viewer) == QColor("red")
+
+
+def test_rejecting_the_viewers_own_o_dialog_pointed_at_a_folder_leaves_the_launch_text_showing(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    viewer = shown_launch_viewer(qtbot)
+    launch_text = shown_texts(viewer)
+
+    def reject_pointed_at_folder():
+        dialog = QApplication.activeModalWidget()
+        dialog.setDirectory(str(tmp_path))
+        dialog.reject()
+
+    QTimer.singleShot(200, reject_pointed_at_folder)
+    qtbot.keyClick(viewer, Qt.Key.Key_O)
+
+    assert shown_texts(viewer) == launch_text
