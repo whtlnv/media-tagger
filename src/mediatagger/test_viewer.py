@@ -1,4 +1,5 @@
 import os
+import struct
 import subprocess
 import sys
 
@@ -18,6 +19,16 @@ def make_image(path, color, width=64, height=48):
     image = QImage(width, height, QImage.Format.Format_RGB32)
     image.fill(QColor(color))
     image.save(str(path))
+    return path
+
+
+def make_jpeg_tagged_rotate_90(path, color, width, height):
+    """A JPEG stored as width x height whose EXIF orientation (6) says to show it rotated 90° clockwise."""
+    make_image(path, color, width, height)
+    tiff = b"MM\x00\x2a" + struct.pack(">IH", 8, 1) + struct.pack(">HHIHH", 0x0112, 3, 1, 6, 0) + struct.pack(">I", 0)
+    exif = b"Exif\x00\x00" + tiff
+    data = path.read_bytes()
+    path.write_bytes(data[:2] + b"\xff\xe1" + struct.pack(">H", len(exif) + 2) + exif + data[2:])
     return path
 
 
@@ -590,6 +601,20 @@ def test_an_image_larger_than_the_window_is_decoded_at_most_at_the_window_size_k
     decoded = decode_fitted(tmp_path / "IMG_1.jpg", QSize(400, 400))
 
     assert decoded.size() == QSize(400, 300)
+
+
+def test_a_jpeg_smaller_than_the_window_tagged_rotate_90_is_drawn_upright_taller_than_wide(qtbot, tmp_path):
+    make_jpeg_tagged_rotate_90(tmp_path / "IMG_1.jpg", "red", width=200, height=100)
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    viewer.resize(300, 300)
+    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+
+    frame = viewer.grab().toImage()
+    middle_x, middle_y = frame.width() // 2, frame.height() // 2
+    photo = frame.pixelColor(middle_x, middle_y)  # JPEG decodes red as near-red, so compare against the drawn photo
+    assert photo != QColor("black")
+    assert frame.pixelColor(middle_x, middle_y - 80) == photo
+    assert frame.pixelColor(middle_x - 80, middle_y) == QColor("black")
 
 
 def test_the_viewer_decodes_the_shown_image_once_however_often_it_repaints(qtbot, tmp_path, monkeypatch):
