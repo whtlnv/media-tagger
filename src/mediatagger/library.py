@@ -42,6 +42,7 @@ def _set_item_tags(connection, item_id, tags):
         "INSERT INTO item_tags (item_id, tag_id) SELECT ?, id FROM tags WHERE name = ?",
         [(item_id, tag) for tag in tags],
     )
+    connection.execute("DELETE FROM tags WHERE id NOT IN (SELECT tag_id FROM item_tags)")
 
 
 def _parse_entry(text):

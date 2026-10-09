@@ -353,3 +353,19 @@ def test_a_tagged_files_row_in_items_records_its_kind_as_file(tmp_path):
     items = _query(tmp_path, "SELECT rel_path, kind FROM items")
 
     assert items == [("beach.jpg", "file")]
+
+
+def test_removing_a_tag_from_the_last_file_that_has_it_removes_the_tags_row_from_tags(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "beach.jpg"
+    photo.touch()
+    other = tmp_path / "dunes.jpg"
+    other.touch()
+    library.enter(photo, "beach sunset")
+    library.enter(other, "beach")
+
+    library.enter(photo, "-sunset")
+
+    tags = _query(tmp_path, "SELECT name FROM tags ORDER BY name")
+
+    assert tags == [("beach",)]
