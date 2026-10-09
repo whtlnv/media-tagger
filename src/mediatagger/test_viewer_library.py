@@ -895,3 +895,12 @@ def test_pressing_t_on_a_read_only_drive_with_a_tag_library_opens_no_tag_prompt(
         qtbot.keyClick(viewer, Qt.Key.Key_T)
 
         assert visible_tag_prompts(viewer) == []
+
+
+def test_on_a_read_only_drive_with_a_tag_library_the_tag_overlay_still_shows_a_files_existing_tags(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach family")
+    with made_read_only(drive):
+        viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+        assert sorted(shown_texts(viewer)) == sorted([READ_ONLY_BANNER_TEXT, "beach family"])

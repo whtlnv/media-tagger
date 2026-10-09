@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 11:20 · `src/mediatagger/test_viewer_library.py::test_on_a_read_only_drive_with_a_tag_library_the_tag_overlay_still_shows_a_files_existing_tags`
+- Behavior: On a read-only drive with a tag library, the tag overlay still shows a file's existing tags
+- Predicted: likely a pass, not a right-reason failure: `_open_library` already opens the library on a read-only drive (`Library.open` swallows the migration's OperationalError) and `_show_current_tags` runs after it
+- Actual: passed on first run; both the read-only banner and `beach family` are shown
+- Type: passed unexpectedly
+- Resolution: The behavior already comes from earlier cycles (read-only `Library.open` plus `_show_current_tags` after `_open_library`). No rewrite can make it fail without faking. Kept the test as a regression pin, because only the read-only `t` handling was guarded before.
+
 ## 2026-10-09 10:57 · `src/mediatagger/test_viewer_library.py::test_after_dropping_a_folder_from_a_second_drive_with_a_tag_library_tags_entered_in_the_prompt_are_recorded_in_the_second_drives_tags_db_not_the_firsts`
 - Behavior: After dropping a folder from a second drive with a tag library, tags entered in the prompt are recorded in the second drive's `tags.db`, not the first's
 - Predicted: pass — `dropEvent` → `_open` → `_open_library` already replaces `self.library` with the dropped drive's library, and `_open_tag_prompt` tags through `self.library` (no right-reason failure available)
