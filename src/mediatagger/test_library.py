@@ -335,3 +335,15 @@ def test_opening_a_schema_version_1_library_upgrades_its_tags_db_in_place_to_sch
     assert meta["schema_version"] == "2"
     assert meta["drive_id"] == "phase-3-drive"
     assert {"items", "tags", "item_tags"} <= tables
+
+
+def test_a_newly_created_library_records_schema_version_2_in_its_tags_db(tmp_path):
+    Library.create(tmp_path)
+
+    connection = sqlite3.connect(tmp_path / ".mediatagger" / "tags.db")
+    try:
+        meta = dict(connection.execute("SELECT key, value FROM meta"))
+    finally:
+        connection.close()
+
+    assert meta["schema_version"] == "2"

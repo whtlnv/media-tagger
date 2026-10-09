@@ -52,7 +52,7 @@ def _parse_entry(text):
 
 
 class Library:
-    schema_version = 1  # the version this code writes; an opened library reports the version its tags.db records
+    schema_version = 2  # the version this code writes; an opened library reports the version its tags.db records
 
     def __init__(self, tags_db, drive_id, schema_version=schema_version):
         self._tags_db = tags_db
