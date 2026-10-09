@@ -32,6 +32,13 @@ TAGS_CANT_BE_SAVED_HERE_TEXT = "Tags can't be saved here"
 CANT_SAVE_MESSAGE_MS = 3000
 
 
+class TagInput(QLineEdit):
+    def keyPressEvent(self, event):
+        super().keyPressEvent(event)
+        if event.key() == Qt.Key.Key_Return:
+            event.accept()  # QLineEdit passes Enter on to its parent, where it would pause the video
+
+
 def overlay_label(text, parent):
     label = QLabel(text, parent)
     label.setStyleSheet(LABEL_STYLE)
@@ -79,7 +86,7 @@ class Viewer(QWidget):
         self.surface = None
         self._decoded_key = self._decoded = None
         self._tagging = None  # (library, path) of the item being tagged while the tag prompt is open
-        self.tag_input = QLineEdit(self)
+        self.tag_input = TagInput(self)
         self.tag_input.setStyleSheet(LABEL_STYLE)
         self.tag_input.returnPressed.connect(self._record_tags)
         self.tag_input.hide()

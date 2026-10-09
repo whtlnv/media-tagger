@@ -609,6 +609,22 @@ def test_typing_p_and_m_in_the_tag_prompt_open_over_a_playing_video_neither_paus
     assert [engine.pause, engine.mute] == [False, False]
 
 
+def test_pressing_enter_in_the_tag_prompt_over_a_playing_video_saves_the_tags_without_pausing_it(qtbot, tmp_path):
+    [drive] = make_folders(tmp_path, "MEDIATAGGER")
+    [folder] = make_folders(drive, "Clips")
+    make_clip(folder / "IMG_1.mp4", duration=30)
+    Library.create(drive)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    make_surface_ready(viewer)
+    engine = viewer.video_player.engine
+    wait_until_playing(engine)
+
+    enter_in_tag_prompt(qtbot, viewer, "beach")
+
+    assert Library.open(drive).tags(folder / "IMG_1.mp4") == ["beach"]
+    assert engine.pause is False
+
+
 def test_arrow_keys_in_the_tag_prompt_open_over_a_paused_video_neither_move_the_slideshow_nor_seek_it(qtbot, tmp_path):
     [drive] = make_folders(tmp_path, "MEDIATAGGER")
     [folder] = make_folders(drive, "Clips")
