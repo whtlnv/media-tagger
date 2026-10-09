@@ -32,13 +32,15 @@ def test_opening_a_folder_lists_its_videos_alongside_its_images_in_natural_order
     ]
 
 
-def test_a_non_media_file_in_the_folder_is_not_in_the_slideshow(tmp_path):
-    touch(tmp_path, "IMG_1.jpg", "notes.txt", "clip_2.mp4")
+@pytest.mark.parametrize("names, listed", [
+    pytest.param(["IMG_1.jpg", "notes.txt", "clip_2.mp4"], ["IMG_1.jpg", "clip_2.mp4"], id="non-media file"),
+    pytest.param(["IMG_1.jpg", ".hidden.jpg"], ["IMG_1.jpg"], id="hidden file with a media extension"),
+    pytest.param(["IMG_1.jpg", "._IMG_1.jpg", ".DS_Store"], ["IMG_1.jpg"], id="macOS litter"),
+])
+def test_a_file_that_is_not_shown_media_is_not_in_the_slideshow(tmp_path, names, listed):
+    touch(tmp_path, *names)
 
-    assert media_files(tmp_path) == [
-        tmp_path / "IMG_1.jpg",
-        tmp_path / "clip_2.mp4",
-    ]
+    assert media_files(tmp_path) == [tmp_path / name for name in listed]
 
 
 def test_media_extensions_are_matched_regardless_of_case(tmp_path):
@@ -48,18 +50,6 @@ def test_media_extensions_are_matched_regardless_of_case(tmp_path):
         tmp_path / "IMG_1.JPG",
         tmp_path / "clip_2.Mp4",
     ]
-
-
-def test_a_hidden_file_with_a_media_extension_is_not_in_the_slideshow(tmp_path):
-    touch(tmp_path, "IMG_1.jpg", ".hidden.jpg")
-
-    assert media_files(tmp_path) == [tmp_path / "IMG_1.jpg"]
-
-
-def test_macos_litter_is_not_in_the_slideshow(tmp_path):
-    touch(tmp_path, "IMG_1.jpg", "._IMG_1.jpg", ".DS_Store")
-
-    assert media_files(tmp_path) == [tmp_path / "IMG_1.jpg"]
 
 
 def test_a_subfolder_and_the_media_inside_it_are_not_in_the_slideshow(tmp_path):
