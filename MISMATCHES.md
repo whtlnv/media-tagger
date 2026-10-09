@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 13:25 · `src/mediatagger/test_viewer_library.py::test_pressing_t_on_a_drive_whose_library_cant_be_opened_opens_no_tag_prompt_says_tags_cant_be_saved_here_and_leaves_the_drive_unchanged`
+- Behavior: On a drive whose library can't be opened, pressing `t` opens no tag prompt, shows "Tags can't be saved here", and leaves the drive's files unchanged
+- Predicted: pass — 2a89c1b's `except sqlite3.DatabaseError` returns with `self.library = None`, so `_tags_can_be_saved_here()` is False and `t` takes the existing cant-save branch
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: The behavior was already delivered as a side effect of the previous cycle (a None library already means "can't save"), so no failing version exists without inventing a false requirement. Kept the test as a regression pin; there's nothing left for /green to build.
+
 ## 2026-10-09 11:43 · `src/mediatagger/test_viewer_library.py::test_pressing_t_on_a_read_only_drive_with_a_tag_library_says_tags_cant_be_saved_here_in_the_status_bar`
 - Behavior: On a read-only drive with a tag library, pressing `t` also makes the status bar say "Tags can't be saved here"
 - Predicted: pass — the general `else: self.cant_save_status.show()` branch from df162dc already covers read-only (`_tags_can_be_saved_here` is False when the read-only banner shows)

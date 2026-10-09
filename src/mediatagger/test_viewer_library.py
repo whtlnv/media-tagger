@@ -990,3 +990,16 @@ def test_opening_a_folder_on_a_drive_whose_tags_db_is_garbage_still_shows_the_sl
 
     assert centre_colour(viewer) == QColor("red")
     assert status_bar_texts(viewer) == [LIBRARY_CANT_BE_OPENED_TEXT.format("MEDIATAGGER")]
+
+
+def test_pressing_t_on_a_drive_whose_library_cant_be_opened_opens_no_tag_prompt_says_tags_cant_be_saved_here_and_leaves_the_drive_unchanged(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    tags_db_path(drive).write_bytes(b"this is not a database" * 100)
+    before = file_contents_under(drive)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    assert visible_tag_prompts(viewer) == []
+    assert TAGS_CANT_BE_SAVED_HERE_TEXT in status_bar_texts(viewer)
+    assert file_contents_under(drive) == before
