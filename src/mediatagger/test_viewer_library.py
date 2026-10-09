@@ -885,3 +885,13 @@ def test_after_dropping_a_folder_from_a_second_drive_with_a_tag_library_tags_ent
 
     assert Library.open(second_drive).tags(dropped / "IMG_1.png") == ["beach", "family"]
     assert Library.open(first_drive).tags(viewed / "IMG_1.png") == []
+
+
+def test_pressing_t_on_a_read_only_drive_with_a_tag_library_opens_no_tag_prompt(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    with made_read_only(drive):
+        viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+        qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+        assert visible_tag_prompts(viewer) == []

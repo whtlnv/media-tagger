@@ -57,7 +57,7 @@
 - [x] The tag overlay stays visible on top of a video item
 - [x] Tagging a file on a drive opened at another mount path shows the same tags as before: a viewer on a copy of the drive at a different root shows the file's tags in the overlay
 - [x] After dropping a folder from a second drive with a tag library, tags entered in the prompt are recorded in the second drive's `tags.db`, not the first's
-- [ ] On a read-only drive with a tag library, pressing `t` opens no tag prompt
+- [x] On a read-only drive with a tag library, pressing `t` opens no tag prompt
 - [ ] On a read-only drive with a tag library, the tag overlay still shows a file's existing tags
 - [ ] On a drive whose tag library was declined, pressing `t` opens no tag prompt
 - [ ] On the system disk (viewing only), pressing `t` opens no tag prompt

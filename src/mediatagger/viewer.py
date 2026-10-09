@@ -196,7 +196,8 @@ class Viewer(QWidget):
             self._show_info()
             return
         if event.key() == Qt.Key.Key_T:
-            self._open_tag_prompt()
+            if self.read_only_banner.isHidden():
+                self._open_tag_prompt()
             return
         if self._tag_prompt_has_focus():
             return  # keys the open tag prompt ignores must not reach the slideshow or video
