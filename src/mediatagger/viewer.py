@@ -45,7 +45,7 @@ class Viewer(QWidget):
             self._show_info()
             return
         if event.key() == Qt.Key.Key_F:
-            self.showNormal()
+            self.showNormal() if self.isFullScreen() else self.showFullScreen()
             return
         if event.key() in VIDEO_KEYS:
             self.video_player.press(VIDEO_KEYS[event.key()])

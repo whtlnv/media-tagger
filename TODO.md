@@ -56,7 +56,7 @@
 - [x] In the viewer, the `i` overlay is text in a corner showing the filename and position (e.g. `IMG_1.png` and `1 / 2`), updates after `Space`, and leaves the image visible at the centre of the window
 - [x] The viewer opens fullscreen
 - [x] Pressing `f` in fullscreen leaves fullscreen
-- [ ] Pressing `f` when not fullscreen enters fullscreen
+- [x] Pressing `f` when not fullscreen enters fullscreen
 - [ ] A media file that can't be decoded shows an "unsupported" placeholder instead of crashing
 - [ ] A decodable image shows the image, not the "unsupported" placeholder
 - [ ] Pressing `Space` on an "unsupported" placeholder shows the next item
