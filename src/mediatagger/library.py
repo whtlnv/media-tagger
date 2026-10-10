@@ -118,9 +118,10 @@ class Library:
             " JOIN items ON items.id = item_tags.item_id"
             " GROUP BY items.rel_path"
         )
-        counts = {root / rel_path: count for rel_path, count in rows}
+        paths = ((root / rel_path, count) for rel_path, count in rows)
+        counts = {path: count for path, count in paths if path.parent == folder}
         connection.close()
-        return {path: count for path, count in counts.items() if path.parent == folder}
+        return counts
 
     def tags(self, path):
         if self.schema_version < 2:
