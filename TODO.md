@@ -46,7 +46,7 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 - [x] In the grid, `Esc` quits the app
 - [x] In the grid, `f` toggles fullscreen
 - [x] Dropping a folder onto the grid starts that folder's slideshow
-- [ ] Dropping a file onto the grid starts its folder's slideshow at that file
+- [x] Dropping a file onto the grid starts its folder's slideshow at that file
 - [ ] Moving the grid cursor onto a tagged item shows its own tags, space-separated, in the status bar
 - [ ] Moving the grid cursor onto an untagged item shows no tags in the status bar
 - [ ] The library status (e.g. the read-only notice) stays visible in the status bar while the grid is shown

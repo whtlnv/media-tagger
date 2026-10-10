@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 06:37 · `src/mediatagger/test_window.py::test_dropping_a_file_onto_the_windows_grid_starts_its_folders_slideshow_at_that_file`
+- Behavior: Dropping a file onto the grid starts its folder's slideshow at that file
+- Predicted: passes on first run — the folder-drop cycle wired `Grid.dropped` to `Window._open` → `viewer.open`, and `Slideshow.open` on a file already opens its folder at that file (no right-reason failure available)
+- Actual: passed (1 passed)
+- Type: passed unexpectedly
+- Resolution: The previous cycle already delivered this behavior. It's not a vacuous pass: the test drops `y.jpg`, the second item, so a default of "first item" would fail. I kept the test as a regression pin; no production change is needed.
+
 ## 2026-10-10 04:56 · `src/mediatagger/test_window.py::test_in_the_windows_viewer_esc_after_stepping_to_the_second_item_puts_the_grid_cursor_on_the_second_item`
 - Behavior: In the window's viewer, `Esc` after stepping to the second item puts the grid cursor on the second item
 - Predicted: passes on first run — `Window._show_grid` already reads `viewer.slideshow.current` at Esc time (no right-reason failure available)

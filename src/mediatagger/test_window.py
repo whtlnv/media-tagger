@@ -203,3 +203,20 @@ def test_dropping_a_folder_onto_the_windows_grid_starts_that_folders_slideshow(q
     shown = stack.currentWidget()
     assert isinstance(shown, Viewer)
     assert shown.slideshow.current == dropped / "x.jpg"
+
+
+def test_dropping_a_file_onto_the_windows_grid_starts_its_folders_slideshow_at_that_file(qtbot, tmp_path):
+    viewed, dropped = make_folders(tmp_path, "viewed", "dropped")
+    make_image(viewed / "a.jpg", "red")
+    make_image(dropped / "x.jpg", "green")
+    make_image(dropped / "y.jpg", "blue")
+    window = Window(viewed, player_options=SILENT)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    drag_and_drop_onto(stack.currentWidget().viewport(), dropped / "y.jpg")
+
+    shown = stack.currentWidget()
+    assert isinstance(shown, Viewer)
+    assert shown.slideshow.current == dropped / "y.jpg"
