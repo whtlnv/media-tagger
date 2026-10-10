@@ -1,3 +1,7 @@
+import json
+import os
+from pathlib import Path
+
 from PySide6.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
 
 from mediatagger.drive_session import DriveSession
@@ -53,6 +57,13 @@ class Window(QWidget):
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
         self.status_bar.raise_()
+        self._record_state(grid.folder)
+
+    def _record_state(self, folder):
+        config_home = os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")
+        state_file = Path(config_home) / "mediatagger" / "state.json"
+        state_file.parent.mkdir(parents=True, exist_ok=True)
+        state_file.write_text(json.dumps({"folder": str(folder), "mount_point": str(self.session.drive)}))
 
     def _show_tags_of(self, index):
         library = self.session.library

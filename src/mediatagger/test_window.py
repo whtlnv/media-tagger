@@ -1,4 +1,5 @@
 import errno
+import json
 import os
 from datetime import datetime, timezone
 
@@ -463,3 +464,17 @@ def test_closing_the_window_shuts_down_its_viewers_video_player_and_leaves_a_bac
 
     assert engine.handle is None
     assert tags_in_newest_backup(backup_root, drive, tmp_path / "restored", "Photos/IMG_0.mp4") == ["sunset"]
+
+
+def test_showing_a_folders_grid_records_that_folder_and_its_drives_mount_point_in_the_state_file_under_the_config_home(qtbot, tmp_path, monkeypatch):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    config_home = tmp_path / "config"
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(config_home))
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    state = json.loads((config_home / "mediatagger" / "state.json").read_text())
+    assert state == {"folder": str(folder), "mount_point": str(drive)}
