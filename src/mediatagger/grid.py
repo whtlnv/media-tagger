@@ -86,6 +86,7 @@ class _TileDelegate(QStyledItemDelegate):
 
 class Grid(QListView):
     up = Signal()
+    escaped = Signal()
 
     def __init__(self, folder, at=None, library=None):
         super().__init__()
@@ -113,5 +114,8 @@ class Grid(QListView):
             return
         if event.key() == Qt.Key.Key_Backspace:
             self.up.emit()
+            return
+        if event.key() == Qt.Key.Key_Escape:
+            self.escaped.emit()
             return
         super().keyPressEvent(event)

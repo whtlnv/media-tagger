@@ -158,3 +158,16 @@ def test_in_the_windows_grid_of_a_drives_mount_point_backspace_stays_on_that_gri
     shown = stack.currentWidget()
     assert isinstance(shown, Grid)
     assert shown.currentIndex().data(TILE_ROLE).path == drive / "a.jpg"
+
+
+def test_in_the_windows_grid_esc_quits_the_app(qtbot, tmp_path):
+    make_image(tmp_path / "a.jpg", "red")
+    window = Window(tmp_path, player_options=SILENT)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    assert not window.isVisible()

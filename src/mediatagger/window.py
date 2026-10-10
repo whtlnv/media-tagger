@@ -20,6 +20,7 @@ class Window(QWidget):
     def _show(self, grid):
         grid.activated.connect(self._open_tile)
         grid.up.connect(lambda: self._leave(grid.folder))
+        grid.escaped.connect(self.close)
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
 
