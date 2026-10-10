@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 09:49 · `src/mediatagger/test_window.py::test_launching_the_window_with_no_path_and_no_state_file_shows_the_launch_screen`
+- Behavior: Launching the window with no path and no state file shows the launch screen
+- Predicted: passes on first run — `Window._remembered_folder` already returns None when the state file is missing, so the viewer's launch screen stays current
+- Actual: passed (1 passed)
+- Type: passed unexpectedly
+- Resolution: The behavior already exists from the remembered-folder cycles (the missing-file guard in `_remembered_folder`), so no right-reason failure is possible; kept the test as a characterization pin rather than contorting it to fail.
+
 ## 2026-10-10 08:37 · `src/mediatagger/test_window.py::test_closing_the_window_shuts_down_its_viewers_video_player_and_leaves_a_backup_of_the_open_library_holding_the_entered_tag`
 - Behavior: Closing the window shuts down the viewer's video player and leaves a backup of the open library
 - Predicted: passes — `Window.closeEvent` already calls `viewer.close()`, which terminates mpv and calls `session.close()` to back up the library (shipped with 46ca4f6)

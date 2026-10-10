@@ -580,3 +580,14 @@ def test_launching_the_window_with_no_path_when_the_remembered_folder_no_longer_
     shown = window.findChild(QStackedWidget).currentWidget()
     assert isinstance(shown, Viewer)
     assert shown.slideshow is None
+
+
+def test_launching_the_window_with_no_path_and_no_state_file_shows_the_launch_screen(qtbot):
+    assert not (Path(os.environ["XDG_CONFIG_HOME"]) / "mediatagger" / "state.json").exists()
+
+    window = Window(player_options=SILENT)
+    qtbot.addWidget(window)
+
+    shown = window.findChild(QStackedWidget).currentWidget()
+    assert isinstance(shown, Viewer)
+    assert shown.slideshow is None
