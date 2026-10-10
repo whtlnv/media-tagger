@@ -17,7 +17,7 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 - [x] The grid opened on a folder at a given file has its cursor on that file
 - [x] A folder tile draws the folder glyph, an image tile the image glyph and a video tile the video glyph
 - [x] A video tile shows a ▶ badge
-- [ ] An image tile shows no ▶ badge
+- [x] An image tile shows no ▶ badge
 - [ ] A tile whose filename is wider than the tile shows it truncated with an ellipsis
 - [ ] A tile whose filename fits shows it whole, with no ellipsis
 - [ ] A tile for an item with 3 own tags shows a `🏷3` badge

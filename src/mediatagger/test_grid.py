@@ -68,3 +68,11 @@ def test_a_video_tile_shows_a_play_badge(qtbot, tmp_path):
     qtbot.addWidget(grid)
 
     assert VIDEO_BADGE in painted_texts(grid, 0)
+
+
+def test_an_image_tile_shows_no_play_badge(qtbot, tmp_path):
+    touch(tmp_path, "photo.jpg")
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+
+    assert VIDEO_BADGE not in painted_texts(grid, 0)

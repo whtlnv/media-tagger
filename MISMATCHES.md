@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 02:26 · `src/mediatagger/test_grid.py::test_an_image_tile_shows_no_play_badge`
+- Behavior: An image tile shows no ▶ badge
+- Predicted: pass on first run — the previous green already guarded the badge with `if is_video(entry)`
+- Actual: passed on first run
+- Type: passed unexpectedly (as predicted)
+- Resolution: The behavior was already built by the video-badge cycle. I kept the test as a regression pin after a mutation check: with the guard replaced by `if True`, the test fails, so it is not vacuous. The guard was restored. /green has nothing to implement.
+
 ## 2026-10-10 01:46 · `src/mediatagger/test_library.py::test_a_folders_tag_counts_leave_out_tagged_items_that_live_in_other_folders_including_its_subfolders`
 - Behavior: A folder's tag counts leave out tagged items that live in other folders (including its subfolders)
 - Predicted: pass — `tag_counts` iterates `folder.iterdir()`, so only direct children are ever counted
