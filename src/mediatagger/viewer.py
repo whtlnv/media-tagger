@@ -135,8 +135,8 @@ class Viewer(QWidget):
         self.app_location = app_location
         self.backup_root = backup_root or default_backup_root()
         self.backup_clock = backup_clock
-        self.ask_to_create_library = ask_to_create_library or self._ask_to_create_library
-        self.ask_to_restore_library = ask_to_restore_library or self._ask_to_create_library
+        self.ask_to_create_library = ask_to_create_library or self._ask_yes_or_no
+        self.ask_to_restore_library = ask_to_restore_library or self._ask_yes_or_no
         self.declined_drives = set()
         self.library = None  # the open Library of the current drive, if it has one
         self.folder_picker = folder_picker or self._pick_folder
@@ -371,7 +371,7 @@ class Viewer(QWidget):
         else:
             self.showFullScreen()
 
-    def _ask_to_create_library(self, question):
+    def _ask_yes_or_no(self, question):
         if not self.isVisible():
             self._show_and_settle()
         return QMessageBox(QMessageBox.Icon.Question, "", question, QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, self).exec() == QMessageBox.StandardButton.Yes
