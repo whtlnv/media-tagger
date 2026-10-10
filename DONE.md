@@ -1,3 +1,80 @@
+- [x] 2026-10-10 · Listing a folder gives its subfolders first, then its images and videos
+- [x] 2026-10-10 · Subfolders are listed in natural, case-blind order (`day2` before `day10`, `alpha` before `Beta`)
+- [x] 2026-10-10 · A folder listing leaves out non-media files
+- [x] 2026-10-10 · A folder listing leaves out folders whose name starts with `.` (`.mediatagger`, `.Trashes`, `.Spotlight-V100`, `.fseventsd`, `.hidden`) while listing a plain folder beside them
+- [x] 2026-10-10 · Asking the library for a folder's tag counts gives an item with two own tags a count of 2
+- [x] 2026-10-10 · Asking the library for a folder's tag counts gives an untagged item no count
+- [x] 2026-10-10 · A folder's tag counts leave out tagged items that live in other folders (including its subfolders)
+- [x] 2026-10-10 · Asking the library for the tag counts of a folder of 5,000 items runs one SQL query
+- [x] 2026-10-10 · The grid of a folder shows one tile per listed entry, subfolders first, in listing order
+- [x] 2026-10-10 · The grid opened on a folder at a given file has its cursor on that file
+- [x] 2026-10-10 · A folder tile draws the folder glyph, an image tile the image glyph and a video tile the video glyph
+- [x] 2026-10-10 · A video tile shows a ▶ badge
+- [x] 2026-10-10 · An image tile shows no ▶ badge
+- [x] 2026-10-10 · A tile whose filename is wider than the tile shows it truncated with an ellipsis
+- [x] 2026-10-10 · A tile whose filename fits shows it whole, with no ellipsis
+- [x] 2026-10-10 · A tile for an item with 3 own tags shows a `🏷3` badge
+- [x] 2026-10-10 · A tile for an untagged item shows no tag badge
+- [x] 2026-10-10 · A grid with no library (viewing only) shows no tag badges
+- [x] 2026-10-10 · In the grid, `→` moves the cursor to the next tile and `←` back
+- [x] 2026-10-10 · In the grid, `↓` moves the cursor one row down
+- [x] 2026-10-10 · In the grid, `+` makes the tiles bigger than their starting size of about 200 px
+- [x] 2026-10-10 · In the grid, `-` makes the tiles smaller than their starting size
+- [x] 2026-10-10 · In the grid, pressing `+` repeatedly stops growing the tiles at about 400 px
+- [x] 2026-10-10 · In the grid, pressing `-` repeatedly stops shrinking the tiles at about 100 px
+- [x] 2026-10-10 · Repainting the grid after its files have been deleted from disk still paints their tiles, without reading the files
+- [x] 2026-10-10 · Listing a folder of 5,000 files looks up each entry on disk at most once (counted, not timed)
+- [x] 2026-10-10 · Repainting the grid after one of its subfolders has been deleted from disk still draws that tile with the folder glyph
+- [x] 2026-10-10 · Opening the grid of a folder of 5,000 files finishes within a time budget, like the 5,000-tag test — budget set with headroom from a measurement taken after the single-lookup listing is in place, not the old 50 ms guess
+- [x] 2026-10-10 · The window opened on a folder path shows the slideshow of that folder at its first item
+- [x] 2026-10-10 · In the window's viewer, `Esc` shows the grid of the current item's folder with the cursor on that item
+- [x] 2026-10-10 · In the window's viewer, `Esc` after stepping to the second item puts the grid cursor on the second item
+- [x] 2026-10-10 · In the window's viewer on a playing video, `Esc` to the grid stops the video (nothing keeps playing behind the grid)
+- [x] 2026-10-10 · In the window's viewer with the tag prompt open, `Esc` closes the prompt and stays in the viewer
+- [x] 2026-10-10 · On the window's launch screen, `Esc` quits the app
+- [x] 2026-10-10 · In the grid, `Enter` on a file starts that folder's slideshow at that file
+- [x] 2026-10-10 · In the grid, `Enter` on a folder opens that folder's grid with the cursor on its first entry
+- [x] 2026-10-10 · In the grid, `Backspace` opens the parent folder's grid with the cursor on the folder just left
+- [x] 2026-10-10 · In the grid of a drive's mount point, `Backspace` stays on that grid
+- [x] 2026-10-10 · In the grid, `Esc` quits the app
+- [x] 2026-10-10 · In the grid, `f` toggles fullscreen
+- [x] 2026-10-10 · Dropping a folder onto the grid starts that folder's slideshow
+- [x] 2026-10-10 · Dropping a file onto the grid starts its folder's slideshow at that file
+- [x] 2026-10-10 · In a window launched with no path, after a folder is dropped onto the launch screen, `Esc` in its slideshow shows that folder's grid instead of quitting
+- [x] 2026-10-10 · In the grid, pressing `f` twice leaves fullscreen again
+- [x] 2026-10-10 · After going back and forth between grids and the viewer many times, the window holds only the grid currently shown (earlier grids are deleted, not kept in the stack)
+- [x] 2026-10-10 · Moving the grid cursor onto a tagged item shows its own tags, space-separated, in the status bar
+- [x] 2026-10-10 · Moving the grid cursor onto an untagged item shows no tags in the status bar
+- [x] 2026-10-10 · The library status (e.g. the read-only notice) stays visible in the status bar while the grid is shown
+- [x] 2026-10-10 · A backup message started in the viewer stays visible in the status bar after `Esc` shows the grid
+- [x] 2026-10-10 · Going from the viewer to the grid and back on the same drive makes no new backup
+- [x] 2026-10-10 · Going from the viewer to the grid and back on the same drive does not ask again to create its library
+- [x] 2026-10-10 · Going from the viewer to the grid and back on a drive whose `tags.db` is damaged, after answering No to the restore question, asks no restore question again
+- [x] 2026-10-10 · Opening a file from the grid takes the grid's selected-item tags off the status bar (the viewer shows the file's tags in its corner overlay instead)
+- [x] 2026-10-10 · Scrolled to the end, the window's grid keeps its last row of tiles just above the status bar (tiles fill their grid cell, the grid scrolls by pixel and keeps the status bar's height clear at its bottom)
+- [x] 2026-10-10 · After tagging a file in the viewer, `Esc` shows its grid tile with the updated tag badge
+- [x] 2026-10-10 · Closing the window shuts down the viewer's video player and leaves a backup of the open library
+- [x] 2026-10-10 · Showing a folder's grid records that folder and its drive's mount point in `state.json` under `$XDG_CONFIG_HOME/mediatagger/`
+- [x] 2026-10-10 · Showing a folder's slideshow records that folder in `state.json`
+- [x] 2026-10-10 · With `XDG_CONFIG_HOME` unset, the state is recorded under `<home>/.config/mediatagger/` of the injected home
+- [x] 2026-10-10 · The state file is not written when it would land on the app's own drive
+- [x] 2026-10-10 · The state file is not written when it would land on the drive being viewed
+- [x] 2026-10-10 · Launching the window with no path, when the remembered folder exists, opens that folder's grid
+- [x] 2026-10-10 · Launching the window with no path into a remembered folder's grid opens that drive's library
+- [x] 2026-10-10 · Launching the window with no path, when the remembered folder no longer exists, shows the launch screen
+- [x] 2026-10-10 · Launching the window with no path and no state file shows the launch screen
+- [x] 2026-10-10 · Launching the window with no path and an unreadable state file shows the launch screen
+- [x] 2026-10-10 · Launching the window with no path and no state file, then closing it, leaves no state file (nothing is remembered until a folder is shown)
+- [x] 2026-10-10 · Launching the window on a file path records that file's folder in `state.json`, not the file
+- [x] 2026-10-10 · Dropping a folder onto the window's launch screen records that folder in `state.json`
+- [x] 2026-10-10 · Launching the window with no path into a remembered folder's grid puts the cursor on its first entry and shows tag badges from that drive's library
+- [x] 2026-10-10 · Entering a subfolder from the window's grid shows tag badges for its tagged items
+- [x] 2026-10-10 · Launching the window with no path and a `state.json` that has no `folder` entry shows the launch screen
+- [x] 2026-10-10 · Launching the window with no path and a `state.json` it has no permission to read shows the launch screen
+- [x] 2026-10-10 · Running the shipped `mediatagger <folder>` command shows one window whose `Esc` switches from the slideshow to that folder's grid
+  - predicted-contradiction: `src/mediatagger/test_main.py::test_pressing_esc_in_the_mediatagger_command_makes_it_exit_cleanly` — asserts: pressing `Esc` in the slideshow of `mediatagger <folder>` makes the command exit cleanly — retired-by: "`Esc` switches from the slideshow to that folder's grid"
+- [x] 2026-10-10 · Running the shipped `mediatagger` command with no path, after a folder was viewed, opens that folder's grid
+- [x] 2026-10-10 · In the shipped `mediatagger <folder>` command, `Esc` in the slideshow and then `Esc` in the grid makes it exit cleanly
 - [x] 2026-10-10 · Backing up a library writes a copy of its `tags.db` to `<backup root>/<drive_id>/tags-<UTC time>.db`, named from the given clock (`tags-20261009T153000Z.db`), and opening the copy shows the library's tags
 - [x] 2026-10-10 · With `XDG_DATA_HOME` set, the default backup root is `$XDG_DATA_HOME/mediatagger/backups`
 - [x] 2026-10-10 · With `XDG_DATA_HOME` unset, the default backup root is `~/.local/share/mediatagger/backups` (the test points `HOME` at a temp folder)
