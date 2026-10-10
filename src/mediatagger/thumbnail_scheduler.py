@@ -18,14 +18,16 @@ class ThumbnailScheduler:
 
     def request(self, path):
         with self._lock:
-            already_queued = path in self._pending or path in self._unrequested
-            if path in self._pending:
-                self._pending.remove(path)
-            if path in self._unrequested:
-                self._unrequested.remove(path)
+            already_queued = self._withdraw(path)
             self._pending.append(path)
         if not already_queued:
             self._executor.submit(self._generate_next)
+
+    def _withdraw(self, path):
+        queues = [queue for queue in (self._pending, self._unrequested) if path in queue]
+        for queue in queues:
+            queue.remove(path)
+        return bool(queues)
 
     def _generate_next(self):
         with self._lock:
