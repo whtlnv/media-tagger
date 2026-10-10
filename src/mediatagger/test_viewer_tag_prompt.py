@@ -37,15 +37,6 @@ def shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, tags):
     return drive, folder, shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
 
-def test_in_the_tag_prompt_on_a_drive_whose_library_has_beach_and_bird_typing_b_shows_a_suggestion_popup_listing_beach_and_bird(qtbot, tmp_path):
-    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach bird")
-
-    type_in_tag_prompt(qtbot, viewer, "b")
-
-    [suggestions] = visible_suggestion_lists()
-    assert sorted(listed(suggestions)) == ["beach", "bird"]
-
-
 def test_in_the_tag_prompt_on_a_drive_whose_library_has_no_tags_yet_typing_b_shows_no_suggestion_popup(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
@@ -58,6 +49,7 @@ def test_in_the_tag_prompt_on_a_drive_whose_library_has_no_tags_yet_typing_b_sho
 @pytest.mark.parametrize(
     "library_tags, typed, expected",
     [
+        ("beach bird", "b", ["beach", "bird"]),
         ("beach bird", "be", ["beach"]),
         ("beach bird", "BE", ["beach"]),
         ("beach family", "beach fam", ["family"]),
@@ -66,6 +58,7 @@ def test_in_the_tag_prompt_on_a_drive_whose_library_has_no_tags_yet_typing_b_sho
         ("beach bird", "BEACH b", ["bird"]),
     ],
     ids=[
+        "typing_b_lists_beach_and_bird",
         "typing_be_lists_beach_and_not_bird",
         "matching_ignores_case_typing_upper_case_be_lists_beach",
         "the_last_space_separated_word_is_completed_typing_beach_fam_lists_family",
