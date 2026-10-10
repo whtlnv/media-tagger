@@ -173,15 +173,15 @@ class Viewer(QWidget):
         self.cant_save_status.hide()
         self.couldnt_save_status = _overlay_label(_COULDNT_SAVE_TAGS_TEXT, self.status_bar)
         self.couldnt_save_status.hide()
-        self.backing_up_status = _overlay_label(BACKING_UP_TEXT, self.status_bar)
-        self.backing_up_status.hide()
+        self.backup_status = _overlay_label(BACKING_UP_TEXT, self.status_bar)
+        self.backup_status.hide()
         status_layout = QHBoxLayout(self.status_bar)
         status_layout.setContentsMargins(CORNER_MARGIN, 0, CORNER_MARGIN, CORNER_MARGIN)
         status_layout.addWidget(self.library_label)
         status_layout.addWidget(self.read_only_status)
         status_layout.addWidget(self.cant_save_status)
         status_layout.addWidget(self.couldnt_save_status)
-        status_layout.addWidget(self.backing_up_status)
+        status_layout.addWidget(self.backup_status)
         status_layout.addStretch()
 
     def closeEvent(self, event):
@@ -433,10 +433,10 @@ class Viewer(QWidget):
         self._show_library_status(LIBRARY_TEXT.format(drive.name), read_only)
 
     def _back_up_library(self):
-        self.backing_up_status.setText(BACKING_UP_TEXT)
-        self.backing_up_status.show()
+        self.backup_status.setText(BACKING_UP_TEXT)
+        self.backup_status.show()
         back_up(self.library, self.backup_root, clock=self.backup_clock)
-        self.backing_up_status.setText(BACKED_UP_TEXT)
+        self.backup_status.setText(BACKED_UP_TEXT)
 
     def _show_library_status(self, text, read_only):
         self.read_only_banner.setVisible(read_only)
