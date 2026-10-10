@@ -288,3 +288,21 @@ def test_moving_the_windows_grid_cursor_onto_a_tagged_item_shows_its_own_tags_sp
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
 
     assert "beach family" in shown_status_bar_texts(window)
+
+
+def test_moving_the_windows_grid_cursor_onto_an_untagged_item_shows_no_tags_in_the_status_bar(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    Library.open(drive).enter(folder / "IMG_2.png", "beach family")
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Left)
+
+    shown = shown_status_bar_texts(window)
+    assert "beach family" not in shown
+    assert "" not in shown

@@ -61,7 +61,7 @@ class StatusBar(QWidget):
 
     def show_tags(self, text):
         self.tags_status.setText(text)
-        self.tags_status.show()
+        self.tags_status.setVisible(bool(text))
 
     def show_background(self, text, finished=False):
         """The one slot for background work (backups now, later phases' jobs too). Work in progress and failures stay
