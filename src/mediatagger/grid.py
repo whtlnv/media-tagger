@@ -15,6 +15,8 @@ TAG_BADGE = "🏷"
 
 TILE_SIZE = QSize(200, 200)
 
+ZOOM_STEP = QSize(40, 40)
+
 
 def _glyph(entry):
     if entry.is_dir():
@@ -55,6 +57,6 @@ class Grid(QListView):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Plus:
-            self.setGridSize(self.gridSize() + QSize(40, 40))
+            self.setGridSize(self.gridSize() + ZOOM_STEP)
             return
         super().keyPressEvent(event)
