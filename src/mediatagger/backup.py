@@ -80,7 +80,10 @@ def restore(drive, backup, clock):
     try:
         _copy_database(backup, tags_db)
     except sqlite3.DatabaseError:
-        damaged.rename(tags_db)
+        if damaged.exists():
+            damaged.rename(tags_db)
+        else:
+            tags_db.unlink()
         raise
 
 

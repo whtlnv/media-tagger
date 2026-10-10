@@ -378,3 +378,19 @@ def test_answering_yes_to_the_restore_question_when_the_newest_backup_is_garbage
     assert RESTORE_FAILED_TEXT.format("file is not a database") in status_bar_texts(viewer)
     assert LIBRARY_CANT_BE_OPENED_TEXT.format(drive.name) in status_bar_texts(viewer)
     assert tags_db_path(drive).read_bytes() == damaged_bytes
+
+
+def test_answering_yes_to_the_restore_question_for_a_missing_tags_db_when_the_newest_backup_is_garbage_says_restore_failed_and_the_drive_has_no_tag_library_and_leaves_no_tags_db(qtbot, tmp_path):
+    from mediatagger.viewer import DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT, RESTORE_FAILED_TEXT
+
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    backup_root = tmp_path / "backups"
+    back_up(Library.open(drive), backup_root, clock=lambda: datetime(2026, 10, 9, 15, 30, tzinfo=timezone.utc))
+    newest_backup(backup_root, drive.name).path.write_bytes(b"this backup is not a database" * 100)
+    tags_db_path(drive).unlink()
+
+    viewer = viewer_backing_up_into(qtbot, backup_root, folder, drive, ask_to_restore_library=lambda question: True)
+
+    assert RESTORE_FAILED_TEXT.format("file is not a database") in status_bar_texts(viewer)
+    assert DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format(drive.name) in status_bar_texts(viewer)
+    assert not tags_db_path(drive).exists()
