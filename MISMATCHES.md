@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 03:16 · `src/mediatagger/test_grid.py::test_in_the_grid_plus_makes_the_tiles_bigger_than_their_starting_size_of_about_200_px`
+- Behavior: In the grid, `+` makes the tiles bigger than their starting size of about 200 px
+- Predicted: AssertionError — starting tile width is `TILE_SIZE` 128, not ~200
+- Actual: AssertionError — but the measured width was 35: `visualRect` of an item is its text size hint (35×15), not the grid cell set by `setGridSize`
+- Type: wrong-reason
+- Resolution: `visualRect` doesn't measure tiles under `setGridSize`; rewrote the test to measure tile width as the x-distance between two neighbouring tiles, which now fails on 128 vs ~200 as predicted.
+
 ## 2026-10-10 02:54 · `src/mediatagger/test_grid.py::test_a_grid_with_no_library_shows_no_tag_badges`
 - Behavior: A grid with no library (viewing only) shows no tag badges
 - Predicted: pass — `Grid` already falls back to `{}` tag counts when `library` is None (from the `🏷3` cycle)

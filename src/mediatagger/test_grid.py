@@ -157,3 +157,22 @@ def test_in_the_grid_down_arrow_moves_the_cursor_one_row_down(qtbot, tmp_path):
 
     below = grid.visualRect(grid.currentIndex())
     assert (below.x(), below.y() > start.y()) == (start.x(), True)
+
+
+def test_in_the_grid_plus_makes_the_tiles_bigger_than_their_starting_size_of_about_200_px(qtbot, tmp_path):
+    touch(tmp_path, "a.jpg", "b.jpg")
+    grid = Grid(tmp_path, at=tmp_path / "a.jpg")
+    qtbot.addWidget(grid)
+    grid.resize(1000, 1000)
+    grid.show()
+    qtbot.waitExposed(grid)
+
+    def tile_width():
+        return grid.visualRect(grid.model().index(1, 0)).x() - grid.visualRect(grid.model().index(0, 0)).x()
+
+    start = tile_width()
+
+    qtbot.keyClick(grid, Qt.Key.Key_Plus)
+
+    assert abs(start - 200) <= 20
+    assert tile_width() > start

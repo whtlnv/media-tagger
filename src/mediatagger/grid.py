@@ -13,7 +13,7 @@ VIDEO_BADGE = "▶"
 
 TAG_BADGE = "🏷"
 
-TILE_SIZE = QSize(128, 128)
+TILE_SIZE = QSize(200, 200)
 
 
 def _glyph(entry):
@@ -52,3 +52,9 @@ class Grid(QListView):
         self.setItemDelegate(_TileDelegate(entries, tag_counts, self))
         if at is not None:
             self.setCurrentIndex(self.model().index(names.index(at.name), 0))
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Plus:
+            self.setGridSize(self.gridSize() + QSize(40, 40))
+            return
+        super().keyPressEvent(event)
