@@ -1,11 +1,13 @@
 import os
 import sqlite3
+from datetime import datetime, timezone
 from pathlib import Path
 
 from PySide6.QtCore import QEvent, QEventLoop, QPoint, QRect, Qt, QTimer
 from PySide6.QtGui import QImageIOHandler, QImageReader, QPainter
 from PySide6.QtWidgets import QCompleter, QFileDialog, QHBoxLayout, QLabel, QLineEdit, QMessageBox, QWidget
 
+from mediatagger.backup import back_up
 from mediatagger.folder import is_video
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
 from mediatagger.library import Library, tags_db_path
@@ -117,12 +119,13 @@ def decode_fitted(path, bounds):
 
 class Viewer(QWidget):
     def __init__(self, path=None, player_options=None, folder_picker=None, is_mount_point=os.path.ismount, ask_to_create_library=None,
-        app_location=APP_PACKAGE,
+        app_location=APP_PACKAGE, backup_root=None,
     ):
         super().__init__()
         collect_garbage_on_the_gui_thread()
         self.is_mount_point = is_mount_point
         self.app_location = app_location
+        self.backup_root = backup_root
         self.ask_to_create_library = ask_to_create_library or self._ask_to_create_library
         self.declined_drives = set()
         self.library = None  # the open Library of the current drive, if it has one
@@ -416,6 +419,7 @@ class Viewer(QWidget):
             except (sqlite3.DatabaseError, OSError):
                 self._show_library_status(LIBRARY_CANT_BE_OPENED_TEXT.format(drive.name), read_only=False)
                 return
+            back_up(self.library, self.backup_root, clock=lambda: datetime.now(timezone.utc))
         self._show_library_status(LIBRARY_TEXT.format(drive.name), read_only)
 
     def _show_library_status(self, text, read_only):
