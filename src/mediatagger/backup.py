@@ -16,7 +16,11 @@ def back_up(library, backup_root=None, clock=None):
         backup_root = default_backup_root()
     backup_dir = backup_root / library.drive_id
     backup_dir.mkdir(parents=True, exist_ok=True)
-    _copy_database(library._tags_db, backup_dir / f"tags-{clock():%Y%m%dT%H%M%SZ}.db")
+    previous_backups = sorted(backup_dir.glob("tags-*.db"))
+    new_backup = backup_dir / f"tags-{clock():%Y%m%dT%H%M%SZ}.db"
+    _copy_database(library._tags_db, new_backup)
+    if previous_backups and previous_backups[-1].read_bytes() == new_backup.read_bytes():
+        new_backup.unlink()
     for old_backup in sorted(backup_dir.glob("tags-*.db"))[:-BACKUPS_KEPT_PER_DRIVE]:
         old_backup.unlink()
     drive_root = library._tags_db.parent.parent
