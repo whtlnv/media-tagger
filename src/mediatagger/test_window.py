@@ -407,3 +407,23 @@ def test_opening_a_file_from_the_windows_grid_takes_the_grids_selected_item_tags
 
     assert isinstance(stack.currentWidget(), Viewer)
     assert "beach family" not in shown_status_bar_texts(window)
+
+
+def test_scrolled_to_the_end_the_windows_grid_keeps_its_last_row_of_tiles_just_above_the_status_bar(qtbot, tmp_path):
+    for name in "abcde":
+        make_image(tmp_path / f"{name}.jpg", "red")
+    window = Window(tmp_path, player_options=SILENT)
+    qtbot.addWidget(window)
+    window.resize(400, 330)
+    window.show()
+    qtbot.waitExposed(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    grid = stack.currentWidget()
+
+    grid.scrollToBottom()
+
+    last_tile = grid.visualRect(grid.model().index(grid.model().rowCount() - 1, 0))
+    last_tile_bottom = grid.viewport().mapTo(window, last_tile.bottomLeft()).y()
+    status_bar_top = window.status_bar.geometry().top()
+    assert status_bar_top - grid.frameWidth() - grid.spacing() - 1 <= last_tile_bottom < status_bar_top

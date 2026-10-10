@@ -2,6 +2,20 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 08:16 · `src/mediatagger/test_window.py::test_in_a_one_tile_wide_window_scrolled_fully_down_the_grids_last_tile_sits_at_or_above_the_status_bar`
+- Behavior: In a 400x330 window (one 200px tile per row) scrolled fully down, the last tile's bottom edge is at or above the status bar's top edge
+- Predicted: AssertionError — last tile's bottom at the window bottom (~331) below the status bar's top (276)
+- Actual: AssertionError — 401 <= 276 (first run, before correction: 401 <= 246, because `show_exposed` resizes to 400x300, so the 400x330 resize must come after it)
+- Type: right-reason mismatch
+- Resolution: The grid scrolls per item, so `End` in a 328px viewport scrolls the last row only to the second slot (rows at 0 and 200), leaving the last tile's bottom at 401, past the window bottom rather than at it; with the status bar's 54px reserved, the ~274px viewport holds the last row at the top (bottom ~201), so the assertion still drives the right behavior — accepted as-is.
+
+## 2026-10-10 08:09 · `src/mediatagger/test_window.py::test_scrolled_to_the_end_the_windows_grids_last_row_of_tiles_sits_fully_above_the_status_bar`
+- Behavior: Scrolled to the end, the grid's last row of tiles sits fully above the status bar, not under it
+- Predicted: AssertionError — last tile's bottom below the status bar's top (stated after the first run, not before)
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: The grid scrolls per item, so dragging the scroll bar to its maximum puts the last row at the top of the viewport, and `visualRect` is the label's size hint (40×15), not the tile cell. The rewrite presses `End` (the keyboard way to the end, which scrolls the last row to the viewport bottom) and measures the cell as `visualRect.topLeft()` + `gridSize()`; it now fails 400 < 246.
+
 ## 2026-10-10 07:44 · `src/mediatagger/test_window.py::test_going_from_the_windows_viewer_to_the_grid_and_back_on_the_same_drive_does_not_ask_again_to_create_its_library`
 - Behavior: Going from the viewer to the grid and back on the same drive does not ask again to create its library
 - Predicted: passes — the window's one shared DriveSession already keeps `declined_drives`, so re-opening the viewer on the same drive skips the question

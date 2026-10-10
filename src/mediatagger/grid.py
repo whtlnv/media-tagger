@@ -73,6 +73,9 @@ class _FolderModel(QAbstractListModel):
 
 
 class _TileDelegate(QStyledItemDelegate):
+    def sizeHint(self, option, index):
+        return self.parent().gridSize()  # a tile fills its grid cell
+
     def paint(self, painter, option, index):
         tile = index.data(TILE_ROLE)
         painter.drawText(option.rect, Qt.AlignmentFlag.AlignCenter, tile.kind.value)
@@ -96,6 +99,7 @@ class Grid(QListView):
         self.setWrapping(True)
         self.setGridSize(TILE_SIZE)
         self.setUniformItemSizes(True)  # lays out thousands of tiles without asking each one its size
+        self.setVerticalScrollMode(QListView.ScrollMode.ScrollPerPixel)
         tiles = _tiles(folder, library.tag_counts(folder) if library else {})
         self.setModel(_FolderModel(tiles, self))
         self.setItemDelegate(_TileDelegate(self))
@@ -103,6 +107,10 @@ class Grid(QListView):
         if at is not None:
             names = [tile.name for tile in tiles]
             self.setCurrentIndex(self.model().index(names.index(at.name), 0))
+
+    def keep_clear_at_the_bottom(self, height):
+        """Room below the last row for what lies over the grid's bottom edge (the window's status bar)."""
+        self.setViewportMargins(0, 0, 0, height)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Plus:

@@ -49,6 +49,7 @@ class Window(QWidget):
         grid.selectionModel().currentChanged.connect(self._show_tags_of)
         for old in self.findChildren(Grid):
             old.deleteLater()
+        grid.keep_clear_at_the_bottom(self.status_bar.sizeHint().height())
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
         self.status_bar.raise_()
