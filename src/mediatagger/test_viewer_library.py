@@ -357,13 +357,12 @@ def test_on_a_read_only_drive_with_a_tag_library_the_status_bar_texts_sit_side_b
     with made_read_only(drive):
         viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
-    shown = status_bar_labels(viewer)
-    left, right = sorted((frame_in(viewer, label) for label in shown), key=lambda frame: frame.left())
-    assert len(shown) == 2
-    assert viewer.rect().contains(left) and viewer.rect().contains(right)
-    assert left.left() >= CORNER_MARGIN
-    assert max(left.bottom(), right.bottom()) <= viewer.rect().bottom() - CORNER_MARGIN
-    assert left.right() < right.left()
+    frames = sorted((frame_in(viewer, label) for label in status_bar_labels(viewer)), key=lambda frame: frame.left())
+    assert len(frames) >= 2  # the library and read-only texts, plus any background-work message
+    assert all(viewer.rect().contains(frame) for frame in frames)
+    assert frames[0].left() >= CORNER_MARGIN
+    assert max(frame.bottom() for frame in frames) <= viewer.rect().bottom() - CORNER_MARGIN
+    assert all(left.right() < right.left() for left, right in zip(frames, frames[1:]))
 
 
 def test_the_status_bar_text_is_shown_whole_with_room_for_its_full_height(qtbot, tmp_path):
@@ -407,8 +406,8 @@ def test_on_a_read_only_drive_with_a_tag_library_each_status_bar_text_is_styled_
         viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
     shown = status_bar_labels(viewer)
-    assert len(shown) == 2
-    assert [label.styleSheet() for label in shown] == [viewer.info.styleSheet()] * 2
+    assert len(shown) >= 2  # the library and read-only texts, plus any background-work message
+    assert [label.styleSheet() for label in shown] == [viewer.info.styleSheet()] * len(shown)
 
 
 def test_on_a_read_only_drive_with_a_tag_library_the_read_only_banner_is_styled_like_the_info_overlay(qtbot, tmp_path):
