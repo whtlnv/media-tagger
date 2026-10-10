@@ -2,6 +2,7 @@ import errno
 import json
 import os
 from datetime import datetime, timezone
+from pathlib import Path
 
 from PySide6.QtCore import QCoreApplication, QEvent, Qt
 from PySide6.QtWidgets import QLabel, QStackedWidget
@@ -478,3 +479,9 @@ def test_showing_a_folders_grid_records_that_folder_and_its_drives_mount_point_i
 
     state = json.loads((config_home / "mediatagger" / "state.json").read_text())
     assert state == {"folder": str(folder), "mount_point": str(drive)}
+
+
+def test_every_test_runs_with_the_config_home_pointing_at_a_throwaway_folder_outside_the_real_home():
+    config_home = Path(os.environ["XDG_CONFIG_HOME"])
+
+    assert (config_home.is_dir(), config_home.is_relative_to(Path.home())) == (True, False)
