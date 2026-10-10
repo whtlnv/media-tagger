@@ -8,7 +8,7 @@ from PySide6.QtCore import QSize
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import make_image, make_jpeg_tagged_rotate_90
 
-from mediatagger.thumbnails import image_thumbnail, video_duration, video_thumbnail
+from mediatagger.thumbnails import folder_thumbnail, image_thumbnail, video_duration, video_thumbnail
 
 
 def test_a_wide_image_is_fitted_to_400_px_across_keeping_its_aspect_ratio(tmp_path):
@@ -140,3 +140,16 @@ def test_a_corrupt_video_yields_no_thumbnail_and_no_duration(tmp_path):
 
     assert video_thumbnail(path) is None
     assert video_duration(path) is None
+
+
+def test_a_folder_holding_10_jpg_and_2_jpg_yields_the_thumbnail_of_2_jpg_first_in_natural_order(tmp_path):
+    folder = tmp_path / "album"
+    folder.mkdir()
+    make_image(folder / "10.jpg", "red", width=400, height=800)
+    make_image(folder / "2.jpg", "green", width=800, height=400)
+
+    thumbnail = folder_thumbnail(folder)
+
+    assert thumbnail.size() == QSize(400, 200)
+    centre = thumbnail.pixelColor(thumbnail.width() // 2, thumbnail.height() // 2)
+    assert centre.green() > 100 and centre.red() < 60

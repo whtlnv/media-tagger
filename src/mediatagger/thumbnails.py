@@ -4,6 +4,8 @@ import subprocess
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QImage, QImageReader
 
+from mediatagger.folder import media_files
+
 
 def image_thumbnail(path):
     reader = QImageReader(str(path))
@@ -41,3 +43,7 @@ def video_thumbnail(path, timeout=None):
     except subprocess.TimeoutExpired:
         return None
     return QImage.fromData(result.stdout).scaled(400, 400, Qt.KeepAspectRatio)
+
+
+def folder_thumbnail(folder):
+    return image_thumbnail(media_files(folder)[0])
