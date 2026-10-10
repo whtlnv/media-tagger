@@ -6,7 +6,7 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 ## Phase 7 — Folder grid
 
 - [x] Listing a folder gives its subfolders first, then its images and videos
-- [ ] Subfolders are listed in natural, case-blind order (`day2` before `day10`, `alpha` before `Beta`)
+- [x] Subfolders are listed in natural, case-blind order (`day2` before `day10`, `alpha` before `Beta`)
 - [ ] A folder listing leaves out non-media files
 - [ ] A folder listing leaves out folders whose name starts with `.` (`.mediatagger`, `.Trashes`, `.Spotlight-V100`, `.fseventsd`, `.hidden`) while listing a plain folder beside them
 - [ ] Asking the library for a folder's tag counts gives an item with two own tags a count of 2

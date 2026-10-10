@@ -75,3 +75,10 @@ def test_listing_a_folder_gives_its_subfolders_first_then_its_images_and_videos(
     (tmp_path / "zoo").mkdir()
 
     assert folder_entries(tmp_path) == [tmp_path / "zoo", tmp_path / "a_beach.jpg", tmp_path / "b_dance.mp4"]
+
+
+def test_subfolders_are_listed_in_natural_case_blind_order(tmp_path):
+    for name in ["day10", "Beta", "day2", "alpha"]:
+        (tmp_path / name).mkdir()
+
+    assert [path.name for path in folder_entries(tmp_path)] == ["alpha", "Beta", "day2", "day10"]
