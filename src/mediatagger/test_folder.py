@@ -1,3 +1,6 @@
+import os
+from collections import Counter
+
 import pytest
 
 from mediatagger.folder import folder_entries, is_video, media_files
@@ -96,3 +99,20 @@ def test_a_folder_listing_leaves_out_hidden_folders(tmp_path):
         (tmp_path / name).mkdir()
 
     assert folder_entries(tmp_path) == [tmp_path / "trip"]
+
+
+def test_listing_a_folder_of_5000_files_looks_up_each_entry_on_disk_at_most_once(tmp_path, monkeypatch):
+    touch(tmp_path, *[f"IMG_{i}.jpg" for i in range(5000)])
+    lookups = Counter()
+    real_stat = os.stat
+
+    def counting_stat(path, *args, **kwargs):
+        lookups[os.fspath(path)] += 1
+        return real_stat(path, *args, **kwargs)
+
+    monkeypatch.setattr(os, "stat", counting_stat)
+
+    entries = folder_entries(tmp_path)
+
+    assert len(entries) == 5000
+    assert max(lookups.values(), default=0) <= 1

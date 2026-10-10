@@ -1,4 +1,6 @@
+import os
 import re
+from pathlib import Path
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".bmp", ".tif", ".tiff", ".heic"}
 
@@ -19,10 +21,6 @@ def _is_media(path):
     return path.is_file() and path.suffix.lower() in MEDIA_EXTENSIONS and not _is_hidden(path)
 
 
-def _is_subfolder(path):
-    return path.is_dir() and not _is_hidden(path)
-
-
 def media_files(folder):
     media = [path for path in folder.iterdir() if _is_media(path)]
     return sorted(media, key=_natural_key)
@@ -33,5 +31,8 @@ def is_video(path):
 
 
 def folder_entries(folder):
-    subfolders = [path for path in folder.iterdir() if _is_subfolder(path)]
-    return sorted(subfolders, key=_natural_key) + media_files(folder)
+    with os.scandir(folder) as scan:
+        entries = [entry for entry in scan if not _is_hidden(entry)]
+    subfolders = [Path(entry) for entry in entries if entry.is_dir()]
+    media = [Path(entry) for entry in entries if entry.is_file() and Path(entry).suffix.lower() in MEDIA_EXTENSIONS]
+    return sorted(subfolders, key=_natural_key) + sorted(media, key=_natural_key)

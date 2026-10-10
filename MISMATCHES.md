@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 04:00 · `src/mediatagger/test_grid.py::test_after_a_first_grid_has_been_shown_opening_and_showing_the_grid_of_a_folder_of_5000_files_takes_under_50_ms`
+- Behavior: Opening the grid of a folder of 5,000 files finishes within a time budget, like the 5,000-tag test
+- Predicted: AssertionError `(False, 5000)` — opening and showing a 5,000-file grid takes over 200 ms because of per-entry stats and layout
+- Actual: passed (flakily) — repeated runs measured 190–350 ms; profiling showed ~55 ms listing + ~70 ms constructing (repeated per-entry stats), only ~3 ms showing, plus a one-off ~145 ms Qt font load on the first widget shown in the process
+- Type: passed unexpectedly
+- Resolution: The noise came from the one-off font load, not the grid. I rewrote the test to show a warm-up grid first, like the tag test excludes its first keystroke, and to use the tag test's 50 ms budget. It now fails reliably at about 125 ms, which comes from the per-entry stats.
+
 ## 2026-10-10 03:16 · `src/mediatagger/test_grid.py::test_in_the_grid_plus_makes_the_tiles_bigger_than_their_starting_size_of_about_200_px`
 - Behavior: In the grid, `+` makes the tiles bigger than their starting size of about 200 px
 - Predicted: AssertionError — starting tile width is `TILE_SIZE` 128, not ~200
