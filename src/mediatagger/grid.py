@@ -43,6 +43,7 @@ class Grid(QListView):
         entries = folder_entries(folder)
         names = [entry.name for entry in entries]
         self.setModel(QStringListModel(names, self))
-        self.setItemDelegate(_TileDelegate(entries, library.tag_counts(folder) if library else {}, self))
+        tag_counts = library.tag_counts(folder) if library else {}
+        self.setItemDelegate(_TileDelegate(entries, tag_counts, self))
         if at is not None:
             self.setCurrentIndex(self.model().index(names.index(at.name), 0))
