@@ -25,7 +25,8 @@ class Window(QWidget):
         layout.addWidget(self.stack)
         self.status_bar = StatusBar(self)
         self.session = DriveSession(self.status_bar, self, **session_options)
-        self.viewer = Viewer(path, player_options=player_options, folder_picker=folder_picker, on_escape=self._escape, session=self.session)
+        self.viewer = Viewer(path, player_options=player_options, folder_picker=folder_picker, on_escape=self._escape, session=self.session,
+            on_drop=self._record_state)
         self.stack.addWidget(self.viewer)
         if path is not None:
             self._record_state(path if path.is_dir() else path.parent)

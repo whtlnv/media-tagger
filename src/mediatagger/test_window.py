@@ -624,3 +624,14 @@ def test_launching_the_window_on_a_file_path_records_that_files_folder_in_the_st
 
     state = json.loads((Path(os.environ["XDG_CONFIG_HOME"]) / "mediatagger" / "state.json").read_text())
     assert state["folder"] == str(folder)
+
+
+def test_dropping_a_folder_onto_the_windows_launch_screen_records_that_folder_in_the_state_file(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    window = Window(player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+
+    drag_and_drop_onto(window.findChild(QStackedWidget).currentWidget(), folder)
+
+    state = json.loads((Path(os.environ["XDG_CONFIG_HOME"]) / "mediatagger" / "state.json").read_text())
+    assert state["folder"] == str(folder)

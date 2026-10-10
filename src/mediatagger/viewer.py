@@ -99,11 +99,12 @@ def decode_fitted(path, bounds):
 class Viewer(QWidget):
     def __init__(self, path=None, player_options=None, folder_picker=None, is_mount_point=os.path.ismount, ask_to_create_library=None,
         app_location=APP_PACKAGE, backup_root=None, backup_clock=lambda: datetime.now(timezone.utc), ask_to_restore_library=None,
-        on_escape=None, session=None,
+        on_escape=None, session=None, on_drop=lambda path: None,
     ):
         """A viewer on its own makes its own status bar and drive session; inside a window it is handed the window's."""
         super().__init__()
         self.on_escape = on_escape or self.close
+        self.on_drop = on_drop
         collect_garbage_on_the_gui_thread()
         if session is None:
             session = DriveSession(StatusBar(self), self, is_mount_point, ask_to_create_library, app_location, backup_root, backup_clock, ask_to_restore_library)
@@ -204,7 +205,9 @@ class Viewer(QWidget):
 
     def dropEvent(self, event):
         self.stop_video()
-        self.open(Path(event.mimeData().urls()[0].toLocalFile()))
+        path = Path(event.mimeData().urls()[0].toLocalFile())
+        self.open(path)
+        self.on_drop(path)
 
     def stop_video(self):
         self.video_player.press("Right")  # leaving the current item is what stops its video
