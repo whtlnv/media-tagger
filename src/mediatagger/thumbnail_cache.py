@@ -64,4 +64,8 @@ class ThumbnailCache:
 
 
 def open_thumbnail_cache(drive_id, home):
-    return ThumbnailCache(":memory:")
+    if drive_id is None:
+        return ThumbnailCache(":memory:")
+    path = cache_file(drive_id, home)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    return ThumbnailCache(path)

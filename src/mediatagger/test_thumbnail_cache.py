@@ -173,6 +173,20 @@ def test_each_stored_video_comes_back_with_its_own_stored_duration(tmp_path):
     assert (long_duration, short_duration) == (42, 7.25)
 
 
+def test_a_drives_cache_opened_by_its_drive_id_returns_its_thumbnails_after_being_opened_again_by_the_same_drive_id(tmp_path):
+    from PySide6.QtGui import QColor
+
+    from mediatagger.thumbnail_cache import open_thumbnail_cache
+
+    open_thumbnail_cache(drive_id="drive-1234", home=tmp_path / "home").store(
+        "Photos/beach.jpg", size=1234, mtime=1700000000.5, thumbnail=solid_thumbnail("red")
+    )
+    reopened = open_thumbnail_cache(drive_id="drive-1234", home=tmp_path / "home")
+    found = reopened.lookup("Photos/beach.jpg", size=1234, mtime=1700000000.5)
+
+    assert found.pixelColor(200, 100) == QColor("red")
+
+
 def solid_thumbnail(color):
     from PySide6.QtGui import QColor, QImage
 
