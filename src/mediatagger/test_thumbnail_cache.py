@@ -14,3 +14,11 @@ def test_with_the_cache_home_set_a_drives_cache_is_thumbs_db_under_mediatagger_a
     monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))
 
     assert cache_file("drive-1234", home=tmp_path / "home") == tmp_path / "cache" / "mediatagger" / "drive-1234" / "thumbs.db"
+
+
+def test_with_the_cache_home_unset_a_drives_cache_is_thumbs_db_under_the_homes_dot_cache(monkeypatch, tmp_path):
+    from mediatagger.thumbnail_cache import cache_file
+
+    monkeypatch.delenv("XDG_CACHE_HOME")
+
+    assert cache_file("drive-1234", home=tmp_path / "home") == tmp_path / "home" / ".cache" / "mediatagger" / "drive-1234" / "thumbs.db"

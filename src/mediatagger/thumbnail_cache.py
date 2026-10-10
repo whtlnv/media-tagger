@@ -3,4 +3,5 @@ from pathlib import Path
 
 
 def cache_file(drive_id, home):
-    return Path(os.environ["XDG_CACHE_HOME"]) / "mediatagger" / drive_id / "thumbs.db"
+    cache_home = os.environ.get("XDG_CACHE_HOME", home / ".cache")
+    return Path(cache_home) / "mediatagger" / drive_id / "thumbs.db"
