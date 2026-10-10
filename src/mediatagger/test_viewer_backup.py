@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QLabel
 
 from mediatagger.backup import back_up, default_backup_root, newest_backup
 from mediatagger.library import Library, tags_db_path
-from mediatagger.test_viewer import make_image, SILENT
+from mediatagger.test_viewer import make_image, shown_texts, SILENT
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, make_tag_library_drive, overwrite_tags_db_with_garbage, status_bar_texts
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger.viewer import BACKED_UP_TEXT, BACKING_UP_TEXT, BACKUP_FAILED_TEXT, Viewer
@@ -274,3 +274,21 @@ def test_opening_a_folder_on_a_drive_whose_tags_db_is_garbage_with_no_backups_fo
 
     assert asked == []
     assert status_bar_texts(viewer) == [LIBRARY_CANT_BE_OPENED_TEXT.format(drive.name)]
+
+
+def test_answering_yes_to_the_restore_question_opens_the_library_with_the_backed_up_tags_shown_and_says_restored_backup_from_its_local_time(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    backup_root = tmp_path / "backups"
+    library = Library.open(drive)
+    library.enter(folder / "IMG_1.png", "beach family")
+    back_up(library, backup_root, clock=lambda: datetime(2026, 10, 9, 15, 30, tzinfo=timezone.utc))
+    overwrite_tags_db_with_garbage(drive)
+
+    with local_time_zone("America/Mexico_City"):  # UTC−6 all year
+        viewer = viewer_backing_up_into(qtbot, backup_root, folder, drive, ask_to_restore_library=lambda question: True)
+        viewer.resize(400, 300)
+        viewer.show()
+        qtbot.waitExposed(viewer)
+
+    assert shown_texts(viewer) == ["beach family"]
+    assert "✓ Restored backup from 2026-10-09 09:30" in status_bar_texts(viewer)

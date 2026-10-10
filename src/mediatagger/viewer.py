@@ -7,7 +7,7 @@ from PySide6.QtCore import QEvent, QEventLoop, QPoint, QRect, Qt, QTimer
 from PySide6.QtGui import QImageIOHandler, QImageReader, QPainter
 from PySide6.QtWidgets import QApplication, QCompleter, QFileDialog, QHBoxLayout, QLabel, QLineEdit, QMessageBox, QWidget
 
-from mediatagger.backup import back_up, default_backup_root, newest_backup
+from mediatagger.backup import back_up, default_backup_root, newest_backup, restore
 from mediatagger.folder import is_video
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
 from mediatagger.library import Library, tags_db_path
@@ -41,6 +41,7 @@ _COULDNT_SAVE_TAGS_TEXT = "Couldn't save tags — is the drive still connected?"
 BACKING_UP_TEXT = "⟳ Backing up database…"
 BACKED_UP_TEXT = "✓ Backed up"
 BACKUP_FAILED_TEXT = "✗ Backup failed — {}"
+RESTORED_BACKUP_TEXT = "✓ Restored backup from {:%Y-%m-%d %H:%M}"
 _CANT_SAVE_MESSAGE_MS = 3000
 _BACKED_UP_MESSAGE_MS = 3000
 
@@ -431,10 +432,11 @@ class Viewer(QWidget):
             try:
                 self.library = Library.open(drive)
             except (sqlite3.DatabaseError, OSError):
-                self._offer_to_restore_library(drive)
-                self._show_library_status(LIBRARY_CANT_BE_OPENED_TEXT.format(drive.name), read_only=False)
-                return
-            self._back_up_library()
+                if not self._offer_to_restore_library(drive):
+                    self._show_library_status(LIBRARY_CANT_BE_OPENED_TEXT.format(drive.name), read_only=False)
+                    return
+            else:
+                self._back_up_library()
         self._show_library_status(LIBRARY_TEXT.format(drive.name), read_only)
 
     def _back_up_library(self):
@@ -461,8 +463,13 @@ class Viewer(QWidget):
 
     def _offer_to_restore_library(self, drive):
         backup = newest_backup(self.backup_root, drive.name)
-        if backup:
-            self.ask_to_restore_library(RESTORE_LIBRARY_QUESTION.format(drive.name, backup.taken_at.astimezone()))
+        if backup and self.ask_to_restore_library(RESTORE_LIBRARY_QUESTION.format(drive.name, backup.taken_at.astimezone())):
+            restore(drive, backup.path, self.backup_clock)
+            self.library = Library.open(drive)
+            self.backup_status.setText(RESTORED_BACKUP_TEXT.format(backup.taken_at.astimezone()))
+            self.backup_status.show()
+            return True
+        return False
 
     def _agrees_to_create_library(self, drive):
         if drive in self.declined_drives:
