@@ -446,3 +446,13 @@ def test_after_restoring_a_missing_tags_db_the_viewer_asks_no_create_question_an
 
     assert asked_to_create == []
     assert "Library: MEDIATAGGER" in status_bar_texts(viewer)
+
+
+def test_opening_a_folder_on_a_read_only_drive_whose_tags_db_is_garbage_with_no_backups_says_its_library_cant_be_opened(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    overwrite_tags_db_with_garbage(drive)
+
+    with made_read_only(drive):
+        viewer = viewer_backing_up_into(qtbot, tmp_path / "backups", folder, drive)
+
+    assert "Library on MEDIATAGGER can't be opened — viewing only" in status_bar_texts(viewer)

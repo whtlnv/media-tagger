@@ -445,7 +445,8 @@ class Viewer(QWidget):
             self.library = Library.open(drive)
         except (sqlite3.DatabaseError, OSError):
             if read_only:
-                self._show_library_status(CANT_RESTORE_TO_READ_ONLY_DRIVE_TEXT.format(drive.name), read_only=True)
+                text = CANT_RESTORE_TO_READ_ONLY_DRIVE_TEXT if newest_backup(self.backup_root, drive.name) else LIBRARY_CANT_BE_OPENED_TEXT
+                self._show_library_status(text.format(drive.name), read_only=True)
                 return False
             if not self._offer_to_restore_library(drive):
                 self._show_library_status(LIBRARY_CANT_BE_OPENED_TEXT.format(drive.name), read_only=False)
