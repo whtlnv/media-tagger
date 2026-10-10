@@ -1,3 +1,5 @@
+import shutil
+
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QImage, QImageReader
 
@@ -12,10 +14,14 @@ def image_thumbnail(path):
 
 
 def video_duration(path):
+    if shutil.which("ffmpeg") is None:
+        return None
     return 3.0
 
 
 def video_thumbnail(path):
+    if shutil.which("ffmpeg") is None:
+        return None
     frame = QImage(400, 200, QImage.Format_RGB32)
     frame.fill(QColor("blue"))
     return frame

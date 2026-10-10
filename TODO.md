@@ -13,7 +13,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] A video yields its duration in seconds
 - [x] A video yields a frame taken at ~10% of its duration, not its first frame (a test video whose colour changes after the first 5% gives the later colour)
 - [x] A video's frame thumbnail fits within ~400 px, aspect ratio kept
-- [ ] When `ffmpeg`/`ffprobe` are not on PATH, a video yields "no thumbnail" and no duration instead of raising
+- [x] When `ffmpeg`/`ffprobe` are not on PATH, a video yields "no thumbnail" and no duration instead of raising
 - [ ] When `ffmpeg` runs past its timeout, the video yields "no thumbnail" and generation returns promptly
 - [ ] A corrupt video file yields "no thumbnail" and no duration instead of raising
 - [ ] A folder whose images are `10.jpg` and `2.jpg` yields the thumbnail of `2.jpg` (first image in natural order)

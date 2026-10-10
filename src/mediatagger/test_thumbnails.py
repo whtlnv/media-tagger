@@ -74,3 +74,12 @@ def test_a_wide_videos_thumbnail_is_fitted_to_400_px_across_keeping_its_aspect_r
     )
 
     assert video_thumbnail(path).size() == QSize(400, 200)
+
+
+@pytest.mark.skipif(shutil.which("ffmpeg") is None, reason="ffmpeg is not installed")
+def test_without_ffmpeg_on_the_path_a_video_yields_no_thumbnail_and_no_duration(tmp_path, monkeypatch):
+    path = make_clip(tmp_path / "clip.mp4", duration=3)
+    monkeypatch.setenv("PATH", str(tmp_path / "empty-bin"))
+
+    assert video_thumbnail(path) is None
+    assert video_duration(path) is None
