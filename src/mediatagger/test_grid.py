@@ -17,6 +17,16 @@ def tile_width(grid):
     return grid.visualRect(grid.model().index(1, 0)).x() - grid.visualRect(grid.model().index(0, 0)).x()
 
 
+def shown_two_tile_grid(qtbot, tmp_path, width):
+    touch(tmp_path, "a.jpg", "b.jpg")
+    grid = Grid(tmp_path, at=tmp_path / "a.jpg")
+    qtbot.addWidget(grid)
+    grid.resize(width, 1000)
+    grid.show()
+    qtbot.waitExposed(grid)
+    return grid
+
+
 class RecordingPainter(QPainter):
     def __init__(self, device):
         super().__init__(device)
@@ -164,12 +174,7 @@ def test_in_the_grid_down_arrow_moves_the_cursor_one_row_down(qtbot, tmp_path):
 
 
 def test_in_the_grid_plus_makes_the_tiles_bigger_than_their_starting_size_of_about_200_px(qtbot, tmp_path):
-    touch(tmp_path, "a.jpg", "b.jpg")
-    grid = Grid(tmp_path, at=tmp_path / "a.jpg")
-    qtbot.addWidget(grid)
-    grid.resize(1000, 1000)
-    grid.show()
-    qtbot.waitExposed(grid)
+    grid = shown_two_tile_grid(qtbot, tmp_path, width=1000)
 
     start = tile_width(grid)
 
@@ -180,12 +185,7 @@ def test_in_the_grid_plus_makes_the_tiles_bigger_than_their_starting_size_of_abo
 
 
 def test_in_the_grid_minus_makes_the_tiles_smaller_than_their_starting_size(qtbot, tmp_path):
-    touch(tmp_path, "a.jpg", "b.jpg")
-    grid = Grid(tmp_path, at=tmp_path / "a.jpg")
-    qtbot.addWidget(grid)
-    grid.resize(1000, 1000)
-    grid.show()
-    qtbot.waitExposed(grid)
+    grid = shown_two_tile_grid(qtbot, tmp_path, width=1000)
 
     start = tile_width(grid)
 
@@ -195,12 +195,7 @@ def test_in_the_grid_minus_makes_the_tiles_smaller_than_their_starting_size(qtbo
 
 
 def test_in_the_grid_pressing_plus_repeatedly_stops_growing_the_tiles_at_about_400_px(qtbot, tmp_path):
-    touch(tmp_path, "a.jpg", "b.jpg")
-    grid = Grid(tmp_path, at=tmp_path / "a.jpg")
-    qtbot.addWidget(grid)
-    grid.resize(2000, 1000)
-    grid.show()
-    qtbot.waitExposed(grid)
+    grid = shown_two_tile_grid(qtbot, tmp_path, width=2000)
 
     for _ in range(10):
         qtbot.keyClick(grid, Qt.Key.Key_Plus)
