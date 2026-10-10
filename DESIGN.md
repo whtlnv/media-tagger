@@ -95,7 +95,7 @@ Search history is remembered (`↑` in the search box).
 
 ### Launch
 
-- If the drive from last session is mounted: reopen the last folder in the grid.
+- If the drive from last session is mounted: reopen the last folder in the grid. The last folder shown is remembered in `$XDG_CONFIG_HOME/mediatagger/state.json` (default `~/.config/mediatagger/`), never written to the app's own drive or the drive being viewed.
 - Otherwise: empty screen "Drop a folder or file here, or press o to open".
 
 ### Drag & drop
@@ -112,7 +112,7 @@ Search history is remembered (`↑` in the search box).
 | `←` | previous |
 | `t` | tag prompt |
 | `i` | toggle info overlay (filename, position `233 / 1,204`) |
-| `Esc` | back to grid, cursor on the current file (until Phase 7 exists: quits the app) |
+| `Esc` | back to grid, cursor on the current file |
 | `f` | toggle fullscreen |
 | `p` / `Enter` | play/pause (video) |
 | `↑` / `↓` | seek ±10 s (video) |
@@ -133,12 +133,13 @@ Search history is remembered (`↑` in the search box).
 | `/` | focus search |
 | `t` | tag selected item (file or folder) |
 | `+` / `-` | tile size |
-| `Esc` | (in search) clear search, back to the folder |
+| `Esc` | quit; (in search) clear search, back to the folder |
+| `f` | toggle fullscreen |
 
 - Tiles ~200 px: thumbnail, truncated filename, tag-count badge when the item has own tags.
 - Video tiles: frame at ~10%, ▶ badge, duration.
 - Folder tiles: first image inside.
-- Selected item's full tags shown in the status bar.
+- Selected item's own tags shown in the status bar.
 
 ### Status bar (always visible)
 
