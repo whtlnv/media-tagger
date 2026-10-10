@@ -118,4 +118,7 @@ class Grid(QListView):
         if event.key() == Qt.Key.Key_Escape:
             self.escaped.emit()
             return
+        if event.key() == Qt.Key.Key_F:
+            self.window().showFullScreen()
+            return
         super().keyPressEvent(event)

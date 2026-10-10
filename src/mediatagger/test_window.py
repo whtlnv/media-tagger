@@ -171,3 +171,17 @@ def test_in_the_windows_grid_esc_quits_the_app(qtbot, tmp_path):
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
 
     assert not window.isVisible()
+
+
+def test_in_the_windows_grid_f_toggles_fullscreen(qtbot, tmp_path):
+    make_image(tmp_path / "a.jpg", "red")
+    window = Window(tmp_path, player_options=SILENT)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    was_fullscreen = window.isFullScreen()
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_F)
+
+    assert window.isFullScreen() is not was_fullscreen
