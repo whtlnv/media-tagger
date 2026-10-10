@@ -17,9 +17,10 @@ from mediatagger.viewer import BACKED_UP_TEXT, BACKING_UP_TEXT, BACKUP_FAILED_TE
 
 
 def viewer_backing_up_into(qtbot, backup_root, folder, *drives, **options):
+    options.setdefault("ask_to_create_library", lambda question: False)
     viewer = Viewer(
         folder, player_options=SILENT, is_mount_point=lambda path: path in drives,
-        ask_to_create_library=lambda question: False, backup_root=backup_root, **options,
+        backup_root=backup_root, **options,
     )
     qtbot.addWidget(viewer)
     return viewer
@@ -333,11 +334,10 @@ def test_answering_no_to_the_restore_question_for_a_missing_tags_db_asks_the_cre
     tags_db_path(drive).unlink()
     asked = []
 
-    viewer = Viewer(
-        folder, player_options=SILENT, is_mount_point=lambda path: path == drive, backup_root=backup_root,
+    viewer_backing_up_into(
+        qtbot, backup_root, folder, drive,
         ask_to_restore_library=lambda question: asked.append(question) or False,
         ask_to_create_library=lambda question: asked.append(question) or False,
     )
-    qtbot.addWidget(viewer)
 
     assert asked == [RESTORE_LIBRARY_QUESTION.format(drive.name, taken_at.astimezone()), CREATE_LIBRARY_QUESTION.format(drive.name)]
