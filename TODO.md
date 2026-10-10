@@ -45,7 +45,7 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 - [x] In the grid of a drive's mount point, `Backspace` stays on that grid
 - [x] In the grid, `Esc` quits the app
 - [x] In the grid, `f` toggles fullscreen
-- [ ] Dropping a folder onto the grid starts that folder's slideshow
+- [x] Dropping a folder onto the grid starts that folder's slideshow
 - [ ] Dropping a file onto the grid starts its folder's slideshow at that file
 - [ ] Moving the grid cursor onto a tagged item shows its own tags, space-separated, in the status bar
 - [ ] Moving the grid cursor onto an untagged item shows no tags in the status bar

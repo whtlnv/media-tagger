@@ -6,6 +6,7 @@ from mediatagger.grid import TILE_ROLE, Grid
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import SILENT, make_image, make_surface_ready, show_exposed, wait_until_loaded
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, visible_tag_prompts
+from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger.viewer import Viewer
 from mediatagger.window import Window
 
@@ -185,3 +186,20 @@ def test_in_the_windows_grid_f_toggles_fullscreen(qtbot, tmp_path):
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_F)
 
     assert window.isFullScreen() is not was_fullscreen
+
+
+def test_dropping_a_folder_onto_the_windows_grid_starts_that_folders_slideshow(qtbot, tmp_path):
+    viewed, dropped = make_folders(tmp_path, "viewed", "dropped")
+    make_image(viewed / "a.jpg", "red")
+    make_image(dropped / "x.jpg", "green")
+    make_image(dropped / "y.jpg", "blue")
+    window = Window(viewed, player_options=SILENT)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    drag_and_drop_onto(stack.currentWidget().viewport(), dropped)
+
+    shown = stack.currentWidget()
+    assert isinstance(shown, Viewer)
+    assert shown.slideshow.current == dropped / "x.jpg"

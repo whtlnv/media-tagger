@@ -21,6 +21,7 @@ class Window(QWidget):
         grid.activated.connect(self._open_tile)
         grid.up.connect(lambda: self._leave(grid.folder))
         grid.escaped.connect(self.close)
+        grid.dropped.connect(self._open)
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
 
@@ -39,5 +40,8 @@ class Window(QWidget):
             grid.setCurrentIndex(grid.model().index(0, 0))
             self._show(grid)
             return
+        self._open(path)
+
+    def _open(self, path):
         self.viewer.open(path)
         self.stack.setCurrentWidget(self.viewer)

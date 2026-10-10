@@ -87,6 +87,7 @@ class _TileDelegate(QStyledItemDelegate):
 class Grid(QListView):
     up = Signal()
     escaped = Signal()
+    dropped = Signal(Path)
 
     def __init__(self, folder, at=None, library=None):
         super().__init__()
@@ -98,6 +99,7 @@ class Grid(QListView):
         tiles = _tiles(folder, library.tag_counts(folder) if library else {})
         self.setModel(_FolderModel(tiles, self))
         self.setItemDelegate(_TileDelegate(self))
+        self.setAcceptDrops(True)
         if at is not None:
             names = [tile.name for tile in tiles]
             self.setCurrentIndex(self.model().index(names.index(at.name), 0))
@@ -122,3 +124,9 @@ class Grid(QListView):
             self.window().showFullScreen()
             return
         super().keyPressEvent(event)
+
+    def dragEnterEvent(self, event):
+        event.acceptProposedAction()
+
+    def dropEvent(self, event):
+        self.dropped.emit(Path(event.mimeData().urls()[0].toLocalFile()))
