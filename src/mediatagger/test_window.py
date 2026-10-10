@@ -3,11 +3,11 @@ from PySide6.QtWidgets import QLabel, QStackedWidget
 
 from mediatagger.grid import TILE_ROLE, Grid
 from mediatagger.library import Library
-from mediatagger.status_bar import StatusBar
+from mediatagger.status_bar import READ_ONLY_STATUS_TEXT, StatusBar
 
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import SILENT, make_image, make_surface_ready, show_exposed, wait_until_loaded
-from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, visible_tag_prompts
+from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, made_read_only, visible_tag_prompts
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger.viewer import Viewer
 from mediatagger.window import Window
@@ -304,3 +304,17 @@ def test_moving_the_windows_grid_cursor_onto_an_untagged_item_shows_no_tags_in_t
     shown = shown_status_bar_texts(window)
     assert "beach family" not in shown
     assert "" not in shown
+
+
+def test_the_library_status_of_a_read_only_drive_stays_visible_in_the_status_bar_while_the_windows_grid_is_shown(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    with made_read_only(drive):
+        window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+        qtbot.addWidget(window)
+        show_exposed(qtbot, window)
+        stack = window.findChild(QStackedWidget)
+
+        qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    assert isinstance(stack.currentWidget(), Grid)
+    assert READ_ONLY_STATUS_TEXT in shown_status_bar_texts(window)

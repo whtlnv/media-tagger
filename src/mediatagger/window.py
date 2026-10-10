@@ -36,6 +36,7 @@ class Window(QWidget):
             old.deleteLater()
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
+        self.status_bar.read_only_status.setVisible(self.viewer.session.read_only)
 
     def _show_tags_of(self, index):
         library = self.viewer.session.library
