@@ -24,7 +24,7 @@ Phase 6 notes for every cycle: backup logic lives in a new `src/mediatagger/back
 - [x] Opening a folder on a drive whose library can't be opened makes no backup
 - [x] Closing the viewer after tagging an item leaves a backup containing that tag, written before the close returns
 - [x] Opening a folder on another drive after tagging an item leaves a backup of the first drive containing that tag
-- [ ] While a backup is running, the status bar shows `⟳ Backing up database…`
+- [x] While a backup is running, the status bar shows `⟳ Backing up database…`
 - [ ] When a backup finishes, the status bar shows `✓ Backed up`
 - [ ] A few seconds after a backup finishes, `✓ Backed up` is cleared from the status bar
 - [ ] When a backup fails because the backup root isn't writable, the status bar shows `✗ Backup failed: <short reason>` and the viewer keeps showing the item

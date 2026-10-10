@@ -37,6 +37,7 @@ READ_ONLY_BANNER_TEXT = "This drive is read-only — tags can't be saved"
 READ_ONLY_STATUS_TEXT = "Read-only — tags can't be saved"
 TAGS_CANT_BE_SAVED_HERE_TEXT = "Tags can't be saved here"
 _COULDNT_SAVE_TAGS_TEXT = "Couldn't save tags — is the drive still connected?"
+BACKING_UP_TEXT = "Backing up database…"
 _CANT_SAVE_MESSAGE_MS = 3000
 
 
@@ -119,13 +120,14 @@ def decode_fitted(path, bounds):
 
 class Viewer(QWidget):
     def __init__(self, path=None, player_options=None, folder_picker=None, is_mount_point=os.path.ismount, ask_to_create_library=None,
-        app_location=APP_PACKAGE, backup_root=None,
+        app_location=APP_PACKAGE, backup_root=None, backup_clock=lambda: datetime.now(timezone.utc),
     ):
         super().__init__()
         collect_garbage_on_the_gui_thread()
         self.is_mount_point = is_mount_point
         self.app_location = app_location
         self.backup_root = backup_root
+        self.backup_clock = backup_clock
         self.ask_to_create_library = ask_to_create_library or self._ask_to_create_library
         self.declined_drives = set()
         self.library = None  # the open Library of the current drive, if it has one
@@ -170,12 +172,15 @@ class Viewer(QWidget):
         self.cant_save_status.hide()
         self.couldnt_save_status = _overlay_label(_COULDNT_SAVE_TAGS_TEXT, self.status_bar)
         self.couldnt_save_status.hide()
+        self.backing_up_status = _overlay_label(BACKING_UP_TEXT, self.status_bar)
+        self.backing_up_status.hide()
         status_layout = QHBoxLayout(self.status_bar)
         status_layout.setContentsMargins(CORNER_MARGIN, 0, CORNER_MARGIN, CORNER_MARGIN)
         status_layout.addWidget(self.library_label)
         status_layout.addWidget(self.read_only_status)
         status_layout.addWidget(self.cant_save_status)
         status_layout.addWidget(self.couldnt_save_status)
+        status_layout.addWidget(self.backing_up_status)
         status_layout.addStretch()
 
     def closeEvent(self, event):
@@ -427,7 +432,9 @@ class Viewer(QWidget):
         self._show_library_status(LIBRARY_TEXT.format(drive.name), read_only)
 
     def _back_up_library(self):
-        back_up(self.library, self.backup_root, clock=lambda: datetime.now(timezone.utc))
+        self.backing_up_status.show()
+        back_up(self.library, self.backup_root, clock=self.backup_clock)
+        self.backing_up_status.hide()
 
     def _show_library_status(self, text, read_only):
         self.read_only_banner.setVisible(read_only)
