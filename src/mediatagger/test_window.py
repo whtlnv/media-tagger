@@ -78,3 +78,13 @@ def test_in_the_windows_viewer_with_the_tag_prompt_open_esc_closes_the_prompt_an
 
     assert visible_tag_prompts(viewer) == []
     assert stack.currentWidget() is viewer
+
+
+def test_on_the_windows_launch_screen_esc_quits_the_app(qtbot):
+    window = Window(player_options=SILENT)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+
+    qtbot.keyClick(window.findChild(QStackedWidget).currentWidget(), Qt.Key.Key_Escape)
+
+    assert not window.isVisible()

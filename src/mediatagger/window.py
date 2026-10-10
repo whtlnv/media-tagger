@@ -5,10 +5,10 @@ from mediatagger.viewer import Viewer
 
 
 class Window(QWidget):
-    def __init__(self, path, player_options=None, **viewer_options):
+    def __init__(self, path=None, player_options=None, **viewer_options):
         super().__init__()
         self.stack = QStackedWidget(self)
-        self.viewer = Viewer(path, player_options=player_options, on_escape=self._show_grid, **viewer_options)
+        self.viewer = Viewer(path, player_options=player_options, on_escape=self._show_grid if path else self.close, **viewer_options)
         self.stack.addWidget(self.viewer)
         QVBoxLayout(self).addWidget(self.stack)
 
