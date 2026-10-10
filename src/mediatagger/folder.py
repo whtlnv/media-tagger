@@ -17,8 +17,12 @@ def _is_hidden(path):
     return path.name.startswith(".")
 
 
+def _has_media_extension(path):
+    return path.suffix.lower() in MEDIA_EXTENSIONS
+
+
 def _is_media(path):
-    return path.is_file() and path.suffix.lower() in MEDIA_EXTENSIONS and not _is_hidden(path)
+    return path.is_file() and _has_media_extension(path) and not _is_hidden(path)
 
 
 def media_files(folder):
@@ -34,5 +38,5 @@ def folder_entries(folder):
     with os.scandir(folder) as scan:
         entries = [entry for entry in scan if not _is_hidden(entry)]
     subfolders = [Path(entry) for entry in entries if entry.is_dir()]
-    media = [Path(entry) for entry in entries if entry.is_file() and Path(entry).suffix.lower() in MEDIA_EXTENSIONS]
+    media = [Path(entry) for entry in entries if entry.is_file() and _has_media_extension(Path(entry))]
     return sorted(subfolders, key=_natural_key) + sorted(media, key=_natural_key)
