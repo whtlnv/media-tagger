@@ -83,3 +83,10 @@ def test_without_ffmpeg_on_the_path_a_video_yields_no_thumbnail_and_no_duration(
 
     assert video_thumbnail(path) is None
     assert video_duration(path) is None
+
+
+@pytest.mark.skipif(shutil.which("ffprobe") is None, reason="ffprobe is not installed")
+def test_a_7_second_video_yields_a_duration_of_about_7_seconds(tmp_path):
+    path = make_clip(tmp_path / "clip.mp4", duration=7)
+
+    assert video_duration(path) == pytest.approx(7, abs=0.2)

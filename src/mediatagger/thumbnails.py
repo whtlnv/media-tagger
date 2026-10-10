@@ -1,4 +1,5 @@
 import shutil
+import subprocess
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QImage, QImageReader
@@ -16,7 +17,12 @@ def image_thumbnail(path):
 def video_duration(path):
     if shutil.which("ffmpeg") is None:
         return None
-    return 3.0
+    result = subprocess.run(
+        ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+         "-of", "default=noprint_wrappers=1:nokey=1", str(path)],
+        capture_output=True, text=True,
+    )
+    return float(result.stdout)
 
 
 def video_thumbnail(path):
