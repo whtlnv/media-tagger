@@ -429,12 +429,12 @@ class Viewer(QWidget):
             if read_only:
                 self._show_library_status(NO_LIBRARY_TEXT, read_only=True)
                 return
-            if tags_db_path(drive).parent.is_dir():
-                self._offer_to_restore_library(drive)
-            if not self._agrees_to_create_library(drive):
-                self._show_library_status(DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format(drive.name), read_only=False)
-                return
-            self.library = Library.create(drive)
+            restored = tags_db_path(drive).parent.is_dir() and self._offer_to_restore_library(drive)
+            if not restored:
+                if not self._agrees_to_create_library(drive):
+                    self._show_library_status(DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format(drive.name), read_only=False)
+                    return
+                self.library = Library.create(drive)
         elif not self._open_existing_library(drive, read_only):
             return
         self._show_library_status(LIBRARY_TEXT.format(drive.name), read_only)

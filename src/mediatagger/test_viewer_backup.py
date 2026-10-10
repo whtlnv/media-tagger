@@ -429,3 +429,20 @@ def test_a_backup_failing_soon_after_an_earlier_backed_up_keeps_its_failure_show
     qtbot.wait(400)
 
     assert f"✗ Backup failed: {os.strerror(errno.EACCES)}" in status_bar_texts(viewer)
+
+
+def test_after_restoring_a_missing_tags_db_the_viewer_asks_no_create_question_and_names_the_drive_as_the_open_library(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    backup_root = tmp_path / "backups"
+    back_up(Library.open(drive), backup_root, clock=lambda: datetime(2026, 10, 9, 15, 30, tzinfo=timezone.utc))
+    tags_db_path(drive).unlink()
+    asked_to_create = []
+
+    viewer = Viewer(
+        folder, player_options=SILENT, is_mount_point=lambda path: path == drive, backup_root=backup_root,
+        ask_to_restore_library=lambda question: True, ask_to_create_library=lambda question: asked_to_create.append(question) or False,
+    )
+    qtbot.addWidget(viewer)
+
+    assert asked_to_create == []
+    assert "Library: MEDIATAGGER" in status_bar_texts(viewer)
