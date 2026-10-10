@@ -36,7 +36,7 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 - [x] The window opened on a folder path shows the slideshow of that folder at its first item
 - [x] In the window's viewer, `Esc` shows the grid of the current item's folder with the cursor on that item
 - [x] In the window's viewer, `Esc` after stepping to the second item puts the grid cursor on the second item
-- [ ] In the window's viewer on a playing video, `Esc` to the grid stops the video (nothing keeps playing behind the grid)
+- [x] In the window's viewer on a playing video, `Esc` to the grid stops the video (nothing keeps playing behind the grid)
 - [ ] In the window's viewer with the tag prompt open, `Esc` closes the prompt and stays in the viewer
 - [ ] On the window's launch screen, `Esc` quits the app
 - [ ] In the grid, `Enter` on a file starts that folder's slideshow at that file

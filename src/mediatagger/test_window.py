@@ -3,7 +3,8 @@ from PySide6.QtWidgets import QStackedWidget
 
 from mediatagger.grid import Grid
 
-from mediatagger.test_viewer import SILENT, make_image
+from mediatagger.test_video import make_clip
+from mediatagger.test_viewer import SILENT, make_image, make_surface_ready, show_exposed, wait_until_loaded
 from mediatagger.viewer import Viewer
 from mediatagger.window import Window
 
@@ -46,3 +47,18 @@ def test_in_the_windows_viewer_esc_after_stepping_to_the_second_item_puts_the_gr
     shown = stack.currentWidget()
     assert isinstance(shown, Grid)
     assert shown.currentIndex().data(Qt.ItemDataRole.DisplayRole) == "b.jpg"
+
+
+def test_in_the_windows_viewer_on_a_playing_video_esc_to_the_grid_stops_the_video(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "a.mp4")
+    make_image(tmp_path / "b.jpg", "blue")
+    window = Window(tmp_path, player_options=SILENT)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    viewer = window.findChild(QStackedWidget).currentWidget()
+    make_surface_ready(viewer)
+    wait_until_loaded(viewer.video_player.engine, clip)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Escape)
+
+    assert viewer.video_player.engine.path is None
