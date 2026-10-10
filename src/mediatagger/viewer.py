@@ -38,6 +38,7 @@ READ_ONLY_STATUS_TEXT = "Read-only — tags can't be saved"
 TAGS_CANT_BE_SAVED_HERE_TEXT = "Tags can't be saved here"
 _COULDNT_SAVE_TAGS_TEXT = "Couldn't save tags — is the drive still connected?"
 BACKING_UP_TEXT = "Backing up database…"
+BACKED_UP_TEXT = "Backed up"
 _CANT_SAVE_MESSAGE_MS = 3000
 
 
@@ -432,9 +433,10 @@ class Viewer(QWidget):
         self._show_library_status(LIBRARY_TEXT.format(drive.name), read_only)
 
     def _back_up_library(self):
+        self.backing_up_status.setText(BACKING_UP_TEXT)
         self.backing_up_status.show()
         back_up(self.library, self.backup_root, clock=self.backup_clock)
-        self.backing_up_status.hide()
+        self.backing_up_status.setText(BACKED_UP_TEXT)
 
     def _show_library_status(self, text, read_only):
         self.read_only_banner.setVisible(read_only)

@@ -6,7 +6,7 @@ from mediatagger.library import Library, tags_db_path
 from mediatagger.test_viewer import make_image, SILENT
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, make_tag_library_drive, overwrite_tags_db_with_garbage, status_bar_texts
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
-from mediatagger.viewer import BACKING_UP_TEXT, Viewer
+from mediatagger.viewer import BACKED_UP_TEXT, BACKING_UP_TEXT, Viewer
 
 
 def viewer_backing_up_into(qtbot, backup_root, folder, *drives, **options):
@@ -92,3 +92,11 @@ def test_while_a_backup_is_running_the_status_bar_shows_backing_up_database(qtbo
     viewer.close()
 
     assert BACKING_UP_TEXT in status_while_backing_up[-1]
+
+
+def test_when_a_backup_finishes_the_status_bar_shows_backed_up(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+
+    viewer = viewer_backing_up_into(qtbot, tmp_path / "backups", folder, drive)
+
+    assert BACKED_UP_TEXT in status_bar_texts(viewer)
