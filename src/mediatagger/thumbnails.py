@@ -16,6 +16,6 @@ def video_duration(path):
 
 
 def video_thumbnail(path):
-    frame = QImage(64, 48, QImage.Format_RGB32)
+    frame = QImage(400, 200, QImage.Format_RGB32)
     frame.fill(QColor("blue"))
     return frame

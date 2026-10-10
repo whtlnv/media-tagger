@@ -61,3 +61,16 @@ def test_a_videos_thumbnail_is_a_frame_from_about_10_percent_in_not_its_first_fr
 
     centre = frame.pixelColor(frame.width() // 2, frame.height() // 2)
     assert centre.blue() > 200 and centre.red() < 60
+
+
+@pytest.mark.skipif(shutil.which("ffmpeg") is None, reason="ffmpeg is not installed")
+def test_a_wide_videos_thumbnail_is_fitted_to_400_px_across_keeping_its_aspect_ratio(tmp_path):
+    path = tmp_path / "wide.mp4"
+    subprocess.run(
+        ["ffmpeg", "-loglevel", "error",
+         "-f", "lavfi", "-i", "color=blue:size=1600x800:rate=10:duration=2",
+         "-pix_fmt", "yuv420p", str(path)],
+        check=True,
+    )
+
+    assert video_thumbnail(path).size() == QSize(400, 200)
