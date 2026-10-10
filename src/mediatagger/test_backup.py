@@ -147,6 +147,17 @@ def test_backing_up_into_a_backup_root_that_is_not_writable_reports_a_failure_wi
     assert outcome.failure == "Permission denied"
 
 
+def test_backing_up_a_library_whose_tags_db_was_overwritten_with_garbage_after_it_opened_reports_a_failure_and_leaves_no_new_backup(tmp_path):
+    library, photo = _library_with_photo(tmp_path)
+    backup_root = tmp_path / "backups"
+    tags_db_path(tmp_path / "drive").write_bytes(b"garbage" * 1000)
+
+    outcome = back_up(library, backup_root=backup_root, clock=_clock_at_october(9))
+
+    assert outcome.failure == "file is not a database"
+    assert _backup_names(backup_root, library) == []
+
+
 def test_the_newest_backup_for_a_drive_name_and_its_date_and_time_are_found_by_matching_drive_json_names(tmp_path):
     backup_root = tmp_path / "backups"
     photos = tmp_path / "PHOTOS"
