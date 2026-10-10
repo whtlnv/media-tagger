@@ -41,7 +41,7 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 - [x] On the window's launch screen, `Esc` quits the app
 - [x] In the grid, `Enter` on a file starts that folder's slideshow at that file
 - [x] In the grid, `Enter` on a folder opens that folder's grid with the cursor on its first entry
-- [ ] In the grid, `Backspace` opens the parent folder's grid with the cursor on the folder just left
+- [x] In the grid, `Backspace` opens the parent folder's grid with the cursor on the folder just left
 - [ ] In the grid of a drive's mount point, `Backspace` stays on that grid
 - [ ] In the grid, `Esc` quits the app
 - [ ] In the grid, `f` toggles fullscreen

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 
-from PySide6.QtCore import QAbstractListModel, QModelIndex, QSize, Qt
+from PySide6.QtCore import QAbstractListModel, QModelIndex, QSize, Qt, Signal
 from PySide6.QtWidgets import QListView, QStyledItemDelegate
 
 from mediatagger.folder import is_video_name, subfolder_and_media_names
@@ -85,8 +85,11 @@ class _TileDelegate(QStyledItemDelegate):
 
 
 class Grid(QListView):
+    up = Signal()
+
     def __init__(self, folder, at=None, library=None):
         super().__init__()
+        self.folder = folder
         self.setFlow(QListView.Flow.LeftToRight)
         self.setWrapping(True)
         self.setGridSize(TILE_SIZE)
@@ -107,5 +110,8 @@ class Grid(QListView):
             return
         if event.key() == Qt.Key.Key_Return:
             self.activated.emit(self.currentIndex())
+            return
+        if event.key() == Qt.Key.Key_Backspace:
+            self.up.emit()
             return
         super().keyPressEvent(event)

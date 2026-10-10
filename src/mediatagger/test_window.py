@@ -123,3 +123,21 @@ def test_in_the_windows_grid_enter_on_a_folder_opens_that_folders_grid_with_the_
     shown = stack.currentWidget()
     assert isinstance(shown, Grid)
     assert shown.currentIndex().data(TILE_ROLE).path == tmp_path / "day1" / "x.jpg"
+
+
+def test_in_the_windows_grid_backspace_opens_the_parent_folders_grid_with_the_cursor_on_the_folder_just_left(qtbot, tmp_path):
+    (tmp_path / "day1").mkdir()
+    make_image(tmp_path / "day1" / "x.jpg", "red")
+    make_image(tmp_path / "a.jpg", "green")
+    window = Window(tmp_path, player_options=SILENT)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Left)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Backspace)
+
+    shown = stack.currentWidget()
+    assert isinstance(shown, Grid)
+    assert shown.currentIndex().data(TILE_ROLE).path == tmp_path / "day1"
