@@ -43,6 +43,7 @@ BACKED_UP_TEXT = "✓ Backed up"
 BACKUP_FAILED_TEXT = "✗ Backup failed — {}"
 RESTORED_BACKUP_TEXT = "✓ Restored backup from {:%Y-%m-%d %H:%M}"
 RESTORE_FAILED_TEXT = "✗ Restore failed: {}"
+CANT_RESTORE_TO_READ_ONLY_DRIVE_TEXT = "{} is read-only — its backup can't be restored"
 _CANT_SAVE_MESSAGE_MS = 3000
 _BACKED_UP_MESSAGE_MS = 3000
 
@@ -435,6 +436,9 @@ class Viewer(QWidget):
             try:
                 self.library = Library.open(drive)
             except (sqlite3.DatabaseError, OSError):
+                if read_only:
+                    self._show_library_status(CANT_RESTORE_TO_READ_ONLY_DRIVE_TEXT.format(drive.name), read_only)
+                    return
                 if not self._offer_to_restore_library(drive):
                     self._show_library_status(LIBRARY_CANT_BE_OPENED_TEXT.format(drive.name), read_only=False)
                     return

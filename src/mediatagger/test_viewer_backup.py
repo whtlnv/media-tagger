@@ -11,7 +11,7 @@ from PySide6.QtWidgets import QLabel
 from mediatagger.backup import back_up, default_backup_root, newest_backup
 from mediatagger.library import Library, tags_db_path
 from mediatagger.test_viewer import make_image, shown_texts, SILENT
-from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, make_tag_library_drive, overwrite_tags_db_with_garbage, status_bar_texts
+from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, made_read_only, make_tag_library_drive, overwrite_tags_db_with_garbage, status_bar_texts
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger.viewer import BACKED_UP_TEXT, BACKING_UP_TEXT, BACKUP_FAILED_TEXT, Viewer
 
@@ -394,3 +394,19 @@ def test_answering_yes_to_the_restore_question_for_a_missing_tags_db_when_the_ne
     assert RESTORE_FAILED_TEXT.format("file is not a database") in status_bar_texts(viewer)
     assert DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format(drive.name) in status_bar_texts(viewer)
     assert not tags_db_path(drive).exists()
+
+
+def test_opening_a_folder_on_a_read_only_drive_whose_tags_db_is_garbage_with_backups_for_a_drive_of_the_same_name_asks_nothing_and_says_the_backup_cant_be_restored_to_a_read_only_drive(qtbot, tmp_path):
+    from mediatagger.viewer import CANT_RESTORE_TO_READ_ONLY_DRIVE_TEXT
+
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    backup_root = tmp_path / "backups"
+    back_up(Library.open(drive), backup_root, clock=lambda: datetime(2026, 10, 9, 15, 30, tzinfo=timezone.utc))
+    overwrite_tags_db_with_garbage(drive)
+    asked = []
+
+    with made_read_only(drive):
+        viewer = viewer_backing_up_into(qtbot, backup_root, folder, drive, ask_to_restore_library=lambda question: asked.append(question) or False)
+
+    assert asked == []
+    assert CANT_RESTORE_TO_READ_ONLY_DRIVE_TEXT.format(drive.name) in status_bar_texts(viewer)
