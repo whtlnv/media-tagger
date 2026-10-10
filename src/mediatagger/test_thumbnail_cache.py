@@ -107,6 +107,21 @@ def test_a_stored_failure_is_a_miss_once_the_files_mtime_changes(tmp_path):
     assert cache.lookup("Photos/broken.jpg", size=1234, mtime=1700000999.0) is None
 
 
+def test_a_thumbnail_stored_in_one_session_is_returned_after_the_cache_is_reopened(tmp_path):
+    from PySide6.QtCore import QSize
+    from PySide6.QtGui import QColor
+
+    from mediatagger.thumbnail_cache import ThumbnailCache
+
+    ThumbnailCache(tmp_path / "thumbs.db").store(
+        "Photos/beach.jpg", size=1234, mtime=1700000000.5, thumbnail=solid_thumbnail("red")
+    )
+    reopened = ThumbnailCache(tmp_path / "thumbs.db")
+    found = reopened.lookup("Photos/beach.jpg", size=1234, mtime=1700000000.5)
+
+    assert (found.size(), found.pixelColor(200, 100)) == (QSize(400, 200), QColor("red"))
+
+
 def solid_thumbnail(color):
     from PySide6.QtGui import QColor, QImage
 
