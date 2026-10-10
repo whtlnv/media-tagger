@@ -184,7 +184,7 @@ class Viewer(QWidget):
         if self.video_player.engine.handle is not None:  # a second close must not call into a destroyed mpv handle
             self.video_player.engine.terminate()
         if self.library:
-            back_up(self.library, self.backup_root, clock=lambda: datetime.now(timezone.utc))
+            self._back_up_library()
         super().closeEvent(event)
 
     def resizeEvent(self, event):
@@ -421,8 +421,11 @@ class Viewer(QWidget):
             except (sqlite3.DatabaseError, OSError):
                 self._show_library_status(LIBRARY_CANT_BE_OPENED_TEXT.format(drive.name), read_only=False)
                 return
-            back_up(self.library, self.backup_root, clock=lambda: datetime.now(timezone.utc))
+            self._back_up_library()
         self._show_library_status(LIBRARY_TEXT.format(drive.name), read_only)
+
+    def _back_up_library(self):
+        back_up(self.library, self.backup_root, clock=lambda: datetime.now(timezone.utc))
 
     def _show_library_status(self, text, read_only):
         self.read_only_banner.setVisible(read_only)
