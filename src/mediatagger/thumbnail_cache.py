@@ -44,9 +44,12 @@ class ThumbnailCache:
         return str(path.relative_to(self._root))
 
     def lookup(self, file_path, size, mtime):
-        stored_size, stored_mtime, png = self._db.execute(
+        row = self._db.execute(
             "SELECT size, mtime, png FROM thumbnails WHERE path = ?", (self._key(file_path),)
         ).fetchone()
+        if row is None:
+            return None
+        stored_size, stored_mtime, png = row
         if size != stored_size or mtime != stored_mtime:
             return None
         if png is None:

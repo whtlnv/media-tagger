@@ -152,6 +152,14 @@ def test_with_no_drive_id_a_stored_thumbnail_is_returned_again_within_the_sessio
     assert found.pixelColor(200, 100) == QColor("red")
 
 
+def test_a_file_that_was_never_stored_is_a_miss(tmp_path):
+    from mediatagger.thumbnail_cache import ThumbnailCache
+
+    cache = ThumbnailCache(tmp_path / "thumbs.db")
+
+    assert cache.lookup("Photos/never-seen.jpg", size=1234, mtime=1700000000.5) is None
+
+
 def solid_thumbnail(color):
     from PySide6.QtGui import QColor, QImage
 

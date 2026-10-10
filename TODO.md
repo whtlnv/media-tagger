@@ -39,7 +39,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] Thumbnails stored in one session are returned after the cache is reopened (survives restarting the app)
 - [x] A thumbnail stored while the drive was mounted at one path is returned when the drive is mounted at another
 - [x] With no drive id (no library), a generated thumbnail is returned again within the session from memory
-- [ ] A file that was never stored is a miss (looking it up does not fail)
+- [x] A file that was never stored is a miss (looking it up does not fail)
 - [ ] A stored video's duration of 42 s comes back as 42 s, and a 7.25 s one as 7.25 s (the stored duration, not a fixed value)
 - [ ] A drive's cache opened by its drive id keeps its thumbnails on disk: closing it and opening it again by the same drive id returns them
 - [ ] With no drive id, nothing is written to disk
