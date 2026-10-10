@@ -3,6 +3,8 @@ import os
 import sqlite3
 from pathlib import Path
 
+BACKUPS_KEPT_PER_DRIVE = 10
+
 
 def default_backup_root():
     data_home = os.environ.get("XDG_DATA_HOME", Path.home() / ".local" / "share")
@@ -15,7 +17,7 @@ def back_up(library, backup_root=None, clock=None):
     backup_dir = backup_root / library.drive_id
     backup_dir.mkdir(parents=True, exist_ok=True)
     _copy_database(library._tags_db, backup_dir / f"tags-{clock():%Y%m%dT%H%M%SZ}.db")
-    for old_backup in sorted(backup_dir.glob("tags-*.db"))[:-10]:
+    for old_backup in sorted(backup_dir.glob("tags-*.db"))[:-BACKUPS_KEPT_PER_DRIVE]:
         old_backup.unlink()
     drive_root = library._tags_db.parent.parent
     drive = {"name": drive_root.name, "drive_id": library.drive_id}
