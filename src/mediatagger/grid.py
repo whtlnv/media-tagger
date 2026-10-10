@@ -9,6 +9,8 @@ IMAGE_GLYPH = "🖼"
 
 VIDEO_GLYPH = "🎬"
 
+VIDEO_BADGE = "▶"
+
 
 def _glyph(entry):
     if entry.is_dir():
@@ -22,7 +24,10 @@ class _GlyphDelegate(QStyledItemDelegate):
         self._entries = entries
 
     def paint(self, painter, option, index):
-        painter.drawText(option.rect, Qt.AlignmentFlag.AlignCenter, _glyph(self._entries[index.row()]))
+        entry = self._entries[index.row()]
+        painter.drawText(option.rect, Qt.AlignmentFlag.AlignCenter, _glyph(entry))
+        if is_video(entry):
+            painter.drawText(option.rect, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignRight, VIDEO_BADGE)
 
 
 class Grid(QListView):

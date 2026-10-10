@@ -3,7 +3,7 @@ from PySide6.QtGui import QImage, QPainter
 from PySide6.QtWidgets import QStyleOptionViewItem
 
 from mediatagger.folder import folder_entries
-from mediatagger.grid import FOLDER_GLYPH, IMAGE_GLYPH, VIDEO_GLYPH, Grid
+from mediatagger.grid import FOLDER_GLYPH, IMAGE_GLYPH, VIDEO_BADGE, VIDEO_GLYPH, Grid
 from mediatagger.test_folder import touch
 
 
@@ -60,3 +60,11 @@ def test_a_folder_tile_draws_the_folder_glyph_an_image_tile_the_image_glyph_and_
     assert FOLDER_GLYPH in painted_texts(grid, 0)
     assert VIDEO_GLYPH in painted_texts(grid, 1)
     assert IMAGE_GLYPH in painted_texts(grid, 2)
+
+
+def test_a_video_tile_shows_a_play_badge(qtbot, tmp_path):
+    touch(tmp_path, "clip.mp4")
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+
+    assert VIDEO_BADGE in painted_texts(grid, 0)
