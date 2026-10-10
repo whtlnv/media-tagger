@@ -7,19 +7,19 @@ from pathlib import Path
 
 from mediatagger.library import tags_db_path
 
-BACKUPS_KEPT_PER_DRIVE = 10
-TIMESTAMP_FORMAT = "%Y%m%dT%H%M%SZ"
-BACKUP_NAME_FORMAT = f"tags-{TIMESTAMP_FORMAT}"
-BACKUP_GLOB = "tags-*.db"
+_BACKUPS_KEPT_PER_DRIVE = 10
+_TIMESTAMP_FORMAT = "%Y%m%dT%H%M%SZ"
+_BACKUP_NAME_FORMAT = f"tags-{_TIMESTAMP_FORMAT}"
+_BACKUP_GLOB = "tags-*.db"
 
 
 @dataclass
-class BackupOutcome:
+class _BackupOutcome:
     failure: str
 
 
 @dataclass
-class FoundBackup:
+class _FoundBackup:
     path: Path
     taken_at: datetime
 
@@ -34,30 +34,30 @@ def failure_reason(error):
 
 
 def back_up(library, backup_root=None, *, clock):
-    """Copy the library's database into its drive's backup folder; any failure comes back as a BackupOutcome, never raised."""
+    """Copy the library's database into its drive's backup folder; any failure comes back as a _BackupOutcome, never raised."""
     if backup_root is None:
         backup_root = default_backup_root()
     try:
         _back_up(library, backup_root / library.drive_id, clock)
     except (OSError, sqlite3.Error) as error:
-        return BackupOutcome(failure=failure_reason(error))
+        return _BackupOutcome(failure=failure_reason(error))
 
 
 def _back_up(library, backup_dir, clock):
     backup_dir.mkdir(parents=True, exist_ok=True)
-    new_backup = backup_dir / f"{clock():{BACKUP_NAME_FORMAT}}.db"
+    new_backup = backup_dir / f"{clock():{_BACKUP_NAME_FORMAT}}.db"
     partial = new_backup.with_name(new_backup.name + ".partial")  # a half-written copy must never pass for a backup
     try:
         _copy_database(library._tags_db, partial)
     except (OSError, sqlite3.Error):
         partial.unlink(missing_ok=True)
         raise
-    backups = sorted(backup_dir.glob(BACKUP_GLOB))
+    backups = sorted(backup_dir.glob(_BACKUP_GLOB))
     if backups and backups[-1].read_bytes() == partial.read_bytes():
         partial.unlink()  # nothing changed since the latest backup
     else:
         partial.replace(new_backup)
-    for old_backup in sorted(backup_dir.glob(BACKUP_GLOB))[:-BACKUPS_KEPT_PER_DRIVE]:
+    for old_backup in sorted(backup_dir.glob(_BACKUP_GLOB))[:-_BACKUPS_KEPT_PER_DRIVE]:
         old_backup.unlink()
     drive_root = library._tags_db.parent.parent
     drive = {"name": drive_root.name, "drive_id": library.drive_id}
@@ -68,17 +68,17 @@ def newest_backup(backup_root, drive_name):
     for drive_json in backup_root.glob("*/drive.json"):
         if json.loads(drive_json.read_text())["name"] != drive_name:
             continue
-        backups = sorted(drive_json.parent.glob(BACKUP_GLOB))
+        backups = sorted(drive_json.parent.glob(_BACKUP_GLOB))
         if not backups:
             continue
         path = backups[-1]
-        taken_at = datetime.strptime(path.stem, BACKUP_NAME_FORMAT).replace(tzinfo=timezone.utc)
-        return FoundBackup(path=path, taken_at=taken_at)
+        taken_at = datetime.strptime(path.stem, _BACKUP_NAME_FORMAT).replace(tzinfo=timezone.utc)
+        return _FoundBackup(path=path, taken_at=taken_at)
 
 
 def restore(drive, backup, clock):
     tags_db = tags_db_path(drive)
-    damaged = tags_db.parent / f"tags.db.damaged-{clock():{TIMESTAMP_FORMAT}}"
+    damaged = tags_db.parent / f"tags.db.damaged-{clock():{_TIMESTAMP_FORMAT}}"
     if tags_db.exists():
         tags_db.rename(damaged)
     try:
