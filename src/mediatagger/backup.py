@@ -6,6 +6,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 BACKUPS_KEPT_PER_DRIVE = 10
+BACKUP_NAME_FORMAT = "tags-%Y%m%dT%H%M%SZ"
+BACKUP_GLOB = "tags-*.db"
 
 
 @dataclass
@@ -32,12 +34,12 @@ def back_up(library, backup_root=None, clock=None):
         backup_dir.mkdir(parents=True, exist_ok=True)
     except PermissionError as error:
         return BackupOutcome(failure=error.strerror)
-    new_backup = backup_dir / f"tags-{clock():%Y%m%dT%H%M%SZ}.db"
-    previous_backups = sorted(backup for backup in backup_dir.glob("tags-*.db") if backup != new_backup)
+    new_backup = backup_dir / f"{clock():{BACKUP_NAME_FORMAT}}.db"
+    previous_backups = sorted(backup for backup in backup_dir.glob(BACKUP_GLOB) if backup != new_backup)
     _copy_database(library._tags_db, new_backup)
     if _duplicates_latest(new_backup, previous_backups):
         new_backup.unlink()
-    for old_backup in sorted(backup_dir.glob("tags-*.db"))[:-BACKUPS_KEPT_PER_DRIVE]:
+    for old_backup in sorted(backup_dir.glob(BACKUP_GLOB))[:-BACKUPS_KEPT_PER_DRIVE]:
         old_backup.unlink()
     drive_root = library._tags_db.parent.parent
     drive = {"name": drive_root.name, "drive_id": library.drive_id}
@@ -47,8 +49,8 @@ def back_up(library, backup_root=None, clock=None):
 def newest_backup(backup_root, drive_name):
     for drive_json in backup_root.glob("*/drive.json"):
         if json.loads(drive_json.read_text())["name"] == drive_name:
-            path = sorted(drive_json.parent.glob("tags-*.db"))[-1]
-            taken_at = datetime.strptime(path.stem, "tags-%Y%m%dT%H%M%SZ").replace(tzinfo=timezone.utc)
+            path = sorted(drive_json.parent.glob(BACKUP_GLOB))[-1]
+            taken_at = datetime.strptime(path.stem, BACKUP_NAME_FORMAT).replace(tzinfo=timezone.utc)
             return FoundBackup(path=path, taken_at=taken_at)
 
 
