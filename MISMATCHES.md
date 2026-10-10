@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 04:25 · `src/mediatagger/test_grid.py::test_repainting_the_grid_after_one_of_its_subfolders_is_deleted_from_disk_still_draws_that_tile_with_the_folder_glyph`
+- Behavior: Repainting the grid after one of its subfolders has been deleted from disk still draws that tile with the folder glyph
+- Predicted: the TODO item expects an AssertionError (the tile drawn with the image glyph, since `is_dir()` returns False once the folder is gone). After reading `grid.py` first, I expected it to pass. I didn't write that prediction down before running.
+- Actual: passed on its first run
+- Type: passed unexpectedly
+- Resolution: Commit 9cba401 already builds each tile's glyph once, in `_TileDelegate.__init__`. Its test `test_repainting_the_grid_after_its_files_are_deleted_from_disk_still_paints_their_tiles_without_reading_them` already asserts `FOLDER_GLYPH` on a deleted subfolder. No rewrite can fail for this behavior without inventing a new one, so I removed the test and wrote no new one.
+
 ## 2026-10-10 04:00 · `src/mediatagger/test_grid.py::test_after_a_first_grid_has_been_shown_opening_and_showing_the_grid_of_a_folder_of_5000_files_takes_under_50_ms`
 - Behavior: Opening the grid of a folder of 5,000 files finishes within a time budget, like the 5,000-tag test
 - Predicted: AssertionError `(False, 5000)` — opening and showing a 5,000-file grid takes over 200 ms because of per-entry stats and layout
