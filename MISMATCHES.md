@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 19:11 · `src/mediatagger/test_backup.py::test_backing_up_a_library_whose_tags_changed_since_the_drives_last_backup_writes_a_new_backup`
+- Behavior: Backing up a library whose tags changed since that drive's last backup writes a new backup
+- Predicted: passes on first run — `_duplicates_latest` only discards byte-identical copies, so a changed database is kept
+- Actual: passed (1 passed)
+- Type: passed unexpectedly
+- Resolution: The behavior already shipped with the previous item: the unchanged-database check only drops byte-identical copies, and the 10-backup tests already depend on that. The test was kept as a non-vacuous pin of the TODO item rather than rewritten into a false failure.
+
 ## 2026-10-09 19:01 · `src/mediatagger/test_backup.py::test_backing_up_a_drive_that_has_fewer_than_10_backups_deletes_none_of_them`
 - Behavior: Backing up a drive that has fewer than 10 backups deletes none of them
 - Predicted: passes. The pruning slice `sorted(...)[:-BACKUPS_KEPT_PER_DRIVE]` in `back_up` is empty when there are fewer than 10 backups (predicted openly before running; a right-reason failure was not possible)

@@ -14,7 +14,7 @@ Phase 6 notes for every cycle: backup logic lives in a new `src/mediatagger/back
 - [x] Backing up a drive that already has 10 backups leaves only the 10 newest, the oldest deleted
 - [x] Backing up a drive that has fewer than 10 backups deletes none of them
 - [x] Backing up a library whose database hasn't changed since that drive's last backup writes no new backup
-- [ ] Backing up a library whose tags changed since that drive's last backup writes a new backup
+- [x] Backing up a library whose tags changed since that drive's last backup writes a new backup
 - [ ] Backing up into a backup root that isn't writable reports a failure with a short reason instead of raising
 - [ ] For a drive name with backups, the newest backup and its date and time are found by matching `drive.json` names
 - [ ] For a drive name with no backups, no backup is found

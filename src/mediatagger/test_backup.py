@@ -106,3 +106,20 @@ def test_backing_up_a_library_whose_database_has_not_changed_since_the_drives_la
 
     backups = sorted(path.name for path in (backup_root / library.drive_id).glob("tags-*.db"))
     assert backups == ["tags-20261009T153000Z.db"]
+
+
+def test_backing_up_a_library_whose_tags_changed_since_the_drives_last_backup_writes_a_new_backup(tmp_path):
+    drive = tmp_path / "drive"
+    drive.mkdir()
+    photo = drive / "beach.jpg"
+    photo.touch()
+    library = Library.create(drive)
+    library.enter(photo, "beach family")
+    backup_root = tmp_path / "backups"
+    back_up(library, backup_root=backup_root, clock=lambda: datetime(2026, 10, 9, 15, 30, 0, tzinfo=timezone.utc))
+    library.enter(photo, "beach sunset")
+
+    back_up(library, backup_root=backup_root, clock=lambda: datetime(2026, 10, 10, 15, 30, 0, tzinfo=timezone.utc))
+
+    backups = sorted(path.name for path in (backup_root / library.drive_id).glob("tags-*.db"))
+    assert backups == ["tags-20261009T153000Z.db", "tags-20261010T153000Z.db"]
