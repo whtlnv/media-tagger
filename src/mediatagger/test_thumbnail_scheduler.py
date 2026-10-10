@@ -31,3 +31,37 @@ def test_with_more_than_three_thumbnails_pending_exactly_three_generate_at_once(
     qtbot.waitUntil(lambda: len(generated) == 5)
 
     assert peak == 3
+
+
+def test_while_workers_are_busy_the_most_recently_requested_thumbnail_is_generated_first(qtbot, tmp_path):
+    lock = threading.Lock()
+    releases = {}
+    started = []
+    generated = []
+
+    def generate(path):
+        with lock:
+            started.append(path)
+        releases.setdefault(path, threading.Event()).wait(timeout=10)
+        with lock:
+            generated.append(path)
+
+    scheduler = ThumbnailScheduler(generate=generate)
+    busy = [tmp_path / f"busy{index}.jpg" for index in range(3)]
+    pending = [tmp_path / f"pending{index}.jpg" for index in range(3)]
+    for path in busy + pending:
+        releases[path] = threading.Event()
+    try:
+        for path in busy:
+            scheduler.request(path)
+        qtbot.waitUntil(lambda: len(started) == 3)
+        for path in pending:
+            scheduler.request(path)
+        releases[busy[0]].set()
+        qtbot.waitUntil(lambda: len(started) == 4)
+    finally:
+        for event in releases.values():
+            event.set()
+    qtbot.waitUntil(lambda: len(generated) == 6)
+
+    assert started[3] == pending[-1]

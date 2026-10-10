@@ -48,7 +48,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 
 ### Order of work
 - [x] With more than three thumbnails pending, exactly three generate at once
-- [ ] While workers are busy, the most recently requested thumbnail is generated before earlier pending ones
+- [x] While workers are busy, the most recently requested thumbnail is generated before earlier pending ones
 - [ ] Re-requesting a thumbnail that is already pending moves it ahead of the others
 - [ ] Once the requested thumbnails are done, the rest of the folder's thumbnails are generated without being requested
 - [ ] A thumbnail requested while the rest of the folder is prefetching is generated before the remaining prefetch
