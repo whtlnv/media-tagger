@@ -1,3 +1,33 @@
+- [x] 2026-10-09 · In the tag prompt on a drive whose library has the tags `beach` and `bird`, typing `b` shows a suggestion popup listing `beach` and `bird`
+- [x] 2026-10-09 · In the tag prompt on a drive whose library has no tags yet, typing `b` shows no suggestion popup
+- [x] 2026-10-09 · In the tag prompt on a drive whose library has the tags `beach` and `bird`, typing `be` lists `beach` and not `bird`
+- [x] 2026-10-09 · Suggestions are ordered by how many items carry the tag: with `bird` on 3 items and `beach` on 1, typing `b` lists `bird` above `beach`
+- [x] 2026-10-09 · Suggestions are ordered by how many items carry the tag: with `beach` on 3 items and `bird` on 1, typing `b` lists `beach` above `bird`
+- [x] 2026-10-09 · Suggestions with the same item count are listed alphabetically: with `bird` and `beach` on 2 items each, typing `b` lists `beach` above `bird`
+- [x] 2026-10-09 · Suggestion matching ignores case: typing `BE` lists `beach`
+- [x] 2026-10-09 · Suggestions complete the last space-separated word: typing `beach fam` with `family` in the library lists `family`
+- [x] 2026-10-09 · Typing a namespace prefix lists every tag under it at any depth: typing `people:` lists `people:ana` and `people:luis:jr`, and not `place:mexico`
+- [x] 2026-10-09 · Tags the current item already has are not suggested for adding: on an item tagged `sunset`, with `summer` also in the library, typing `s` lists `summer` and not `sunset`
+- [x] 2026-10-09 · A word starting with `-` suggests from the current item's own tags: on an item tagged `sunset`, with `summer` also in the library, typing `-s` lists `sunset` and not `summer`
+- [x] 2026-10-09 · Words already entered in the prompt are not suggested again: typing `beach b` lists `bird` and not `beach`
+- [x] 2026-10-09 · Suggestions come from the current drive's library: after dropping a folder from a second drive whose library has only `zebra`, typing `b` shows no popup and typing `z` lists `zebra`
+- [x] 2026-10-09 · A tag saved from the prompt is suggested the next time the prompt opens: after saving `zebra` on one item, opening the prompt on the next item and typing `z` lists `zebra`
+- [x] 2026-10-09 · In the suggestion popup, `↓` twice highlights the second suggestion and `↑` then highlights the first
+- [x] 2026-10-09 · `Tab` accepts the highlighted suggestion, replacing only the word being typed: `beach fam`, `↓`, `Tab` leaves `beach family` in the prompt and closes the popup
+- [x] 2026-10-09 · `Enter` accepts the highlighted suggestion without saving: `beach fam`, `↓`, `Enter` leaves `beach family` in the open prompt and the item's tags unchanged
+  - note: `Enter` accepts only when a suggestion is highlighted (via `↓`/`↑`). With the popup showing but nothing highlighted, `Enter` saves as before — `test_on_a_file_tagged_beach_family_typing_minus_family_in_the_tag_prompt_and_pressing_enter_leaves_it_tagged_only_beach` must keep passing (no contradiction).
+- [x] 2026-10-09 · Accepting a removal suggestion keeps the `-`: on an item tagged `sunset`, `-s`, `↓`, `Tab` leaves `-sunset` in the prompt
+- [x] 2026-10-09 · `Esc` with the suggestion popup open closes only the popup: the prompt stays open with its text and the app keeps running
+- [x] 2026-10-09 · Accepting a suggestion for the only word in the prompt leaves no leading space: `fam`, `↓`, `Tab` leaves exactly `family` in the prompt
+- [x] 2026-10-09 · `Esc` after the popup has been closed cancels the prompt, leaving the item's tags unchanged
+- [x] 2026-10-09 · `Enter` with no suggestion popup showing saves the prompt's text: `beach fam`, `Esc`, `Enter` adds `beach` and `fam` to the item
+- [x] 2026-10-09 · On a video item with the suggestion popup open, `↓` and `↑` move the highlight and do not seek the video
+- [x] 2026-10-09 · The suggestion popup over a white image shows light text on a dark background, as the overlays do
+- [x] 2026-10-09 · The suggestion popup opens above the prompt and lies entirely inside the window, even with more suggestions than fit below the prompt
+- [x] 2026-10-09 · With 5,000 tags in the library, each keystroke in the tag prompt updates the suggestions in under 50 ms
+- [x] 2026-10-09 · When saving the prompt fails with `sqlite3.Error` from the library, the prompt stays open with its text and the status bar says "Couldn't save tags — is the drive still connected?"
+- [x] 2026-10-09 · When saving the prompt fails with `OSError` from the library, the prompt stays open with its text and the status bar says "Couldn't save tags — is the drive still connected?"
+- [x] 2026-10-09 · Running the shipped `mediatagger <folder>` command on a drive whose library has `beach`, pressing `t` and typing `b` shows the suggestion popup listing `beach` (the test's driver script treats a temp folder as the mount point)
 - [x] 2026-10-09 · Dropping a folder onto the viewer while the tag prompt is open closes the prompt without saving, so a later `Enter` cannot tag the previous item
 - [x] 2026-10-09 · The tag prompt's input reads as a text box: its style gives it a visible light border and a lighter translucent background than the overlays (the shown tags keep the overlays' look)
 - [x] 2026-10-09 · After the window is resized while the tag prompt is open, the prompt is still centred just above the status bar
