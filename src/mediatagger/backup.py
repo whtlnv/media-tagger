@@ -49,7 +49,10 @@ def back_up(library, backup_root=None, clock=None):
 def newest_backup(backup_root, drive_name):
     for drive_json in backup_root.glob("*/drive.json"):
         if json.loads(drive_json.read_text())["name"] == drive_name:
-            path = sorted(drive_json.parent.glob(BACKUP_GLOB))[-1]
+            backups = sorted(drive_json.parent.glob(BACKUP_GLOB))
+            if not backups:
+                continue
+            path = backups[-1]
             taken_at = datetime.strptime(path.stem, BACKUP_NAME_FORMAT).replace(tzinfo=timezone.utc)
             return FoundBackup(path=path, taken_at=taken_at)
 

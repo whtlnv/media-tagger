@@ -165,3 +165,15 @@ def test_the_newest_backup_for_a_drive_name_and_its_date_and_time_are_found_by_m
 
     assert found.path == backup_root / photos_library.drive_id / "tags-20261010T153000Z.db"
     assert found.taken_at == datetime(2026, 10, 10, 15, 30, 0, tzinfo=timezone.utc)
+
+
+def test_for_a_drive_name_whose_backups_are_all_gone_no_backup_is_found(tmp_path):
+    backup_root = tmp_path / "backups"
+    photos = tmp_path / "PHOTOS"
+    photos.mkdir()
+    photos_library = Library.create(photos)
+    back_up(photos_library, backup_root=backup_root, clock=_clock_at_october(9))
+    for backup in (backup_root / photos_library.drive_id).glob("tags-*.db"):
+        backup.unlink()
+
+    assert newest_backup(backup_root, "PHOTOS") is None
