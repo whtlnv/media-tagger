@@ -95,7 +95,7 @@ class Window(QWidget):
     def _open_tile(self, index):
         path = index.data(TILE_ROLE).path
         if path.is_dir():
-            grid = Grid(path)
+            grid = Grid(path, library=self.session.library)
             grid.setCurrentIndex(grid.model().index(0, 0))
             self._show(grid)
             return

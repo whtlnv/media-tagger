@@ -650,3 +650,21 @@ def test_dropping_a_folder_onto_the_windows_launch_screen_records_that_folder_in
 
     state = json.loads((Path(os.environ["XDG_CONFIG_HOME"]) / "mediatagger" / "state.json").read_text())
     assert state["folder"] == str(folder)
+
+
+def test_entering_a_subfolder_from_the_windows_grid_shows_tag_badges_for_its_tagged_items(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    (folder / "day1").mkdir()
+    make_image(folder / "day1" / "x.png", "blue")
+    Library.open(drive).enter(folder / "day1" / "x.png", "beach family")
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Left)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+
+    grid = stack.currentWidget()
+    assert grid.folder == folder / "day1"
+    assert f"{TAG_BADGE}2" in painted_texts(grid, 0)
