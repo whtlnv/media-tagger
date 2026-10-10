@@ -30,6 +30,8 @@ Phase 6 notes for every cycle: backup logic lives in a new `src/mediatagger/back
 - [x] A few seconds after a backup finishes, `✓ Backed up` is cleared from the status bar
 - [x] When a backup fails because the backup root isn't writable, the status bar shows `✗ Backup failed: <short reason>` and the viewer keeps showing the item
 - [x] When a backup fails, tagging the current item still saves its tags
+- [ ] Backing up a library whose `tags.db` was overwritten with garbage after it opened reports a failure with a short reason instead of raising, and leaves no new file in the drive's backup folder (a half-written copy must never become the newest backup)
+- [ ] When writing a drive's `drive.json` fails during a backup (e.g. a folder already sits at that path), the viewer shows `✗ Backup failed: <short reason>` and keeps showing the item — no `OSError` or `sqlite3.Error` from a backup ever escapes the viewer
 - [ ] Opening a folder on a drive whose `tags.db` is garbage, with backups for a drive of the same name, asks "The tag library on <DRIVE> is missing or damaged. Restore the backup from <date time>?" (`ask_to_restore_library=`)
 - [ ] Opening a folder on a drive whose `tags.db` is garbage, with no backups for a drive of that name, asks nothing and shows `Library on <DRIVE> can't be opened — viewing only`
 - [ ] Answering Yes to the restore question opens the library with the backed-up tags shown for the current item and the status bar showing `✓ Restored backup from <date time>`
