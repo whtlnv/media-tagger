@@ -527,6 +527,18 @@ def test_the_state_file_is_not_written_when_it_would_land_on_the_apps_own_drive(
     assert not (config_home / "mediatagger" / "state.json").exists()
 
 
+def test_the_state_file_is_written_when_the_app_and_the_config_home_both_live_on_the_system_disk(qtbot, tmp_path, monkeypatch):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    config_home = tmp_path / "home" / ".config"
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(config_home))
+
+    window = Window(folder, player_options=SILENT, app_location=tmp_path / "app" / "mediatagger", is_mount_point=lambda path: path in (drive, Path("/")),
+                    ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+
+    assert json.loads((config_home / "mediatagger" / "state.json").read_text())["folder"] == str(folder)
+
+
 def test_the_state_file_is_not_written_when_it_would_land_on_the_drive_being_viewed(qtbot, tmp_path, monkeypatch):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     config_home = drive / "config"

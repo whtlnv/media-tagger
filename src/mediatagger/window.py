@@ -100,7 +100,9 @@ class Window(QWidget):
         remember(self._state_file, folder, self.session.drive)
 
     def _is_on_the_apps_own_drive(self, path):
-        return any(self.session.is_mount_point(ancestor) for ancestor in self.session.app_location.parents if ancestor in path.parents)
+        """The system disk is the home folder's own disk, so only an app drive other than `/` is kept clear."""
+        app_drive = next((folder for folder in self.session.app_location.parents if self.session.is_mount_point(folder)), Path("/"))
+        return app_drive != Path("/") and app_drive in path.parents
 
     def _is_on_the_drive_being_viewed(self, path):
         return self.session.drive in path.parents
