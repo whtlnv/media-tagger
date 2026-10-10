@@ -76,3 +76,15 @@ def test_an_image_tile_shows_no_play_badge(qtbot, tmp_path):
     qtbot.addWidget(grid)
 
     assert VIDEO_BADGE not in painted_texts(grid, 0)
+
+
+def test_a_tile_whose_filename_is_wider_than_the_tile_shows_it_truncated_with_an_ellipsis(qtbot, tmp_path):
+    name = "a_very_long_filename_" * 6 + ".jpg"
+    touch(tmp_path, name)
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+
+    texts = painted_texts(grid, 0)
+
+    assert name not in texts
+    assert any(text.endswith("…") and name.startswith(text[:-1]) for text in texts)

@@ -26,6 +26,8 @@ class _TileDelegate(QStyledItemDelegate):
     def paint(self, painter, option, index):
         entry = self._entries[index.row()]
         painter.drawText(option.rect, Qt.AlignmentFlag.AlignCenter, _glyph(entry))
+        name = painter.fontMetrics().elidedText(entry.name, Qt.TextElideMode.ElideRight, option.rect.width())
+        painter.drawText(option.rect, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignHCenter, name)
         if is_video(entry):
             painter.drawText(option.rect, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignRight, VIDEO_BADGE)
 
