@@ -63,3 +63,40 @@ def test_while_workers_are_busy_the_most_recently_requested_thumbnail_is_generat
     qtbot.waitUntil(lambda: len(generated) == 6)
 
     assert started[3] == pending[-1]
+
+
+def test_re_requesting_a_pending_thumbnail_moves_it_ahead_of_the_others(qtbot, tmp_path):
+    lock = threading.Lock()
+    started = []
+    generated = []
+
+    def generate(path):
+        with lock:
+            started.append(path)
+        releases[path].wait(timeout=10)
+        with lock:
+            generated.append(path)
+
+    scheduler = ThumbnailScheduler(generate=generate)
+    busy = [tmp_path / f"busy{index}.jpg" for index in range(3)]
+    pending = [tmp_path / f"pending{index}.jpg" for index in range(3)]
+    releases = {path: threading.Event() for path in busy + pending}
+    for path in pending:
+        releases[path].set()
+    try:
+        for path in busy:
+            scheduler.request(path)
+        qtbot.waitUntil(lambda: len(started) == 3)
+        for path in pending:
+            scheduler.request(path)
+        scheduler.request(pending[1])
+        releases[busy[0]].set()
+        qtbot.waitUntil(lambda: len(started) >= 6)
+        with lock:
+            order = started[3:6]
+    finally:
+        for event in releases.values():
+            event.set()
+    qtbot.waitUntil(lambda: len(generated) >= 6)
+
+    assert order == [pending[1], pending[2], pending[0]]

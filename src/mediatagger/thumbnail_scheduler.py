@@ -11,8 +11,12 @@ class ThumbnailScheduler:
 
     def request(self, path):
         with self._lock:
+            already_pending = path in self._pending
+            if already_pending:
+                self._pending.remove(path)
             self._pending.append(path)
-        self._executor.submit(self._generate_most_recent)
+        if not already_pending:
+            self._executor.submit(self._generate_most_recent)
 
     def _generate_most_recent(self):
         with self._lock:
