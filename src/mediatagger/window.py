@@ -28,7 +28,7 @@ class Window(QWidget):
         self.viewer = Viewer(path, player_options=player_options, folder_picker=folder_picker, on_escape=self._escape, session=self.session)
         self.stack.addWidget(self.viewer)
         if path is not None:
-            self._record_state(path)
+            self._record_state(path if path.is_dir() else path.parent)
         if remembered and remembered.exists():
             self.session.open_library(remembered)
             self._show(Grid(remembered))

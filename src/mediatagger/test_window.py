@@ -614,3 +614,13 @@ def test_launching_the_window_with_no_path_and_no_state_file_then_closing_it_lea
     window.close()
 
     assert not state_file.exists()
+
+
+def test_launching_the_window_on_a_file_path_records_that_files_folder_in_the_state_file_not_the_file(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+
+    window = Window(folder / "IMG_1.png", player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+
+    state = json.loads((Path(os.environ["XDG_CONFIG_HOME"]) / "mediatagger" / "state.json").read_text())
+    assert state["folder"] == str(folder)
