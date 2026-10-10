@@ -21,7 +21,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] A folder whose images are `10.jpg` and `2.jpg` yields the thumbnail of `2.jpg` (first image in natural order)
 - [x] A folder holding only videos, or images only in its subfolders, yields "no thumbnail"
 - [x] A duration of 75 s reads `1:15`
-- [ ] A duration of 3,725 s reads `1:02:05` (hours shown from an hour)
+- [x] A duration of 3,725 s reads `1:02:05` (hours shown from an hour)
 
 ### Cache
 - [ ] Tests that write a thumbnail cache write it under a per-test temp folder, never the real `~/.cache`

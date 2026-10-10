@@ -172,3 +172,7 @@ def test_a_folder_holding_only_a_gif_video_and_a_subfolder_with_an_image_yields_
 
 def test_a_duration_of_75_seconds_reads_1_15():
     assert format_duration(75) == "1:15"
+
+
+def test_a_duration_of_3725_seconds_reads_1_02_05_with_hours_shown():
+    assert format_duration(3725) == "1:02:05"
