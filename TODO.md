@@ -7,7 +7,7 @@ Phase 6 notes for every cycle: backup logic lives in a new `src/mediatagger/back
 
 ## Phase 6 — Database backups
 
-- [ ] Backing up a library writes a copy of its `tags.db` to `<backup root>/<drive_id>/tags-<UTC time>.db`, named from the given clock (`tags-20261009T153000Z.db`), and opening the copy shows the library's tags
+- [x] Backing up a library writes a copy of its `tags.db` to `<backup root>/<drive_id>/tags-<UTC time>.db`, named from the given clock (`tags-20261009T153000Z.db`), and opening the copy shows the library's tags
 - [ ] With `XDG_DATA_HOME` set, the default backup root is `$XDG_DATA_HOME/mediatagger/backups`
 - [ ] With `XDG_DATA_HOME` unset, the default backup root is `~/.local/share/mediatagger/backups` (the test points `HOME` at a temp folder)
 - [ ] Backing up writes `drive.json` next to the drive's backups, recording the drive's name (its mount point's folder name) and its drive id
