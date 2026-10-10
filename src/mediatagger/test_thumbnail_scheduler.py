@@ -35,22 +35,20 @@ def test_with_more_than_three_thumbnails_pending_exactly_three_generate_at_once(
 
 def test_while_workers_are_busy_the_most_recently_requested_thumbnail_is_generated_first(qtbot, tmp_path):
     lock = threading.Lock()
-    releases = {}
     started = []
     generated = []
 
     def generate(path):
         with lock:
             started.append(path)
-        releases.setdefault(path, threading.Event()).wait(timeout=10)
+        releases[path].wait(timeout=10)
         with lock:
             generated.append(path)
 
     scheduler = ThumbnailScheduler(generate=generate)
     busy = [tmp_path / f"busy{index}.jpg" for index in range(3)]
     pending = [tmp_path / f"pending{index}.jpg" for index in range(3)]
-    for path in busy + pending:
-        releases[path] = threading.Event()
+    releases = {path: threading.Event() for path in busy + pending}
     try:
         for path in busy:
             scheduler.request(path)
