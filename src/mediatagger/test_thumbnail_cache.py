@@ -61,6 +61,23 @@ def test_a_stored_thumbnail_is_not_returned_once_the_files_size_changes(tmp_path
     assert cache.lookup("Photos/beach.jpg", size=5678, mtime=1700000000.5) is None
 
 
+def test_thumbnails_stored_for_two_different_files_are_each_returned_for_their_own_file(tmp_path):
+    from PySide6.QtGui import QColor, QImage
+
+    from mediatagger.thumbnail_cache import ThumbnailCache
+
+    blue_thumbnail = QImage(400, 200, QImage.Format_RGB32)
+    blue_thumbnail.fill(QColor("blue"))
+    cache = ThumbnailCache(tmp_path / "thumbs.db")
+
+    cache.store("Photos/beach.jpg", size=1234, mtime=1700000000.5, thumbnail=red_thumbnail())
+    cache.store("Photos/forest.jpg", size=1234, mtime=1700000000.5, thumbnail=blue_thumbnail)
+    beach = cache.lookup("Photos/beach.jpg", size=1234, mtime=1700000000.5)
+    forest = cache.lookup("Photos/forest.jpg", size=1234, mtime=1700000000.5)
+
+    assert (beach.pixelColor(200, 100), forest.pixelColor(200, 100)) == (QColor("red"), QColor("blue"))
+
+
 def red_thumbnail():
     from PySide6.QtGui import QColor, QImage
 

@@ -10,13 +10,13 @@ def cache_file(drive_id, home):
 class ThumbnailCache:
     def __init__(self, path):
         self._path = path
+        self._entries = {}
 
     def store(self, relative_path, size, mtime, thumbnail):
-        self._size = size
-        self._mtime = mtime
-        self._thumbnail = thumbnail
+        self._entries[relative_path] = (size, mtime, thumbnail)
 
     def lookup(self, relative_path, size, mtime):
-        if size != self._size or mtime != self._mtime:
+        stored_size, stored_mtime, thumbnail = self._entries[relative_path]
+        if size != stored_size or mtime != stored_mtime:
             return None
-        return self._thumbnail
+        return thumbnail
