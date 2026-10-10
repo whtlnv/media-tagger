@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 19:01 · `src/mediatagger/test_backup.py::test_backing_up_a_drive_that_has_fewer_than_10_backups_deletes_none_of_them`
+- Behavior: Backing up a drive that has fewer than 10 backups deletes none of them
+- Predicted: passes. The pruning slice `sorted(...)[:-BACKUPS_KEPT_PER_DRIVE]` in `back_up` is empty when there are fewer than 10 backups (predicted openly before running; a right-reason failure was not possible)
+- Actual: passed
+- Type: passed unexpectedly (by Red's contract; the pass itself was predicted)
+- Resolution: The previous cycle's retention slice already delivered this behavior. I kept the test as a regression guard instead of forcing an artificial failure. It isn't vacuous: it makes 4 real backups and checks all 4 remain, so a prune that deleted the oldest every time, or that got the keep count wrong, would fail it.
+
 ## 2026-10-09 17:31 · `src/mediatagger/test_main.py::test_running_the_mediatagger_command_on_a_drive_whose_library_has_beach_pressing_t_and_typing_b_shows_the_suggestion_popup_listing_beach`
 - Behavior: Running the shipped `mediatagger <folder>` command on a drive whose library has `beach`, pressing `t` and typing `b` shows the suggestion popup listing `beach`
 - Predicted: AssertionError — stdout `suggestions=[]`, since in a standalone offscreen process the window isn't active, so the prompt lacks focus and QLineEdit never opens the completer popup

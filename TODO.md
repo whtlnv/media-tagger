@@ -12,7 +12,7 @@ Phase 6 notes for every cycle: backup logic lives in a new `src/mediatagger/back
 - [x] With `XDG_DATA_HOME` unset, the default backup root is `~/.local/share/mediatagger/backups` (the test points `HOME` at a temp folder)
 - [x] Backing up writes `drive.json` next to the drive's backups, recording the drive's name (its mount point's folder name) and its drive id
 - [x] Backing up a drive that already has 10 backups leaves only the 10 newest, the oldest deleted
-- [ ] Backing up a drive that has fewer than 10 backups deletes none of them
+- [x] Backing up a drive that has fewer than 10 backups deletes none of them
 - [ ] Backing up a library whose database hasn't changed since that drive's last backup writes no new backup
 - [ ] Backing up a library whose tags changed since that drive's last backup writes a new backup
 - [ ] Backing up into a backup root that isn't writable reports a failure with a short reason instead of raising
