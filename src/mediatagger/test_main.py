@@ -6,8 +6,9 @@ from pathlib import Path
 from PySide6.QtGui import QColor
 
 from mediatagger.test_viewer import make_image, offscreen_environment, run_python_offscreen, shown_launch_viewer, shown_texts, shown_viewer_on
-from mediatagger.backup import back_up, newest_backup, restore
-from mediatagger.library import Library, tags_db_path
+from mediatagger.backup import back_up, newest_backup
+from mediatagger.library import Library
+from mediatagger.test_viewer_backup import tags_in_newest_backup
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image, overwrite_tags_db_with_garbage
 from mediatagger.viewer import DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT
 
@@ -338,9 +339,6 @@ def test_running_the_mediatagger_command_with_xdg_data_home_set_on_a_drive_with_
     drive_id = Library.open(drive).drive_id
     result = run_python_offscreen(ENTER_TAGS_IN_THE_TAG_PROMPT_SCRIPT, str(drive), str(folder), "beach")
     assert result.returncode == 0, result.stderr
-    backup = newest_backup(data_home / "mediatagger" / "backups", drive.name)
-    assert backup.path.parent == data_home / "mediatagger" / "backups" / drive_id
-    restored_drive = tmp_path / "restored"
-    tags_db_path(restored_drive).parent.mkdir(parents=True)
-    restore(restored_drive, backup.path, clock=lambda: datetime(2026, 10, 10, tzinfo=timezone.utc))
-    assert Library.open(restored_drive).tags(restored_drive / folder.relative_to(drive) / "IMG_1.png") == ["beach"]
+    backup_root = data_home / "mediatagger" / "backups"
+    assert newest_backup(backup_root, drive.name).path.parent == backup_root / drive_id
+    assert tags_in_newest_backup(backup_root, drive, tmp_path / "restored", folder.relative_to(drive) / "IMG_1.png") == ["beach"]
