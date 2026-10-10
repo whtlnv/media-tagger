@@ -43,13 +43,17 @@ class DriveSession:
         self.ask_to_restore_library = ask_to_restore_library or self._ask_yes_or_no
         self.declined_drives = set()
         self.library = None  # the open Library of the current drive, if it has one
+        self.drive = None
         self.read_only = False
 
     def open_library(self, path):
+        drive = next(folder for folder in (path, *path.parents) if self.is_mount_point(folder))
+        if self.library and drive == self.drive:
+            return
         if self.library:
             self.back_up_library()
         self.library = None
-        drive = next(folder for folder in (path, *path.parents) if self.is_mount_point(folder))
+        self.drive = drive
         if self._never_holds_a_library(drive):
             self.status_bar.library_label.setText(NO_LIBRARY_VIEWING_ONLY_TEXT)
             return

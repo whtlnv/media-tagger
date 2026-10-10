@@ -1,5 +1,6 @@
 import errno
 import os
+from datetime import datetime, timezone
 
 from PySide6.QtCore import QCoreApplication, QEvent, Qt
 from PySide6.QtWidgets import QLabel, QStackedWidget
@@ -11,7 +12,7 @@ from mediatagger.status_bar import READ_ONLY_STATUS_TEXT, StatusBar
 
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import SILENT, make_image, make_surface_ready, show_exposed, wait_until_loaded
-from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, made_read_only, visible_tag_prompts
+from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, made_read_only, visible_tag_prompts
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger.viewer import Viewer
 from mediatagger.window import Window
@@ -337,3 +338,21 @@ def test_a_backup_failure_shown_in_the_windows_viewer_stays_visible_in_the_statu
 
     assert isinstance(stack.currentWidget(), Grid)
     assert BACKUP_FAILED_TEXT.format(os.strerror(errno.EISDIR)) in shown_status_bar_texts(window)
+
+
+def test_going_from_the_windows_viewer_to_the_grid_and_back_on_the_same_drive_makes_no_new_backup(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    backup_root = tmp_path / "backups"
+    ticks = iter(datetime(2026, 10, 10, 12, 0, second, tzinfo=timezone.utc) for second in range(60))
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False, backup_root=backup_root, backup_clock=lambda: next(ticks))
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    stack = window.findChild(QStackedWidget)
+    enter_in_tag_prompt(qtbot, stack.currentWidget(), "sunset")
+    backups_before = sorted((backup_root / Library.open(drive).drive_id).glob("tags-*.db"))
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+
+    assert isinstance(stack.currentWidget(), Viewer)
+    assert sorted((backup_root / Library.open(drive).drive_id).glob("tags-*.db")) == backups_before
