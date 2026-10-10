@@ -2,6 +2,7 @@ import json
 import os
 import sqlite3
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 
 BACKUPS_KEPT_PER_DRIVE = 10
@@ -10,6 +11,12 @@ BACKUPS_KEPT_PER_DRIVE = 10
 @dataclass
 class BackupOutcome:
     failure: str
+
+
+@dataclass
+class FoundBackup:
+    path: Path
+    taken_at: datetime
 
 
 def default_backup_root():
@@ -35,6 +42,14 @@ def back_up(library, backup_root=None, clock=None):
     drive_root = library._tags_db.parent.parent
     drive = {"name": drive_root.name, "drive_id": library.drive_id}
     (backup_dir / "drive.json").write_text(json.dumps(drive))
+
+
+def newest_backup(backup_root, drive_name):
+    for drive_json in backup_root.glob("*/drive.json"):
+        if json.loads(drive_json.read_text())["name"] == drive_name:
+            path = sorted(drive_json.parent.glob("tags-*.db"))[-1]
+            taken_at = datetime.strptime(path.stem, "tags-%Y%m%dT%H%M%SZ").replace(tzinfo=timezone.utc)
+            return FoundBackup(path=path, taken_at=taken_at)
 
 
 def _duplicates_latest(new_backup, previous_backups):

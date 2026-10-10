@@ -2,7 +2,7 @@ import json
 import shutil
 from datetime import datetime, timezone
 
-from mediatagger.backup import back_up
+from mediatagger.backup import back_up, newest_backup
 from mediatagger.library import Library, tags_db_path
 
 
@@ -145,3 +145,23 @@ def test_backing_up_into_a_backup_root_that_is_not_writable_reports_a_failure_wi
         backup_root.chmod(0o700)
 
     assert outcome.failure == "Permission denied"
+
+
+def test_the_newest_backup_for_a_drive_name_and_its_date_and_time_are_found_by_matching_drive_json_names(tmp_path):
+    backup_root = tmp_path / "backups"
+    photos = tmp_path / "PHOTOS"
+    photos.mkdir()
+    (photos / "beach.jpg").touch()
+    photos_library = Library.create(photos)
+    other = tmp_path / "OTHER"
+    other.mkdir()
+    other_library = Library.create(other)
+    back_up(photos_library, backup_root=backup_root, clock=_clock_at_october(9))
+    photos_library.enter(photos / "beach.jpg", "beach")
+    back_up(photos_library, backup_root=backup_root, clock=_clock_at_october(10))
+    back_up(other_library, backup_root=backup_root, clock=_clock_at_october(11))
+
+    found = newest_backup(backup_root, "PHOTOS")
+
+    assert found.path == backup_root / photos_library.drive_id / "tags-20261010T153000Z.db"
+    assert found.taken_at == datetime(2026, 10, 10, 15, 30, 0, tzinfo=timezone.utc)
