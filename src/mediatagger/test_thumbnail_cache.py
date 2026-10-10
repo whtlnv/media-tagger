@@ -52,3 +52,17 @@ def test_a_stored_thumbnail_is_not_returned_once_the_files_mtime_changes(tmp_pat
     cache.store("Photos/beach.jpg", size=1234, mtime=1700000000.5, thumbnail=thumbnail)
 
     assert cache.lookup("Photos/beach.jpg", size=1234, mtime=1700000999.0) is None
+
+
+def test_a_stored_thumbnail_is_not_returned_once_the_files_size_changes(tmp_path):
+    from PySide6.QtGui import QColor, QImage
+
+    from mediatagger.thumbnail_cache import ThumbnailCache
+
+    thumbnail = QImage(400, 200, QImage.Format_RGB32)
+    thumbnail.fill(QColor("red"))
+    cache = ThumbnailCache(tmp_path / "thumbs.db")
+
+    cache.store("Photos/beach.jpg", size=1234, mtime=1700000000.5, thumbnail=thumbnail)
+
+    assert cache.lookup("Photos/beach.jpg", size=5678, mtime=1700000000.5) is None
