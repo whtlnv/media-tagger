@@ -74,7 +74,8 @@ def newest_backup(backup_root, drive_name):
 
 def restore(drive, backup, clock):
     tags_db = tags_db_path(drive)
-    tags_db.rename(tags_db.parent / f"tags.db.damaged-{clock():{TIMESTAMP_FORMAT}}")
+    if tags_db.exists():
+        tags_db.rename(tags_db.parent / f"tags.db.damaged-{clock():{TIMESTAMP_FORMAT}}")
     _copy_database(backup, tags_db)
 
 

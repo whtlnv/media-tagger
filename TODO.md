@@ -41,7 +41,7 @@ Phase 6 notes for every cycle: backup logic lives in a new `src/mediatagger/back
 - [x] Answering No to the restore question for a garbage `tags.db` shows `Library on <DRIVE> can't be opened — viewing only`
 - [x] Opening a folder on a drive whose `.mediatagger/` exists without `tags.db`, with backups for a drive of the same name, asks the restore question
 - [x] Answering No to the restore question for a missing `tags.db` asks the create-library question
-- [ ] Answering Yes to the restore question for a missing `tags.db` (`.mediatagger/` exists) opens the library with the backed-up tags shown for the current item and the status bar showing `✓ Restored backup from <date time>`
+- [x] Answering Yes to the restore question for a missing `tags.db` (`.mediatagger/` exists) opens the library with the backed-up tags shown for the current item and the status bar showing `✓ Restored backup from <date time>`
 - [ ] Answering Yes to the restore question when the newest backup is itself unreadable (garbage bytes) shows `✗ Restore failed: <short reason>` and `Library on <DRIVE> can't be opened — viewing only`, never raises, and leaves the drive's original damaged `tags.db` back in place as `tags.db`
 - [ ] Opening a folder on a read-only drive whose `tags.db` is garbage, with backups for a drive of the same name, asks no restore question and the status bar says the backup can't be restored to a read-only drive, viewing only
 - [ ] Running the shipped `mediatagger <folder>` on a drive whose `tags.db` is garbage, with a backup for a drive of that name under `$XDG_DATA_HOME`, asks the restore question in a Yes/No dialog over the already shown viewer (the default `ask_to_restore_library`), and answering Yes shows the restored tags

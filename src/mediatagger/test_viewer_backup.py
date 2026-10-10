@@ -341,3 +341,23 @@ def test_answering_no_to_the_restore_question_for_a_missing_tags_db_asks_the_cre
     )
 
     assert asked == [RESTORE_LIBRARY_QUESTION.format(drive.name, taken_at.astimezone()), CREATE_LIBRARY_QUESTION.format(drive.name)]
+
+
+def test_answering_yes_to_the_restore_question_for_a_missing_tags_db_opens_the_library_with_the_backed_up_tags_shown_and_says_restored_backup_from_its_local_time(qtbot, tmp_path):
+    from mediatagger.viewer import RESTORED_BACKUP_TEXT
+
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    backup_root = tmp_path / "backups"
+    library = Library.open(drive)
+    library.enter(folder / "IMG_1.png", "beach family")
+    taken_at = datetime(2026, 10, 9, 15, 30, tzinfo=timezone.utc)
+    back_up(library, backup_root, clock=lambda: taken_at)
+    tags_db_path(drive).unlink()
+
+    viewer = viewer_backing_up_into(qtbot, backup_root, folder, drive, ask_to_restore_library=lambda question: True)
+    viewer.resize(400, 300)
+    viewer.show()
+    qtbot.waitExposed(viewer)
+
+    assert shown_texts(viewer) == ["beach family"]
+    assert RESTORED_BACKUP_TEXT.format(taken_at.astimezone()) in status_bar_texts(viewer)
