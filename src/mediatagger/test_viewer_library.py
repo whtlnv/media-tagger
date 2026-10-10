@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QLabel, QLineEdit
 
 from mediatagger.library import Library, tags_db_path
 from mediatagger.test_video import make_clip
-from mediatagger.test_viewer import centre_colour, make_image, shown_labels, shown_launch_viewer, shown_texts, shown_viewer_on, SILENT, shows_video_surface
+from mediatagger.test_viewer import centre_colour, make_image, show_exposed, shown_labels, shown_launch_viewer, shown_texts, shown_viewer_on, SILENT, shows_video_surface
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger.viewer import (
     APP_PACKAGE, CREATE_LIBRARY_QUESTION, DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT, LIBRARY_TEXT, NO_LIBRARY_TEXT, NO_LIBRARY_VIEWING_ONLY_TEXT,
@@ -84,9 +84,7 @@ def viewer_on_drive(qtbot, folder, drive, ask_to_create_library, app_location=AP
 
 def shown_viewer_on_drives(qtbot, folder, drives, ask_to_create_library, app_location=APP_PACKAGE):
     viewer = viewer_on_drives(qtbot, folder, drives, ask_to_create_library, app_location)
-    viewer.resize(400, 300)
-    viewer.show()
-    qtbot.waitExposed(viewer)
+    show_exposed(qtbot, viewer)
     return viewer
 
 
