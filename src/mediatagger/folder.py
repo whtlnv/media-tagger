@@ -22,3 +22,8 @@ def media_files(folder):
 
 def is_video(path):
     return path.suffix.lower() in VIDEO_EXTENSIONS
+
+
+def folder_entries(folder):
+    subfolders = [path for path in folder.iterdir() if path.is_dir()]
+    return subfolders + media_files(folder)

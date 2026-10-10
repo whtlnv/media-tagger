@@ -1,6 +1,6 @@
 import pytest
 
-from mediatagger.folder import is_video, media_files
+from mediatagger.folder import folder_entries, is_video, media_files
 
 
 def touch(folder, *names):
@@ -68,3 +68,10 @@ def test_natural_order_ignores_letter_case(tmp_path):
     assert [path.name for path in media_files(tmp_path)] == [
         "broken_0005.jpg", "CLIP_0003.AVI", "IMG_0001.jpg", "img_0002_tall.jpg", "IMG_0004.mp4",
     ]
+
+
+def test_listing_a_folder_gives_its_subfolders_first_then_its_images_and_videos(tmp_path):
+    touch(tmp_path, "a_beach.jpg", "b_dance.mp4")
+    (tmp_path / "zoo").mkdir()
+
+    assert folder_entries(tmp_path) == [tmp_path / "zoo", tmp_path / "a_beach.jpg", tmp_path / "b_dance.mp4"]
