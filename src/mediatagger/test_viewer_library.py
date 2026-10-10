@@ -10,10 +10,9 @@ from mediatagger.library import Library, tags_db_path
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import centre_colour, make_image, show_exposed, shown_labels, shown_launch_viewer, shown_texts, shown_viewer_on, SILENT, shows_video_surface
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
-from mediatagger.viewer import (
-    APP_PACKAGE, CREATE_LIBRARY_QUESTION, DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT, LIBRARY_TEXT, NO_LIBRARY_TEXT, NO_LIBRARY_VIEWING_ONLY_TEXT,
-    TAGS_CANT_BE_SAVED_HERE_TEXT, Viewer,
-)
+from mediatagger.drive_session import APP_PACKAGE, CREATE_LIBRARY_QUESTION, DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT, LIBRARY_TEXT, NO_LIBRARY_VIEWING_ONLY_TEXT
+from mediatagger.status_bar import NO_LIBRARY_TEXT, TAGS_CANT_BE_SAVED_HERE_TEXT
+from mediatagger.viewer import Viewer
 
 
 def status_bar_labels(viewer):
@@ -325,8 +324,8 @@ def test_the_status_bar_text_is_shown_whole_with_room_for_its_full_height(qtbot,
 
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
-    assert viewer.library_label.height() >= viewer.library_label.sizeHint().height()
-    assert viewer.library_label.width() == viewer.library_label.sizeHint().width()
+    assert viewer.status_bar.library_label.height() >= viewer.status_bar.library_label.sizeHint().height()
+    assert viewer.status_bar.library_label.width() == viewer.status_bar.library_label.sizeHint().width()
 
 
 def test_the_question_to_create_a_tag_library_is_asked_over_the_dropped_folders_first_image_not_a_placeholder(qtbot, tmp_path):
@@ -351,8 +350,8 @@ def test_the_status_bar_text_stays_on_top_of_a_playing_video(qtbot, tmp_path):
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     qtbot.waitUntil(lambda: shows_video_surface(viewer))
 
-    status_text_centre = viewer.library_label.mapTo(viewer, viewer.library_label.rect().center())
-    assert viewer.childAt(status_text_centre) is viewer.library_label
+    status_text_centre = viewer.status_bar.library_label.mapTo(viewer, viewer.status_bar.library_label.rect().center())
+    assert viewer.childAt(status_text_centre) is viewer.status_bar.library_label
 
 
 def test_pressing_t_on_a_drive_whose_tag_library_was_declined_opens_no_tag_prompt(qtbot, tmp_path):
@@ -410,7 +409,7 @@ def test_the_tags_cant_be_saved_here_message_leaves_the_status_bar_a_few_seconds
 
 
 def test_opening_a_folder_on_a_drive_whose_tags_db_is_garbage_still_shows_the_slideshow_and_says_the_library_cant_be_opened_viewing_only(qtbot, tmp_path):
-    from mediatagger.viewer import LIBRARY_CANT_BE_OPENED_TEXT
+    from mediatagger.drive_session import LIBRARY_CANT_BE_OPENED_TEXT
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     make_image(folder / "IMG_2.png", "blue")
     overwrite_tags_db_with_garbage(drive)
@@ -435,7 +434,7 @@ def test_pressing_t_on_a_drive_whose_library_cant_be_opened_opens_no_tag_prompt_
 
 
 def test_opening_a_folder_on_a_drive_whose_library_open_fails_with_an_os_error_still_shows_the_slideshow_and_says_the_library_cant_be_opened_viewing_only(qtbot, tmp_path, monkeypatch):
-    from mediatagger.viewer import LIBRARY_CANT_BE_OPENED_TEXT
+    from mediatagger.drive_session import LIBRARY_CANT_BE_OPENED_TEXT
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     make_image(folder / "IMG_2.png", "blue")
 

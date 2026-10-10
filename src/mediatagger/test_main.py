@@ -10,7 +10,7 @@ from mediatagger.backup import back_up, newest_backup
 from mediatagger.library import Library
 from mediatagger.test_viewer_backup import tags_in_newest_backup
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image, overwrite_tags_db_with_garbage
-from mediatagger.viewer import DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT
+from mediatagger.drive_session import DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT
 
 RUN_MEDIATAGGER_COMMAND = (
     "from importlib.metadata import entry_points\n"

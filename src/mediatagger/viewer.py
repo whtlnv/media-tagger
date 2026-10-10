@@ -3,49 +3,26 @@ import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 
-from PySide6.QtCore import QEvent, QEventLoop, QPoint, QRect, Qt, QTimer
+from PySide6.QtCore import QEvent, QPoint, QRect, Qt
 from PySide6.QtGui import QImageIOHandler, QImageReader, QPainter
-from PySide6.QtWidgets import QApplication, QCompleter, QFileDialog, QHBoxLayout, QLabel, QLineEdit, QMessageBox, QWidget
+from PySide6.QtWidgets import QCompleter, QFileDialog, QLineEdit, QWidget
 
-from mediatagger.backup import back_up, default_backup_root, failure_reason, newest_backup, restore
+from mediatagger.drive_session import APP_PACKAGE, DriveSession
 from mediatagger.folder import is_video
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
-from mediatagger.library import Library, tags_db_path
 from mediatagger.mpv_surface import MpvSurface
+from mediatagger.status_bar import CORNER_MARGIN, StatusBar, overlay_label
 from mediatagger.slideshow import Slideshow
 from mediatagger.video import VideoPlayer, new_engine
 
 _PLAYER_OPTIONS = {"vo": "libmpv"}
 _VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up", Qt.Key.Key_Down: "Down", Qt.Key.Key_Return: "Enter"}
-# Explicit colours: the desktop theme's default text colour may be black, which vanishes on a black background.
-_LABEL_STYLE = "color: white; background-color: rgba(0, 0, 0, 160); padding: 8px 12px; border-radius: 6px; font-size: 18px;"
 _SUGGESTION_POPUP_STYLE = "QListView { color: white; background-color: rgb(64, 64, 64); border: 1px solid rgb(200, 200, 200); font-size: 18px; } QListView::item { padding: 4px 12px; }"
 _TAG_INPUT_STYLE = "color: white; background-color: rgba(64, 64, 64, 220); border: 1px solid rgb(200, 200, 200); padding: 8px 12px; border-radius: 6px; font-size: 18px;"
-CORNER_MARGIN = 16
 _TAG_PROMPT_WIDTH = 600
 _SLIDESHOW_KEYS = {Qt.Key.Key_Left: "Left", Qt.Key.Key_Right: "Right", Qt.Key.Key_Space: "Space"}
 UNSUPPORTED_TEXT = "Unsupported"
-APP_PACKAGE = Path(__file__).parent  # its drive is never written while the app runs
-_FULLSCREEN_SETTLE_MS = 1000
-NO_LIBRARY_TEXT = "No library open"
-LIBRARY_TEXT = "Library: {}"
-NO_LIBRARY_VIEWING_ONLY_TEXT = "No library — viewing only"
-DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT = "{} has no tag library — viewing only"
-LIBRARY_CANT_BE_OPENED_TEXT = "Library on {} can't be opened — viewing only"
-CREATE_LIBRARY_QUESTION = "Create a tag library on {}?"
-RESTORE_LIBRARY_QUESTION = "The tag library on {} is missing or damaged. Restore the backup from {:%Y-%m-%d %H:%M}?"
 READ_ONLY_BANNER_TEXT = "This drive is read-only — tags can't be saved"
-READ_ONLY_STATUS_TEXT = "Read-only — tags can't be saved"
-TAGS_CANT_BE_SAVED_HERE_TEXT = "Tags can't be saved here"
-_COULDNT_SAVE_TAGS_TEXT = "Couldn't save tags — is the drive still connected?"
-BACKING_UP_TEXT = "⟳ Backing up database…"
-BACKED_UP_TEXT = "✓ Backed up"
-BACKUP_FAILED_TEXT = "✗ Backup failed: {}"
-RESTORED_BACKUP_TEXT = "✓ Restored backup from {:%Y-%m-%d %H:%M}"
-RESTORE_FAILED_TEXT = "✗ Restore failed: {}"
-CANT_RESTORE_TO_READ_ONLY_DRIVE_TEXT = "{} is read-only — its backup can't be restored"
-_CANT_SAVE_MESSAGE_MS = 3000
-_FINISHED_MESSAGE_MS = 3000
 
 
 def _last_word(text):
@@ -94,12 +71,6 @@ class _TagInput(QLineEdit):
             event.accept()  # QLineEdit passes Enter on to its parent, where it would pause the video
 
 
-def _overlay_label(text, parent):
-    label = QLabel(text, parent)
-    label.setStyleSheet(_LABEL_STYLE)
-    return label
-
-
 def _fitted_rect(size, bounds):
     target = QRect(QPoint(), size.scaled(bounds.size(), Qt.AspectRatioMode.KeepAspectRatio))
     target.moveCenter(bounds.center())
@@ -131,14 +102,8 @@ class Viewer(QWidget):
     ):
         super().__init__()
         collect_garbage_on_the_gui_thread()
-        self.is_mount_point = is_mount_point
-        self.app_location = app_location
-        self.backup_root = backup_root or default_backup_root()
-        self.backup_clock = backup_clock
-        self.ask_to_create_library = ask_to_create_library or self._ask_yes_or_no
-        self.ask_to_restore_library = ask_to_restore_library or self._ask_yes_or_no
-        self.declined_drives = set()
-        self.library = None  # the open Library of the current drive, if it has one
+        self.status_bar = StatusBar(self)
+        self.session = DriveSession(self.status_bar, self, is_mount_point, ask_to_create_library, app_location, backup_root, backup_clock, ask_to_restore_library)
         self.folder_picker = folder_picker or self._pick_folder
         self.slideshow = None
         self.video_player = VideoPlayer(new_engine(**{**_PLAYER_OPTIONS, **(player_options or {})}))
@@ -153,16 +118,15 @@ class Viewer(QWidget):
         self.tag_input.completer().setCaseSensitivity(Qt.CaseInsensitive)
         self.tag_input.completer().popup().setStyleSheet(_SUGGESTION_POPUP_STYLE)
         self.tag_input.hide()
-        self.prompt_tags = _overlay_label("", self)
+        self.prompt_tags = overlay_label("", self)
         self.prompt_tags.hide()
-        self.tag_overlay = _overlay_label("", self)
+        self.tag_overlay = overlay_label("", self)
         self.tag_overlay.hide()
-        self.info = _overlay_label("", self)
+        self.info = overlay_label("", self)
         self.info.move(CORNER_MARGIN, CORNER_MARGIN)
         self.info.hide()
-        self.placeholder = _overlay_label(UNSUPPORTED_TEXT, self)
-        self._build_status_bar()
-        self.read_only_banner = _overlay_label(READ_ONLY_BANNER_TEXT, self)
+        self.placeholder = overlay_label(UNSUPPORTED_TEXT, self)
+        self.read_only_banner = overlay_label(READ_ONLY_BANNER_TEXT, self)
         self.read_only_banner.hide()
         self.setWindowState(Qt.WindowState.WindowFullScreen)
         self.setAcceptDrops(True)
@@ -171,43 +135,18 @@ class Viewer(QWidget):
             return
         self._open(path)
 
-    def _build_status_bar(self):
-        self.status_bar = QWidget(self)
-        self.library_label = _overlay_label(NO_LIBRARY_TEXT, self.status_bar)
-        self.read_only_status = _overlay_label(READ_ONLY_STATUS_TEXT, self.status_bar)
-        self.read_only_status.hide()
-        self.cant_save_status = _overlay_label(TAGS_CANT_BE_SAVED_HERE_TEXT, self.status_bar)
-        self.cant_save_status.hide()
-        self.couldnt_save_status = _overlay_label(_COULDNT_SAVE_TAGS_TEXT, self.status_bar)
-        self.couldnt_save_status.hide()
-        self.background_status = _overlay_label("", self.status_bar)
-        self.background_status.hide()
-        self._background_status_clearing = QTimer(self)
-        self._background_status_clearing.setSingleShot(True)
-        self._background_status_clearing.timeout.connect(self.background_status.hide)
-        status_layout = QHBoxLayout(self.status_bar)
-        status_layout.setContentsMargins(CORNER_MARGIN, 0, CORNER_MARGIN, CORNER_MARGIN)
-        status_layout.addWidget(self.library_label)
-        status_layout.addWidget(self.read_only_status)
-        status_layout.addWidget(self.cant_save_status)
-        status_layout.addWidget(self.couldnt_save_status)
-        status_layout.addWidget(self.background_status)
-        status_layout.addStretch()
-
     def closeEvent(self, event):
         if self.surface:
             self.surface.release()
         if self.video_player.engine.handle is not None:  # a second close must not call into a destroyed mpv handle
             self.video_player.engine.terminate()
-        if self.library:
-            self._back_up_library()
+        self.session.close()
         super().closeEvent(event)
 
     def resizeEvent(self, event):
         if self.surface:
             self.surface.setGeometry(self.rect())
-        status_bar_height = self.status_bar.sizeHint().height()
-        self.status_bar.setGeometry(0, self.height() - status_bar_height, self.width(), status_bar_height)
+        self.status_bar.place_along_the_bottom_of(self.rect())
         self._centre(self.placeholder)
         self._pin_top_centre(self.read_only_banner)
         self._pin_top_right(self.tag_overlay)
@@ -283,11 +222,10 @@ class Viewer(QWidget):
             self._show_info()
             return
         if event.key() == Qt.Key.Key_T:
-            if self._tags_can_be_saved_here():
+            if self.session.tags_can_be_saved():
                 self._open_tag_prompt()
             else:
-                self.cant_save_status.show()
-                QTimer.singleShot(_CANT_SAVE_MESSAGE_MS, self.cant_save_status.hide)
+                self.status_bar.flash_cant_save()
             return
         if self._tag_prompt_has_focus():
             return  # keys the open tag prompt ignores must not reach the slideshow or video
@@ -302,17 +240,11 @@ class Viewer(QWidget):
         self._refresh()
         self._show_current_tags()
 
-    def _tags_can_be_saved_here(self):
-        return self.library is not None and not self._drive_is_read_only()
-
-    def _drive_is_read_only(self):
-        return not self.read_only_banner.isHidden()
-
     def _tag_prompt_has_focus(self):
         return self.focusWidget() is self.tag_input and self.tag_input.isVisible()
 
     def _open_tag_prompt(self):
-        library = self.library
+        library = self.session.library
         path = self.slideshow.current
         self._tagging = (library, path)
         self.tag_overlay.hide()
@@ -344,7 +276,7 @@ class Viewer(QWidget):
         try:
             library.enter(path, self.tag_input.text())
         except (sqlite3.Error, OSError):
-            self.couldnt_save_status.show()
+            self.status_bar.show_couldnt_save(True)
             return
         self._close_tag_prompt()
 
@@ -353,12 +285,12 @@ class Viewer(QWidget):
         self._tagging = None
         self.tag_input.hide()
         self.prompt_tags.hide()
-        self.couldnt_save_status.hide()  # it was about this prompt's entry
+        self.status_bar.show_couldnt_save(False)  # it was about this prompt's entry
         self.setFocus()  # keys go back to the viewer, not to the hidden input
 
     def _show_current_tags(self):
-        if self.library:
-            self._show_tag_overlay(self.library, self.slideshow.current)
+        if self.session.library:
+            self._show_tag_overlay(self.session.library, self.slideshow.current)
 
     def _show_tag_overlay(self, library, path):
         tags = " ".join(library.tags(path))
@@ -373,18 +305,6 @@ class Viewer(QWidget):
             self.showNormal()
         else:
             self.showFullScreen()
-
-    def _ask_yes_or_no(self, question):
-        if not self.isVisible():
-            self._show_and_settle()
-        return QMessageBox(QMessageBox.Icon.Question, "", question, QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, self).exec() == QMessageBox.StandardButton.Yes
-
-    def _show_and_settle(self):
-        """macOS animates the switch to fullscreen; a modal opened mid-animation leaves the window at 100x30."""
-        self.show()
-        settling = QEventLoop()
-        QTimer.singleShot(_FULLSCREEN_SETTLE_MS, settling.quit)
-        settling.exec()
 
     def _pick_folder(self):
         picker = QFileDialog(self)
@@ -413,106 +333,9 @@ class Viewer(QWidget):
         if showing_info:
             self.slideshow.press("i")
         self._refresh()
-        self._open_library(path)  # after the first item is shown, so a question about the library is asked over it
+        self.session.open_library(path)  # after the first item is shown, so a question about the library is asked over it
+        self.read_only_banner.setVisible(self.session.read_only)
         self._show_current_tags()
-
-    def _open_library(self, path):
-        if self.library:
-            self._back_up_library()
-        self.library = None
-        drive = next(folder for folder in (path, *path.parents) if self.is_mount_point(folder))
-        if self._never_holds_a_library(drive):
-            self.library_label.setText(NO_LIBRARY_VIEWING_ONLY_TEXT)
-            return
-        read_only = not os.access(drive, os.W_OK)
-        if not tags_db_path(drive).exists():
-            if not self._open_missing_library(drive, read_only):
-                return
-        elif not self._open_existing_library(drive, read_only):
-            return
-        self._show_library_status(LIBRARY_TEXT.format(drive.name), read_only)
-
-    def _open_missing_library(self, drive, read_only):
-        """Whether the drive without a tags.db ended up with one open, restored from a backup or created; if not, says why."""
-        if read_only:
-            self._show_library_status(NO_LIBRARY_TEXT, read_only=True)
-            return False
-        if tags_db_path(drive).parent.is_dir() and self._offer_to_restore_library(drive):
-            return True
-        if not self._agrees_to_create_library(drive):
-            self._show_library_status(DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format(drive.name), read_only=False)
-            return False
-        self.library = Library.create(drive)
-        return True
-
-    def _open_existing_library(self, drive, read_only):
-        """Whether the drive's tags.db ended up open, as it was or restored from a backup; if not, says why."""
-        try:
-            self.library = Library.open(drive)
-        except (sqlite3.DatabaseError, OSError):
-            if read_only:
-                text = CANT_RESTORE_TO_READ_ONLY_DRIVE_TEXT if newest_backup(self.backup_root, drive.name) else LIBRARY_CANT_BE_OPENED_TEXT
-                self._show_library_status(text.format(drive.name), read_only=True)
-                return False
-            if not self._offer_to_restore_library(drive):
-                self._show_library_status(LIBRARY_CANT_BE_OPENED_TEXT.format(drive.name), read_only=False)
-                return False
-            return True
-        self._back_up_library()
-        return True
-
-    def _back_up_library(self):
-        self._show_background_status(BACKING_UP_TEXT)
-        # Paint it before the backup blocks the event loop; user input waits, so no queued key runs mid-open or mid-close.
-        # Not while the viewer is still unshown (being built): there is nothing to paint, and a caller's timer would fire too early.
-        if self.isVisible():
-            QApplication.processEvents(QEventLoop.ProcessEventsFlag.ExcludeUserInputEvents)
-        outcome = back_up(self.library, self.backup_root, clock=self.backup_clock)
-        if outcome is not None:
-            self._show_background_status(BACKUP_FAILED_TEXT.format(outcome.failure))
-            return
-        self._show_background_status(BACKED_UP_TEXT, finished=True)
-
-    def _show_background_status(self, text, finished=False):
-        """The status bar's one slot for background work (backups now, later phases' jobs too). Work in progress and
-        failures stay shown; a finished job's message clears after a few seconds, unless a newer message replaced it."""
-        self._background_status_clearing.stop()
-        self.background_status.setText(text)
-        self.background_status.show()
-        if finished:
-            self._background_status_clearing.start(_FINISHED_MESSAGE_MS)
-
-    def _show_library_status(self, text, read_only):
-        self.read_only_banner.setVisible(read_only)
-        self.read_only_status.setVisible(read_only)
-        self.library_label.setText(text)
-
-    def _never_holds_a_library(self, drive):
-        return drive == Path("/") or drive in self.app_location.parents
-
-    def _offer_to_restore_library(self, drive):
-        backup = newest_backup(self.backup_root, drive.name)
-        if not backup:
-            return False
-        taken_at = backup.taken_at.astimezone()
-        if not self.ask_to_restore_library(RESTORE_LIBRARY_QUESTION.format(drive.name, taken_at)):
-            return False
-        try:
-            restore(drive, backup.path, self.backup_clock)
-            self.library = Library.open(drive)
-        except (OSError, sqlite3.Error) as error:
-            self._show_background_status(RESTORE_FAILED_TEXT.format(failure_reason(error)))
-            return False
-        self._show_background_status(RESTORED_BACKUP_TEXT.format(taken_at), finished=True)
-        return True
-
-    def _agrees_to_create_library(self, drive):
-        if drive in self.declined_drives:
-            return False
-        if not self.ask_to_create_library(CREATE_LIBRARY_QUESTION.format(drive.name)):
-            self.declined_drives.add(drive)
-            return False
-        return True
 
     def _show_cant_open(self, path):
         self.slideshow = None

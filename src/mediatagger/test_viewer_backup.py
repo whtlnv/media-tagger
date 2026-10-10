@@ -13,11 +13,9 @@ from mediatagger.library import Library, tags_db_path
 from mediatagger.test_viewer import make_image, show_exposed, shown_texts, SILENT
 from mediatagger.test_viewer_library import decline_noting_the_question_in, drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, made_read_only, make_tag_library_drive, overwrite_tags_db_with_garbage, status_bar_texts
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
-from mediatagger import viewer as viewer_module
-from mediatagger.viewer import (
-    BACKED_UP_TEXT, BACKING_UP_TEXT, BACKUP_FAILED_TEXT, CANT_RESTORE_TO_READ_ONLY_DRIVE_TEXT, CREATE_LIBRARY_QUESTION, DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT,
-    LIBRARY_CANT_BE_OPENED_TEXT, LIBRARY_TEXT, RESTORE_FAILED_TEXT, RESTORE_LIBRARY_QUESTION, RESTORED_BACKUP_TEXT, Viewer,
-)
+from mediatagger import status_bar as status_bar_module
+from mediatagger.drive_session import BACKED_UP_TEXT, BACKING_UP_TEXT, BACKUP_FAILED_TEXT, CANT_RESTORE_TO_READ_ONLY_DRIVE_TEXT, CREATE_LIBRARY_QUESTION, DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT, LIBRARY_CANT_BE_OPENED_TEXT, LIBRARY_TEXT, RESTORE_FAILED_TEXT, RESTORE_LIBRARY_QUESTION, RESTORED_BACKUP_TEXT
+from mediatagger.viewer import Viewer
 
 
 def viewer_backing_up_into(qtbot, backup_root, folder, *drives, **options):
@@ -392,7 +390,7 @@ def test_opening_a_folder_on_a_read_only_drive_whose_tags_db_is_garbage_with_bac
 
 
 def test_a_backup_failing_soon_after_an_earlier_backed_up_keeps_its_failure_shown_past_the_earlier_messages_clear_time(qtbot, tmp_path, monkeypatch):
-    monkeypatch.setattr(viewer_module, "_FINISHED_MESSAGE_MS", 200)
+    monkeypatch.setattr(status_bar_module, "_FINISHED_MESSAGE_MS", 200)
     first_drive, viewed = drive_with_a_tag_library_holding_one_image(tmp_path)
     second_drive = make_tag_library_drive(tmp_path / "BACKUP")
     [dropped] = make_folders(second_drive, "Videos")

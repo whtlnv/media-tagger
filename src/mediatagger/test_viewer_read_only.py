@@ -8,7 +8,9 @@ from mediatagger.test_viewer_library import (
     resize_and_wait, shown_viewer_on_drive, shown_viewer_on_drives, status_bar_labels, status_bar_texts, viewer_on_drives, visible_tag_prompts,
 )
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
-from mediatagger.viewer import CORNER_MARGIN, LIBRARY_TEXT, READ_ONLY_BANNER_TEXT, READ_ONLY_STATUS_TEXT, TAGS_CANT_BE_SAVED_HERE_TEXT
+from mediatagger.drive_session import LIBRARY_TEXT
+from mediatagger.status_bar import CORNER_MARGIN, READ_ONLY_STATUS_TEXT, TAGS_CANT_BE_SAVED_HERE_TEXT
+from mediatagger.viewer import READ_ONLY_BANNER_TEXT
 
 
 def test_opening_a_folder_on_a_read_only_drive_that_has_a_tag_library_shows_a_banner_saying_tags_cant_be_saved(qtbot, tmp_path):

@@ -9,7 +9,7 @@ from mediatagger.test_viewer_library import (
     drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, frame_in, made_read_only, resize_and_wait, shown_viewer_on_drive, visible_tag_prompts,
 )
 from mediatagger.test_viewer_open import make_folders
-from mediatagger.viewer import CORNER_MARGIN
+from mediatagger.status_bar import CORNER_MARGIN
 
 
 def test_after_entering_beach_family_in_the_tag_prompt_a_tag_overlay_shows_beach_family_while_the_prompt_is_closed(qtbot, tmp_path):
