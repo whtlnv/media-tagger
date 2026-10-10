@@ -16,11 +16,19 @@ class Window(QWidget):
     def _show_grid(self):
         self.viewer.stop_video()
         current = self.viewer.slideshow.current
-        grid = Grid(current.parent, at=current)
+        self._show(Grid(current.parent, at=current))
+
+    def _show(self, grid):
         grid.activated.connect(self._show_viewer_at)
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
 
     def _show_viewer_at(self, index):
-        self.viewer.open(index.data(TILE_ROLE).path)
+        path = index.data(TILE_ROLE).path
+        if path.is_dir():
+            grid = Grid(path)
+            grid.setCurrentIndex(grid.model().index(0, 0))
+            self._show(grid)
+            return
+        self.viewer.open(path)
         self.stack.setCurrentWidget(self.viewer)

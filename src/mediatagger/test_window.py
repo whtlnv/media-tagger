@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QStackedWidget
 
-from mediatagger.grid import Grid
+from mediatagger.grid import TILE_ROLE, Grid
 
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import SILENT, make_image, make_surface_ready, show_exposed, wait_until_loaded
@@ -105,3 +105,21 @@ def test_in_the_windows_grid_enter_on_a_file_starts_that_folders_slideshow_at_th
     shown = stack.currentWidget()
     assert isinstance(shown, Viewer)
     assert shown.slideshow.current == tmp_path / "b.jpg"
+
+
+def test_in_the_windows_grid_enter_on_a_folder_opens_that_folders_grid_with_the_cursor_on_its_first_entry(qtbot, tmp_path):
+    (tmp_path / "day1").mkdir()
+    make_image(tmp_path / "day1" / "x.jpg", "red")
+    make_image(tmp_path / "day1" / "y.jpg", "blue")
+    make_image(tmp_path / "a.jpg", "green")
+    window = Window(tmp_path, player_options=SILENT)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Left)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+
+    shown = stack.currentWidget()
+    assert isinstance(shown, Grid)
+    assert shown.currentIndex().data(TILE_ROLE).path == tmp_path / "day1" / "x.jpg"
