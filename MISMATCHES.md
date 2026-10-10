@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 23:06 · `src/mediatagger/test_viewer_backup.py::test_answering_no_to_the_restore_question_says_the_library_cant_be_opened_viewing_only`
+- Behavior: Answering No to the restore question for a garbage `tags.db` shows `Library on <DRIVE> can't be opened — viewing only`
+- Predicted: passes on first run — the Yes cycle (1fda9fc) already made `_offer_to_restore_library` return False on decline, which falls through to `LIBRARY_CANT_BE_OPENED_TEXT`
+- Actual: passed
+- Type: passed unexpectedly
+- Resolution: The behavior was already built in the Yes cycle, so there was nothing to rewrite the test toward. With the decline branch temporarily removed, the test failed (status showed `Library: MEDIATAGGER` + restored text). The test stays as a regression pin, and /green has nothing to add.
+
 ## 2026-10-09 22:47 · `src/mediatagger/test_viewer_backup.py::test_opening_a_folder_on_a_drive_whose_tags_db_is_garbage_with_no_backups_for_a_drive_of_that_name_asks_nothing_and_says_the_library_cant_be_opened_viewing_only`
 - Behavior: Opening a folder on a drive whose `tags.db` is garbage, with no backups for a drive of that name, asks nothing and shows `Library on <DRIVE> can't be opened — viewing only`
 - Predicted: pass (stated before running), because `_offer_to_restore_library` only asks when `newest_backup` finds one, and the garbage branch already shows `LIBRARY_CANT_BE_OPENED_TEXT`
