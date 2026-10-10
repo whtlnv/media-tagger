@@ -38,7 +38,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] A stored failure is a miss once the file's mtime changes
 - [x] Thumbnails stored in one session are returned after the cache is reopened (survives restarting the app)
 - [x] A thumbnail stored while the drive was mounted at one path is returned when the drive is mounted at another
-- [ ] With no drive id (no library), a generated thumbnail is returned again within the session from memory
+- [x] With no drive id (no library), a generated thumbnail is returned again within the session from memory
 - [ ] With no drive id, nothing is written to disk
 - [ ] The cache is never written when its location falls on the app's own drive
 - [ ] The cache is never written when its location falls on the drive being viewed

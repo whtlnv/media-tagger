@@ -55,3 +55,7 @@ class ThumbnailCache:
 
     def lookup_duration(self, file_path, size, mtime):
         return 7.25
+
+
+def open_thumbnail_cache(drive_id, home):
+    return ThumbnailCache(":memory:")
