@@ -1,5 +1,6 @@
 import shutil
 import subprocess
+import time
 
 import pytest
 from PySide6.QtCore import QSize
@@ -108,3 +109,25 @@ def test_an_800_by_600_video_green_at_10_percent_yields_a_green_400_by_300_thumb
     assert frame.size() == QSize(400, 300)
     centre = frame.pixelColor(frame.width() // 2, frame.height() // 2)
     assert centre.green() > 100 and centre.red() < 60 and centre.blue() < 60
+
+
+def make_fake_tool(bin_dir, name, script):
+    bin_dir.mkdir(exist_ok=True)
+    tool = bin_dir / name
+    tool.write_text("#!/bin/sh\n" + script + "\n")
+    tool.chmod(0o755)
+    return tool
+
+
+@pytest.mark.skipif(shutil.which("ffmpeg") is None, reason="ffmpeg is not installed")
+def test_when_ffmpeg_runs_past_its_timeout_a_video_yields_no_thumbnail_promptly(tmp_path, monkeypatch):
+    path = make_clip(tmp_path / "clip.mp4", duration=3)
+    make_fake_tool(tmp_path / "bin", "ffprobe", "echo 3.0")
+    make_fake_tool(tmp_path / "bin", "ffmpeg", "exec /bin/sleep 30")
+    monkeypatch.setenv("PATH", str(tmp_path / "bin"))
+
+    started = time.monotonic()
+    thumbnail = video_thumbnail(path, timeout=0.5)
+
+    assert thumbnail is None
+    assert time.monotonic() - started < 5

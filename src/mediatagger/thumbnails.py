@@ -25,13 +25,16 @@ def video_duration(path):
     return float(result.stdout)
 
 
-def video_thumbnail(path):
+def video_thumbnail(path, timeout=None):
     if shutil.which("ffmpeg") is None:
         return None
     seek_seconds = video_duration(path) * 0.1
-    result = subprocess.run(
-        ["ffmpeg", "-v", "error", "-ss", str(seek_seconds), "-i", str(path),
-         "-frames:v", "1", "-f", "image2pipe", "-c:v", "png", "-"],
-        capture_output=True,
-    )
+    try:
+        result = subprocess.run(
+            ["ffmpeg", "-v", "error", "-ss", str(seek_seconds), "-i", str(path),
+             "-frames:v", "1", "-f", "image2pipe", "-c:v", "png", "-"],
+            capture_output=True, timeout=timeout,
+        )
+    except subprocess.TimeoutExpired:
+        return None
     return QImage.fromData(result.stdout).scaled(400, 400, Qt.KeepAspectRatio)
