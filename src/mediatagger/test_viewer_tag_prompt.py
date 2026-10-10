@@ -385,3 +385,18 @@ def test_highlighting_a_suggestion_offers_the_prompt_its_whole_text_with_only_th
     qtbot.keyClick(suggestions, Qt.Key.Key_Down)
 
     assert offered == ["beach family"]
+
+
+def test_highlighting_a_removal_suggestion_offers_the_prompt_the_tag_with_its_dash_on_an_item_tagged_sunset_minus_s_down_offers_minus_sunset(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "sunset")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    type_in_tag_prompt(qtbot, viewer, "-s")
+    [prompt] = visible_tag_prompts(viewer)
+    [suggestions] = visible_suggestion_lists()
+    offered = []
+    prompt.completer().highlighted[str].connect(offered.append)
+
+    qtbot.keyClick(suggestions, Qt.Key.Key_Down)
+
+    assert offered == ["-sunset"]
