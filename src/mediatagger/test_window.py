@@ -141,3 +141,20 @@ def test_in_the_windows_grid_backspace_opens_the_parent_folders_grid_with_the_cu
     shown = stack.currentWidget()
     assert isinstance(shown, Grid)
     assert shown.currentIndex().data(TILE_ROLE).path == tmp_path / "day1"
+
+
+def test_in_the_windows_grid_of_a_drives_mount_point_backspace_stays_on_that_grid(qtbot, tmp_path):
+    drive = tmp_path / "drive"
+    drive.mkdir()
+    make_image(drive / "a.jpg", "red")
+    window = Window(drive, player_options=SILENT, is_mount_point=lambda path: path == drive,
+        ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Backspace)
+
+    shown = stack.currentWidget()
+    assert isinstance(shown, Grid)
+    assert shown.currentIndex().data(TILE_ROLE).path == drive / "a.jpg"

@@ -19,9 +19,14 @@ class Window(QWidget):
 
     def _show(self, grid):
         grid.activated.connect(self._open_tile)
-        grid.up.connect(lambda: self._show_parent_of(grid.folder))
+        grid.up.connect(lambda: self._leave(grid.folder))
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
+
+    def _leave(self, folder):
+        if self.viewer.session.is_mount_point(folder):
+            return
+        self._show_parent_of(folder)
 
     def _show_parent_of(self, path):
         self._show(Grid(path.parent, at=path))
