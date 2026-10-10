@@ -40,6 +40,7 @@ _COULDNT_SAVE_TAGS_TEXT = "Couldn't save tags — is the drive still connected?"
 BACKING_UP_TEXT = "⟳ Backing up database…"
 BACKED_UP_TEXT = "✓ Backed up"
 _CANT_SAVE_MESSAGE_MS = 3000
+_BACKED_UP_MESSAGE_MS = 3000
 
 
 def _last_word(text):
@@ -438,6 +439,7 @@ class Viewer(QWidget):
         QApplication.processEvents()
         back_up(self.library, self.backup_root, clock=self.backup_clock)
         self.backup_status.setText(BACKED_UP_TEXT)
+        QTimer.singleShot(_BACKED_UP_MESSAGE_MS, self.backup_status.hide)
 
     def _show_library_status(self, text, read_only):
         self.read_only_banner.setVisible(read_only)

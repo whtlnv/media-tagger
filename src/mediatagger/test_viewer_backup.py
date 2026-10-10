@@ -138,3 +138,11 @@ def test_on_a_shown_viewer_the_signed_backing_up_message_is_painted_before_the_b
 
     assert "⟳ Backing up database…" in painted_when_backup_ran[-1]
     assert "✓ Backed up" in status_bar_texts(viewer)
+
+
+def test_a_few_seconds_after_a_backup_finishes_backed_up_is_cleared_from_the_status_bar(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+
+    viewer = viewer_backing_up_into(qtbot, tmp_path / "backups", folder, drive)
+
+    qtbot.waitUntil(lambda: BACKED_UP_TEXT not in status_bar_texts(viewer), timeout=10000)
