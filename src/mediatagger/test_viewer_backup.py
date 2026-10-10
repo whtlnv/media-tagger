@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QLabel
 
 from mediatagger.backup import back_up, default_backup_root, newest_backup
 from mediatagger.library import Library, tags_db_path
-from mediatagger.test_viewer import make_image, shown_texts, SILENT
+from mediatagger.test_viewer import make_image, show_exposed, shown_texts, SILENT
 from mediatagger.test_viewer_library import decline_noting_the_question_in, drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, made_read_only, make_tag_library_drive, overwrite_tags_db_with_garbage, status_bar_texts
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger import viewer as viewer_module
@@ -25,12 +25,6 @@ def viewer_backing_up_into(qtbot, backup_root, folder, *drives, **options):
     )
     qtbot.addWidget(viewer)
     return viewer
-
-
-def show_exposed(qtbot, viewer):
-    viewer.resize(400, 300)
-    viewer.show()
-    qtbot.waitExposed(viewer)
 
 
 def show_and_tag(qtbot, viewer, tag):

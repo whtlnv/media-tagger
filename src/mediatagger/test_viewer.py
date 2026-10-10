@@ -61,11 +61,15 @@ def viewer_on(qtbot, folder):
     return viewer
 
 
-def unready_viewer_on(qtbot, folder):
-    viewer = viewer_on(qtbot, folder)
+def show_exposed(qtbot, viewer):
     viewer.resize(400, 300)
     viewer.show()
     qtbot.waitExposed(viewer)
+
+
+def unready_viewer_on(qtbot, folder):
+    viewer = viewer_on(qtbot, folder)
+    show_exposed(qtbot, viewer)
     return viewer
 
 
