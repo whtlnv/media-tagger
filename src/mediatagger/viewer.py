@@ -39,6 +39,7 @@ TAGS_CANT_BE_SAVED_HERE_TEXT = "Tags can't be saved here"
 _COULDNT_SAVE_TAGS_TEXT = "Couldn't save tags — is the drive still connected?"
 BACKING_UP_TEXT = "⟳ Backing up database…"
 BACKED_UP_TEXT = "✓ Backed up"
+BACKUP_FAILED_TEXT = "✗ Backup failed — {}"
 _CANT_SAVE_MESSAGE_MS = 3000
 _BACKED_UP_MESSAGE_MS = 3000
 
@@ -437,7 +438,10 @@ class Viewer(QWidget):
         self.backup_status.setText(BACKING_UP_TEXT)
         self.backup_status.show()
         QApplication.processEvents()
-        back_up(self.library, self.backup_root, clock=self.backup_clock)
+        outcome = back_up(self.library, self.backup_root, clock=self.backup_clock)
+        if outcome is not None:
+            self.backup_status.setText(BACKUP_FAILED_TEXT.format(outcome.failure))
+            return
         self.backup_status.setText(BACKED_UP_TEXT)
         QTimer.singleShot(_BACKED_UP_MESSAGE_MS, self.backup_status.hide)
 

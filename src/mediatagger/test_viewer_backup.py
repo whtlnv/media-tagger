@@ -1,3 +1,5 @@
+import errno
+import os
 import shutil
 from datetime import datetime, timezone
 
@@ -9,7 +11,7 @@ from mediatagger.library import Library, tags_db_path
 from mediatagger.test_viewer import make_image, SILENT
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, make_tag_library_drive, overwrite_tags_db_with_garbage, status_bar_texts
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
-from mediatagger.viewer import BACKED_UP_TEXT, BACKING_UP_TEXT, Viewer
+from mediatagger.viewer import BACKED_UP_TEXT, BACKING_UP_TEXT, BACKUP_FAILED_TEXT, Viewer
 
 
 def viewer_backing_up_into(qtbot, backup_root, folder, *drives, **options):
@@ -146,3 +148,17 @@ def test_a_few_seconds_after_a_backup_finishes_backed_up_is_cleared_from_the_sta
     viewer = viewer_backing_up_into(qtbot, tmp_path / "backups", folder, drive)
 
     qtbot.waitUntil(lambda: BACKED_UP_TEXT not in status_bar_texts(viewer), timeout=10000)
+
+
+def test_when_a_backup_fails_because_the_backup_root_is_not_writable_the_status_bar_shows_backup_failed_with_its_reason_and_the_viewer_keeps_showing_the_item(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    backup_root = tmp_path / "backups"
+    backup_root.mkdir()
+    backup_root.chmod(0o500)
+    try:
+        viewer = viewer_backing_up_into(qtbot, backup_root, folder, drive)
+    finally:
+        backup_root.chmod(0o700)
+
+    assert BACKUP_FAILED_TEXT.format(os.strerror(errno.EACCES)) in status_bar_texts(viewer)
+    assert viewer.slideshow.current == folder / "IMG_1.png"
