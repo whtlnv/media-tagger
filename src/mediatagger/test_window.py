@@ -31,3 +31,18 @@ def test_in_the_windows_viewer_esc_shows_the_grid_of_the_current_items_folder_wi
     shown = stack.currentWidget()
     assert isinstance(shown, Grid)
     assert shown.currentIndex().data(Qt.ItemDataRole.DisplayRole) == "a.jpg"
+
+
+def test_in_the_windows_viewer_esc_after_stepping_to_the_second_item_puts_the_grid_cursor_on_the_second_item(qtbot, tmp_path):
+    make_image(tmp_path / "a.jpg", "red")
+    make_image(tmp_path / "b.jpg", "blue")
+    window = Window(tmp_path, player_options=SILENT)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    shown = stack.currentWidget()
+    assert isinstance(shown, Grid)
+    assert shown.currentIndex().data(Qt.ItemDataRole.DisplayRole) == "b.jpg"

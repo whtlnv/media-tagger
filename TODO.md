@@ -35,7 +35,7 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 - [x] Opening the grid of a folder of 5,000 files finishes within a time budget, like the 5,000-tag test — budget set with headroom from a measurement taken after the single-lookup listing is in place, not the old 50 ms guess
 - [x] The window opened on a folder path shows the slideshow of that folder at its first item
 - [x] In the window's viewer, `Esc` shows the grid of the current item's folder with the cursor on that item
-- [ ] In the window's viewer, `Esc` after stepping to the second item puts the grid cursor on the second item
+- [x] In the window's viewer, `Esc` after stepping to the second item puts the grid cursor on the second item
 - [ ] In the window's viewer on a playing video, `Esc` to the grid stops the video (nothing keeps playing behind the grid)
 - [ ] In the window's viewer with the tag prompt open, `Esc` closes the prompt and stays in the viewer
 - [ ] On the window's launch screen, `Esc` quits the app

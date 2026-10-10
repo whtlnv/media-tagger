@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 04:56 · `src/mediatagger/test_window.py::test_in_the_windows_viewer_esc_after_stepping_to_the_second_item_puts_the_grid_cursor_on_the_second_item`
+- Behavior: In the window's viewer, `Esc` after stepping to the second item puts the grid cursor on the second item
+- Predicted: passes on first run — `Window._show_grid` already reads `viewer.slideshow.current` at Esc time (no right-reason failure available)
+- Actual: passed (1 passed)
+- Type: passed unexpectedly
+- Resolution: The previous cycle's green already built the grid from the live slideshow position, so this item came for free; kept the test as a regression pin rather than rewriting it, because no honest rewrite of this behavior can fail.
+
 ## 2026-10-10 04:29 · `src/mediatagger/test_grid.py::test_after_a_first_grid_has_been_shown_opening_and_showing_the_grid_of_a_folder_of_5000_files_takes_under_150_ms`
 - Behavior: Opening the grid of a folder of 5,000 files finishes within a time budget, with headroom over a measurement taken after the single-lookup listing
 - Predicted: pass. The single-lookup listing (b959e95) already removed the per-entry stats that made the 50 ms version fail at about 125 ms.
