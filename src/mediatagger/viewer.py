@@ -443,8 +443,7 @@ class Viewer(QWidget):
         self._show_library_status(LIBRARY_TEXT.format(drive.name), read_only)
 
     def _back_up_library(self):
-        self.backup_status.setText(BACKING_UP_TEXT)
-        self.backup_status.show()
+        self._show_backup_status(BACKING_UP_TEXT)
         # Paint it before the backup blocks the event loop; user input waits, so no queued key runs mid-open or mid-close.
         # Not while the viewer is still unshown (being built): there is nothing to paint, and a caller's timer would fire too early.
         if self.isVisible():
@@ -455,6 +454,10 @@ class Viewer(QWidget):
             return
         self.backup_status.setText(BACKED_UP_TEXT)
         QTimer.singleShot(_BACKED_UP_MESSAGE_MS, self.backup_status.hide)
+
+    def _show_backup_status(self, text):
+        self.backup_status.setText(text)
+        self.backup_status.show()
 
     def _show_library_status(self, text, read_only):
         self.read_only_banner.setVisible(read_only)
@@ -474,12 +477,10 @@ class Viewer(QWidget):
         try:
             restore(drive, backup.path, self.backup_clock)
         except sqlite3.DatabaseError as error:
-            self.backup_status.setText(RESTORE_FAILED_TEXT.format(error))
-            self.backup_status.show()
+            self._show_backup_status(RESTORE_FAILED_TEXT.format(error))
             return False
         self.library = Library.open(drive)
-        self.backup_status.setText(RESTORED_BACKUP_TEXT.format(taken_at))
-        self.backup_status.show()
+        self._show_backup_status(RESTORED_BACKUP_TEXT.format(taken_at))
         return True
 
     def _agrees_to_create_library(self, drive):
