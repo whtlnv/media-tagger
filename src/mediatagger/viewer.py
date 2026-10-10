@@ -426,18 +426,24 @@ class Viewer(QWidget):
             return
         read_only = not os.access(drive, os.W_OK)
         if not tags_db_path(drive).exists():
-            if read_only:
-                self._show_library_status(NO_LIBRARY_TEXT, read_only=True)
+            if not self._open_missing_library(drive, read_only):
                 return
-            restored = tags_db_path(drive).parent.is_dir() and self._offer_to_restore_library(drive)
-            if not restored:
-                if not self._agrees_to_create_library(drive):
-                    self._show_library_status(DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format(drive.name), read_only=False)
-                    return
-                self.library = Library.create(drive)
         elif not self._open_existing_library(drive, read_only):
             return
         self._show_library_status(LIBRARY_TEXT.format(drive.name), read_only)
+
+    def _open_missing_library(self, drive, read_only):
+        """Whether the drive without a tags.db ended up with one open, restored from a backup or created; if not, says why."""
+        if read_only:
+            self._show_library_status(NO_LIBRARY_TEXT, read_only=True)
+            return False
+        if tags_db_path(drive).parent.is_dir() and self._offer_to_restore_library(drive):
+            return True
+        if not self._agrees_to_create_library(drive):
+            self._show_library_status(DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format(drive.name), read_only=False)
+            return False
+        self.library = Library.create(drive)
+        return True
 
     def _open_existing_library(self, drive, read_only):
         """Whether the drive's tags.db ended up open, as it was or restored from a backup; if not, says why."""
