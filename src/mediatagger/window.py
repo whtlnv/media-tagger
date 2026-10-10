@@ -32,7 +32,9 @@ class Window(QWidget):
             self._record_state(path if path.is_dir() else path.parent)
         if remembered and remembered.exists():
             self.session.open_library(remembered)
-            self._show(Grid(remembered))
+            grid = Grid(remembered, library=self.session.library)
+            self._show(grid)
+            grid.setCurrentIndex(grid.model().index(0, 0))
 
     def resizeEvent(self, event):
         self.status_bar.place_along_the_bottom_of(self.rect())

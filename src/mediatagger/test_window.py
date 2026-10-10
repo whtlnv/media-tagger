@@ -567,6 +567,21 @@ def test_launching_the_window_with_no_path_into_a_remembered_folders_grid_opens_
     assert "beach family" in shown_status_bar_texts(window)
 
 
+def test_launching_the_window_with_no_path_into_a_remembered_folders_grid_puts_the_cursor_on_its_first_entry_and_shows_tag_badges_from_that_drives_library(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach family")
+    earlier = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(earlier)
+    earlier.close()
+
+    window = Window(player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+
+    grid = window.findChild(QStackedWidget).currentWidget()
+    assert grid.currentIndex().row() == 0
+    assert f"{TAG_BADGE}2" in painted_texts(grid, 0)
+
+
 def test_launching_the_window_with_no_path_when_the_remembered_folder_no_longer_exists_shows_the_launch_screen(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     earlier = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
