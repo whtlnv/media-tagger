@@ -37,7 +37,7 @@ Why not web/Electron/Wails: browsers can't play AVI/MPEG-2/DivX, and dropped fol
 
 ### Backups
 
-On app start and exit, copy `tags.db` with the SQLite backup API to `~/.local/share/mediatagger/backups/<drive_id>/`, keeping the last 10. If the drive's DB is missing or corrupt, offer to restore the latest backup.
+When a library opens, before switching to another drive, and on exit, copy `tags.db` with the SQLite backup API to `$XDG_DATA_HOME/mediatagger/backups/<drive_id>/` (default `~/.local/share/mediatagger/backups/<drive_id>/`), keeping the last 10; an unchanged DB writes no new backup. If the drive's DB is missing or corrupt, offer to restore the latest backup for a drive of the same name, keeping the damaged file as `.mediatagger/tags.db.damaged-<timestamp>`. A read-only drive is not offered a restore.
 
 ### Thumbnail cache
 
@@ -146,7 +146,7 @@ It names the open library (`Library: MEDIATAGGER`) or says there is none (viewin
 
 Pressing `t` where tags can't be saved (no library, declined, can't be opened, read-only, system disk, the app's own drive) briefly shows `Tags can't be saved here`.
 
-Any background work is announced and its completion shown, e.g. `⟳ Generating thumbnails 132 / 1,204` → `✓ Thumbnails ready`, `⟳ Backing up database…` → `✓ Backed up`. Nothing runs silently.
+Any background work is announced and its completion shown, e.g. `⟳ Generating thumbnails 132 / 1,204` → `✓ Thumbnails ready`, `⟳ Backing up database…` → `✓ Backed up`. Failures read `✗ Backup failed: <reason>` / `✗ Restore failed: <reason>`. Nothing runs silently.
 
 Thumbnail generation: on demand for visible tiles (3 workers, newest request first), then background prefetch of the rest of the current folder.
 
