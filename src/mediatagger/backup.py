@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
+from mediatagger.library import tags_db_path
+
 BACKUPS_KEPT_PER_DRIVE = 10
 BACKUP_NAME_FORMAT = "tags-%Y%m%dT%H%M%SZ"
 BACKUP_GLOB = "tags-*.db"
@@ -56,6 +58,12 @@ def newest_backup(backup_root, drive_name):
         path = backups[-1]
         taken_at = datetime.strptime(path.stem, BACKUP_NAME_FORMAT).replace(tzinfo=timezone.utc)
         return FoundBackup(path=path, taken_at=taken_at)
+
+
+def restore(drive, backup, clock):
+    tags_db = tags_db_path(drive)
+    tags_db.rename(tags_db.parent / f"tags.db.damaged-{clock():%Y%m%dT%H%M%SZ}")
+    _copy_database(backup, tags_db)
 
 
 def _duplicates_latest(new_backup, previous_backups):

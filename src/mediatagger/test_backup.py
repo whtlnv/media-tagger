@@ -2,7 +2,7 @@ import json
 import shutil
 from datetime import datetime, timezone
 
-from mediatagger.backup import back_up, newest_backup
+from mediatagger.backup import back_up, newest_backup, restore
 from mediatagger.library import Library, tags_db_path
 
 
@@ -177,3 +177,17 @@ def test_for_a_drive_name_whose_backups_are_all_gone_no_backup_is_found(tmp_path
         backup.unlink()
 
     assert newest_backup(backup_root, "PHOTOS") is None
+
+
+def test_restoring_a_drive_from_a_backup_keeps_the_damaged_tags_db_aside_and_opens_with_the_backed_up_tags(tmp_path):
+    library, photo = _library_with_photo(tmp_path)
+    library.enter(photo, "beach family")
+    backup_root = tmp_path / "backups"
+    back_up(library, backup_root=backup_root, clock=_clock_at_october(9))
+    drive = tmp_path / "drive"
+    tags_db_path(drive).write_bytes(b"garbage")
+
+    restore(drive, newest_backup(backup_root, "drive").path, clock=_clock_at_october(10))
+
+    assert (tags_db_path(drive).parent / "tags.db.damaged-20261010T153000Z").read_bytes() == b"garbage"
+    assert Library.open(drive).tags(photo) == ["beach", "family"]
