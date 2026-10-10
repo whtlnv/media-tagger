@@ -88,3 +88,20 @@ def test_on_the_windows_launch_screen_esc_quits_the_app(qtbot):
     qtbot.keyClick(window.findChild(QStackedWidget).currentWidget(), Qt.Key.Key_Escape)
 
     assert not window.isVisible()
+
+
+def test_in_the_windows_grid_enter_on_a_file_starts_that_folders_slideshow_at_that_file(qtbot, tmp_path):
+    make_image(tmp_path / "a.jpg", "red")
+    make_image(tmp_path / "b.jpg", "blue")
+    make_image(tmp_path / "c.jpg", "green")
+    window = Window(tmp_path, player_options=SILENT)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+
+    shown = stack.currentWidget()
+    assert isinstance(shown, Viewer)
+    assert shown.slideshow.current == tmp_path / "b.jpg"

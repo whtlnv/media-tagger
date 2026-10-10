@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
 
-from mediatagger.grid import Grid
+from mediatagger.grid import TILE_ROLE, Grid
 from mediatagger.viewer import Viewer
 
 
@@ -17,5 +17,10 @@ class Window(QWidget):
         self.viewer.stop_video()
         current = self.viewer.slideshow.current
         grid = Grid(current.parent, at=current)
+        grid.activated.connect(self._show_viewer_at)
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
+
+    def _show_viewer_at(self, index):
+        self.viewer._open(index.data(TILE_ROLE).path)
+        self.stack.setCurrentWidget(self.viewer)

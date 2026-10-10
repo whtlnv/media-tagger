@@ -105,4 +105,7 @@ class Grid(QListView):
         if event.key() == Qt.Key.Key_Minus:
             self.setGridSize((self.gridSize() - ZOOM_STEP).expandedTo(MIN_TILE_SIZE))
             return
+        if event.key() == Qt.Key.Key_Return:
+            self.activated.emit(self.currentIndex())
+            return
         super().keyPressEvent(event)
