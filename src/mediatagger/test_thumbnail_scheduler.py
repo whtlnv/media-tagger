@@ -100,3 +100,20 @@ def test_re_requesting_a_pending_thumbnail_moves_it_ahead_of_the_others(qtbot, t
     qtbot.waitUntil(lambda: len(generated) >= 6)
 
     assert order == [pending[1], pending[2], pending[0]]
+
+
+def test_once_requested_thumbnails_are_done_the_rest_of_the_folder_is_generated_unrequested(qtbot, tmp_path):
+    lock = threading.Lock()
+    generated = []
+
+    def generate(path):
+        with lock:
+            generated.append(path)
+
+    scheduler = ThumbnailScheduler(generate=generate)
+    folder = [tmp_path / f"{index}.jpg" for index in range(6)]
+    scheduler.enter_folder(folder)
+    scheduler.request(folder[2])
+    qtbot.waitUntil(lambda: len(generated) == len(folder))
+
+    assert sorted(generated) == sorted(folder)
