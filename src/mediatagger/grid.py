@@ -18,7 +18,7 @@ def _glyph(entry):
     return VIDEO_GLYPH if is_video(entry) else IMAGE_GLYPH
 
 
-class _GlyphDelegate(QStyledItemDelegate):
+class _TileDelegate(QStyledItemDelegate):
     def __init__(self, entries, parent):
         super().__init__(parent)
         self._entries = entries
@@ -36,6 +36,6 @@ class Grid(QListView):
         entries = folder_entries(folder)
         names = [entry.name for entry in entries]
         self.setModel(QStringListModel(names, self))
-        self.setItemDelegate(_GlyphDelegate(entries, self))
+        self.setItemDelegate(_TileDelegate(entries, self))
         if at is not None:
             self.setCurrentIndex(self.model().index(names.index(at.name), 0))
