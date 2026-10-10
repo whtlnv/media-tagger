@@ -192,3 +192,17 @@ def test_in_the_grid_minus_makes_the_tiles_smaller_than_their_starting_size(qtbo
     qtbot.keyClick(grid, Qt.Key.Key_Minus)
 
     assert tile_width(grid) < start
+
+
+def test_in_the_grid_pressing_plus_repeatedly_stops_growing_the_tiles_at_about_400_px(qtbot, tmp_path):
+    touch(tmp_path, "a.jpg", "b.jpg")
+    grid = Grid(tmp_path, at=tmp_path / "a.jpg")
+    qtbot.addWidget(grid)
+    grid.resize(2000, 1000)
+    grid.show()
+    qtbot.waitExposed(grid)
+
+    for _ in range(10):
+        qtbot.keyClick(grid, Qt.Key.Key_Plus)
+
+    assert abs(tile_width(grid) - 400) <= 20

@@ -17,6 +17,8 @@ TILE_SIZE = QSize(200, 200)
 
 ZOOM_STEP = QSize(40, 40)
 
+MAX_TILE_SIZE = QSize(400, 400)
+
 
 def _glyph(entry):
     if entry.is_dir():
@@ -57,7 +59,7 @@ class Grid(QListView):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Plus:
-            self.setGridSize(self.gridSize() + ZOOM_STEP)
+            self.setGridSize((self.gridSize() + ZOOM_STEP).boundedTo(MAX_TILE_SIZE))
             return
         if event.key() == Qt.Key.Key_Minus:
             self.setGridSize(self.gridSize() - ZOOM_STEP)
