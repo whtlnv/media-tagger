@@ -2,6 +2,9 @@
 
 ## Out of Scope
 
+- **[src/mediatagger/folder.py:39] The video and media extension rules are defined twice, once on Paths and once on names** (added: 2026-10-10)
+  `is_video`/`_has_media_extension` use `Path.suffix` while `is_video_name` and `subfolder_and_media_names` use `os.path.splitext`; unifying them changes how a name such as `..mp4` is classified (`Path.suffix` gives `.mp4`, `splitext` gives none), a behavior change a refactor may not make.
+
 - **[src/mediatagger/test_viewer_backup.py:394] Test monkeypatches the private `viewer._FINISHED_MESSAGE_MS`** (added: 2026-10-10)
   The backup-failure-outlives-earlier-message test shortens the private clear delay through `viewer_module`; `Viewer` offers no public way to set how long a finished background message stays, so decoupling needs a production change (e.g. a constructor option).
 
