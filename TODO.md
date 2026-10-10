@@ -56,7 +56,7 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 - [x] A backup message started in the viewer stays visible in the status bar after `Esc` shows the grid
 - [x] Going from the viewer to the grid and back on the same drive makes no new backup
 - [x] Going from the viewer to the grid and back on the same drive does not ask again to create its library
-- [ ] Going from the viewer to the grid and back on a drive whose `tags.db` is damaged, after answering No to the restore question, asks no restore question again
+- [x] Going from the viewer to the grid and back on a drive whose `tags.db` is damaged, after answering No to the restore question, asks no restore question again
 - [ ] Opening a file from the grid takes the grid's selected-item tags off the status bar (the viewer shows the file's tags in its corner overlay instead)
 - [ ] Scrolled to the end, the grid's last row of tiles sits fully above the status bar, not under it
 - [ ] After tagging a file in the viewer, `Esc` shows its grid tile with the updated tag badge

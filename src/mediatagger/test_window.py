@@ -5,7 +5,8 @@ from datetime import datetime, timezone
 from PySide6.QtCore import QCoreApplication, QEvent, Qt
 from PySide6.QtWidgets import QLabel, QStackedWidget
 
-from mediatagger.drive_session import BACKUP_FAILED_TEXT, CREATE_LIBRARY_QUESTION
+from mediatagger.backup import back_up
+from mediatagger.drive_session import BACKUP_FAILED_TEXT, CREATE_LIBRARY_QUESTION, RESTORE_LIBRARY_QUESTION
 from mediatagger.grid import TILE_ROLE, Grid
 from mediatagger.library import Library
 from mediatagger.status_bar import READ_ONLY_STATUS_TEXT, StatusBar
@@ -14,7 +15,7 @@ from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import SILENT, make_image, make_surface_ready, show_exposed, wait_until_loaded
 from mediatagger.test_viewer_library import (
     decline_noting_the_question_in, drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image, enter_in_tag_prompt,
-    made_read_only, visible_tag_prompts,
+    made_read_only, overwrite_tags_db_with_garbage, visible_tag_prompts,
 )
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger.viewer import Viewer
@@ -374,3 +375,25 @@ def test_going_from_the_windows_viewer_to_the_grid_and_back_on_the_same_drive_do
 
     assert isinstance(stack.currentWidget(), Viewer)
     assert asked == [CREATE_LIBRARY_QUESTION.format(drive.name)]
+
+
+def test_going_from_the_windows_viewer_to_the_grid_and_back_on_a_drive_whose_tags_db_is_damaged_after_declining_the_restore_asks_no_restore_question_again(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    backup_root = tmp_path / "backups"
+    taken_at = datetime(2026, 10, 9, 15, 30, tzinfo=timezone.utc)
+    back_up(Library.open(drive), backup_root, clock=lambda: taken_at)
+    overwrite_tags_db_with_garbage(drive)
+    asked = []
+    window = Window(
+        folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False,
+        backup_root=backup_root, ask_to_restore_library=decline_noting_the_question_in(asked),
+    )
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    stack = window.findChild(QStackedWidget)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+
+    assert isinstance(stack.currentWidget(), Viewer)
+    assert asked == [RESTORE_LIBRARY_QUESTION.format(drive.name, taken_at.astimezone())]

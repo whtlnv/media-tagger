@@ -42,6 +42,7 @@ class DriveSession:
         self.ask_to_create_library = ask_to_create_library or self._ask_yes_or_no
         self.ask_to_restore_library = ask_to_restore_library or self._ask_yes_or_no
         self.declined_drives = set()
+        self.declined_restore_drives = set()
         self.library = None  # the open Library of the current drive, if it has one
         self.drive = None
         self.read_only = False
@@ -122,10 +123,11 @@ class DriveSession:
 
     def _offer_to_restore_library(self, drive):
         backup = newest_backup(self.backup_root, drive.name)
-        if not backup:
+        if not backup or drive in self.declined_restore_drives:
             return False
         taken_at = backup.taken_at.astimezone()
         if not self.ask_to_restore_library(RESTORE_LIBRARY_QUESTION.format(drive.name, taken_at)):
+            self.declined_restore_drives.add(drive)
             return False
         try:
             restore(drive, backup.path, self.backup_clock)
