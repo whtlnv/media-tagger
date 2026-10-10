@@ -163,7 +163,7 @@ def test_when_a_backup_fails_because_the_backup_root_is_not_writable_the_status_
     finally:
         backup_root.chmod(0o700)
 
-    assert BACKUP_FAILED_TEXT.format(os.strerror(errno.EACCES)) in status_bar_texts(viewer)
+    assert f"✗ Backup failed: {os.strerror(errno.EACCES)}" in status_bar_texts(viewer)
     assert viewer.slideshow.current == folder / "IMG_1.png"
 
 
