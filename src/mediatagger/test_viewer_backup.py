@@ -13,6 +13,7 @@ from mediatagger.library import Library, tags_db_path
 from mediatagger.test_viewer import make_image, shown_texts, SILENT
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, made_read_only, make_tag_library_drive, overwrite_tags_db_with_garbage, status_bar_texts
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
+from mediatagger import viewer as viewer_module
 from mediatagger.viewer import BACKED_UP_TEXT, BACKING_UP_TEXT, BACKUP_FAILED_TEXT, Viewer
 
 
@@ -410,3 +411,23 @@ def test_opening_a_folder_on_a_read_only_drive_whose_tags_db_is_garbage_with_bac
 
     assert asked == []
     assert CANT_RESTORE_TO_READ_ONLY_DRIVE_TEXT.format(drive.name) in status_bar_texts(viewer)
+
+
+def test_a_backup_failing_soon_after_an_earlier_backed_up_keeps_its_failure_shown_past_the_earlier_messages_clear_time(qtbot, tmp_path, monkeypatch):
+    monkeypatch.setattr(viewer_module, "_FINISHED_MESSAGE_MS", 200)
+    first_drive, viewed = drive_with_a_tag_library_holding_one_image(tmp_path)
+    second_drive = make_tag_library_drive(tmp_path / "BACKUP")
+    [dropped] = make_folders(second_drive, "Videos")
+    make_image(dropped / "IMG_1.png", "green")
+    backup_root = tmp_path / "backups"
+    viewer = viewer_backing_up_into(qtbot, backup_root, viewed, first_drive, second_drive)
+    assert BACKED_UP_TEXT in status_bar_texts(viewer)
+    backup_root.chmod(0o500)  # the second drive's backup folder can't be made
+    try:
+        drag_and_drop_onto(viewer, dropped)
+    finally:
+        backup_root.chmod(0o700)
+
+    qtbot.wait(400)
+
+    assert f"✗ Backup failed: {os.strerror(errno.EACCES)}" in status_bar_texts(viewer)

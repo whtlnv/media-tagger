@@ -45,7 +45,7 @@ RESTORED_BACKUP_TEXT = "✓ Restored backup from {:%Y-%m-%d %H:%M}"
 RESTORE_FAILED_TEXT = "✗ Restore failed: {}"
 CANT_RESTORE_TO_READ_ONLY_DRIVE_TEXT = "{} is read-only — its backup can't be restored"
 _CANT_SAVE_MESSAGE_MS = 3000
-_BACKED_UP_MESSAGE_MS = 3000
+_FINISHED_MESSAGE_MS = 3000
 
 
 def _last_word(text):
@@ -180,15 +180,18 @@ class Viewer(QWidget):
         self.cant_save_status.hide()
         self.couldnt_save_status = _overlay_label(_COULDNT_SAVE_TAGS_TEXT, self.status_bar)
         self.couldnt_save_status.hide()
-        self.backup_status = _overlay_label(BACKING_UP_TEXT, self.status_bar)
-        self.backup_status.hide()
+        self.background_status = _overlay_label("", self.status_bar)
+        self.background_status.hide()
+        self._background_status_clearing = QTimer(self)
+        self._background_status_clearing.setSingleShot(True)
+        self._background_status_clearing.timeout.connect(self.background_status.hide)
         status_layout = QHBoxLayout(self.status_bar)
         status_layout.setContentsMargins(CORNER_MARGIN, 0, CORNER_MARGIN, CORNER_MARGIN)
         status_layout.addWidget(self.library_label)
         status_layout.addWidget(self.read_only_status)
         status_layout.addWidget(self.cant_save_status)
         status_layout.addWidget(self.couldnt_save_status)
-        status_layout.addWidget(self.backup_status)
+        status_layout.addWidget(self.background_status)
         status_layout.addStretch()
 
     def closeEvent(self, event):
@@ -447,21 +450,25 @@ class Viewer(QWidget):
         self._show_library_status(LIBRARY_TEXT.format(drive.name), read_only)
 
     def _back_up_library(self):
-        self._show_backup_status(BACKING_UP_TEXT)
+        self._show_background_status(BACKING_UP_TEXT)
         # Paint it before the backup blocks the event loop; user input waits, so no queued key runs mid-open or mid-close.
         # Not while the viewer is still unshown (being built): there is nothing to paint, and a caller's timer would fire too early.
         if self.isVisible():
             QApplication.processEvents(QEventLoop.ProcessEventsFlag.ExcludeUserInputEvents)
         outcome = back_up(self.library, self.backup_root, clock=self.backup_clock)
         if outcome is not None:
-            self.backup_status.setText(BACKUP_FAILED_TEXT.format(outcome.failure))
+            self._show_background_status(BACKUP_FAILED_TEXT.format(outcome.failure))
             return
-        self.backup_status.setText(BACKED_UP_TEXT)
-        QTimer.singleShot(_BACKED_UP_MESSAGE_MS, self.backup_status.hide)
+        self._show_background_status(BACKED_UP_TEXT, finished=True)
 
-    def _show_backup_status(self, text):
-        self.backup_status.setText(text)
-        self.backup_status.show()
+    def _show_background_status(self, text, finished=False):
+        """The status bar's one slot for background work (backups now, later phases' jobs too). Work in progress and
+        failures stay shown; a finished job's message clears after a few seconds, unless a newer message replaced it."""
+        self._background_status_clearing.stop()
+        self.background_status.setText(text)
+        self.background_status.show()
+        if finished:
+            self._background_status_clearing.start(_FINISHED_MESSAGE_MS)
 
     def _show_library_status(self, text, read_only):
         self.read_only_banner.setVisible(read_only)
@@ -480,11 +487,11 @@ class Viewer(QWidget):
             return False
         try:
             restore(drive, backup.path, self.backup_clock)
-        except sqlite3.DatabaseError as error:
-            self._show_backup_status(RESTORE_FAILED_TEXT.format(error))
+            self.library = Library.open(drive)
+        except (OSError, sqlite3.Error) as error:
+            self._show_background_status(RESTORE_FAILED_TEXT.format(getattr(error, "strerror", None) or error))
             return False
-        self.library = Library.open(drive)
-        self._show_backup_status(RESTORED_BACKUP_TEXT.format(taken_at))
+        self._show_background_status(RESTORED_BACKUP_TEXT.format(taken_at), finished=True)
         return True
 
     def _agrees_to_create_library(self, drive):

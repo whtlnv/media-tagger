@@ -79,11 +79,11 @@ def restore(drive, backup, clock):
         tags_db.rename(damaged)
     try:
         _copy_database(backup, tags_db)
-    except sqlite3.DatabaseError:
+    except (OSError, sqlite3.Error):
         if damaged.exists():
-            damaged.rename(tags_db)
+            damaged.replace(tags_db)  # put the drive back as it was, over any half-written copy
         else:
-            tags_db.unlink()
+            tags_db.unlink(missing_ok=True)
         raise
 
 
