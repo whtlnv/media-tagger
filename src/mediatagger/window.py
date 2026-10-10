@@ -27,7 +27,8 @@ class Window(QWidget):
         self.session = DriveSession(self.status_bar, self, **session_options)
         self.viewer = Viewer(path, player_options=player_options, folder_picker=folder_picker, on_escape=self._escape, session=self.session)
         self.stack.addWidget(self.viewer)
-        self._record_state(path)
+        if path is not None:
+            self._record_state(path)
         if remembered and remembered.exists():
             self.session.open_library(remembered)
             self._show(Grid(remembered))

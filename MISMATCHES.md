@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 10:12 · `src/mediatagger/test_window.py::test_launching_the_window_with_no_path_and_no_state_file_then_closing_it_leaves_no_state_file`
+- Behavior: Launching the window with no path and no state file, then closing it, leaves no state file
+- Predicted: AssertionError — `Window.__init__` calls `_record_state(None)` and writes a state file holding folder "None"
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: with the real `os.path.ismount`, `/` is a mount point that is an ancestor of both the app package and the throwaway config home, so `_is_on_the_apps_own_drive` suppresses every write. The test now injects `is_mount_point=lambda path: False` like the other state tests, and it fails as predicted. Side note: on a machine where the app and `~/.config` share the root filesystem (the Pi), the real mount check may stop the state file from ever being written. Worth checking separately.
+
 ## 2026-10-10 09:49 · `src/mediatagger/test_window.py::test_launching_the_window_with_no_path_and_no_state_file_shows_the_launch_screen`
 - Behavior: Launching the window with no path and no state file shows the launch screen
 - Predicted: passes on first run — `Window._remembered_folder` already returns None when the state file is missing, so the viewer's launch screen stays current

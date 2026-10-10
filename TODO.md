@@ -71,7 +71,7 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 - [x] Launching the window with no path, when the remembered folder no longer exists, shows the launch screen
 - [x] Launching the window with no path and no state file shows the launch screen
 - [x] Launching the window with no path and an unreadable state file shows the launch screen
-- [ ] Launching the window with no path and no state file, then closing it, leaves no state file (nothing is remembered until a folder is shown)
+- [x] Launching the window with no path and no state file, then closing it, leaves no state file (nothing is remembered until a folder is shown)
 - [ ] Launching the window on a file path records that file's folder in `state.json`, not the file
 - [ ] Dropping a folder onto the window's launch screen records that folder in `state.json`
 - [ ] Launching the window with no path into a remembered folder's grid puts the cursor on its first entry and shows tag badges from that drive's library

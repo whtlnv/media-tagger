@@ -604,3 +604,13 @@ def test_launching_the_window_with_no_path_and_an_unreadable_state_file_shows_th
     shown = window.findChild(QStackedWidget).currentWidget()
     assert isinstance(shown, Viewer)
     assert shown.slideshow is None
+
+
+def test_launching_the_window_with_no_path_and_no_state_file_then_closing_it_leaves_no_state_file(qtbot):
+    state_file = Path(os.environ["XDG_CONFIG_HOME"]) / "mediatagger" / "state.json"
+
+    window = Window(player_options=SILENT, is_mount_point=lambda path: False)
+    qtbot.addWidget(window)
+    window.close()
+
+    assert not state_file.exists()
