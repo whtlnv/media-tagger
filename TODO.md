@@ -35,7 +35,7 @@ Phase 6 notes for every cycle: backup logic lives in a new `src/mediatagger/back
 - [x] Opening a folder on a drive whose `tags.db` is garbage, with backups for a drive of the same name, asks "The tag library on <DRIVE> is missing or damaged. Restore the backup from <date time>?" (`ask_to_restore_library=`)
 - [x] A viewer given no `backup_root=` finds restore backups under the default backup root (`$XDG_DATA_HOME/mediatagger/backups`), so opening a drive whose `tags.db` is garbage, with a backup there for a drive of the same name, asks the restore question
 - [x] The restore question shows the backup's time in local time as `YYYY-MM-DD HH:MM` (e.g. a backup taken at 15:30 UTC reads `2026-10-09 09:30` with the local zone at UTC−6)
-- [ ] Opening a folder on a drive whose `tags.db` is garbage, with no backups for a drive of that name, asks nothing and shows `Library on <DRIVE> can't be opened — viewing only`
+- [x] Opening a folder on a drive whose `tags.db` is garbage, with no backups for a drive of that name, asks nothing and shows `Library on <DRIVE> can't be opened — viewing only`
 - [ ] Answering Yes to the restore question opens the library with the backed-up tags shown for the current item and the status bar showing `✓ Restored backup from <date time>`
 - [ ] Answering No to the restore question for a garbage `tags.db` shows `Library on <DRIVE> can't be opened — viewing only`
 - [ ] Opening a folder on a drive whose `.mediatagger/` exists without `tags.db`, with backups for a drive of the same name, asks the restore question

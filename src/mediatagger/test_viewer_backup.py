@@ -261,3 +261,16 @@ def test_the_restore_question_names_the_drive_as_missing_or_damaged_and_shows_th
         viewer_backing_up_into(qtbot, backup_root, folder, drive, ask_to_restore_library=lambda question: asked.append(question) or False)
 
     assert asked == ["The tag library on MEDIATAGGER is missing or damaged. Restore the backup from 2026-10-09 09:30?"]
+
+
+def test_opening_a_folder_on_a_drive_whose_tags_db_is_garbage_with_no_backups_for_a_drive_of_that_name_asks_nothing_and_says_the_library_cant_be_opened_viewing_only(qtbot, tmp_path):
+    from mediatagger.viewer import LIBRARY_CANT_BE_OPENED_TEXT
+
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    overwrite_tags_db_with_garbage(drive)
+    asked = []
+
+    viewer = viewer_backing_up_into(qtbot, tmp_path / "backups", folder, drive, ask_to_restore_library=lambda question: asked.append(question) or False)
+
+    assert asked == []
+    assert status_bar_texts(viewer) == [LIBRARY_CANT_BE_OPENED_TEXT.format(drive.name)]

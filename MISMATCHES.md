@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 22:47 · `src/mediatagger/test_viewer_backup.py::test_opening_a_folder_on_a_drive_whose_tags_db_is_garbage_with_no_backups_for_a_drive_of_that_name_asks_nothing_and_says_the_library_cant_be_opened_viewing_only`
+- Behavior: Opening a folder on a drive whose `tags.db` is garbage, with no backups for a drive of that name, asks nothing and shows `Library on <DRIVE> can't be opened — viewing only`
+- Predicted: pass (stated before running), because `_offer_to_restore_library` only asks when `newest_backup` finds one, and the garbage branch already shows `LIBRARY_CANT_BE_OPENED_TEXT`
+- Actual: passed
+- Type: passed unexpectedly
+- Resolution: The restore-question cycle already built this behavior with its `if backup:` guard, so no test can fail for it without inventing new behavior. Kept the test as a pin on the no-backup path (no question asked, cant-be-opened status) instead of rewriting it.
+
 ## 2026-10-09 20:22 · `src/mediatagger/test_viewer_backup.py::test_opening_a_folder_on_a_drive_whose_library_cant_be_opened_makes_no_backup`
 - Behavior: Opening a folder on a drive whose library can't be opened makes no backup
 - Predicted: passes on first run, because `_open_library` returns from the `Library.open` except branch before `back_up` is reached (written in the previous cycle)
