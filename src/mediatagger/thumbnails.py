@@ -28,8 +28,9 @@ def video_duration(path):
 def video_thumbnail(path):
     if shutil.which("ffmpeg") is None:
         return None
+    seek_seconds = video_duration(path) * 0.1
     result = subprocess.run(
-        ["ffmpeg", "-v", "error", "-ss", str(video_duration(path) * 0.1), "-i", str(path),
+        ["ffmpeg", "-v", "error", "-ss", str(seek_seconds), "-i", str(path),
          "-frames:v", "1", "-f", "image2pipe", "-c:v", "png", "-"],
         capture_output=True,
     )
