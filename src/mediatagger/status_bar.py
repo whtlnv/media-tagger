@@ -33,12 +33,14 @@ class StatusBar(QWidget):
         self.couldnt_save_status.hide()
         self.background_status = overlay_label("", self)
         self.background_status.hide()
+        self.tags_status = overlay_label("", self)
+        self.tags_status.hide()
         self._background_status_clearing = QTimer(self)
         self._background_status_clearing.setSingleShot(True)
         self._background_status_clearing.timeout.connect(self.background_status.hide)
         layout = QHBoxLayout(self)
         layout.setContentsMargins(CORNER_MARGIN, 0, CORNER_MARGIN, CORNER_MARGIN)
-        for label in (self.library_label, self.read_only_status, self.cant_save_status, self.couldnt_save_status, self.background_status):
+        for label in (self.library_label, self.read_only_status, self.cant_save_status, self.couldnt_save_status, self.background_status, self.tags_status):
             layout.addWidget(label)
         layout.addStretch()
 
@@ -56,6 +58,10 @@ class StatusBar(QWidget):
 
     def show_couldnt_save(self, shown):
         self.couldnt_save_status.setVisible(shown)
+
+    def show_tags(self, text):
+        self.tags_status.setText(text)
+        self.tags_status.show()
 
     def show_background(self, text, finished=False):
         """The one slot for background work (backups now, later phases' jobs too). Work in progress and failures stay

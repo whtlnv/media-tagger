@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
 
 from mediatagger.grid import TILE_ROLE, Grid
+from mediatagger.status_bar import StatusBar
 from mediatagger.viewer import Viewer
 
 
@@ -10,7 +11,10 @@ class Window(QWidget):
         self.stack = QStackedWidget(self)
         self.viewer = Viewer(path, player_options=player_options, on_escape=self._escape, **viewer_options)
         self.stack.addWidget(self.viewer)
-        QVBoxLayout(self).addWidget(self.stack)
+        self.status_bar = StatusBar(self)
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.stack)
+        layout.addWidget(self.status_bar)
 
     def _escape(self):
         if self.viewer.slideshow is None:
@@ -27,10 +31,16 @@ class Window(QWidget):
         grid.up.connect(lambda: self._leave(grid.folder))
         grid.escaped.connect(self.close)
         grid.dropped.connect(self._open)
+        grid.selectionModel().currentChanged.connect(self._show_tags_of)
         for old in self.findChildren(Grid):
             old.deleteLater()
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
+
+    def _show_tags_of(self, index):
+        library = self.viewer.session.library
+        if library:
+            self.status_bar.show_tags(" ".join(library.tags(index.data(TILE_ROLE).path)))
 
     def _leave(self, folder):
         if self.viewer.session.is_mount_point(folder):

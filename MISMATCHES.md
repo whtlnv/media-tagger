@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 06:59 · `src/mediatagger/test_window.py::test_moving_the_windows_grid_cursor_onto_a_tagged_item_shows_its_own_tags_space_separated_in_the_status_bar`
+- Behavior: Moving the grid cursor onto a tagged item shows its own tags, space-separated, in the status bar
+- Predicted: AssertionError — the visible status bar labels hold only the library status (e.g. `MEDIATAGGER`), no `beach family`
+- Actual: AssertionError — `'beach family' in []`: no status bar label is visible at all while the grid is shown
+- Type: right-reason mismatch
+- Resolution: The window still has no status bar of its own; the only `StatusBar` is the viewer's child and hides with the viewer when the stack switches to the grid. Accepted the failure as correct (the tags are still missing); green will need the window-owned status bar the Phase 7 notes call for.
+
 ## 2026-10-10 06:37 · `src/mediatagger/test_window.py::test_dropping_a_file_onto_the_windows_grid_starts_its_folders_slideshow_at_that_file`
 - Behavior: Dropping a file onto the grid starts its folder's slideshow at that file
 - Predicted: passes on first run — the folder-drop cycle wired `Grid.dropped` to `Window._open` → `viewer.open`, and `Slideshow.open` on a file already opens its folder at that file (no right-reason failure available)

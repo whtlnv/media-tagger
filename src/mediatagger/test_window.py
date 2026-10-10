@@ -1,7 +1,9 @@
 from PySide6.QtCore import QCoreApplication, QEvent, Qt
-from PySide6.QtWidgets import QStackedWidget
+from PySide6.QtWidgets import QLabel, QStackedWidget
 
 from mediatagger.grid import TILE_ROLE, Grid
+from mediatagger.library import Library
+from mediatagger.status_bar import StatusBar
 
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import SILENT, make_image, make_surface_ready, show_exposed, wait_until_loaded
@@ -267,3 +269,22 @@ def test_after_going_back_and_forth_between_grids_and_the_viewer_many_times_the_
     QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
 
     assert window.findChildren(Grid) == [stack.currentWidget()]
+
+
+def shown_status_bar_texts(window):
+    return [label.text() for bar in window.findChildren(StatusBar) for label in bar.findChildren(QLabel) if label.isVisible()]
+
+
+def test_moving_the_windows_grid_cursor_onto_a_tagged_item_shows_its_own_tags_space_separated_in_the_status_bar(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    Library.open(drive).enter(folder / "IMG_2.png", "beach family")
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
+
+    assert "beach family" in shown_status_bar_texts(window)
