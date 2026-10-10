@@ -2,6 +2,9 @@
 
 ## Out of Scope
 
+- **[src/mediatagger/backup.py:58] `back_up` reads `Library._tags_db` and undoes `tags_db_path`'s layout with `.parent.parent`** (added: 2026-10-10)
+  The drive name written to `drive.json` depends on `.mediatagger/tags.db` staying exactly two levels below the drive root, a fact `library.tags_db_path` owns; the fix is for `Library` to expose its drive root (and database path) publicly, which needs a change in `library.py`, outside the e41159b..HEAD range.
+
 - **[src/mediatagger/test_main.py:53] Standalone executable test asserts only that the process is still alive** (added: 2026-10-08)
   `assert still_running` checks the process did not exit but not the "viewer open" its name promises; observing the viewer of an independently launched `mediatagger` process needs a production-side report hook, which this pass may not add.
 
