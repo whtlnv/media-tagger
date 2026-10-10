@@ -1,3 +1,5 @@
+import time
+
 from PySide6.QtCore import QRect, Qt
 from PySide6.QtGui import QImage, QPainter
 from PySide6.QtWidgets import QStyleOptionViewItem
@@ -225,3 +227,21 @@ def test_repainting_the_grid_after_its_files_are_deleted_from_disk_still_paints_
     assert FOLDER_GLYPH in painted_texts(grid, 0)
     assert VIDEO_GLYPH in painted_texts(grid, 1)
     assert IMAGE_GLYPH in painted_texts(grid, 2)
+
+
+def test_after_a_first_grid_has_been_shown_opening_and_showing_the_grid_of_a_folder_of_5000_files_takes_under_150_ms(qtbot, tmp_path):
+    (tmp_path / "warm-up").mkdir()
+    touch(tmp_path / "warm-up", "a.jpg")
+    warm_up = Grid(tmp_path / "warm-up")  # the first widget shown loads Qt's fonts, a one-off cost
+    qtbot.addWidget(warm_up)
+    warm_up.show()
+    (tmp_path / "big").mkdir()
+    touch(tmp_path / "big", *[f"IMG_{i}.jpg" for i in range(5000)])
+
+    started = time.perf_counter()
+    grid = Grid(tmp_path / "big")
+    grid.show()
+    elapsed = time.perf_counter() - started
+    qtbot.addWidget(grid)
+
+    assert (elapsed < 0.150, grid.model().rowCount()) == (True, 5000)

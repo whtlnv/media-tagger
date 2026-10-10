@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 04:29 · `src/mediatagger/test_grid.py::test_after_a_first_grid_has_been_shown_opening_and_showing_the_grid_of_a_folder_of_5000_files_takes_under_150_ms`
+- Behavior: Opening the grid of a folder of 5,000 files finishes within a time budget, with headroom over a measurement taken after the single-lookup listing
+- Predicted: pass. The single-lookup listing (b959e95) already removed the per-entry stats that made the 50 ms version fail at about 125 ms.
+- Actual: passed in 5 of 5 runs. Before writing the test I measured 60 warmed-up opens at 48–58 ms, with outliers at about 88 ms.
+- Type: passed unexpectedly (predicted)
+- Resolution: The behavior already holds, so this is a regression guard like the 5,000-tag test, not a driving test. The 150 ms budget is about 2.7× the typical time and 1.7× the worst outlier. It uses the same warm-up shape that failed reliably at 125 ms with per-entry stats. The Pi is unmeasured.
+
 ## 2026-10-10 04:25 · `src/mediatagger/test_grid.py::test_repainting_the_grid_after_one_of_its_subfolders_is_deleted_from_disk_still_draws_that_tile_with_the_folder_glyph`
 - Behavior: Repainting the grid after one of its subfolders has been deleted from disk still draws that tile with the folder glyph
 - Predicted: the TODO item expects an AssertionError (the tile drawn with the image glyph, since `is_dir()` returns False once the folder is gone). After reading `grid.py` first, I expected it to pass. I didn't write that prediction down before running.
