@@ -60,3 +60,18 @@ def test_backing_up_writes_drive_json_next_to_the_drives_backups_recording_its_n
 
     drive_json = json.loads((backup_root / library.drive_id / "drive.json").read_text())
     assert drive_json == {"name": "PHOTOS", "drive_id": library.drive_id}
+
+
+def test_backing_up_a_drive_that_already_has_10_backups_leaves_only_the_10_newest_the_oldest_deleted(tmp_path):
+    drive = tmp_path / "drive"
+    drive.mkdir()
+    photo = drive / "beach.jpg"
+    photo.touch()
+    library = Library.create(drive)
+    backup_root = tmp_path / "backups"
+    for day in range(1, 12):
+        library.enter(photo, f"day{day}")
+        back_up(library, backup_root=backup_root, clock=lambda: datetime(2026, 10, day, 15, 30, 0, tzinfo=timezone.utc))
+
+    backups = sorted(path.name for path in (backup_root / library.drive_id).glob("tags-*.db"))
+    assert backups == [f"tags-202610{day:02d}T153000Z.db" for day in range(2, 12)]

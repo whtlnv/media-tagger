@@ -13,8 +13,10 @@ def back_up(library, backup_root=None, clock=None):
     if backup_root is None:
         backup_root = default_backup_root()
     backup_dir = backup_root / library.drive_id
-    backup_dir.mkdir(parents=True)
+    backup_dir.mkdir(parents=True, exist_ok=True)
     _copy_database(library._tags_db, backup_dir / f"tags-{clock():%Y%m%dT%H%M%SZ}.db")
+    for old_backup in sorted(backup_dir.glob("tags-*.db"))[:-10]:
+        old_backup.unlink()
     drive_root = library._tags_db.parent.parent
     drive = {"name": drive_root.name, "drive_id": library.drive_id}
     (backup_dir / "drive.json").write_text(json.dumps(drive))
