@@ -99,13 +99,16 @@ def decode_fitted(path, bounds):
 class Viewer(QWidget):
     def __init__(self, path=None, player_options=None, folder_picker=None, is_mount_point=os.path.ismount, ask_to_create_library=None,
         app_location=APP_PACKAGE, backup_root=None, backup_clock=lambda: datetime.now(timezone.utc), ask_to_restore_library=None,
-        on_escape=None,
+        on_escape=None, session=None,
     ):
+        """A viewer on its own makes its own status bar and drive session; inside a window it is handed the window's."""
         super().__init__()
         self.on_escape = on_escape or self.close
         collect_garbage_on_the_gui_thread()
-        self.status_bar = StatusBar(self)
-        self.session = DriveSession(self.status_bar, self, is_mount_point, ask_to_create_library, app_location, backup_root, backup_clock, ask_to_restore_library)
+        if session is None:
+            session = DriveSession(StatusBar(self), self, is_mount_point, ask_to_create_library, app_location, backup_root, backup_clock, ask_to_restore_library)
+        self.session = session
+        self.status_bar = session.status_bar
         self.folder_picker = folder_picker or self._pick_folder
         self.slideshow = None
         self.video_player = VideoPlayer(new_engine(**{**_PLAYER_OPTIONS, **(player_options or {})}))
@@ -148,7 +151,8 @@ class Viewer(QWidget):
     def resizeEvent(self, event):
         if self.surface:
             self.surface.setGeometry(self.rect())
-        self.status_bar.place_along_the_bottom_of(self.rect())
+        if self.status_bar.parent() is self:
+            self.status_bar.place_along_the_bottom_of(self.rect())
         self._centre(self.placeholder)
         self._pin_top_centre(self.read_only_banner)
         self._pin_top_right(self.tag_overlay)
@@ -183,7 +187,7 @@ class Viewer(QWidget):
     def _pin_bottom_centre(self, widget):
         frame = widget.geometry()
         frame.moveCenter(self.rect().center())
-        frame.moveBottom(self.status_bar.geometry().top() - 1)
+        frame.moveBottom(self.mapFromGlobal(self.status_bar.mapToGlobal(QPoint(0, 0))).y() - 1)
         widget.setGeometry(frame)
 
     def paintEvent(self, event):
