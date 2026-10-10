@@ -5,9 +5,9 @@ from PySide6.QtWidgets import QApplication
 
 
 def main() -> None:
-    from mediatagger.viewer import Viewer
+    from mediatagger.window import Window
 
     app = QApplication.instance() or QApplication(sys.argv)
-    viewer = Viewer(Path(sys.argv[1]) if len(sys.argv) > 1 else None)
-    viewer.show()
+    window = Window(Path(sys.argv[1]) if len(sys.argv) > 1 else None)
+    window.show()
     app.exec()

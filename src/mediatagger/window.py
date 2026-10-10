@@ -1,6 +1,7 @@
 from pathlib import Path
 
-from PySide6.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QApplication, QStackedWidget, QVBoxLayout, QWidget
 
 from mediatagger.drive_session import DriveSession
 from mediatagger.grid import TILE_ROLE, Grid
@@ -25,11 +26,14 @@ class Window(QWidget):
         layout.addWidget(self.stack)
         self.status_bar = StatusBar(self)
         self.session = DriveSession(self.status_bar, self, **session_options)
-        self.viewer = Viewer(path, player_options=player_options, folder_picker=folder_picker, on_escape=self._escape, session=self.session,
+        self.viewer = Viewer(player_options=player_options, folder_picker=folder_picker, on_escape=self._escape, session=self.session,
             on_drop=self._record_state)
         self.stack.addWidget(self.viewer)
-        if path is not None:
-            self._record_state(path if path.is_dir() else path.parent)
+        self._forwarding = False
+        self.setAcceptDrops(True)
+        self.setWindowState(Qt.WindowState.WindowFullScreen)
+        if path is not None:  # opened once the viewer is in place, so a question about the library is asked over it
+            self._open(path)
         if remembered and remembered.exists():
             self.session.open_library(remembered)
             grid = Grid(remembered, library=self.session.library)
@@ -39,6 +43,28 @@ class Window(QWidget):
     def resizeEvent(self, event):
         self.status_bar.place_along_the_bottom_of(self.rect())
         self.status_bar.raise_()
+
+    def keyPressEvent(self, event):
+        self._forward_to_the_shown_page(event)
+
+    def dragEnterEvent(self, event):
+        if any(url.isLocalFile() for url in event.mimeData().urls()):
+            event.acceptProposedAction()
+
+    def dropEvent(self, event):
+        self.viewer.stop_video()
+        self._open(Path(event.mimeData().urls()[0].toLocalFile()))
+
+    def _forward_to_the_shown_page(self, event):
+        """Keys that reach the window itself belong to the page it shows. One the page ignores comes back up to the
+        window, which then lets it go rather than forwarding it again."""
+        if self._forwarding:
+            return
+        self._forwarding = True
+        try:
+            QApplication.sendEvent(self.stack.currentWidget(), event)
+        finally:
+            self._forwarding = False
 
     def closeEvent(self, event):
         self.viewer.close()  # shuts down its video player and backs up the session's library
@@ -105,3 +131,5 @@ class Window(QWidget):
         self.viewer.open(path)
         self.stack.setCurrentWidget(self.viewer)
         self.status_bar.show_tags("")
+        if self.viewer.slideshow is not None:
+            self._record_state(self.viewer.slideshow.current.parent)

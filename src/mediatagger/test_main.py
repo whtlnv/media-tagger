@@ -69,25 +69,32 @@ def test_running_the_mediatagger_command_on_a_file_opens_the_fullscreen_viewer_o
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == f"fullscreen=True centre={QColor('blue').name()}"
 
-PRESS_ESC_SCRIPT = (
+PRESS_ESC_THEN_REPORT_SCRIPT = (
     "import sys\n"
     "from PySide6.QtCore import Qt, QTimer\n"
     "from PySide6.QtTest import QTest\n"
-    "from PySide6.QtWidgets import QApplication\n"
+    "from PySide6.QtWidgets import QApplication, QListView\n"
     "app = QApplication([])\n"
-    "def press_esc():\n"
+    "def press_esc_then_report():\n"
     "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
     "    QTest.keyClick(window, Qt.Key.Key_Escape)\n"
-    "QTimer.singleShot(1000, press_esc)\n"
+    "    shown = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    grids = [grid for grid in window.findChildren(QListView) if grid.isVisible()]\n"
+    "    cursor = [grid.currentIndex().data() for grid in grids]\n"
+    "    print(f'windows={len(shown)} cursor={cursor}', flush=True)\n"
+    "    QApplication.closeAllWindows()\n"
+    "    QApplication.quit()\n"
+    "QTimer.singleShot(1000, press_esc_then_report)\n"
     "sys.argv = ['mediatagger', sys.argv[1]]\n"
-) + RUN_MEDIATAGGER_COMMAND + "print('exited', flush=True)\n"
+) + RUN_MEDIATAGGER_COMMAND
 
 
-def test_pressing_esc_in_the_mediatagger_command_makes_it_exit_cleanly(tmp_path):
+def test_pressing_esc_in_the_slideshow_of_the_mediatagger_command_shows_that_folders_grid_in_the_same_window_with_the_cursor_on_the_shown_file(tmp_path):
     make_image(tmp_path / "IMG_1.png", "red")
-    result = run_python_offscreen(PRESS_ESC_SCRIPT, str(tmp_path))
+    make_image(tmp_path / "IMG_2.png", "blue")
+    result = run_python_offscreen(PRESS_ESC_THEN_REPORT_SCRIPT, str(tmp_path / "IMG_2.png"))
     assert result.returncode == 0, result.stderr
-    assert result.stdout.strip() == "exited"
+    assert result.stdout.strip() == "windows=1 cursor=['IMG_2.png']"
 
 REPORT_SHOWN_TEXTS_ON_TIMER = (
     "import sys\n"
@@ -217,7 +224,8 @@ NOTE_WHETHER_THE_VIEWER_IS_SHOWN_WHEN_ASKED_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_M
     "def answer():\n"
     "    question = QApplication.activeModalWidget()\n"
     "    if question is not None:\n"
-    "        viewer_shown_when_asked.append(any(isinstance(window, Viewer) and window.isVisible() for window in QApplication.topLevelWidgets()))\n"
+    "        shown = [widget for window in QApplication.topLevelWidgets() for widget in [window, *window.findChildren(Viewer)] if widget.isVisible()]\n"
+    "        viewer_shown_when_asked.append(any(isinstance(widget, Viewer) for widget in shown))\n"
     "        question.reject()\n"
     "        report_soon()\n"
     "def report():\n"
@@ -304,7 +312,8 @@ ANSWER_YES_TO_THE_QUESTION_THEN_REPORT_SHOWN_TEXTS_SCRIPT = TREAT_FIRST_ARGUMENT
     "def answer():\n"
     "    question = QApplication.activeModalWidget()\n"
     "    if question is not None:\n"
-    "        viewer_shown_when_asked.append(any(isinstance(window, Viewer) and window.isVisible() for window in QApplication.topLevelWidgets()))\n"
+    "        shown = [widget for window in QApplication.topLevelWidgets() for widget in [window, *window.findChildren(Viewer)] if widget.isVisible()]\n"
+    "        viewer_shown_when_asked.append(any(isinstance(widget, Viewer) for widget in shown))\n"
     "        question.button(QMessageBox.StandardButton.Yes).click()\n"
     "        report_soon()\n"
     "def report():\n"
