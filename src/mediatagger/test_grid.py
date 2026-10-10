@@ -13,6 +13,10 @@ def tile_names(grid):
     return [model.index(row, 0).data(Qt.ItemDataRole.DisplayRole) for row in range(model.rowCount())]
 
 
+def tile_width(grid):
+    return grid.visualRect(grid.model().index(1, 0)).x() - grid.visualRect(grid.model().index(0, 0)).x()
+
+
 class RecordingPainter(QPainter):
     def __init__(self, device):
         super().__init__(device)
@@ -167,15 +171,12 @@ def test_in_the_grid_plus_makes_the_tiles_bigger_than_their_starting_size_of_abo
     grid.show()
     qtbot.waitExposed(grid)
 
-    def tile_width():
-        return grid.visualRect(grid.model().index(1, 0)).x() - grid.visualRect(grid.model().index(0, 0)).x()
-
-    start = tile_width()
+    start = tile_width(grid)
 
     qtbot.keyClick(grid, Qt.Key.Key_Plus)
 
     assert abs(start - 200) <= 20
-    assert tile_width() > start
+    assert tile_width(grid) > start
 
 
 def test_in_the_grid_minus_makes_the_tiles_smaller_than_their_starting_size(qtbot, tmp_path):
@@ -186,11 +187,8 @@ def test_in_the_grid_minus_makes_the_tiles_smaller_than_their_starting_size(qtbo
     grid.show()
     qtbot.waitExposed(grid)
 
-    def tile_width():
-        return grid.visualRect(grid.model().index(1, 0)).x() - grid.visualRect(grid.model().index(0, 0)).x()
-
-    start = tile_width()
+    start = tile_width(grid)
 
     qtbot.keyClick(grid, Qt.Key.Key_Minus)
 
-    assert tile_width() < start
+    assert tile_width(grid) < start
