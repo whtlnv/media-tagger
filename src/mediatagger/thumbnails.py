@@ -53,7 +53,7 @@ def folder_thumbnail(folder):
 
 
 def format_duration(seconds):
-    hours, remainder = divmod(seconds, 3600)
+    hours, remainder = divmod(int(seconds), 3600)
     minutes, seconds = divmod(remainder, 60)
     if hours:
         return f"{hours}:{minutes:02}:{seconds:02}"

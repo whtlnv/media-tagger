@@ -176,3 +176,7 @@ def test_a_duration_of_75_seconds_reads_1_15():
 
 def test_a_duration_of_3725_seconds_reads_1_02_05_with_hours_shown():
     assert format_duration(3725) == "1:02:05"
+
+
+def test_a_fractional_duration_of_75_6_seconds_reads_1_15_in_whole_seconds():
+    assert format_duration(75.6) == "1:15"

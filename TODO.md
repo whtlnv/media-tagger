@@ -22,7 +22,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] A folder holding only videos, or images only in its subfolders, yields "no thumbnail"
 - [x] A duration of 75 s reads `1:15`
 - [x] A duration of 3,725 s reads `1:02:05` (hours shown from an hour)
-- [ ] A fractional duration of 75.6 s, as `ffprobe` reports it, reads `1:15` (whole seconds only)
+- [x] A fractional duration of 75.6 s, as `ffprobe` reports it, reads `1:15` (whole seconds only)
 - [ ] When `ffprobe` runs past its timeout, the video yields no duration and no thumbnail and generation returns promptly
 
 ### Cache
