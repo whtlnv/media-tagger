@@ -70,7 +70,7 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 - [x] Launching the window with no path into a remembered folder's grid opens that drive's library
 - [x] Launching the window with no path, when the remembered folder no longer exists, shows the launch screen
 - [x] Launching the window with no path and no state file shows the launch screen
-- [ ] Launching the window with no path and an unreadable state file shows the launch screen
+- [x] Launching the window with no path and an unreadable state file shows the launch screen
 - [ ] Running the shipped `mediatagger <folder>` command shows one window whose `Esc` switches from the slideshow to that folder's grid
   - predicted-contradiction: `src/mediatagger/test_main.py::test_pressing_esc_in_the_mediatagger_command_makes_it_exit_cleanly` — asserts: pressing `Esc` in the slideshow of `mediatagger <folder>` makes the command exit cleanly — retired-by: "`Esc` switches from the slideshow to that folder's grid"
 - [ ] Running the shipped `mediatagger` command with no path, after a folder was viewed, opens that folder's grid

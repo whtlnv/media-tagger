@@ -73,7 +73,10 @@ class Window(QWidget):
         state_file = self._state_file()
         if not state_file.exists():
             return None
-        return Path(json.loads(state_file.read_text())["folder"])
+        try:
+            return Path(json.loads(state_file.read_text())["folder"])
+        except json.JSONDecodeError:
+            return None
 
     def _record_state(self, folder):
         state_file = self._state_file()
