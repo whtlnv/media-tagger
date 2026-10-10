@@ -7,7 +7,7 @@ from PySide6.QtCore import QEvent, QEventLoop, QPoint, QRect, Qt, QTimer
 from PySide6.QtGui import QImageIOHandler, QImageReader, QPainter
 from PySide6.QtWidgets import QApplication, QCompleter, QFileDialog, QHBoxLayout, QLabel, QLineEdit, QMessageBox, QWidget
 
-from mediatagger.backup import back_up, newest_backup
+from mediatagger.backup import back_up, default_backup_root, newest_backup
 from mediatagger.folder import is_video
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
 from mediatagger.library import Library, tags_db_path
@@ -460,7 +460,7 @@ class Viewer(QWidget):
         return drive == Path("/") or drive in self.app_location.parents
 
     def _offer_to_restore_library(self, drive):
-        backup = self.backup_root and newest_backup(self.backup_root, drive.name)
+        backup = newest_backup(self.backup_root or default_backup_root(), drive.name)
         if backup:
             self.ask_to_restore_library(RESTORE_LIBRARY_QUESTION.format(drive.name, backup.taken_at))
 
