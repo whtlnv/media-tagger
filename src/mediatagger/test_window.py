@@ -608,10 +608,15 @@ def test_launching_the_window_with_no_path_and_no_state_file_shows_the_launch_sc
     assert shown.slideshow is None
 
 
-def test_launching_the_window_with_no_path_and_an_unreadable_state_file_shows_the_launch_screen(qtbot):
+def write_state_file(text):
     state_file = Path(os.environ["XDG_CONFIG_HOME"]) / "mediatagger" / "state.json"
     state_file.parent.mkdir(parents=True, exist_ok=True)
-    state_file.write_text("{not json")
+    state_file.write_text(text)
+    return state_file
+
+
+def test_launching_the_window_with_no_path_and_an_unreadable_state_file_shows_the_launch_screen(qtbot):
+    write_state_file("{not json")
 
     window = Window(player_options=SILENT)
     qtbot.addWidget(window)
@@ -622,9 +627,7 @@ def test_launching_the_window_with_no_path_and_an_unreadable_state_file_shows_th
 
 
 def test_launching_the_window_with_no_path_and_a_state_file_with_no_folder_entry_shows_the_launch_screen(qtbot, tmp_path):
-    state_file = Path(os.environ["XDG_CONFIG_HOME"]) / "mediatagger" / "state.json"
-    state_file.parent.mkdir(parents=True, exist_ok=True)
-    state_file.write_text(json.dumps({"mount_point": str(tmp_path)}))
+    write_state_file(json.dumps({"mount_point": str(tmp_path)}))
 
     window = Window(player_options=SILENT)
     qtbot.addWidget(window)
@@ -635,10 +638,7 @@ def test_launching_the_window_with_no_path_and_a_state_file_with_no_folder_entry
 
 
 def test_launching_the_window_with_no_path_and_a_state_file_it_has_no_permission_to_read_shows_the_launch_screen(qtbot, tmp_path):
-    state_file = Path(os.environ["XDG_CONFIG_HOME"]) / "mediatagger" / "state.json"
-    state_file.parent.mkdir(parents=True, exist_ok=True)
-    state_file.write_text(json.dumps({"folder": str(tmp_path), "mount_point": str(tmp_path)}))
-    state_file.chmod(0o000)
+    write_state_file(json.dumps({"folder": str(tmp_path), "mount_point": str(tmp_path)})).chmod(0o000)
 
     window = Window(player_options=SILENT)
     qtbot.addWidget(window)
