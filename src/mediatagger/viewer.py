@@ -463,13 +463,16 @@ class Viewer(QWidget):
 
     def _offer_to_restore_library(self, drive):
         backup = newest_backup(self.backup_root, drive.name)
-        if backup and self.ask_to_restore_library(RESTORE_LIBRARY_QUESTION.format(drive.name, backup.taken_at.astimezone())):
-            restore(drive, backup.path, self.backup_clock)
-            self.library = Library.open(drive)
-            self.backup_status.setText(RESTORED_BACKUP_TEXT.format(backup.taken_at.astimezone()))
-            self.backup_status.show()
-            return True
-        return False
+        if not backup:
+            return False
+        taken_at = backup.taken_at.astimezone()
+        if not self.ask_to_restore_library(RESTORE_LIBRARY_QUESTION.format(drive.name, taken_at)):
+            return False
+        restore(drive, backup.path, self.backup_clock)
+        self.library = Library.open(drive)
+        self.backup_status.setText(RESTORED_BACKUP_TEXT.format(taken_at))
+        self.backup_status.show()
+        return True
 
     def _agrees_to_create_library(self, drive):
         if drive in self.declined_drives:
