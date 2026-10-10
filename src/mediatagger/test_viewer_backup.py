@@ -1,6 +1,8 @@
 import errno
 import os
 import shutil
+import time
+from contextlib import contextmanager
 from datetime import datetime, timezone
 
 from PySide6.QtCore import QEvent, QObject, QTimer
@@ -212,7 +214,7 @@ def test_opening_a_folder_on_a_drive_whose_tags_db_is_garbage_with_backups_for_a
 
     viewer_backing_up_into(qtbot, backup_root, folder, drive, ask_to_restore_library=lambda question: asked.append(question) or False)
 
-    assert asked == [RESTORE_LIBRARY_QUESTION.format(drive.name, taken_at)]
+    assert asked == [RESTORE_LIBRARY_QUESTION.format(drive.name, taken_at.astimezone())]
 
 
 def test_a_viewer_given_no_backup_root_finds_restore_backups_under_the_default_backup_root(qtbot, tmp_path):
@@ -230,4 +232,32 @@ def test_a_viewer_given_no_backup_root_finds_restore_backups_under_the_default_b
     )
     qtbot.addWidget(viewer)
 
-    assert asked == [RESTORE_LIBRARY_QUESTION.format(drive.name, taken_at)]
+    assert asked == [RESTORE_LIBRARY_QUESTION.format(drive.name, taken_at.astimezone())]
+
+
+@contextmanager
+def local_time_zone(name):
+    previous = os.environ.get("TZ")
+    os.environ["TZ"] = name
+    time.tzset()
+    try:
+        yield
+    finally:
+        if previous is None:
+            os.environ.pop("TZ", None)
+        else:
+            os.environ["TZ"] = previous
+        time.tzset()
+
+
+def test_the_restore_question_names_the_drive_as_missing_or_damaged_and_shows_the_backups_time_in_local_time(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    backup_root = tmp_path / "backups"
+    back_up(Library.open(drive), backup_root, clock=lambda: datetime(2026, 10, 9, 15, 30, tzinfo=timezone.utc))
+    overwrite_tags_db_with_garbage(drive)
+    asked = []
+
+    with local_time_zone("America/Mexico_City"):  # UTC−6 all year
+        viewer_backing_up_into(qtbot, backup_root, folder, drive, ask_to_restore_library=lambda question: asked.append(question) or False)
+
+    assert asked == ["The tag library on MEDIATAGGER is missing or damaged. Restore the backup from 2026-10-09 09:30?"]

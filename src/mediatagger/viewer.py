@@ -33,7 +33,7 @@ NO_LIBRARY_VIEWING_ONLY_TEXT = "No library — viewing only"
 DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT = "{} has no tag library — viewing only"
 LIBRARY_CANT_BE_OPENED_TEXT = "Library on {} can't be opened — viewing only"
 CREATE_LIBRARY_QUESTION = "Create a tag library on {}?"
-RESTORE_LIBRARY_QUESTION = "The library on {} can't be opened. Restore the backup from {:%Y-%m-%d %H:%M}?"
+RESTORE_LIBRARY_QUESTION = "The tag library on {} is missing or damaged. Restore the backup from {:%Y-%m-%d %H:%M}?"
 READ_ONLY_BANNER_TEXT = "This drive is read-only — tags can't be saved"
 READ_ONLY_STATUS_TEXT = "Read-only — tags can't be saved"
 TAGS_CANT_BE_SAVED_HERE_TEXT = "Tags can't be saved here"
@@ -462,7 +462,7 @@ class Viewer(QWidget):
     def _offer_to_restore_library(self, drive):
         backup = newest_backup(self.backup_root, drive.name)
         if backup:
-            self.ask_to_restore_library(RESTORE_LIBRARY_QUESTION.format(drive.name, backup.taken_at))
+            self.ask_to_restore_library(RESTORE_LIBRARY_QUESTION.format(drive.name, backup.taken_at.astimezone()))
 
     def _agrees_to_create_library(self, drive):
         if drive in self.declined_drives:
