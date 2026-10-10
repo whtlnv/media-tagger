@@ -90,3 +90,21 @@ def test_a_7_second_video_yields_a_duration_of_about_7_seconds(tmp_path):
     path = make_clip(tmp_path / "clip.mp4", duration=7)
 
     assert video_duration(path) == pytest.approx(7, abs=0.2)
+
+
+@pytest.mark.skipif(shutil.which("ffmpeg") is None, reason="ffmpeg is not installed")
+def test_an_800_by_600_video_green_at_10_percent_yields_a_green_400_by_300_thumbnail(tmp_path):
+    path = tmp_path / "clip.mp4"
+    subprocess.run(
+        ["ffmpeg", "-loglevel", "error",
+         "-f", "lavfi", "-i", "color=red:size=800x600:rate=10:duration=0.5",
+         "-f", "lavfi", "-i", "color=green:size=800x600:rate=10:duration=9.5",
+         "-filter_complex", "[0][1]concat=n=2:v=1", "-pix_fmt", "yuv420p", str(path)],
+        check=True,
+    )
+
+    frame = video_thumbnail(path)
+
+    assert frame.size() == QSize(400, 300)
+    centre = frame.pixelColor(frame.width() // 2, frame.height() // 2)
+    assert centre.green() > 100 and centre.red() < 60 and centre.blue() < 60
