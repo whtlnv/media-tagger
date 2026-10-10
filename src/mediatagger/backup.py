@@ -29,6 +29,10 @@ def default_backup_root():
     return Path(data_home) / "mediatagger" / "backups"
 
 
+def failure_reason(error):
+    return getattr(error, "strerror", None) or str(error)
+
+
 def back_up(library, backup_root=None, *, clock):
     """Copy the library's database into its drive's backup folder; any failure comes back as a BackupOutcome, never raised."""
     if backup_root is None:
@@ -36,7 +40,7 @@ def back_up(library, backup_root=None, *, clock):
     try:
         _back_up(library, backup_root / library.drive_id, clock)
     except (OSError, sqlite3.Error) as error:
-        return BackupOutcome(failure=getattr(error, "strerror", None) or str(error))
+        return BackupOutcome(failure=failure_reason(error))
 
 
 def _back_up(library, backup_dir, clock):

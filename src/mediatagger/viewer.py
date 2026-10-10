@@ -7,7 +7,7 @@ from PySide6.QtCore import QEvent, QEventLoop, QPoint, QRect, Qt, QTimer
 from PySide6.QtGui import QImageIOHandler, QImageReader, QPainter
 from PySide6.QtWidgets import QApplication, QCompleter, QFileDialog, QHBoxLayout, QLabel, QLineEdit, QMessageBox, QWidget
 
-from mediatagger.backup import back_up, default_backup_root, newest_backup, restore
+from mediatagger.backup import back_up, default_backup_root, failure_reason, newest_backup, restore
 from mediatagger.folder import is_video
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
 from mediatagger.library import Library, tags_db_path
@@ -501,7 +501,7 @@ class Viewer(QWidget):
             restore(drive, backup.path, self.backup_clock)
             self.library = Library.open(drive)
         except (OSError, sqlite3.Error) as error:
-            self._show_background_status(RESTORE_FAILED_TEXT.format(getattr(error, "strerror", None) or error))
+            self._show_background_status(RESTORE_FAILED_TEXT.format(failure_reason(error)))
             return False
         self._show_background_status(RESTORED_BACKUP_TEXT.format(taken_at), finished=True)
         return True
