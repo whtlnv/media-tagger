@@ -22,3 +22,15 @@ def test_backing_up_a_library_writes_a_copy_of_its_tags_db_named_by_utc_time_und
     tags_db_path(restored_drive).parent.mkdir(parents=True)
     shutil.copy(backup, tags_db_path(restored_drive))
     assert Library.open(restored_drive).tags(restored_drive / "beach.jpg") == ["beach", "family"]
+
+
+def test_backing_up_without_a_backup_root_writes_under_xdg_data_home_when_it_is_set(tmp_path, monkeypatch):
+    drive = tmp_path / "drive"
+    drive.mkdir()
+    library = Library.create(drive)
+    data_home = tmp_path / "data"
+    monkeypatch.setenv("XDG_DATA_HOME", str(data_home))
+
+    back_up(library, clock=lambda: datetime(2026, 10, 9, 15, 30, 0, tzinfo=timezone.utc))
+
+    assert (data_home / "mediatagger" / "backups" / library.drive_id / "tags-20261009T153000Z.db").is_file()
