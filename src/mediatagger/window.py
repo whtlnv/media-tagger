@@ -1,5 +1,3 @@
-import json
-import os
 from pathlib import Path
 
 from PySide6.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
@@ -7,6 +5,7 @@ from PySide6.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
 from mediatagger.drive_session import DriveSession
 from mediatagger.grid import TILE_ROLE, Grid
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
+from mediatagger.state import remember, remembered_folder, state_file
 from mediatagger.status_bar import StatusBar
 from mediatagger.viewer import Viewer
 
@@ -17,8 +16,8 @@ class Window(QWidget):
 
     def __init__(self, path=None, player_options=None, folder_picker=None, home=None, **session_options):
         super().__init__()
-        self._home = home or Path.home()
-        remembered = self._remembered_folder() if path is None else None
+        self._state_file = state_file(home or Path.home())
+        remembered = remembered_folder(self._state_file) if path is None else None
         collect_garbage_on_the_gui_thread()
         self.stack = QStackedWidget(self)
         layout = QVBoxLayout(self)
@@ -65,25 +64,10 @@ class Window(QWidget):
         self.status_bar.raise_()
         self._record_state(grid.folder)
 
-    def _state_file(self):
-        config_home = os.environ.get("XDG_CONFIG_HOME", self._home / ".config")
-        return Path(config_home) / "mediatagger" / "state.json"
-
-    def _remembered_folder(self):
-        state_file = self._state_file()
-        if not state_file.exists():
-            return None
-        try:
-            return Path(json.loads(state_file.read_text())["folder"])
-        except json.JSONDecodeError:
-            return None
-
     def _record_state(self, folder):
-        state_file = self._state_file()
-        if self._is_on_the_apps_own_drive(state_file) or self._is_on_the_drive_being_viewed(state_file):
+        if self._is_on_the_apps_own_drive(self._state_file) or self._is_on_the_drive_being_viewed(self._state_file):
             return
-        state_file.parent.mkdir(parents=True, exist_ok=True)
-        state_file.write_text(json.dumps({"folder": str(folder), "mount_point": str(self.session.drive)}))
+        remember(self._state_file, folder, self.session.drive)
 
     def _is_on_the_apps_own_drive(self, path):
         return any(self.session.is_mount_point(ancestor) for ancestor in self.session.app_location.parents if ancestor in path.parents)
