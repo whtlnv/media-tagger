@@ -2,6 +2,9 @@
 
 ## Out of Scope
 
+- **[src/mediatagger/test_viewer_backup.py:394] Test monkeypatches the private `viewer._FINISHED_MESSAGE_MS`** (added: 2026-10-10)
+  The backup-failure-outlives-earlier-message test shortens the private clear delay through `viewer_module`; `Viewer` offers no public way to set how long a finished background message stays, so decoupling needs a production change (e.g. a constructor option).
+
 - **[src/mediatagger/viewer.py:419] `Viewer` is a 560-line class that also owns the library open/restore/backup flow** (added: 2026-10-10)
   `_open_library` through `_agrees_to_create_library` (~100 lines) decide what to do with a drive's library and write the status bar, banner and background-status widgets directly; moving them out means designing a new boundary between that decision and the widgets, an architectural split for `/complexity-pass`, not a mechanical refactor.
 
