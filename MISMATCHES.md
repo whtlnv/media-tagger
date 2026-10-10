@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 01:20 · `src/mediatagger/test_folder.py::test_a_folder_listing_leaves_out_non_media_files`
+- Behavior: A folder listing leaves out non-media files
+- Predicted: pass (no right-reason failure possible) — `folder_entries` already appends `media_files`, which filters through `_is_media`
+- Actual: passed
+- Type: passed unexpectedly (relative to Red's contract; pass was foreseen)
+- Resolution: The behavior arrived with the "subfolders first, then images and videos" cycle, which reused `media_files`. No smaller missing slice exists, so I kept the test as a pin on `folder_entries` instead of forcing a contrived failure. The TODO item needs no /green.
+
 ## 2026-10-09 23:55 · `src/mediatagger/test_main.py::test_running_the_mediatagger_command_on_a_drive_whose_tags_db_is_garbage_with_a_backup_under_xdg_data_home_asks_to_restore_over_the_shown_viewer_and_yes_shows_the_restored_tags`
 - Behavior: the shipped `mediatagger <folder>` asks the restore question in a Yes/No dialog over the shown viewer by default, and Yes shows the restored tags
 - Predicted: AssertionError on returncode, stderr `TypeError: 'NoneType' object is not callable` from the viewer's missing default `ask_to_restore_library`

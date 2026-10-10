@@ -82,3 +82,10 @@ def test_subfolders_are_listed_in_natural_case_blind_order(tmp_path):
         (tmp_path / name).mkdir()
 
     assert [path.name for path in folder_entries(tmp_path)] == ["alpha", "Beta", "day2", "day10"]
+
+
+def test_a_folder_listing_leaves_out_non_media_files(tmp_path):
+    touch(tmp_path, "IMG_1.jpg", "notes.txt", "README", ".DS_Store")
+    (tmp_path / "trip").mkdir()
+
+    assert folder_entries(tmp_path) == [tmp_path / "trip", tmp_path / "IMG_1.jpg"]
