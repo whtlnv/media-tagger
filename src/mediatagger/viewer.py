@@ -199,10 +199,10 @@ class Viewer(QWidget):
             event.acceptProposedAction()
 
     def dropEvent(self, event):
-        self._stop_video()
+        self.stop_video()
         self._open(Path(event.mimeData().urls()[0].toLocalFile()))
 
-    def _stop_video(self):
+    def stop_video(self):
         self.video_player.press("Right")  # leaving the current item is what stops its video
 
     def keyPressEvent(self, event):

@@ -13,7 +13,7 @@ class Window(QWidget):
         QVBoxLayout(self).addWidget(self.stack)
 
     def _show_grid(self):
-        self.viewer._stop_video()
+        self.viewer.stop_video()
         current = self.viewer.slideshow.current
         grid = Grid(current.parent, at=current)
         self.stack.addWidget(grid)
