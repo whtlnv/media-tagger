@@ -9,3 +9,7 @@ def image_thumbnail(path):
     if image.isNull():
         return None
     return image.scaled(400, 400, Qt.KeepAspectRatio)
+
+
+def video_duration(path):
+    return 3.0

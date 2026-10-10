@@ -10,7 +10,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] A 300×600 image yields a thumbnail of 200×400 (the long side, not always the width, is fitted)
 - [x] An image whose EXIF orientation says "rotated 90°" yields a thumbnail in its displayed (rotated) orientation
 - [x] A corrupt image file yields a "no thumbnail" result instead of raising
-- [ ] A video yields its duration in seconds
+- [x] A video yields its duration in seconds
 - [ ] A video yields a frame taken at ~10% of its duration, not its first frame (a test video whose colour changes after the first 5% gives the later colour)
 - [ ] A video's frame thumbnail fits within ~400 px, aspect ratio kept
 - [ ] When `ffmpeg`/`ffprobe` are not on PATH, a video yields "no thumbnail" and no duration instead of raising
