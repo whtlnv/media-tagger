@@ -15,7 +15,8 @@ def back_up(library, backup_root=None, clock=None):
     backup_dir = backup_root / library.drive_id
     backup_dir.mkdir(parents=True)
     _copy_database(library._tags_db, backup_dir / f"tags-{clock():%Y%m%dT%H%M%SZ}.db")
-    drive = {"name": library._tags_db.parent.parent.name, "drive_id": library.drive_id}
+    drive_root = library._tags_db.parent.parent
+    drive = {"name": drive_root.name, "drive_id": library.drive_id}
     (backup_dir / "drive.json").write_text(json.dumps(drive))
 
 
