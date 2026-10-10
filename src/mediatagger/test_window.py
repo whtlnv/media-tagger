@@ -621,6 +621,19 @@ def test_launching_the_window_with_no_path_and_an_unreadable_state_file_shows_th
     assert shown.slideshow is None
 
 
+def test_launching_the_window_with_no_path_and_a_state_file_with_no_folder_entry_shows_the_launch_screen(qtbot, tmp_path):
+    state_file = Path(os.environ["XDG_CONFIG_HOME"]) / "mediatagger" / "state.json"
+    state_file.parent.mkdir(parents=True, exist_ok=True)
+    state_file.write_text(json.dumps({"mount_point": str(tmp_path)}))
+
+    window = Window(player_options=SILENT)
+    qtbot.addWidget(window)
+
+    shown = window.findChild(QStackedWidget).currentWidget()
+    assert isinstance(shown, Viewer)
+    assert shown.slideshow is None
+
+
 def test_launching_the_window_with_no_path_and_no_state_file_then_closing_it_leaves_no_state_file(qtbot):
     state_file = Path(os.environ["XDG_CONFIG_HOME"]) / "mediatagger" / "state.json"
 
