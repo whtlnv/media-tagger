@@ -44,7 +44,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] A drive's cache opened by its drive id keeps its thumbnails on disk: closing it and opening it again by the same drive id returns them
 - [x] With no drive id, nothing is written to disk
 - [x] The cache is never written when its location falls on the app's own drive
-- [ ] The cache is never written when its location falls on the drive being viewed
+- [x] The cache is never written when its location falls on the drive being viewed
 
 ### Order of work
 - [ ] With more than three thumbnails pending, exactly three generate at once
