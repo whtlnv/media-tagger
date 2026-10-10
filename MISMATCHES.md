@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 20:22 · `src/mediatagger/test_viewer_backup.py::test_opening_a_folder_on_a_drive_whose_library_cant_be_opened_makes_no_backup`
+- Behavior: Opening a folder on a drive whose library can't be opened makes no backup
+- Predicted: passes on first run, because `_open_library` returns from the `Library.open` except branch before `back_up` is reached (written in the previous cycle)
+- Actual: passed (1 passed)
+- Type: passed unexpectedly
+- Resolution: The behavior came along with the previous cycle's happy-path backup, which put `back_up` after the guarded `Library.open`. Without a library there's nothing to back up, so no honest rewrite fails for the right reason. Kept the test as a regression guard: a backup written by mistake under `drive.name` would make `newest_backup` non-None, which the sibling test shows it detects.
+
 ## 2026-10-09 19:11 · `src/mediatagger/test_backup.py::test_backing_up_a_library_whose_tags_changed_since_the_drives_last_backup_writes_a_new_backup`
 - Behavior: Backing up a library whose tags changed since that drive's last backup writes a new backup
 - Predicted: passes on first run — `_duplicates_latest` only discards byte-identical copies, so a changed database is kept
