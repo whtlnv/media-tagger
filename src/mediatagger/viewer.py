@@ -17,7 +17,7 @@ _PLAYER_OPTIONS = {"vo": "libmpv"}
 _VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up", Qt.Key.Key_Down: "Down", Qt.Key.Key_Return: "Enter"}
 # Explicit colours: the desktop theme's default text colour may be black, which vanishes on a black background.
 _LABEL_STYLE = "color: white; background-color: rgba(0, 0, 0, 160); padding: 8px 12px; border-radius: 6px; font-size: 18px;"
-_SUGGESTION_POPUP_STYLE = "color: white; background-color: rgb(64, 64, 64);"
+_SUGGESTION_POPUP_STYLE = "QListView { color: white; background-color: rgb(64, 64, 64); border: 1px solid rgb(200, 200, 200); font-size: 18px; } QListView::item { padding: 4px 12px; }"
 _TAG_INPUT_STYLE = "color: white; background-color: rgba(64, 64, 64, 220); border: 1px solid rgb(200, 200, 200); padding: 8px 12px; border-radius: 6px; font-size: 18px;"
 CORNER_MARGIN = 16
 _TAG_PROMPT_WIDTH = 600
@@ -62,6 +62,9 @@ class _LastWordCompleter(QCompleter):
     def _open_above_the_prompt(self):
         popup = self.popup()
         prompt_top = self.widget().mapToGlobal(QPoint(0, 0)).y()
+        room_above = prompt_top - self.widget().window().mapToGlobal(QPoint(0, 0)).y()
+        if popup.height() > room_above:
+            popup.resize(popup.width(), room_above)  # the list scrolls rather than leaving the window
         popup.move(popup.x(), prompt_top - popup.height())
 
     def pathFromIndex(self, index):

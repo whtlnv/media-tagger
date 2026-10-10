@@ -3,6 +3,7 @@ import time
 
 import pytest
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QFontInfo
 from PySide6.QtWidgets import QAbstractItemView, QApplication
 
 from mediatagger.library import Library
@@ -400,3 +401,12 @@ def test_highlighting_a_removal_suggestion_offers_the_prompt_the_tag_with_its_da
     qtbot.keyClick(suggestions, Qt.Key.Key_Down)
 
     assert offered == ["-sunset"]
+
+
+def test_the_suggestion_popups_text_is_as_large_as_the_prompts(qtbot, tmp_path):
+    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach bird")
+    type_in_tag_prompt(qtbot, viewer, "b")
+    [prompt] = visible_tag_prompts(viewer)
+    [suggestions] = visible_suggestion_lists()
+
+    assert QFontInfo(suggestions.font()).pixelSize() == QFontInfo(prompt.font()).pixelSize()
