@@ -59,8 +59,7 @@ def _back_up(library, backup_dir, clock):
         partial.replace(new_backup)
     for old_backup in sorted(backup_dir.glob(_BACKUP_GLOB))[:-_BACKUPS_KEPT_PER_DRIVE]:
         old_backup.unlink()
-    drive_root = library._tags_db.parent.parent
-    drive = {"name": drive_root.name, "drive_id": library.drive_id}
+    drive = {"name": library.root.name, "drive_id": library.drive_id}
     (backup_dir / "drive.json").write_text(json.dumps(drive))
 
 

@@ -84,8 +84,12 @@ class Library:
         connection.close()
         return cls(tags_db, meta["drive_id"], int(meta["schema_version"]))
 
+    @property
+    def root(self):
+        return self._tags_db.parent.parent
+
     def _key(self, path):
-        return str(path.relative_to(self._tags_db.parent.parent))
+        return str(path.relative_to(self.root))
 
     def enter(self, path, text):
         added, removed = _parse_entry(text)
@@ -111,14 +115,13 @@ class Library:
         return names
 
     def tag_counts(self, folder):
-        root = self._tags_db.parent.parent
         connection = sqlite3.connect(self._tags_db)
         rows = connection.execute(
             "SELECT items.rel_path, COUNT(*) FROM item_tags"
             " JOIN items ON items.id = item_tags.item_id"
             " GROUP BY items.rel_path"
         )
-        paths = ((root / rel_path, count) for rel_path, count in rows)
+        paths = ((self.root / rel_path, count) for rel_path, count in rows)
         counts = {path: count for path, count in paths if path.parent == folder}
         connection.close()
         return counts
