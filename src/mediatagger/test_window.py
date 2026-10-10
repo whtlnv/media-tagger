@@ -1,6 +1,7 @@
 import errno
 import json
 import os
+import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -564,3 +565,18 @@ def test_launching_the_window_with_no_path_into_a_remembered_folders_grid_opens_
     grid.setCurrentIndex(grid.model().index(0, 0))
 
     assert "beach family" in shown_status_bar_texts(window)
+
+
+def test_launching_the_window_with_no_path_when_the_remembered_folder_no_longer_exists_shows_the_launch_screen(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    earlier = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(earlier)
+    earlier.close()
+    shutil.rmtree(folder)
+
+    window = Window(player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+
+    shown = window.findChild(QStackedWidget).currentWidget()
+    assert isinstance(shown, Viewer)
+    assert shown.slideshow is None

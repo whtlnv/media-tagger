@@ -29,7 +29,7 @@ class Window(QWidget):
         self.viewer = Viewer(path, player_options=player_options, folder_picker=folder_picker, on_escape=self._escape, session=self.session)
         self.stack.addWidget(self.viewer)
         self._record_state(path)
-        if remembered:
+        if remembered and remembered.exists():
             self.session.open_library(remembered)
             self._show(Grid(remembered))
 
