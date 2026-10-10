@@ -5,6 +5,7 @@ import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 
+import pytest
 from PySide6.QtCore import QCoreApplication, QEvent, Qt
 from PySide6.QtWidgets import QLabel, QStackedWidget
 
@@ -615,30 +616,13 @@ def write_state_file(text):
     return state_file
 
 
-def test_launching_the_window_with_no_path_and_an_unreadable_state_file_shows_the_launch_screen(qtbot):
-    write_state_file("{not json")
-
-    window = Window(player_options=SILENT)
-    qtbot.addWidget(window)
-
-    shown = window.findChild(QStackedWidget).currentWidget()
-    assert isinstance(shown, Viewer)
-    assert shown.slideshow is None
-
-
-def test_launching_the_window_with_no_path_and_a_state_file_with_no_folder_entry_shows_the_launch_screen(qtbot, tmp_path):
-    write_state_file(json.dumps({"mount_point": str(tmp_path)}))
-
-    window = Window(player_options=SILENT)
-    qtbot.addWidget(window)
-
-    shown = window.findChild(QStackedWidget).currentWidget()
-    assert isinstance(shown, Viewer)
-    assert shown.slideshow is None
-
-
-def test_launching_the_window_with_no_path_and_a_state_file_it_has_no_permission_to_read_shows_the_launch_screen(qtbot, tmp_path):
-    write_state_file(json.dumps({"folder": str(tmp_path), "mount_point": str(tmp_path)})).chmod(0o000)
+@pytest.mark.parametrize("state, mode", [
+    pytest.param(lambda folder: "{not json", 0o644, id="unreadable state file"),
+    pytest.param(lambda folder: json.dumps({"mount_point": str(folder)}), 0o644, id="state file with no folder entry"),
+    pytest.param(lambda folder: json.dumps({"folder": str(folder), "mount_point": str(folder)}), 0o000, id="state file it has no permission to read"),
+])
+def test_launching_the_window_with_no_path_and_a_state_file_it_cannot_use_shows_the_launch_screen(qtbot, tmp_path, state, mode):
+    write_state_file(state(tmp_path)).chmod(mode)
 
     window = Window(player_options=SILENT)
     qtbot.addWidget(window)
