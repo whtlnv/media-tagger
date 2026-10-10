@@ -371,3 +371,17 @@ def test_after_a_failed_save_a_successful_save_takes_the_couldnt_save_message_of
 
     assert (Library.open(drive).tags(folder / "IMG_1.png"), "Couldn't save tags — is the drive still connected?" in status_bar_texts(viewer)) == (["beach"], False)
 
+
+
+def test_highlighting_a_suggestion_offers_the_prompt_its_whole_text_with_only_the_last_word_completed_beach_fam_down_offers_beach_family(qtbot, tmp_path):
+    """The prompt shows what the completer offers on highlight (and on a click); offscreen it never has focus to show it."""
+    drive, folder, viewer = shown_viewer_on_a_drive_whose_library_has(qtbot, tmp_path, "beach family")
+    type_in_tag_prompt(qtbot, viewer, "beach fam")
+    [prompt] = visible_tag_prompts(viewer)
+    [suggestions] = visible_suggestion_lists()
+    offered = []
+    prompt.completer().highlighted[str].connect(offered.append)
+
+    qtbot.keyClick(suggestions, Qt.Key.Key_Down)
+
+    assert offered == ["beach family"]

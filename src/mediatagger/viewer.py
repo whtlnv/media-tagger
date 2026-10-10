@@ -64,12 +64,14 @@ class _LastWordCompleter(QCompleter):
         prompt_top = self.widget().mapToGlobal(QPoint(0, 0)).y()
         popup.move(popup.x(), prompt_top - popup.height())
 
-    def _accept_highlighted(self):
-        prompt = self.widget()
-        highlighted = self.popup().currentIndex().data()
-        typed = prompt.text()
+    def pathFromIndex(self, index):
+        """What the prompt shows for a suggestion, on highlight or acceptance: its text with only the last word completed."""
+        typed = self.widget().text()
         [word_being_completed] = self.splitPath(typed)
-        prompt.setText(typed.removesuffix(word_being_completed) + highlighted)
+        return typed.removesuffix(word_being_completed) + index.data()
+
+    def _accept_highlighted(self):
+        self.widget().setText(self.pathFromIndex(self.popup().currentIndex()))
 
 
 class _TagInput(QLineEdit):
