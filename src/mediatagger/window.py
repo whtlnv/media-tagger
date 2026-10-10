@@ -30,6 +30,7 @@ class Window(QWidget):
         self.stack.addWidget(self.viewer)
         self._record_state(path)
         if remembered:
+            self.session.open_library(remembered)
             self._show(Grid(remembered))
 
     def resizeEvent(self, event):

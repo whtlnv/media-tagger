@@ -548,3 +548,19 @@ def test_launching_the_window_with_no_path_when_the_remembered_folder_exists_ope
     shown = window.findChild(QStackedWidget).currentWidget()
     assert isinstance(shown, Grid)
     assert shown.folder == folder
+
+
+def test_launching_the_window_with_no_path_into_a_remembered_folders_grid_opens_that_drives_library(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach family")
+    earlier = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(earlier)
+    earlier.close()
+    window = Window(player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    grid = window.findChild(QStackedWidget).currentWidget()
+
+    grid.setCurrentIndex(grid.model().index(0, 0))
+
+    assert "beach family" in shown_status_bar_texts(window)
