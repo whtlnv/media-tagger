@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+NO_THUMBNAIL = object()
+
 
 def cache_file(drive_id, home):
     cache_home = os.environ.get("XDG_CACHE_HOME", home / ".cache")
@@ -14,6 +16,9 @@ class ThumbnailCache:
 
     def store(self, relative_path, size, mtime, thumbnail, duration=None):
         self._entries[relative_path] = (size, mtime, thumbnail)
+
+    def store_failure(self, relative_path, size, mtime):
+        self._entries[relative_path] = (size, mtime, NO_THUMBNAIL)
 
     def lookup(self, relative_path, size, mtime):
         stored_size, stored_mtime, thumbnail = self._entries[relative_path]

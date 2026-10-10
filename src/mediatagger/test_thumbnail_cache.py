@@ -86,6 +86,17 @@ def test_a_stored_video_thumbnail_comes_back_with_its_duration(tmp_path):
     assert cache.lookup_duration("Videos/party.mp4", size=1234, mtime=1700000000.5) == 7.25
 
 
+def test_a_stored_failure_comes_back_as_no_thumbnail_rather_than_a_miss_while_the_file_is_unchanged(tmp_path):
+    from mediatagger.thumbnail_cache import NO_THUMBNAIL, ThumbnailCache
+
+    cache = ThumbnailCache(tmp_path / "thumbs.db")
+
+    cache.store_failure("Photos/broken.jpg", size=1234, mtime=1700000000.5)
+    found = cache.lookup("Photos/broken.jpg", size=1234, mtime=1700000000.5)
+
+    assert (found is NO_THUMBNAIL, found is None) == (True, False)
+
+
 def solid_thumbnail(color):
     from PySide6.QtGui import QColor, QImage
 
