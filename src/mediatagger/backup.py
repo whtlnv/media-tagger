@@ -19,13 +19,17 @@ def back_up(library, backup_root=None, clock=None):
     previous_backups = sorted(backup_dir.glob("tags-*.db"))
     new_backup = backup_dir / f"tags-{clock():%Y%m%dT%H%M%SZ}.db"
     _copy_database(library._tags_db, new_backup)
-    if previous_backups and previous_backups[-1].read_bytes() == new_backup.read_bytes():
+    if _duplicates_latest(new_backup, previous_backups):
         new_backup.unlink()
     for old_backup in sorted(backup_dir.glob("tags-*.db"))[:-BACKUPS_KEPT_PER_DRIVE]:
         old_backup.unlink()
     drive_root = library._tags_db.parent.parent
     drive = {"name": drive_root.name, "drive_id": library.drive_id}
     (backup_dir / "drive.json").write_text(json.dumps(drive))
+
+
+def _duplicates_latest(new_backup, previous_backups):
+    return bool(previous_backups) and previous_backups[-1].read_bytes() == new_backup.read_bytes()
 
 
 def _copy_database(source, destination):
