@@ -111,8 +111,16 @@ class Library:
         return names
 
     def tag_counts(self, folder):
-        counts = {path: len(self.tags(path)) for path in folder.iterdir()}
-        return {path: count for path, count in counts.items() if count}
+        root = self._tags_db.parent.parent
+        connection = sqlite3.connect(self._tags_db)
+        rows = connection.execute(
+            "SELECT items.rel_path, COUNT(*) FROM item_tags"
+            " JOIN items ON items.id = item_tags.item_id"
+            " GROUP BY items.rel_path"
+        )
+        counts = {root / rel_path: count for rel_path, count in rows}
+        connection.close()
+        return {path: count for path, count in counts.items() if path.parent == folder}
 
     def tags(self, path):
         if self.schema_version < 2:

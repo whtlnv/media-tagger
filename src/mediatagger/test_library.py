@@ -413,3 +413,25 @@ def test_a_folders_tag_counts_leave_out_tagged_items_that_live_in_other_folders_
     counts = library.tag_counts(folder)
 
     assert counts == {}
+
+
+def test_asking_the_library_for_the_tag_counts_of_a_folder_of_5000_items_runs_one_sql_query(tmp_path, monkeypatch):
+    library = Library.create(tmp_path)
+    folder = tmp_path / "holiday"
+    folder.mkdir()
+    for number in range(5000):
+        (folder / f"photo{number:04}.jpg").touch()
+    library.enter(folder / "photo0000.jpg", "beach")
+    statements = []
+    connect = sqlite3.connect
+
+    def traced_connect(*args, **kwargs):
+        connection = connect(*args, **kwargs)
+        connection.set_trace_callback(statements.append)
+        return connection
+
+    monkeypatch.setattr(sqlite3, "connect", traced_connect)
+
+    library.tag_counts(folder)
+
+    assert len(statements) == 1
