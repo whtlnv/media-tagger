@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 02:54 · `src/mediatagger/test_grid.py::test_a_grid_with_no_library_shows_no_tag_badges`
+- Behavior: A grid with no library (viewing only) shows no tag badges
+- Predicted: pass — `Grid` already falls back to `{}` tag counts when `library` is None (from the `🏷3` cycle)
+- Actual: pass
+- Type: passed unexpectedly
+- Resolution: Already implemented by the `🏷3` cycle; the test isn't vacuous (a tagged library exists on disk for the same folder, and the `🏷3` test shows the identical setup with `library=` draws a badge), so it's kept as a characterization pin that viewing-only mode never reads tags — no rewrite can make it fail without changing the behavior.
+
 ## 2026-10-10 02:50 · `src/mediatagger/test_grid.py::test_a_tile_for_an_untagged_item_shows_no_tag_badge`
 - Behavior: A tile for an untagged item shows no tag badge
 - Predicted: pass — `Library.tag_counts` inner-joins `item_tags`, so untagged items are absent and the delegate draws no badge

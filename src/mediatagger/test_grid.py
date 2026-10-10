@@ -120,3 +120,13 @@ def test_a_tile_for_an_untagged_item_shows_no_tag_badge(qtbot, tmp_path):
     qtbot.addWidget(grid)
 
     assert not any(TAG_BADGE in text for text in painted_texts(grid, 1))
+
+
+def test_a_grid_with_no_library_shows_no_tag_badges(qtbot, tmp_path):
+    library = Library.create(tmp_path)
+    touch(tmp_path, "beach.jpg")
+    library.enter(tmp_path / "beach.jpg", "beach family summer")
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+
+    assert not any(TAG_BADGE in text for text in painted_texts(grid, 0))
