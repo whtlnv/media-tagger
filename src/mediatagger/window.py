@@ -36,9 +36,13 @@ class Window(QWidget):
             old.deleteLater()
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
+        self._mirror_viewer_status()
+
+    def _mirror_viewer_status(self):
         self.status_bar.read_only_status.setVisible(self.viewer.session.read_only)
-        self.status_bar.background_status.setText(self.viewer.status_bar.background_status.text())
-        self.status_bar.background_status.setVisible(self.viewer.status_bar.background_status.isVisibleTo(self.viewer.status_bar))
+        viewer_background_status = self.viewer.status_bar.background_status
+        self.status_bar.background_status.setText(viewer_background_status.text())
+        self.status_bar.background_status.setVisible(viewer_background_status.isVisibleTo(self.viewer.status_bar))
 
     def _show_tags_of(self, index):
         library = self.viewer.session.library
