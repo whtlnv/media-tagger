@@ -2,7 +2,7 @@ import time
 
 from PySide6.QtCore import QRect, Qt
 from PySide6.QtGui import QImage, QPainter
-from PySide6.QtWidgets import QStyleOptionViewItem
+from PySide6.QtWidgets import QStyle, QStyleOptionViewItem
 
 from mediatagger.folder import folder_entries
 from mediatagger.grid import FOLDER_GLYPH, IMAGE_GLYPH, TAG_BADGE, VIDEO_BADGE, VIDEO_GLYPH, Grid
@@ -245,3 +245,25 @@ def test_after_a_first_grid_has_been_shown_opening_and_showing_the_grid_of_a_fol
     qtbot.addWidget(grid)
 
     assert (elapsed < 0.150, grid.model().rowCount()) == (True, 5000)
+
+
+def painted_tile(grid, row, selected):
+    image = QImage(200, 200, QImage.Format.Format_ARGB32)
+    image.fill(0)
+    painter = QPainter(image)
+    option = QStyleOptionViewItem()
+    option.rect = QRect(0, 0, 200, 200)
+    if selected:
+        option.state |= QStyle.StateFlag.State_Selected
+    grid.itemDelegate().paint(painter, option, grid.model().index(row, 0))
+    painter.end()
+    return image
+
+
+def test_the_tile_under_the_grid_cursor_is_painted_highlighted_so_the_cursor_can_be_seen(qtbot, tmp_path):
+    touch(tmp_path, "a.jpg")
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+
+    corner = (10, 10)
+    assert painted_tile(grid, 0, selected=True).pixelColor(*corner) != painted_tile(grid, 0, selected=False).pixelColor(*corner)

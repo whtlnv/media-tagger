@@ -3,7 +3,7 @@ from enum import Enum
 from pathlib import Path
 
 from PySide6.QtCore import QAbstractListModel, QModelIndex, QSize, Qt, Signal
-from PySide6.QtWidgets import QListView, QStyledItemDelegate
+from PySide6.QtWidgets import QListView, QStyle, QStyledItemDelegate
 
 from mediatagger.folder import is_video_name, subfolder_and_media_names
 
@@ -78,6 +78,8 @@ class _TileDelegate(QStyledItemDelegate):
 
     def paint(self, painter, option, index):
         tile = index.data(TILE_ROLE)
+        if option.state & QStyle.StateFlag.State_Selected:
+            painter.fillRect(option.rect.adjusted(2, 2, -2, -2), option.palette.highlight())  # the grid cursor
         painter.drawText(option.rect, Qt.AlignmentFlag.AlignCenter, tile.kind.value)
         name = painter.fontMetrics().elidedText(tile.name, Qt.TextElideMode.ElideRight, option.rect.width())
         painter.drawText(option.rect, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignHCenter, name)
