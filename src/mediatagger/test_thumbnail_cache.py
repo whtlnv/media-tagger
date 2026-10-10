@@ -76,6 +76,16 @@ def test_thumbnails_stored_for_two_different_files_are_each_returned_for_their_o
     assert (beach.pixelColor(200, 100), forest.pixelColor(200, 100)) == (QColor("red"), QColor("blue"))
 
 
+def test_a_stored_video_thumbnail_comes_back_with_its_duration(tmp_path):
+    from mediatagger.thumbnail_cache import ThumbnailCache
+
+    cache = ThumbnailCache(tmp_path / "thumbs.db")
+
+    cache.store("Videos/party.mp4", size=1234, mtime=1700000000.5, thumbnail=solid_thumbnail("red"), duration=7.25)
+
+    assert cache.lookup_duration("Videos/party.mp4", size=1234, mtime=1700000000.5) == 7.25
+
+
 def solid_thumbnail(color):
     from PySide6.QtGui import QColor, QImage
 
