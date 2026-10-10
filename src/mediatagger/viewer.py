@@ -42,6 +42,7 @@ BACKING_UP_TEXT = "⟳ Backing up database…"
 BACKED_UP_TEXT = "✓ Backed up"
 BACKUP_FAILED_TEXT = "✗ Backup failed — {}"
 RESTORED_BACKUP_TEXT = "✓ Restored backup from {:%Y-%m-%d %H:%M}"
+RESTORE_FAILED_TEXT = "✗ Restore failed: {}"
 _CANT_SAVE_MESSAGE_MS = 3000
 _BACKED_UP_MESSAGE_MS = 3000
 
@@ -470,7 +471,12 @@ class Viewer(QWidget):
         taken_at = backup.taken_at.astimezone()
         if not self.ask_to_restore_library(RESTORE_LIBRARY_QUESTION.format(drive.name, taken_at)):
             return False
-        restore(drive, backup.path, self.backup_clock)
+        try:
+            restore(drive, backup.path, self.backup_clock)
+        except sqlite3.DatabaseError as error:
+            self.backup_status.setText(RESTORE_FAILED_TEXT.format(error))
+            self.backup_status.show()
+            return False
         self.library = Library.open(drive)
         self.backup_status.setText(RESTORED_BACKUP_TEXT.format(taken_at))
         self.backup_status.show()

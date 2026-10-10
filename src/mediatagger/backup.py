@@ -74,9 +74,14 @@ def newest_backup(backup_root, drive_name):
 
 def restore(drive, backup, clock):
     tags_db = tags_db_path(drive)
+    damaged = tags_db.parent / f"tags.db.damaged-{clock():{TIMESTAMP_FORMAT}}"
     if tags_db.exists():
-        tags_db.rename(tags_db.parent / f"tags.db.damaged-{clock():{TIMESTAMP_FORMAT}}")
-    _copy_database(backup, tags_db)
+        tags_db.rename(damaged)
+    try:
+        _copy_database(backup, tags_db)
+    except sqlite3.DatabaseError:
+        damaged.rename(tags_db)
+        raise
 
 
 def _copy_database(source, destination):
