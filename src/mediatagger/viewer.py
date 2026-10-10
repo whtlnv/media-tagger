@@ -130,7 +130,7 @@ class Viewer(QWidget):
         collect_garbage_on_the_gui_thread()
         self.is_mount_point = is_mount_point
         self.app_location = app_location
-        self.backup_root = backup_root
+        self.backup_root = backup_root or default_backup_root()
         self.backup_clock = backup_clock
         self.ask_to_create_library = ask_to_create_library or self._ask_to_create_library
         self.ask_to_restore_library = ask_to_restore_library
@@ -460,7 +460,7 @@ class Viewer(QWidget):
         return drive == Path("/") or drive in self.app_location.parents
 
     def _offer_to_restore_library(self, drive):
-        backup = newest_backup(self.backup_root or default_backup_root(), drive.name)
+        backup = newest_backup(self.backup_root, drive.name)
         if backup:
             self.ask_to_restore_library(RESTORE_LIBRARY_QUESTION.format(drive.name, backup.taken_at))
 
