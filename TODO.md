@@ -28,7 +28,7 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 - [x] In the grid, `+` makes the tiles bigger than their starting size of about 200 px
 - [x] In the grid, `-` makes the tiles smaller than their starting size
 - [x] In the grid, pressing `+` repeatedly stops growing the tiles at about 400 px
-- [ ] In the grid, pressing `-` repeatedly stops shrinking the tiles at about 100 px
+- [x] In the grid, pressing `-` repeatedly stops shrinking the tiles at about 100 px
 - [ ] Repainting the grid after its files have been deleted from disk still paints their tiles, without reading the files
 - [ ] Opening the grid of a folder of 5,000 files finishes within a time budget, like the 5,000-tag test
 - [ ] The window opened on a folder path shows the slideshow of that folder at its first item

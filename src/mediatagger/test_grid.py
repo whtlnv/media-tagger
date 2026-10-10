@@ -201,3 +201,12 @@ def test_in_the_grid_pressing_plus_repeatedly_stops_growing_the_tiles_at_about_4
         qtbot.keyClick(grid, Qt.Key.Key_Plus)
 
     assert abs(tile_width(grid) - 400) <= 20
+
+
+def test_in_the_grid_pressing_minus_repeatedly_stops_shrinking_the_tiles_at_about_100_px(qtbot, tmp_path):
+    grid = shown_two_tile_grid(qtbot, tmp_path, width=1000)
+
+    for _ in range(10):
+        qtbot.keyClick(grid, Qt.Key.Key_Minus)
+
+    assert abs(tile_width(grid) - 100) <= 20
