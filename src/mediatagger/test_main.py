@@ -376,3 +376,25 @@ def test_running_the_mediatagger_command_with_no_path_after_a_folder_was_viewed_
     result = run_python_offscreen(REPORT_SHOWN_GRID_WITH_NO_PATH_ON_A_DRIVE_SCRIPT, str(drive))
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == f"grids={[str(folder)]} cursor=['IMG_1.png']"
+
+PRESS_ESC_TWICE_SCRIPT = (
+    "import sys\n"
+    "from PySide6.QtCore import Qt, QTimer\n"
+    "from PySide6.QtTest import QTest\n"
+    "from PySide6.QtWidgets import QApplication\n"
+    "app = QApplication([])\n"
+    "def press_esc_twice():\n"
+    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    QTest.keyClick(window, Qt.Key.Key_Escape)\n"
+    "    QTest.keyClick(window, Qt.Key.Key_Escape)\n"
+    "QTimer.singleShot(1000, press_esc_twice)\n"
+    "sys.argv = ['mediatagger', sys.argv[1]]\n"
+) + RUN_MEDIATAGGER_COMMAND + "print('exited', flush=True)\n"
+
+
+def test_pressing_esc_in_the_slideshow_and_then_esc_in_the_grid_of_the_mediatagger_command_makes_it_exit_cleanly(tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    make_image(tmp_path / "IMG_2.png", "blue")
+    result = run_python_offscreen(PRESS_ESC_TWICE_SCRIPT, str(tmp_path))
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "exited"

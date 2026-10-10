@@ -81,4 +81,4 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 - [x] Running the shipped `mediatagger <folder>` command shows one window whose `Esc` switches from the slideshow to that folder's grid
   - predicted-contradiction: `src/mediatagger/test_main.py::test_pressing_esc_in_the_mediatagger_command_makes_it_exit_cleanly` — asserts: pressing `Esc` in the slideshow of `mediatagger <folder>` makes the command exit cleanly — retired-by: "`Esc` switches from the slideshow to that folder's grid"
 - [x] Running the shipped `mediatagger` command with no path, after a folder was viewed, opens that folder's grid
-- [ ] In the shipped `mediatagger <folder>` command, `Esc` in the slideshow and then `Esc` in the grid makes it exit cleanly
+- [x] In the shipped `mediatagger <folder>` command, `Esc` in the slideshow and then `Esc` in the grid makes it exit cleanly

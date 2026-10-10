@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 11:30 · `src/mediatagger/test_main.py::test_pressing_esc_in_the_slideshow_and_then_esc_in_the_grid_of_the_mediatagger_command_makes_it_exit_cleanly`
+- Behavior: In the shipped `mediatagger <folder>` command, `Esc` in the slideshow and then `Esc` in the grid makes it exit cleanly
+- Predicted: passes on first run, because `Window._show` already connects `grid.escaped` to `close` and the window forwards keys to the shown page. The right-reason alternative would have been `subprocess.TimeoutExpired`
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: not vacuous. The same script with only the first `Esc` hits `TimeoutExpired`, so the exit depends on the grid's `Esc`. The behavior was already delivered by 107812e, so the test was kept as an end-to-end pin of the shipped command rather than rewritten into an artificial failure
+
 ## 2026-10-10 11:24 · `src/mediatagger/test_main.py::test_running_the_mediatagger_command_with_no_path_after_a_folder_was_viewed_opens_that_folders_grid`
 - Behavior: Running the shipped `mediatagger` command with no path, after a folder was viewed, opens that folder's grid
 - Predicted: passes on first run, since 107812e made `main()` build `Window(None)`, which already reads `state.json` from the inherited `XDG_CONFIG_HOME`. The right-reason alternative would have been an AssertionError with `grids=[]`
