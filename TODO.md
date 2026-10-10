@@ -77,7 +77,7 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 - [x] Launching the window with no path into a remembered folder's grid puts the cursor on its first entry and shows tag badges from that drive's library
 - [x] Entering a subfolder from the window's grid shows tag badges for its tagged items
 - [x] Launching the window with no path and a `state.json` that has no `folder` entry shows the launch screen
-- [ ] Launching the window with no path and a `state.json` it has no permission to read shows the launch screen
+- [x] Launching the window with no path and a `state.json` it has no permission to read shows the launch screen
 - [ ] Running the shipped `mediatagger <folder>` command shows one window whose `Esc` switches from the slideshow to that folder's grid
   - predicted-contradiction: `src/mediatagger/test_main.py::test_pressing_esc_in_the_mediatagger_command_makes_it_exit_cleanly` — asserts: pressing `Esc` in the slideshow of `mediatagger <folder>` makes the command exit cleanly — retired-by: "`Esc` switches from the slideshow to that folder's grid"
 - [ ] Running the shipped `mediatagger` command with no path, after a folder was viewed, opens that folder's grid

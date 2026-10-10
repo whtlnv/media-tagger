@@ -14,7 +14,7 @@ def remembered_folder(state):
         return None
     try:
         return Path(json.loads(state.read_text())["folder"])
-    except (json.JSONDecodeError, KeyError):
+    except (json.JSONDecodeError, KeyError, PermissionError):
         return None
 
 
