@@ -153,3 +153,18 @@ def test_a_folder_holding_10_jpg_and_2_jpg_yields_the_thumbnail_of_2_jpg_first_i
     assert thumbnail.size() == QSize(400, 200)
     centre = thumbnail.pixelColor(thumbnail.width() // 2, thumbnail.height() // 2)
     assert centre.green() > 100 and centre.red() < 60
+
+
+@pytest.mark.skipif(shutil.which("ffmpeg") is None, reason="ffmpeg is not installed")
+def test_a_folder_holding_only_a_gif_video_and_a_subfolder_with_an_image_yields_no_thumbnail(tmp_path):
+    folder = tmp_path / "album"
+    folder.mkdir()
+    subprocess.run(
+        ["ffmpeg", "-loglevel", "error",
+         "-f", "lavfi", "-i", "color=red:size=64x48:rate=10:duration=1", str(folder / "clip.gif")],
+        check=True,
+    )
+    (folder / "sub").mkdir()
+    make_image(folder / "sub" / "photo.jpg", "green")
+
+    assert folder_thumbnail(folder) is None

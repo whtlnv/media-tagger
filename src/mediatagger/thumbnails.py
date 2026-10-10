@@ -4,7 +4,7 @@ import subprocess
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QImage, QImageReader
 
-from mediatagger.folder import media_files
+from mediatagger.folder import is_video, media_files
 
 
 def image_thumbnail(path):
@@ -46,4 +46,7 @@ def video_thumbnail(path, timeout=None):
 
 
 def folder_thumbnail(folder):
-    return image_thumbnail(media_files(folder)[0])
+    images = [path for path in media_files(folder) if not is_video(path)]
+    if not images:
+        return None
+    return image_thumbnail(images[0])
