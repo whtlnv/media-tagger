@@ -47,7 +47,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] The cache is never written when its location falls on the drive being viewed
 
 ### Order of work
-- [ ] With more than three thumbnails pending, exactly three generate at once
+- [x] With more than three thumbnails pending, exactly three generate at once
 - [ ] While workers are busy, the most recently requested thumbnail is generated before earlier pending ones
 - [ ] Re-requesting a thumbnail that is already pending moves it ahead of the others
 - [ ] Once the requested thumbnails are done, the rest of the folder's thumbnails are generated without being requested
