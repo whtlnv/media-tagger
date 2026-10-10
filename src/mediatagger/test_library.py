@@ -394,3 +394,22 @@ def test_asking_the_library_for_a_folders_tag_counts_gives_an_untagged_item_no_c
     counts = library.tag_counts(folder)
 
     assert photo not in counts
+
+
+def test_a_folders_tag_counts_leave_out_tagged_items_that_live_in_other_folders_including_its_subfolders(tmp_path):
+    library = Library.create(tmp_path)
+    folder = tmp_path / "holiday"
+    subfolder = folder / "day1"
+    subfolder.mkdir(parents=True)
+    sibling = tmp_path / "holiday2"
+    sibling.mkdir()
+    nested_photo = subfolder / "beach.jpg"
+    nested_photo.touch()
+    sibling_photo = sibling / "dunes.jpg"
+    sibling_photo.touch()
+    library.enter(nested_photo, "beach")
+    library.enter(sibling_photo, "dunes")
+
+    counts = library.tag_counts(folder)
+
+    assert counts == {}

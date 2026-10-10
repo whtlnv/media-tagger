@@ -11,7 +11,7 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 - [x] A folder listing leaves out folders whose name starts with `.` (`.mediatagger`, `.Trashes`, `.Spotlight-V100`, `.fseventsd`, `.hidden`) while listing a plain folder beside them
 - [x] Asking the library for a folder's tag counts gives an item with two own tags a count of 2
 - [x] Asking the library for a folder's tag counts gives an untagged item no count
-- [ ] A folder's tag counts leave out tagged items that live in other folders (including its subfolders)
+- [x] A folder's tag counts leave out tagged items that live in other folders (including its subfolders)
 - [ ] Asking the library for the tag counts of a folder of 5,000 items runs one SQL query
 - [ ] The grid of a folder shows one tile per listed entry, subfolders first, in listing order
 - [ ] The grid opened on a folder at a given file has its cursor on that file

@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 01:46 · `src/mediatagger/test_library.py::test_a_folders_tag_counts_leave_out_tagged_items_that_live_in_other_folders_including_its_subfolders`
+- Behavior: A folder's tag counts leave out tagged items that live in other folders (including its subfolders)
+- Predicted: pass — `tag_counts` iterates `folder.iterdir()`, so only direct children are ever counted
+- Actual: pass
+- Type: passed unexpectedly (by Red's contract; prediction itself matched)
+- Resolution: The behavior already exists as a side effect of iterating direct children; kept the test as a guard for the next item (single SQL query), where a prefix `LIKE` match would pull in nested items and the `holiday2` sibling — not rewritten, since forcing a failure would mean inventing behavior.
+
 ## 2026-10-10 01:20 · `src/mediatagger/test_folder.py::test_a_folder_listing_leaves_out_non_media_files`
 - Behavior: A folder listing leaves out non-media files
 - Predicted: pass (no right-reason failure possible) — `folder_entries` already appends `media_files`, which filters through `_is_media`
