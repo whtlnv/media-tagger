@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 15:54 · `src/mediatagger/test_thumbnail_cache.py::test_a_stored_failure_is_a_miss_once_the_files_mtime_changes`
+- Behavior: A stored failure is a miss once the file's mtime changes
+- Predicted: test passes (predicted before running, after reading the code). The TODO item assumed this behavior was missing, but it wasn't
+- Actual: passed
+- Type: passed unexpectedly (relative to the TODO item's premise)
+- Resolution: `lookup` compares size/mtime for every stored entry before returning it, and `store_failure` (previous cycle) stores the same tuple shape, so mtime invalidation already covers failures. No failing version exists without testing a different behavior. The test is kept as a regression pin, and `/green` has nothing to implement
+
 ## 2026-10-10 11:30 · `src/mediatagger/test_main.py::test_pressing_esc_in_the_slideshow_and_then_esc_in_the_grid_of_the_mediatagger_command_makes_it_exit_cleanly`
 - Behavior: In the shipped `mediatagger <folder>` command, `Esc` in the slideshow and then `Esc` in the grid makes it exit cleanly
 - Predicted: passes on first run, because `Window._show` already connects `grid.escaped` to `close` and the window forwards keys to the shown page. The right-reason alternative would have been `subprocess.TimeoutExpired`

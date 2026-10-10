@@ -97,6 +97,16 @@ def test_a_stored_failure_comes_back_as_no_thumbnail_rather_than_a_miss_while_th
     assert (found is NO_THUMBNAIL, found is None) == (True, False)
 
 
+def test_a_stored_failure_is_a_miss_once_the_files_mtime_changes(tmp_path):
+    from mediatagger.thumbnail_cache import ThumbnailCache
+
+    cache = ThumbnailCache(tmp_path / "thumbs.db")
+
+    cache.store_failure("Photos/broken.jpg", size=1234, mtime=1700000000.5)
+
+    assert cache.lookup("Photos/broken.jpg", size=1234, mtime=1700000999.0) is None
+
+
 def solid_thumbnail(color):
     from PySide6.QtGui import QColor, QImage
 
