@@ -15,8 +15,9 @@ class Window(QWidget):
     """The app's one window: the folder grid and the viewer in a stack, over which lies the one status bar they share,
     reporting the one drive session they share."""
 
-    def __init__(self, path=None, player_options=None, folder_picker=None, **session_options):
+    def __init__(self, path=None, player_options=None, folder_picker=None, home=None, **session_options):
         super().__init__()
+        self._home = home or Path.home()
         collect_garbage_on_the_gui_thread()
         self.stack = QStackedWidget(self)
         layout = QVBoxLayout(self)
@@ -61,7 +62,7 @@ class Window(QWidget):
         self._record_state(grid.folder)
 
     def _record_state(self, folder):
-        config_home = os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")
+        config_home = os.environ.get("XDG_CONFIG_HOME", self._home / ".config")
         state_file = Path(config_home) / "mediatagger" / "state.json"
         state_file.parent.mkdir(parents=True, exist_ok=True)
         state_file.write_text(json.dumps({"folder": str(folder), "mount_point": str(self.session.drive)}))

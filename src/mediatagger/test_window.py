@@ -497,3 +497,16 @@ def test_showing_a_folders_slideshow_records_that_folder_in_the_state_file(qtbot
 
     state = json.loads((config_home / "mediatagger" / "state.json").read_text())
     assert state["folder"] == str(folder)
+
+
+def test_with_the_config_home_unset_the_state_is_recorded_under_the_dot_config_folder_of_the_injected_home(qtbot, tmp_path, monkeypatch):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    home = tmp_path / "home"
+    monkeypatch.delenv("XDG_CONFIG_HOME")
+    monkeypatch.setenv("HOME", str(tmp_path / "environment-home"))
+
+    window = Window(folder, player_options=SILENT, home=home, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+
+    state = json.loads((home / ".config" / "mediatagger" / "state.json").read_text())
+    assert state["folder"] == str(folder)
