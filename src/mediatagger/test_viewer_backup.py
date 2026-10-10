@@ -162,3 +162,18 @@ def test_when_a_backup_fails_because_the_backup_root_is_not_writable_the_status_
 
     assert BACKUP_FAILED_TEXT.format(os.strerror(errno.EACCES)) in status_bar_texts(viewer)
     assert viewer.slideshow.current == folder / "IMG_1.png"
+
+
+def test_when_a_backup_fails_tagging_the_current_item_still_saves_its_tags(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    backup_root = tmp_path / "backups"
+    drives_backup_folder = backup_root / Library.open(drive).drive_id
+    drives_backup_folder.mkdir(parents=True)
+    drives_backup_folder.chmod(0o500)
+    try:
+        viewer = viewer_backing_up_into(qtbot, backup_root, folder, drive)
+        show_and_tag(qtbot, viewer, "sunset")
+    finally:
+        drives_backup_folder.chmod(0o700)
+
+    assert Library.open(drive).tags(folder / "IMG_1.png") == ["sunset"]

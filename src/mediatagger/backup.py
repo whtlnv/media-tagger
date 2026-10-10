@@ -39,7 +39,10 @@ def back_up(library, backup_root=None, clock=None):
         return BackupOutcome(failure=error.strerror)
     new_backup = backup_dir / f"{clock():{BACKUP_NAME_FORMAT}}.db"
     previous_backups = sorted(backup for backup in backup_dir.glob(BACKUP_GLOB) if backup != new_backup)
-    _copy_database(library._tags_db, new_backup)
+    try:
+        _copy_database(library._tags_db, new_backup)
+    except sqlite3.OperationalError as error:
+        return BackupOutcome(failure=str(error))
     if _duplicates_latest(new_backup, previous_backups):
         new_backup.unlink()
     for old_backup in sorted(backup_dir.glob(BACKUP_GLOB))[:-BACKUPS_KEPT_PER_DRIVE]:
