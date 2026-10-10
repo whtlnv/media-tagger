@@ -14,8 +14,9 @@ cp -X "$REPO/spikes/drive/run-app.sh" "$OUT/"
 # Precompile app and packages so the Pi never writes bytecode. unchecked-hash pycs are never revalidated (exFAT timestamps are coarse), which is safe because every push deletes app/ and recompiles it.
 # Drop bytecode written by older launchers, then rebuild it all in unchecked-hash form.
 find "$OUT/lib-linux-aarch64-cp313" -name __pycache__ -type d -prune -exec rm -rf {} +
-python3.13 -m compileall -q -x "deploy_lib" --invalidation-mode unchecked-hash "$OUT/app" "$OUT/lib-linux-aarch64-cp313" || echo "warning: precompile failed"
+python3.13 -m compileall -q -x "deploy_lib" --invalidation-mode unchecked-hash "$OUT/app" "$OUT/lib-linux-aarch64-cp313" || python3.13 -m compileall -q -x "deploy_lib" --invalidation-mode unchecked-hash "$OUT/app" "$OUT/lib-linux-aarch64-cp313" || echo "warning: precompile failed twice"
 git -C "$REPO" log -1 --format='%h %s' > "$OUT/app/VERSION"
-find "$DRIVE" -name '._*' -delete 2>/dev/null || true
+find "$DRIVE" -name '._*' -not -path '*/.Spotlight-V100/*' -delete 2>/dev/null || true
+touch "$OUT/app/VERSION"; rm -f "$OUT/app/._VERSION"
 sync
 echo "App copied: $(cat "$OUT/app/VERSION")"
