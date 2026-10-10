@@ -13,6 +13,13 @@ def cache_file(drive_id, home):
     return Path(cache_home) / "mediatagger" / drive_id / "thumbs.db"
 
 
+def png_bytes(image):
+    buffer = QBuffer()
+    buffer.open(QBuffer.OpenModeFlag.WriteOnly)
+    image.save(buffer, "PNG")
+    return bytes(buffer.data())
+
+
 class ThumbnailCache:
     def __init__(self, path):
         self._db = sqlite3.connect(path)
@@ -21,10 +28,7 @@ class ThumbnailCache:
         )
 
     def store(self, relative_path, size, mtime, thumbnail, duration=None):
-        buffer = QBuffer()
-        buffer.open(QBuffer.OpenModeFlag.WriteOnly)
-        thumbnail.save(buffer, "PNG")
-        self._put(relative_path, size, mtime, bytes(buffer.data()))
+        self._put(relative_path, size, mtime, png_bytes(thumbnail))
 
     def store_failure(self, relative_path, size, mtime):
         self._put(relative_path, size, mtime, None)
