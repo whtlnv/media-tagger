@@ -485,3 +485,15 @@ def test_every_test_runs_with_the_config_home_pointing_at_a_throwaway_folder_out
     config_home = Path(os.environ["XDG_CONFIG_HOME"])
 
     assert (config_home.is_dir(), config_home.is_relative_to(Path.home())) == (True, False)
+
+
+def test_showing_a_folders_slideshow_records_that_folder_in_the_state_file(qtbot, tmp_path, monkeypatch):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    config_home = tmp_path / "config"
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(config_home))
+
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+
+    state = json.loads((config_home / "mediatagger" / "state.json").read_text())
+    assert state["folder"] == str(folder)
