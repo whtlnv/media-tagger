@@ -435,19 +435,24 @@ class Viewer(QWidget):
                 self._show_library_status(DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT.format(drive.name), read_only=False)
                 return
             self.library = Library.create(drive)
-        else:
-            try:
-                self.library = Library.open(drive)
-            except (sqlite3.DatabaseError, OSError):
-                if read_only:
-                    self._show_library_status(CANT_RESTORE_TO_READ_ONLY_DRIVE_TEXT.format(drive.name), read_only=True)
-                    return
-                if not self._offer_to_restore_library(drive):
-                    self._show_library_status(LIBRARY_CANT_BE_OPENED_TEXT.format(drive.name), read_only=False)
-                    return
-            else:
-                self._back_up_library()
+        elif not self._open_existing_library(drive, read_only):
+            return
         self._show_library_status(LIBRARY_TEXT.format(drive.name), read_only)
+
+    def _open_existing_library(self, drive, read_only):
+        """Whether the drive's tags.db ended up open, as it was or restored from a backup; if not, says why."""
+        try:
+            self.library = Library.open(drive)
+        except (sqlite3.DatabaseError, OSError):
+            if read_only:
+                self._show_library_status(CANT_RESTORE_TO_READ_ONLY_DRIVE_TEXT.format(drive.name), read_only=True)
+                return False
+            if not self._offer_to_restore_library(drive):
+                self._show_library_status(LIBRARY_CANT_BE_OPENED_TEXT.format(drive.name), read_only=False)
+                return False
+            return True
+        self._back_up_library()
+        return True
 
     def _back_up_library(self):
         self._show_background_status(BACKING_UP_TEXT)
