@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 07:44 · `src/mediatagger/test_window.py::test_going_from_the_windows_viewer_to_the_grid_and_back_on_the_same_drive_does_not_ask_again_to_create_its_library`
+- Behavior: Going from the viewer to the grid and back on the same drive does not ask again to create its library
+- Predicted: passes — the window's one shared DriveSession already keeps `declined_drives`, so re-opening the viewer on the same drive skips the question
+- Actual: passes (1 passed); `Viewer.open` does reach `session.open_library`, so the test is not vacuous — the behavior already shipped with the shared-session refactor (46ca4f6) plus the existing declined-drive memory
+- Type: passed unexpectedly
+- Resolution: no failing slice exists for this item; kept the test as a regression pin rather than contort it into a failure — the TODO item is effectively already done.
+
 ## 2026-10-10 06:59 · `src/mediatagger/test_window.py::test_moving_the_windows_grid_cursor_onto_a_tagged_item_shows_its_own_tags_space_separated_in_the_status_bar`
 - Behavior: Moving the grid cursor onto a tagged item shows its own tags, space-separated, in the status bar
 - Predicted: AssertionError — the visible status bar labels hold only the library status (e.g. `MEDIATAGGER`), no `beach family`

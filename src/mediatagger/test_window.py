@@ -5,14 +5,17 @@ from datetime import datetime, timezone
 from PySide6.QtCore import QCoreApplication, QEvent, Qt
 from PySide6.QtWidgets import QLabel, QStackedWidget
 
-from mediatagger.drive_session import BACKUP_FAILED_TEXT
+from mediatagger.drive_session import BACKUP_FAILED_TEXT, CREATE_LIBRARY_QUESTION
 from mediatagger.grid import TILE_ROLE, Grid
 from mediatagger.library import Library
 from mediatagger.status_bar import READ_ONLY_STATUS_TEXT, StatusBar
 
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import SILENT, make_image, make_surface_ready, show_exposed, wait_until_loaded
-from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, made_read_only, visible_tag_prompts
+from mediatagger.test_viewer_library import (
+    decline_noting_the_question_in, drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image, enter_in_tag_prompt,
+    made_read_only, visible_tag_prompts,
+)
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger.viewer import Viewer
 from mediatagger.window import Window
@@ -356,3 +359,18 @@ def test_going_from_the_windows_viewer_to_the_grid_and_back_on_the_same_drive_ma
 
     assert isinstance(stack.currentWidget(), Viewer)
     assert sorted((backup_root / Library.open(drive).drive_id).glob("tags-*.db")) == backups_before
+
+
+def test_going_from_the_windows_viewer_to_the_grid_and_back_on_the_same_drive_does_not_ask_again_to_create_its_library(qtbot, tmp_path):
+    drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
+    asked = []
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=decline_noting_the_question_in(asked))
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    stack = window.findChild(QStackedWidget)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+
+    assert isinstance(stack.currentWidget(), Viewer)
+    assert asked == [CREATE_LIBRARY_QUESTION.format(drive.name)]
