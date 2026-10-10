@@ -16,7 +16,7 @@ Phase 6 notes for every cycle: backup logic lives in a new `src/mediatagger/back
 - [x] Backing up a library whose database hasn't changed since that drive's last backup writes no new backup
 - [x] Backing up a library whose tags changed since that drive's last backup writes a new backup
 - [x] Backing up a library tagged `beach`, then entering `sunset` on the same item and backing up again at the same clock second, leaves a backup holding `beach` and `sunset` (the new copy is never deleted as a duplicate of the backup it replaced)
-- [ ] Backing up into a backup root that isn't writable reports a failure with a short reason instead of raising
+- [x] Backing up into a backup root that isn't writable reports a failure with a short reason instead of raising
 - [ ] For a drive name with backups, the newest backup and its date and time are found by matching `drive.json` names
 - [ ] For a drive name with no backups, no backup is found
 - [ ] Restoring a drive from a backup keeps the damaged file as `.mediatagger/tags.db.damaged-<timestamp>` and replaces `tags.db` with the backup, so the library opens with the backed-up tags

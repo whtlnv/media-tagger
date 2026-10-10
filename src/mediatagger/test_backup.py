@@ -132,3 +132,16 @@ def test_backing_up_again_at_the_same_clock_second_after_tagging_leaves_a_backup
 
     assert _backup_names(backup_root, library) == ["tags-20261009T153000Z.db"]
     assert _restored_tags(backup_root / library.drive_id / "tags-20261009T153000Z.db", tmp_path) == ["beach", "sunset"]
+
+
+def test_backing_up_into_a_backup_root_that_is_not_writable_reports_a_failure_with_a_short_reason_instead_of_raising(tmp_path):
+    library, photo = _library_with_photo(tmp_path)
+    backup_root = tmp_path / "backups"
+    backup_root.mkdir()
+    backup_root.chmod(0o500)
+    try:
+        outcome = back_up(library, backup_root=backup_root, clock=_clock_at_october(9))
+    finally:
+        backup_root.chmod(0o700)
+
+    assert outcome.failure == "Permission denied"
