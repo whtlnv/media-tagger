@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 02:37 · `src/mediatagger/test_grid.py::test_a_tile_whose_filename_fits_shows_it_whole_with_no_ellipsis`
+- Behavior: A tile whose filename fits shows it whole, with no ellipsis
+- Predicted: pass — `elidedText` from the prior ellipsis cycle already returns the full string when it fits
+- Actual: pass
+- Type: passed unexpectedly (predicted pass; no red possible)
+- Resolution: Behavior was delivered as a side effect of the truncation cycle; test kept as a non-vacuous guard (fails if the name isn't drawn or is always elided), no production change needed.
+
 ## 2026-10-10 02:26 · `src/mediatagger/test_grid.py::test_an_image_tile_shows_no_play_badge`
 - Behavior: An image tile shows no ▶ badge
 - Predicted: pass on first run — the previous green already guarded the badge with `if is_video(entry)`

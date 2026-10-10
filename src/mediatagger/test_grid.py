@@ -88,3 +88,14 @@ def test_a_tile_whose_filename_is_wider_than_the_tile_shows_it_truncated_with_an
 
     assert name not in texts
     assert any(text.endswith("…") and name.startswith(text[:-1]) for text in texts)
+
+
+def test_a_tile_whose_filename_fits_shows_it_whole_with_no_ellipsis(qtbot, tmp_path):
+    touch(tmp_path, "cat.jpg")
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+
+    texts = painted_texts(grid, 0)
+
+    assert "cat.jpg" in texts
+    assert not any("…" in text for text in texts)
