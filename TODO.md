@@ -35,5 +35,6 @@ Phase 6 notes for every cycle: backup logic lives in a new `src/mediatagger/back
 - [ ] Answering No to the restore question for a garbage `tags.db` shows `Library on <DRIVE> can't be opened — viewing only`
 - [ ] Opening a folder on a drive whose `.mediatagger/` exists without `tags.db`, with backups for a drive of the same name, asks the restore question
 - [ ] Answering No to the restore question for a missing `tags.db` asks the create-library question
+- [ ] Answering Yes to the restore question for a missing `tags.db` (`.mediatagger/` exists) opens the library with the backed-up tags shown for the current item and the status bar showing `✓ Restored backup from <date time>`
 - [ ] Opening a folder on a read-only drive whose `tags.db` is garbage, with backups for a drive of the same name, asks no restore question and the status bar says the backup can't be restored to a read-only drive, viewing only
 - [ ] Running the shipped `mediatagger <folder>` with `XDG_DATA_HOME` pointing at a temp folder, on a drive with a library, leaves a backup of that drive's database under `$XDG_DATA_HOME/mediatagger/backups/<drive_id>/` after the viewer closes
