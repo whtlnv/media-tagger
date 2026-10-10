@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 23:20 · `src/mediatagger/test_viewer_backup.py::test_answering_no_to_the_restore_question_for_a_missing_tags_db_asks_the_create_library_question`
+- Behavior: Answering No to the restore question for a missing `tags.db` asks the create-library question
+- Predicted: passes on first run — `_open_library` already falls through from `_offer_to_restore_library` to `_agrees_to_create_library` on the missing-`tags.db` path (added by the previous cycle's green)
+- Actual: passed (1 passed)
+- Type: passed unexpectedly
+- Resolution: The prior item's green over-delivered this behavior; no honest assertion of the item can fail, so the test is kept as a pin on the restore-then-create question order rather than rewritten.
+
 ## 2026-10-09 23:06 · `src/mediatagger/test_viewer_backup.py::test_answering_no_to_the_restore_question_says_the_library_cant_be_opened_viewing_only`
 - Behavior: Answering No to the restore question for a garbage `tags.db` shows `Library on <DRIVE> can't be opened — viewing only`
 - Predicted: passes on first run — the Yes cycle (1fda9fc) already made `_offer_to_restore_library` return False on decline, which falls through to `LIBRARY_CANT_BE_OPENED_TEXT`
