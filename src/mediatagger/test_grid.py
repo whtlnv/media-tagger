@@ -142,3 +142,18 @@ def test_in_the_grid_right_arrow_moves_the_cursor_to_the_next_tile_and_left_arro
 
     qtbot.keyClick(grid, Qt.Key.Key_Left)
     assert grid.currentIndex().data(Qt.ItemDataRole.DisplayRole) == "a.jpg"
+
+
+def test_in_the_grid_down_arrow_moves_the_cursor_one_row_down(qtbot, tmp_path):
+    touch(tmp_path, *(f"{name}.jpg" for name in "abcdefghij"))
+    grid = Grid(tmp_path, at=tmp_path / "a.jpg")
+    qtbot.addWidget(grid)
+    grid.resize(700, 700)
+    grid.show()
+    qtbot.waitExposed(grid)
+    start = grid.visualRect(grid.currentIndex())
+
+    qtbot.keyClick(grid, Qt.Key.Key_Down)
+
+    below = grid.visualRect(grid.currentIndex())
+    assert (below.x(), below.y() > start.y()) == (start.x(), True)

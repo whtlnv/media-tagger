@@ -1,4 +1,4 @@
-from PySide6.QtCore import QStringListModel, Qt
+from PySide6.QtCore import QSize, QStringListModel, Qt
 from PySide6.QtWidgets import QListView, QStyledItemDelegate
 
 from mediatagger.folder import folder_entries, is_video
@@ -41,6 +41,8 @@ class Grid(QListView):
     def __init__(self, folder, at=None, library=None):
         super().__init__()
         self.setFlow(QListView.Flow.LeftToRight)
+        self.setWrapping(True)
+        self.setGridSize(QSize(128, 128))
         entries = folder_entries(folder)
         names = [entry.name for entry in entries]
         self.setModel(QStringListModel(names, self))
