@@ -19,11 +19,11 @@ class Window(QWidget):
         self._show(Grid(current.parent, at=current))
 
     def _show(self, grid):
-        grid.activated.connect(self._show_viewer_at)
+        grid.activated.connect(self._open_tile)
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
 
-    def _show_viewer_at(self, index):
+    def _open_tile(self, index):
         path = index.data(TILE_ROLE).path
         if path.is_dir():
             grid = Grid(path)
