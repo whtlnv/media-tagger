@@ -38,3 +38,17 @@ def test_a_stored_thumbnail_is_returned_for_a_file_whose_size_and_mtime_are_unch
     found = cache.lookup("Photos/beach.jpg", size=1234, mtime=1700000000.5)
 
     assert (found.size(), found.pixelColor(200, 100)) == (QSize(400, 200), QColor("red"))
+
+
+def test_a_stored_thumbnail_is_not_returned_once_the_files_mtime_changes(tmp_path):
+    from PySide6.QtGui import QColor, QImage
+
+    from mediatagger.thumbnail_cache import ThumbnailCache
+
+    thumbnail = QImage(400, 200, QImage.Format_RGB32)
+    thumbnail.fill(QColor("red"))
+    cache = ThumbnailCache(tmp_path / "thumbs.db")
+
+    cache.store("Photos/beach.jpg", size=1234, mtime=1700000000.5, thumbnail=thumbnail)
+
+    assert cache.lookup("Photos/beach.jpg", size=1234, mtime=1700000999.0) is None

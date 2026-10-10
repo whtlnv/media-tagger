@@ -12,7 +12,10 @@ class ThumbnailCache:
         self._path = path
 
     def store(self, relative_path, size, mtime, thumbnail):
+        self._mtime = mtime
         self._thumbnail = thumbnail
 
     def lookup(self, relative_path, size, mtime):
+        if mtime != self._mtime:
+            return None
         return self._thumbnail

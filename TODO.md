@@ -30,7 +30,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] With `$XDG_CACHE_HOME` set, a drive's cache is `$XDG_CACHE_HOME/mediatagger/<drive_id>/thumbs.db`
 - [x] With `$XDG_CACHE_HOME` unset, a drive's cache is `~/.cache/mediatagger/<drive_id>/thumbs.db` (home injectable)
 - [x] A stored thumbnail is returned for a file whose size and mtime are unchanged
-- [ ] A stored thumbnail is not returned once the file's mtime changes
+- [x] A stored thumbnail is not returned once the file's mtime changes
 - [ ] A stored thumbnail is not returned once the file's size changes
 - [ ] A stored video thumbnail comes back with its duration
 - [ ] A stored failure comes back as "no thumbnail" (not a miss) while the file is unchanged, and as a miss once it changes
