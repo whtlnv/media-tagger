@@ -13,18 +13,18 @@ from mediatagger.mpv_surface import MpvSurface
 from mediatagger.slideshow import Slideshow
 from mediatagger.video import VideoPlayer, new_engine
 
-PLAYER_OPTIONS = {"vo": "libmpv"}
-VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up", Qt.Key.Key_Down: "Down", Qt.Key.Key_Return: "Enter"}
+_PLAYER_OPTIONS = {"vo": "libmpv"}
+_VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up", Qt.Key.Key_Down: "Down", Qt.Key.Key_Return: "Enter"}
 # Explicit colours: the desktop theme's default text colour may be black, which vanishes on a black background.
-LABEL_STYLE = "color: white; background-color: rgba(0, 0, 0, 160); padding: 8px 12px; border-radius: 6px; font-size: 18px;"
-SUGGESTION_POPUP_STYLE = "color: white; background-color: rgb(64, 64, 64);"
-TAG_INPUT_STYLE = "color: white; background-color: rgba(64, 64, 64, 220); border: 1px solid rgb(200, 200, 200); padding: 8px 12px; border-radius: 6px; font-size: 18px;"
+_LABEL_STYLE = "color: white; background-color: rgba(0, 0, 0, 160); padding: 8px 12px; border-radius: 6px; font-size: 18px;"
+_SUGGESTION_POPUP_STYLE = "color: white; background-color: rgb(64, 64, 64);"
+_TAG_INPUT_STYLE = "color: white; background-color: rgba(64, 64, 64, 220); border: 1px solid rgb(200, 200, 200); padding: 8px 12px; border-radius: 6px; font-size: 18px;"
 CORNER_MARGIN = 16
-TAG_PROMPT_WIDTH = 600
-SLIDESHOW_KEYS = {Qt.Key.Key_Left: "Left", Qt.Key.Key_Right: "Right", Qt.Key.Key_Space: "Space"}
+_TAG_PROMPT_WIDTH = 600
+_SLIDESHOW_KEYS = {Qt.Key.Key_Left: "Left", Qt.Key.Key_Right: "Right", Qt.Key.Key_Space: "Space"}
 UNSUPPORTED_TEXT = "Unsupported"
 APP_PACKAGE = Path(__file__).parent  # its drive is never written while the app runs
-FULLSCREEN_SETTLE_MS = 1000
+_FULLSCREEN_SETTLE_MS = 1000
 NO_LIBRARY_TEXT = "No library open"
 LIBRARY_TEXT = "Library: {}"
 NO_LIBRARY_VIEWING_ONLY_TEXT = "No library — viewing only"
@@ -34,15 +34,15 @@ CREATE_LIBRARY_QUESTION = "Create a tag library on {}?"
 READ_ONLY_BANNER_TEXT = "This drive is read-only — tags can't be saved"
 READ_ONLY_STATUS_TEXT = "Read-only — tags can't be saved"
 TAGS_CANT_BE_SAVED_HERE_TEXT = "Tags can't be saved here"
-COULDNT_SAVE_TAGS_TEXT = "Couldn't save tags — is the drive still connected?"
-CANT_SAVE_MESSAGE_MS = 3000
+_COULDNT_SAVE_TAGS_TEXT = "Couldn't save tags — is the drive still connected?"
+_CANT_SAVE_MESSAGE_MS = 3000
 
 
 def _last_word(text):
     return text.split(" ")[-1]
 
 
-class LastWordCompleter(QCompleter):
+class _LastWordCompleter(QCompleter):
     def splitPath(self, path):
         return [_last_word(path).removeprefix("-")]
 
@@ -72,26 +72,26 @@ class LastWordCompleter(QCompleter):
         prompt.setText(typed.removesuffix(word_being_completed) + highlighted)
 
 
-class TagInput(QLineEdit):
+class _TagInput(QLineEdit):
     def keyPressEvent(self, event):
         super().keyPressEvent(event)
         if event.key() == Qt.Key.Key_Return:
             event.accept()  # QLineEdit passes Enter on to its parent, where it would pause the video
 
 
-def overlay_label(text, parent):
+def _overlay_label(text, parent):
     label = QLabel(text, parent)
-    label.setStyleSheet(LABEL_STYLE)
+    label.setStyleSheet(_LABEL_STYLE)
     return label
 
 
-def fitted_rect(size, bounds):
+def _fitted_rect(size, bounds):
     target = QRect(QPoint(), size.scaled(bounds.size(), Qt.AspectRatioMode.KeepAspectRatio))
     target.moveCenter(bounds.center())
     return target
 
 
-def is_openable(path):
+def _is_openable(path):
     """A file is opened with its folder, so the folder must be listable too."""
     if not os.access(path, os.R_OK):
         return False
@@ -123,28 +123,28 @@ class Viewer(QWidget):
         self.library = None  # the open Library of the current drive, if it has one
         self.folder_picker = folder_picker or self._pick_folder
         self.slideshow = None
-        self.video_player = VideoPlayer(new_engine(**{**PLAYER_OPTIONS, **(player_options or {})}))
+        self.video_player = VideoPlayer(new_engine(**{**_PLAYER_OPTIONS, **(player_options or {})}))
         self.surface = None
         self._decoded_key = self._decoded = None
         self._tagging = None  # (library, path) of the item being tagged while the tag prompt is open
-        self.tag_input = TagInput(self)
-        self.tag_input.setStyleSheet(TAG_INPUT_STYLE)
+        self.tag_input = _TagInput(self)
+        self.tag_input.setStyleSheet(_TAG_INPUT_STYLE)
         self.tag_input.returnPressed.connect(self._record_tags)
         self.tag_input.textEdited.connect(self._offer_suggestions)
-        self.tag_input.setCompleter(LastWordCompleter([], self.tag_input))
+        self.tag_input.setCompleter(_LastWordCompleter([], self.tag_input))
         self.tag_input.completer().setCaseSensitivity(Qt.CaseInsensitive)
-        self.tag_input.completer().popup().setStyleSheet(SUGGESTION_POPUP_STYLE)
+        self.tag_input.completer().popup().setStyleSheet(_SUGGESTION_POPUP_STYLE)
         self.tag_input.hide()
-        self.prompt_tags = overlay_label("", self)
+        self.prompt_tags = _overlay_label("", self)
         self.prompt_tags.hide()
-        self.tag_overlay = overlay_label("", self)
+        self.tag_overlay = _overlay_label("", self)
         self.tag_overlay.hide()
-        self.info = overlay_label("", self)
+        self.info = _overlay_label("", self)
         self.info.move(CORNER_MARGIN, CORNER_MARGIN)
         self.info.hide()
-        self.placeholder = overlay_label(UNSUPPORTED_TEXT, self)
+        self.placeholder = _overlay_label(UNSUPPORTED_TEXT, self)
         self._build_status_bar()
-        self.read_only_banner = overlay_label(READ_ONLY_BANNER_TEXT, self)
+        self.read_only_banner = _overlay_label(READ_ONLY_BANNER_TEXT, self)
         self.read_only_banner.hide()
         self.setWindowState(Qt.WindowState.WindowFullScreen)
         self.setAcceptDrops(True)
@@ -155,12 +155,12 @@ class Viewer(QWidget):
 
     def _build_status_bar(self):
         self.status_bar = QWidget(self)
-        self.library_label = overlay_label(NO_LIBRARY_TEXT, self.status_bar)
-        self.read_only_status = overlay_label(READ_ONLY_STATUS_TEXT, self.status_bar)
+        self.library_label = _overlay_label(NO_LIBRARY_TEXT, self.status_bar)
+        self.read_only_status = _overlay_label(READ_ONLY_STATUS_TEXT, self.status_bar)
         self.read_only_status.hide()
-        self.cant_save_status = overlay_label(TAGS_CANT_BE_SAVED_HERE_TEXT, self.status_bar)
+        self.cant_save_status = _overlay_label(TAGS_CANT_BE_SAVED_HERE_TEXT, self.status_bar)
         self.cant_save_status.hide()
-        self.couldnt_save_status = overlay_label(COULDNT_SAVE_TAGS_TEXT, self.status_bar)
+        self.couldnt_save_status = _overlay_label(_COULDNT_SAVE_TAGS_TEXT, self.status_bar)
         self.couldnt_save_status.hide()
         status_layout = QHBoxLayout(self.status_bar)
         status_layout.setContentsMargins(CORNER_MARGIN, 0, CORNER_MARGIN, CORNER_MARGIN)
@@ -225,7 +225,7 @@ class Viewer(QWidget):
         if self.slideshow is None:
             return
         image = self._current_image()
-        painter.drawImage(fitted_rect(image.size(), self.rect()), image)
+        painter.drawImage(_fitted_rect(image.size(), self.rect()), image)
 
     def dragEnterEvent(self, event):
         if any(url.isLocalFile() for url in event.mimeData().urls()):
@@ -261,16 +261,16 @@ class Viewer(QWidget):
                 self._open_tag_prompt()
             else:
                 self.cant_save_status.show()
-                QTimer.singleShot(CANT_SAVE_MESSAGE_MS, self.cant_save_status.hide)
+                QTimer.singleShot(_CANT_SAVE_MESSAGE_MS, self.cant_save_status.hide)
             return
         if self._tag_prompt_has_focus():
             return  # keys the open tag prompt ignores must not reach the slideshow or video
-        if event.key() in VIDEO_KEYS:
-            self.video_player.press(VIDEO_KEYS[event.key()])
+        if event.key() in _VIDEO_KEYS:
+            self.video_player.press(_VIDEO_KEYS[event.key()])
             return
-        if event.key() not in SLIDESHOW_KEYS:
+        if event.key() not in _SLIDESHOW_KEYS:
             return
-        key = SLIDESHOW_KEYS[event.key()]
+        key = _SLIDESHOW_KEYS[event.key()]
         self.slideshow.press(key)
         self.video_player.press(key)
         self._refresh()
@@ -297,7 +297,7 @@ class Viewer(QWidget):
         self.tag_input.clear()
         self._suggestions = ([tag for tag in library.all_tags() if tag not in item_tags], item_tags)
         self._offer_suggestions("")
-        self.tag_input.resize(min(TAG_PROMPT_WIDTH, self.width() - 2 * CORNER_MARGIN), self.tag_input.sizeHint().height())
+        self.tag_input.resize(min(_TAG_PROMPT_WIDTH, self.width() - 2 * CORNER_MARGIN), self.tag_input.sizeHint().height())
         self._pin_bottom_centre(self.tag_input)
         self._pin_above(self.prompt_tags, self.tag_input)
         self.tag_input.show()
@@ -357,7 +357,7 @@ class Viewer(QWidget):
         """macOS animates the switch to fullscreen; a modal opened mid-animation leaves the window at 100x30."""
         self.show()
         settling = QEventLoop()
-        QTimer.singleShot(FULLSCREEN_SETTLE_MS, settling.quit)
+        QTimer.singleShot(_FULLSCREEN_SETTLE_MS, settling.quit)
         settling.exec()
 
     def _pick_folder(self):
@@ -371,7 +371,7 @@ class Viewer(QWidget):
             return
         if self._tagging:  # whatever opens next, the prompt must not go on targeting the previous item
             self._close_tag_prompt()
-        if not is_openable(path):
+        if not _is_openable(path):
             self._show_cant_open(path)
             return
         showing_info = self.slideshow is not None and self.slideshow.overlay
