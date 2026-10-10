@@ -15,7 +15,7 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 - [x] Asking the library for the tag counts of a folder of 5,000 items runs one SQL query
 - [x] The grid of a folder shows one tile per listed entry, subfolders first, in listing order
 - [x] The grid opened on a folder at a given file has its cursor on that file
-- [ ] A folder tile draws the folder glyph, an image tile the image glyph and a video tile the video glyph
+- [x] A folder tile draws the folder glyph, an image tile the image glyph and a video tile the video glyph
 - [ ] A video tile shows a ▶ badge
 - [ ] An image tile shows no ▶ badge
 - [ ] A tile whose filename is wider than the tile shows it truncated with an ellipsis
