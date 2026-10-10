@@ -1,13 +1,12 @@
 import os
 import sqlite3
-from datetime import datetime, timezone
 from pathlib import Path
 
 from PySide6.QtCore import QEvent, QPoint, QRect, Qt
 from PySide6.QtGui import QImageIOHandler, QImageReader, QPainter
 from PySide6.QtWidgets import QCompleter, QFileDialog, QLineEdit, QWidget
 
-from mediatagger.drive_session import APP_PACKAGE, DriveSession
+from mediatagger.drive_session import DriveSession
 from mediatagger.folder import is_video
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
 from mediatagger.mpv_surface import MpvSurface
@@ -97,9 +96,8 @@ def decode_fitted(path, bounds):
 
 
 class Viewer(QWidget):
-    def __init__(self, path=None, player_options=None, folder_picker=None, is_mount_point=os.path.ismount, ask_to_create_library=None,
-        app_location=APP_PACKAGE, backup_root=None, backup_clock=lambda: datetime.now(timezone.utc), ask_to_restore_library=None,
-        on_escape=None, session=None, on_drop=lambda path: None,
+    def __init__(self, path=None, player_options=None, folder_picker=None, on_escape=None, session=None, on_drop=lambda path: None,
+        **session_options,
     ):
         """A viewer on its own makes its own status bar and drive session; inside a window it is handed the window's."""
         super().__init__()
@@ -107,7 +105,7 @@ class Viewer(QWidget):
         self.on_drop = on_drop
         collect_garbage_on_the_gui_thread()
         if session is None:
-            session = DriveSession(StatusBar(self), self, is_mount_point, ask_to_create_library, app_location, backup_root, backup_clock, ask_to_restore_library)
+            session = DriveSession(StatusBar(self), self, **session_options)
         self.session = session
         self.status_bar = session.status_bar
         self.folder_picker = folder_picker or self._pick_folder
