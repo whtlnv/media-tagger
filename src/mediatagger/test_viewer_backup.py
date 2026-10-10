@@ -11,7 +11,7 @@ from PySide6.QtWidgets import QLabel
 from mediatagger.backup import back_up, default_backup_root, newest_backup
 from mediatagger.library import Library, tags_db_path
 from mediatagger.test_viewer import make_image, shown_texts, SILENT
-from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, made_read_only, make_tag_library_drive, overwrite_tags_db_with_garbage, status_bar_texts
+from mediatagger.test_viewer_library import decline_noting_the_question_in, drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, made_read_only, make_tag_library_drive, overwrite_tags_db_with_garbage, status_bar_texts
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger import viewer as viewer_module
 from mediatagger.viewer import BACKED_UP_TEXT, BACKING_UP_TEXT, BACKUP_FAILED_TEXT, Viewer
@@ -216,7 +216,7 @@ def test_opening_a_folder_on_a_drive_whose_tags_db_is_garbage_with_backups_for_a
     overwrite_tags_db_with_garbage(drive)
     asked = []
 
-    viewer_backing_up_into(qtbot, backup_root, folder, drive, ask_to_restore_library=lambda question: asked.append(question) or False)
+    viewer_backing_up_into(qtbot, backup_root, folder, drive, ask_to_restore_library=decline_noting_the_question_in(asked))
 
     assert asked == [RESTORE_LIBRARY_QUESTION.format(drive.name, taken_at.astimezone())]
 
@@ -232,7 +232,7 @@ def test_a_viewer_given_no_backup_root_finds_restore_backups_under_the_default_b
 
     viewer = Viewer(
         folder, player_options=SILENT, is_mount_point=lambda path: path == drive,
-        ask_to_create_library=lambda question: False, ask_to_restore_library=lambda question: asked.append(question) or False,
+        ask_to_create_library=lambda question: False, ask_to_restore_library=decline_noting_the_question_in(asked),
     )
     qtbot.addWidget(viewer)
 
@@ -262,7 +262,7 @@ def test_the_restore_question_names_the_drive_as_missing_or_damaged_and_shows_th
     asked = []
 
     with local_time_zone("America/Mexico_City"):  # UTC−6 all year
-        viewer_backing_up_into(qtbot, backup_root, folder, drive, ask_to_restore_library=lambda question: asked.append(question) or False)
+        viewer_backing_up_into(qtbot, backup_root, folder, drive, ask_to_restore_library=decline_noting_the_question_in(asked))
 
     assert asked == ["The tag library on MEDIATAGGER is missing or damaged. Restore the backup from 2026-10-09 09:30?"]
 
@@ -274,7 +274,7 @@ def test_opening_a_folder_on_a_drive_whose_tags_db_is_garbage_with_no_backups_fo
     overwrite_tags_db_with_garbage(drive)
     asked = []
 
-    viewer = viewer_backing_up_into(qtbot, tmp_path / "backups", folder, drive, ask_to_restore_library=lambda question: asked.append(question) or False)
+    viewer = viewer_backing_up_into(qtbot, tmp_path / "backups", folder, drive, ask_to_restore_library=decline_noting_the_question_in(asked))
 
     assert asked == []
     assert status_bar_texts(viewer) == [LIBRARY_CANT_BE_OPENED_TEXT.format(drive.name)]
@@ -319,7 +319,7 @@ def test_opening_a_folder_on_a_drive_whose_library_folder_exists_without_tags_db
     tags_db_path(drive).unlink()
     asked = []
 
-    viewer_backing_up_into(qtbot, backup_root, folder, drive, ask_to_restore_library=lambda question: asked.append(question) or False)
+    viewer_backing_up_into(qtbot, backup_root, folder, drive, ask_to_restore_library=decline_noting_the_question_in(asked))
 
     assert tags_db_path(drive).parent.is_dir()
     assert asked == [RESTORE_LIBRARY_QUESTION.format(drive.name, taken_at.astimezone())]
@@ -337,8 +337,8 @@ def test_answering_no_to_the_restore_question_for_a_missing_tags_db_asks_the_cre
 
     viewer_backing_up_into(
         qtbot, backup_root, folder, drive,
-        ask_to_restore_library=lambda question: asked.append(question) or False,
-        ask_to_create_library=lambda question: asked.append(question) or False,
+        ask_to_restore_library=decline_noting_the_question_in(asked),
+        ask_to_create_library=decline_noting_the_question_in(asked),
     )
 
     assert asked == [RESTORE_LIBRARY_QUESTION.format(drive.name, taken_at.astimezone()), CREATE_LIBRARY_QUESTION.format(drive.name)]
@@ -405,7 +405,7 @@ def test_opening_a_folder_on_a_read_only_drive_whose_tags_db_is_garbage_with_bac
     asked = []
 
     with made_read_only(drive):
-        viewer = viewer_backing_up_into(qtbot, backup_root, folder, drive, ask_to_restore_library=lambda question: asked.append(question) or False)
+        viewer = viewer_backing_up_into(qtbot, backup_root, folder, drive, ask_to_restore_library=decline_noting_the_question_in(asked))
 
     assert asked == []
     assert CANT_RESTORE_TO_READ_ONLY_DRIVE_TEXT.format(drive.name) in status_bar_texts(viewer)
@@ -440,7 +440,7 @@ def test_after_restoring_a_missing_tags_db_the_viewer_asks_no_create_question_an
 
     viewer = viewer_backing_up_into(
         qtbot, backup_root, folder, drive,
-        ask_to_restore_library=lambda question: True, ask_to_create_library=lambda question: asked_to_create.append(question) or False,
+        ask_to_restore_library=lambda question: True, ask_to_create_library=decline_noting_the_question_in(asked_to_create),
     )
 
     assert asked_to_create == []
