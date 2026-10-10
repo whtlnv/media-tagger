@@ -91,6 +91,22 @@ def test_on_the_windows_launch_screen_esc_quits_the_app(qtbot):
     assert not window.isVisible()
 
 
+def test_on_the_windows_launch_screen_esc_in_a_dropped_folders_slideshow_shows_that_folders_grid(qtbot, tmp_path):
+    make_image(tmp_path / "a.jpg", "red")
+    make_image(tmp_path / "b.jpg", "blue")
+    window = Window(player_options=SILENT)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    drag_and_drop_onto(stack.currentWidget(), tmp_path)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    shown = stack.currentWidget()
+    assert isinstance(shown, Grid)
+    assert shown.folder == tmp_path
+    assert shown.currentIndex().data(Qt.ItemDataRole.DisplayRole) == "a.jpg"
+
+
 def test_in_the_windows_grid_enter_on_a_file_starts_that_folders_slideshow_at_that_file(qtbot, tmp_path):
     make_image(tmp_path / "a.jpg", "red")
     make_image(tmp_path / "b.jpg", "blue")
