@@ -16,7 +16,7 @@ from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger import viewer as viewer_module
 from mediatagger.viewer import (
     BACKED_UP_TEXT, BACKING_UP_TEXT, BACKUP_FAILED_TEXT, CANT_RESTORE_TO_READ_ONLY_DRIVE_TEXT, CREATE_LIBRARY_QUESTION, DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT,
-    LIBRARY_CANT_BE_OPENED_TEXT, RESTORE_FAILED_TEXT, RESTORE_LIBRARY_QUESTION, RESTORED_BACKUP_TEXT, Viewer,
+    LIBRARY_CANT_BE_OPENED_TEXT, LIBRARY_TEXT, RESTORE_FAILED_TEXT, RESTORE_LIBRARY_QUESTION, RESTORED_BACKUP_TEXT, Viewer,
 )
 
 
@@ -149,8 +149,11 @@ def test_a_few_seconds_after_a_backup_finishes_backed_up_is_cleared_from_the_sta
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
 
     viewer = viewer_backing_up_into(qtbot, tmp_path / "backups", folder, drive)
+    assert BACKED_UP_TEXT in status_bar_texts(viewer)
 
     qtbot.waitUntil(lambda: BACKED_UP_TEXT not in status_bar_texts(viewer), timeout=10000)
+
+    assert status_bar_texts(viewer) == [LIBRARY_TEXT.format("MEDIATAGGER")]
 
 
 def test_when_a_backup_fails_because_the_backup_root_is_not_writable_the_status_bar_shows_backup_failed_with_its_reason_and_the_viewer_keeps_showing_the_item(qtbot, tmp_path):
