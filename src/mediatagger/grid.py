@@ -13,6 +13,8 @@ VIDEO_BADGE = "▶"
 
 TAG_BADGE = "🏷"
 
+TILE_SIZE = QSize(128, 128)
+
 
 def _glyph(entry):
     if entry.is_dir():
@@ -42,7 +44,7 @@ class Grid(QListView):
         super().__init__()
         self.setFlow(QListView.Flow.LeftToRight)
         self.setWrapping(True)
-        self.setGridSize(QSize(128, 128))
+        self.setGridSize(TILE_SIZE)
         entries = folder_entries(folder)
         names = [entry.name for entry in entries]
         self.setModel(QStringListModel(names, self))
