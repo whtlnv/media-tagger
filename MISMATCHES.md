@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 02:50 · `src/mediatagger/test_grid.py::test_a_tile_for_an_untagged_item_shows_no_tag_badge`
+- Behavior: A tile for an untagged item shows no tag badge
+- Predicted: pass — `Library.tag_counts` inner-joins `item_tags`, so untagged items are absent and the delegate draws no badge
+- Actual: pass
+- Type: passed unexpectedly
+- Resolution: The `🏷3` cycle already implemented this; the test isn't vacuous (a tagged sibling in the same grid shows badges are drawn), so it's kept as a characterization pin against a `🏷0` regression — no rewrite can make it fail without changing the behavior.
+
 ## 2026-10-10 02:37 · `src/mediatagger/test_grid.py::test_a_tile_whose_filename_fits_shows_it_whole_with_no_ellipsis`
 - Behavior: A tile whose filename fits shows it whole, with no ellipsis
 - Predicted: pass — `elidedText` from the prior ellipsis cycle already returns the full string when it fits
