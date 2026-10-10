@@ -22,5 +22,5 @@ class Window(QWidget):
         self.stack.setCurrentWidget(grid)
 
     def _show_viewer_at(self, index):
-        self.viewer._open(index.data(TILE_ROLE).path)
+        self.viewer.open(index.data(TILE_ROLE).path)
         self.stack.setCurrentWidget(self.viewer)

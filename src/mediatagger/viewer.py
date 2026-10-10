@@ -135,7 +135,7 @@ class Viewer(QWidget):
         if path is None:
             self.placeholder.setText("Drop a folder or file here, or press o to open")
             return
-        self._open(path)
+        self.open(path)
 
     def closeEvent(self, event):
         if self.surface:
@@ -200,7 +200,7 @@ class Viewer(QWidget):
 
     def dropEvent(self, event):
         self.stop_video()
-        self._open(Path(event.mimeData().urls()[0].toLocalFile()))
+        self.open(Path(event.mimeData().urls()[0].toLocalFile()))
 
     def stop_video(self):
         self.video_player.press("Right")  # leaving the current item is what stops its video
@@ -217,7 +217,7 @@ class Viewer(QWidget):
             return
         if self.slideshow is None:
             if event.key() == Qt.Key.Key_O:
-                self._open(self.folder_picker())
+                self.open(self.folder_picker())
             return
         if event.key() == Qt.Key.Key_I:
             self.slideshow.press("i")
@@ -314,7 +314,7 @@ class Viewer(QWidget):
         if picker.exec():
             return Path(picker.selectedFiles()[0])
 
-    def _open(self, path):
+    def open(self, path):
         if path is None:
             return
         if self._tagging:  # whatever opens next, the prompt must not go on targeting the previous item
