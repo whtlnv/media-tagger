@@ -30,7 +30,7 @@ def test_a_stored_thumbnail_is_returned_for_a_file_whose_size_and_mtime_are_unch
 
     from mediatagger.thumbnail_cache import ThumbnailCache
 
-    thumbnail = red_thumbnail()
+    thumbnail = solid_thumbnail("red")
     cache = ThumbnailCache(tmp_path / "thumbs.db")
 
     cache.store("Photos/beach.jpg", size=1234, mtime=1700000000.5, thumbnail=thumbnail)
@@ -42,7 +42,7 @@ def test_a_stored_thumbnail_is_returned_for_a_file_whose_size_and_mtime_are_unch
 def test_a_stored_thumbnail_is_not_returned_once_the_files_mtime_changes(tmp_path):
     from mediatagger.thumbnail_cache import ThumbnailCache
 
-    thumbnail = red_thumbnail()
+    thumbnail = solid_thumbnail("red")
     cache = ThumbnailCache(tmp_path / "thumbs.db")
 
     cache.store("Photos/beach.jpg", size=1234, mtime=1700000000.5, thumbnail=thumbnail)
@@ -53,7 +53,7 @@ def test_a_stored_thumbnail_is_not_returned_once_the_files_mtime_changes(tmp_pat
 def test_a_stored_thumbnail_is_not_returned_once_the_files_size_changes(tmp_path):
     from mediatagger.thumbnail_cache import ThumbnailCache
 
-    thumbnail = red_thumbnail()
+    thumbnail = solid_thumbnail("red")
     cache = ThumbnailCache(tmp_path / "thumbs.db")
 
     cache.store("Photos/beach.jpg", size=1234, mtime=1700000000.5, thumbnail=thumbnail)
@@ -62,25 +62,23 @@ def test_a_stored_thumbnail_is_not_returned_once_the_files_size_changes(tmp_path
 
 
 def test_thumbnails_stored_for_two_different_files_are_each_returned_for_their_own_file(tmp_path):
-    from PySide6.QtGui import QColor, QImage
+    from PySide6.QtGui import QColor
 
     from mediatagger.thumbnail_cache import ThumbnailCache
 
-    blue_thumbnail = QImage(400, 200, QImage.Format_RGB32)
-    blue_thumbnail.fill(QColor("blue"))
     cache = ThumbnailCache(tmp_path / "thumbs.db")
 
-    cache.store("Photos/beach.jpg", size=1234, mtime=1700000000.5, thumbnail=red_thumbnail())
-    cache.store("Photos/forest.jpg", size=1234, mtime=1700000000.5, thumbnail=blue_thumbnail)
+    cache.store("Photos/beach.jpg", size=1234, mtime=1700000000.5, thumbnail=solid_thumbnail("red"))
+    cache.store("Photos/forest.jpg", size=1234, mtime=1700000000.5, thumbnail=solid_thumbnail("blue"))
     beach = cache.lookup("Photos/beach.jpg", size=1234, mtime=1700000000.5)
     forest = cache.lookup("Photos/forest.jpg", size=1234, mtime=1700000000.5)
 
     assert (beach.pixelColor(200, 100), forest.pixelColor(200, 100)) == (QColor("red"), QColor("blue"))
 
 
-def red_thumbnail():
+def solid_thumbnail(color):
     from PySide6.QtGui import QColor, QImage
 
     thumbnail = QImage(400, 200, QImage.Format_RGB32)
-    thumbnail.fill(QColor("red"))
+    thumbnail.fill(QColor(color))
     return thumbnail
