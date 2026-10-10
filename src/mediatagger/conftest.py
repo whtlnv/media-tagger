@@ -27,3 +27,9 @@ def backups_never_reach_the_real_home_folder(tmp_path_factory):
 def state_never_reaches_the_real_home_folder(tmp_path_factory):
     """The window records the last folder under $XDG_CONFIG_HOME; point it at a throwaway folder for every test."""
     yield from _pointed_at_a_throwaway_folder("XDG_CONFIG_HOME", tmp_path_factory)
+
+
+@pytest.fixture(autouse=True)
+def thumbnails_never_reach_the_real_home_folder(tmp_path_factory):
+    """Thumbnails are cached under $XDG_CACHE_HOME; point it at a throwaway folder for every test."""
+    yield from _pointed_at_a_throwaway_folder("XDG_CACHE_HOME", tmp_path_factory)

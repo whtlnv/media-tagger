@@ -26,7 +26,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] When `ffprobe` runs past its timeout, the video yields no duration and no thumbnail and generation returns promptly
 
 ### Cache
-- [ ] Tests that write a thumbnail cache write it under a per-test temp folder, never the real `~/.cache`
+- [x] Tests that write a thumbnail cache write it under a per-test temp folder, never the real `~/.cache`
 - [ ] With `$XDG_CACHE_HOME` set, a drive's cache is `$XDG_CACHE_HOME/mediatagger/<drive_id>/thumbs.db`
 - [ ] With `$XDG_CACHE_HOME` unset, a drive's cache is `~/.cache/mediatagger/<drive_id>/thumbs.db` (home injectable)
 - [ ] A stored thumbnail is returned for a file whose size and mtime are unchanged
