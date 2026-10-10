@@ -17,7 +17,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] A 7-second video yields a duration of about 7 s (read from the file with `ffprobe`, not assumed)
 - [x] An 800×600 video that is green at 10% of its length yields a green 400×300 thumbnail (the frame is taken from the file with `ffmpeg`, not made up)
 - [x] When `ffmpeg` runs past its timeout, the video yields "no thumbnail" and generation returns promptly
-- [ ] A corrupt video file yields "no thumbnail" and no duration instead of raising
+- [x] A corrupt video file yields "no thumbnail" and no duration instead of raising
 - [ ] A folder whose images are `10.jpg` and `2.jpg` yields the thumbnail of `2.jpg` (first image in natural order)
 - [ ] A folder holding only videos, or images only in its subfolders, yields "no thumbnail"
 - [ ] A duration of 75 s reads `1:15`

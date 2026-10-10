@@ -131,3 +131,12 @@ def test_when_ffmpeg_runs_past_its_timeout_a_video_yields_no_thumbnail_promptly(
 
     assert thumbnail is None
     assert time.monotonic() - started < 5
+
+
+@pytest.mark.skipif(shutil.which("ffmpeg") is None, reason="ffmpeg is not installed")
+def test_a_corrupt_video_yields_no_thumbnail_and_no_duration(tmp_path):
+    path = tmp_path / "corrupt.mp4"
+    path.write_bytes(b"this is not an mp4")
+
+    assert video_thumbnail(path) is None
+    assert video_duration(path) is None

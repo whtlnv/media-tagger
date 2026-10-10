@@ -22,13 +22,18 @@ def video_duration(path):
          "-of", "default=noprint_wrappers=1:nokey=1", str(path)],
         capture_output=True, text=True,
     )
+    if result.returncode != 0:
+        return None
     return float(result.stdout)
 
 
 def video_thumbnail(path, timeout=None):
     if shutil.which("ffmpeg") is None:
         return None
-    seek_seconds = video_duration(path) * 0.1
+    duration = video_duration(path)
+    if duration is None:
+        return None
+    seek_seconds = duration * 0.1
     try:
         result = subprocess.run(
             ["ffmpeg", "-v", "error", "-ss", str(seek_seconds), "-i", str(path),
