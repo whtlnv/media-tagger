@@ -25,5 +25,5 @@ def is_video(path):
 
 
 def folder_entries(folder):
-    subfolders = [path for path in folder.iterdir() if path.is_dir()]
+    subfolders = [path for path in folder.iterdir() if path.is_dir() and not path.name.startswith(".")]
     return sorted(subfolders, key=_natural_key) + media_files(folder)

@@ -89,3 +89,10 @@ def test_a_folder_listing_leaves_out_non_media_files(tmp_path):
     (tmp_path / "trip").mkdir()
 
     assert folder_entries(tmp_path) == [tmp_path / "trip", tmp_path / "IMG_1.jpg"]
+
+
+def test_a_folder_listing_leaves_out_hidden_folders(tmp_path):
+    for name in [".mediatagger", ".Trashes", ".Spotlight-V100", ".fseventsd", ".hidden", "trip"]:
+        (tmp_path / name).mkdir()
+
+    assert folder_entries(tmp_path) == [tmp_path / "trip"]
