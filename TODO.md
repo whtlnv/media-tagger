@@ -26,7 +26,7 @@ Phase 6 notes for every cycle: backup logic lives in a new `src/mediatagger/back
 - [x] Opening a folder on another drive after tagging an item leaves a backup of the first drive containing that tag
 - [x] While a backup is running, the status bar shows `⟳ Backing up database…`
 - [x] When a backup finishes, the status bar shows `✓ Backed up`
-- [ ] On a shown viewer, the status bar message while backing up reads exactly `⟳ Backing up database…` (with its ⟳ sign), the message once it finishes reads exactly `✓ Backed up` (with its ✓ sign), and the backing-up message has already been painted on screen when the copy starts (the label received a paint event before the backup ran, since the backup is synchronous)
+- [x] On a shown viewer, the status bar message while backing up reads exactly `⟳ Backing up database…` (with its ⟳ sign), the message once it finishes reads exactly `✓ Backed up` (with its ✓ sign), and the backing-up message has already been painted on screen when the copy starts (the label received a paint event before the backup ran, since the backup is synchronous)
 - [ ] A few seconds after a backup finishes, `✓ Backed up` is cleared from the status bar
 - [ ] When a backup fails because the backup root isn't writable, the status bar shows `✗ Backup failed: <short reason>` and the viewer keeps showing the item
 - [ ] When a backup fails, tagging the current item still saves its tags

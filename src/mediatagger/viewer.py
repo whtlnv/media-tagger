@@ -5,7 +5,7 @@ from pathlib import Path
 
 from PySide6.QtCore import QEvent, QEventLoop, QPoint, QRect, Qt, QTimer
 from PySide6.QtGui import QImageIOHandler, QImageReader, QPainter
-from PySide6.QtWidgets import QCompleter, QFileDialog, QHBoxLayout, QLabel, QLineEdit, QMessageBox, QWidget
+from PySide6.QtWidgets import QApplication, QCompleter, QFileDialog, QHBoxLayout, QLabel, QLineEdit, QMessageBox, QWidget
 
 from mediatagger.backup import back_up
 from mediatagger.folder import is_video
@@ -37,8 +37,8 @@ READ_ONLY_BANNER_TEXT = "This drive is read-only — tags can't be saved"
 READ_ONLY_STATUS_TEXT = "Read-only — tags can't be saved"
 TAGS_CANT_BE_SAVED_HERE_TEXT = "Tags can't be saved here"
 _COULDNT_SAVE_TAGS_TEXT = "Couldn't save tags — is the drive still connected?"
-BACKING_UP_TEXT = "Backing up database…"
-BACKED_UP_TEXT = "Backed up"
+BACKING_UP_TEXT = "⟳ Backing up database…"
+BACKED_UP_TEXT = "✓ Backed up"
 _CANT_SAVE_MESSAGE_MS = 3000
 
 
@@ -435,6 +435,7 @@ class Viewer(QWidget):
     def _back_up_library(self):
         self.backup_status.setText(BACKING_UP_TEXT)
         self.backup_status.show()
+        QApplication.processEvents()
         back_up(self.library, self.backup_root, clock=self.backup_clock)
         self.backup_status.setText(BACKED_UP_TEXT)
 

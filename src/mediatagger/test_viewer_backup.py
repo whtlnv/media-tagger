@@ -1,6 +1,9 @@
 import shutil
 from datetime import datetime, timezone
 
+from PySide6.QtCore import QEvent, QObject
+from PySide6.QtWidgets import QLabel
+
 from mediatagger.backup import newest_backup
 from mediatagger.library import Library, tags_db_path
 from mediatagger.test_viewer import make_image, SILENT
@@ -23,6 +26,19 @@ def show_and_tag(qtbot, viewer, tag):
     viewer.show()
     qtbot.waitExposed(viewer)
     enter_in_tag_prompt(qtbot, viewer, tag)
+
+
+class PaintedTexts(QObject):
+    def __init__(self, labels):
+        super().__init__()
+        self.texts = []
+        for label in labels:
+            label.installEventFilter(self)
+
+    def eventFilter(self, watched, event):
+        if event.type() == QEvent.Type.Paint:
+            self.texts.append(watched.text())
+        return False
 
 
 def tags_in_newest_backup(backup_root, drive, restored_drive, item):
@@ -100,3 +116,25 @@ def test_when_a_backup_finishes_the_status_bar_shows_backed_up(qtbot, tmp_path):
     viewer = viewer_backing_up_into(qtbot, tmp_path / "backups", folder, drive)
 
     assert BACKED_UP_TEXT in status_bar_texts(viewer)
+
+
+def test_on_a_shown_viewer_the_signed_backing_up_message_is_painted_before_the_backup_runs_and_the_signed_backed_up_message_follows(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    painted = None
+    painted_when_backup_ran = []
+
+    def clock_noting_what_was_painted():
+        if painted is not None:
+            painted_when_backup_ran.append(list(painted.texts))
+        return datetime(2026, 10, 9, 15, 30, tzinfo=timezone.utc)
+
+    viewer = viewer_backing_up_into(qtbot, tmp_path / "backups", folder, drive, backup_clock=clock_noting_what_was_painted)
+    viewer.resize(400, 300)
+    viewer.show()
+    qtbot.waitExposed(viewer)
+    painted = PaintedTexts(viewer.status_bar.findChildren(QLabel))
+
+    viewer.close()
+
+    assert "⟳ Backing up database…" in painted_when_backup_ran[-1]
+    assert "✓ Backed up" in status_bar_texts(viewer)
