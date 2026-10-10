@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QImageReader
+from PySide6.QtGui import QColor, QImage, QImageReader
 
 
 def image_thumbnail(path):
@@ -13,3 +13,9 @@ def image_thumbnail(path):
 
 def video_duration(path):
     return 3.0
+
+
+def video_thumbnail(path):
+    frame = QImage(64, 48, QImage.Format_RGB32)
+    frame.fill(QColor("blue"))
+    return frame
