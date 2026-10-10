@@ -64,6 +64,8 @@ class Window(QWidget):
     def _record_state(self, folder):
         config_home = os.environ.get("XDG_CONFIG_HOME", self._home / ".config")
         state_file = Path(config_home) / "mediatagger" / "state.json"
+        if any(self.session.is_mount_point(folder) for folder in self.session.app_location.parents if folder in state_file.parents):
+            return
         state_file.parent.mkdir(parents=True, exist_ok=True)
         state_file.write_text(json.dumps({"folder": str(folder), "mount_point": str(self.session.drive)}))
 

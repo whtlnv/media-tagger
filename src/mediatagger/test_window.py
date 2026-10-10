@@ -510,3 +510,16 @@ def test_with_the_config_home_unset_the_state_is_recorded_under_the_dot_config_f
 
     state = json.loads((home / ".config" / "mediatagger" / "state.json").read_text())
     assert state["folder"] == str(folder)
+
+
+def test_the_state_file_is_not_written_when_it_would_land_on_the_apps_own_drive(qtbot, tmp_path, monkeypatch):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    app_drive = tmp_path / "APP"
+    config_home = app_drive / "config"
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(config_home))
+
+    window = Window(folder, player_options=SILENT, app_location=app_drive / "app" / "mediatagger", is_mount_point=lambda path: path in (drive, app_drive),
+                    ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+
+    assert not (config_home / "mediatagger" / "state.json").exists()
