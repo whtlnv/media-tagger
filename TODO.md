@@ -60,7 +60,7 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 - [x] Opening a file from the grid takes the grid's selected-item tags off the status bar (the viewer shows the file's tags in its corner overlay instead)
 - [x] Scrolled to the end, the window's grid keeps its last row of tiles just above the status bar (tiles fill their grid cell, the grid scrolls by pixel and keeps the status bar's height clear at its bottom)
 - [x] After tagging a file in the viewer, `Esc` shows its grid tile with the updated tag badge
-- [ ] Closing the window shuts down the viewer's video player and leaves a backup of the open library
+- [x] Closing the window shuts down the viewer's video player and leaves a backup of the open library
 - [ ] Showing a folder's grid records that folder and its drive's mount point in `state.json` under `$XDG_CONFIG_HOME/mediatagger/`
 - [ ] Showing a folder's slideshow records that folder in `state.json`
 - [ ] With `XDG_CONFIG_HOME` unset, the state is recorded under `<home>/.config/mediatagger/` of the injected home

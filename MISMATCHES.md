@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 08:37 · `src/mediatagger/test_window.py::test_closing_the_window_shuts_down_its_viewers_video_player_and_leaves_a_backup_of_the_open_library_holding_the_entered_tag`
+- Behavior: Closing the window shuts down the viewer's video player and leaves a backup of the open library
+- Predicted: passes — `Window.closeEvent` already calls `viewer.close()`, which terminates mpv and calls `session.close()` to back up the library (shipped with 46ca4f6)
+- Actual: passes (1 passed); it also passes when closing with the grid shown (viewer hidden). With `Window.closeEvent`'s `viewer.close()` disabled, it fails `assert <MpvHandle> is None`, so the test is not vacuous
+- Type: passed unexpectedly
+- Resolution: no failing slice exists for this item; kept the test as a regression pin rather than force it to fail — the TODO item is effectively already done.
+
 ## 2026-10-10 08:16 · `src/mediatagger/test_window.py::test_in_a_one_tile_wide_window_scrolled_fully_down_the_grids_last_tile_sits_at_or_above_the_status_bar`
 - Behavior: In a 400x330 window (one 200px tile per row) scrolled fully down, the last tile's bottom edge is at or above the status bar's top edge
 - Predicted: AssertionError — last tile's bottom at the window bottom (~331) below the status bar's top (276)

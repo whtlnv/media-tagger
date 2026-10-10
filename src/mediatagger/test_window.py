@@ -13,6 +13,7 @@ from mediatagger.status_bar import READ_ONLY_STATUS_TEXT, StatusBar
 
 from mediatagger.test_grid import painted_texts
 from mediatagger.test_video import make_clip
+from mediatagger.test_viewer_backup import tags_in_newest_backup
 from mediatagger.test_viewer import SILENT, make_image, make_surface_ready, show_exposed, wait_until_loaded
 from mediatagger.test_viewer_library import (
     decline_noting_the_question_in, drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image, enter_in_tag_prompt,
@@ -443,3 +444,22 @@ def test_after_tagging_a_file_in_the_windows_viewer_esc_shows_its_grid_tile_with
     grid = stack.currentWidget()
     assert isinstance(grid, Grid)
     assert f"{TAG_BADGE}2" in painted_texts(grid, grid.currentIndex().row())
+
+
+def test_closing_the_window_shuts_down_its_viewers_video_player_and_leaves_a_backup_of_the_open_library_holding_the_entered_tag(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    clip = make_clip(folder / "IMG_0.mp4")
+    backup_root = tmp_path / "backups"
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False, backup_root=backup_root)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    viewer = window.findChild(QStackedWidget).currentWidget()
+    make_surface_ready(viewer)
+    engine = viewer.video_player.engine
+    wait_until_loaded(engine, clip)
+    enter_in_tag_prompt(qtbot, viewer, "sunset")
+
+    window.close()
+
+    assert engine.handle is None
+    assert tags_in_newest_backup(backup_root, drive, tmp_path / "restored", "Photos/IMG_0.mp4") == ["sunset"]
