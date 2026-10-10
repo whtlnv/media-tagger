@@ -32,6 +32,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] A stored thumbnail is returned for a file whose size and mtime are unchanged
 - [x] A stored thumbnail is not returned once the file's mtime changes
 - [x] A stored thumbnail is not returned once the file's size changes
+- [ ] Thumbnails stored for two different files are each returned for their own file
 - [ ] A stored video thumbnail comes back with its duration
 - [ ] A stored failure comes back as "no thumbnail" (not a miss) while the file is unchanged, and as a miss once it changes
 - [ ] Thumbnails stored in one session are returned after the cache is reopened (survives restarting the app)
