@@ -1,3 +1,4 @@
+import json
 import shutil
 from datetime import datetime, timezone
 
@@ -47,3 +48,15 @@ def test_backing_up_without_a_backup_root_writes_under_home_local_share_when_xdg
     back_up(library, clock=lambda: datetime(2026, 10, 9, 15, 30, 0, tzinfo=timezone.utc))
 
     assert (home / ".local" / "share" / "mediatagger" / "backups" / library.drive_id / "tags-20261009T153000Z.db").is_file()
+
+
+def test_backing_up_writes_drive_json_next_to_the_drives_backups_recording_its_name_and_drive_id(tmp_path):
+    drive = tmp_path / "PHOTOS"
+    drive.mkdir()
+    library = Library.create(drive)
+    backup_root = tmp_path / "backups"
+
+    back_up(library, backup_root=backup_root, clock=lambda: datetime(2026, 10, 9, 15, 30, 0, tzinfo=timezone.utc))
+
+    drive_json = json.loads((backup_root / library.drive_id / "drive.json").read_text())
+    assert drive_json == {"name": "PHOTOS", "drive_id": library.drive_id}
