@@ -64,13 +64,16 @@ class Window(QWidget):
     def _record_state(self, folder):
         config_home = os.environ.get("XDG_CONFIG_HOME", self._home / ".config")
         state_file = Path(config_home) / "mediatagger" / "state.json"
-        if self._is_on_the_apps_own_drive(state_file) or self.session.drive in state_file.parents:
+        if self._is_on_the_apps_own_drive(state_file) or self._is_on_the_drive_being_viewed(state_file):
             return
         state_file.parent.mkdir(parents=True, exist_ok=True)
         state_file.write_text(json.dumps({"folder": str(folder), "mount_point": str(self.session.drive)}))
 
     def _is_on_the_apps_own_drive(self, path):
         return any(self.session.is_mount_point(ancestor) for ancestor in self.session.app_location.parents if ancestor in path.parents)
+
+    def _is_on_the_drive_being_viewed(self, path):
+        return self.session.drive in path.parents
 
     def _show_tags_of(self, index):
         library = self.session.library
