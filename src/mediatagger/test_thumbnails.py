@@ -8,7 +8,7 @@ from PySide6.QtCore import QSize
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import make_image, make_jpeg_tagged_rotate_90
 
-from mediatagger.thumbnails import folder_thumbnail, image_thumbnail, video_duration, video_thumbnail
+from mediatagger.thumbnails import folder_thumbnail, format_duration, image_thumbnail, video_duration, video_thumbnail
 
 
 def test_a_wide_image_is_fitted_to_400_px_across_keeping_its_aspect_ratio(tmp_path):
@@ -168,3 +168,7 @@ def test_a_folder_holding_only_a_gif_video_and_a_subfolder_with_an_image_yields_
     make_image(folder / "sub" / "photo.jpg", "green")
 
     assert folder_thumbnail(folder) is None
+
+
+def test_a_duration_of_75_seconds_reads_1_15():
+    assert format_duration(75) == "1:15"

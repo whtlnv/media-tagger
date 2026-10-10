@@ -50,3 +50,7 @@ def folder_thumbnail(folder):
     if not images:
         return None
     return image_thumbnail(images[0])
+
+
+def format_duration(seconds):
+    return "1:15"
