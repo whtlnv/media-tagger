@@ -99,8 +99,10 @@ def decode_fitted(path, bounds):
 class Viewer(QWidget):
     def __init__(self, path=None, player_options=None, folder_picker=None, is_mount_point=os.path.ismount, ask_to_create_library=None,
         app_location=APP_PACKAGE, backup_root=None, backup_clock=lambda: datetime.now(timezone.utc), ask_to_restore_library=None,
+        on_escape=None,
     ):
         super().__init__()
+        self.on_escape = on_escape or self.close
         collect_garbage_on_the_gui_thread()
         self.status_bar = StatusBar(self)
         self.session = DriveSession(self.status_bar, self, is_mount_point, ask_to_create_library, app_location, backup_root, backup_clock, ask_to_restore_library)
@@ -207,8 +209,8 @@ class Viewer(QWidget):
         if event.key() == Qt.Key.Key_Escape and self._tag_prompt_has_focus():
             self._close_tag_prompt()
             return
-        if event.key() == Qt.Key.Key_Escape:  # interim: quits until the grid (Phase 7) makes Esc "back to grid"
-            self.close()
+        if event.key() == Qt.Key.Key_Escape:  # interim: a lone viewer quits until the grid (Phase 7) makes Esc "back to grid"
+            self.on_escape()
             return
         if event.key() == Qt.Key.Key_F:
             self._toggle_fullscreen()
