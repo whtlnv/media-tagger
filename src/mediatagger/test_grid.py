@@ -130,3 +130,15 @@ def test_a_grid_with_no_library_shows_no_tag_badges(qtbot, tmp_path):
     qtbot.addWidget(grid)
 
     assert not any(TAG_BADGE in text for text in painted_texts(grid, 0))
+
+
+def test_in_the_grid_right_arrow_moves_the_cursor_to_the_next_tile_and_left_arrow_back(qtbot, tmp_path):
+    touch(tmp_path, "a.jpg", "b.jpg", "c.jpg")
+    grid = Grid(tmp_path, at=tmp_path / "a.jpg")
+    qtbot.addWidget(grid)
+
+    qtbot.keyClick(grid, Qt.Key.Key_Right)
+    assert grid.currentIndex().data(Qt.ItemDataRole.DisplayRole) == "b.jpg"
+
+    qtbot.keyClick(grid, Qt.Key.Key_Left)
+    assert grid.currentIndex().data(Qt.ItemDataRole.DisplayRole) == "a.jpg"

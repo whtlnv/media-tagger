@@ -40,6 +40,7 @@ class _TileDelegate(QStyledItemDelegate):
 class Grid(QListView):
     def __init__(self, folder, at=None, library=None):
         super().__init__()
+        self.setFlow(QListView.Flow.LeftToRight)
         entries = folder_entries(folder)
         names = [entry.name for entry in entries]
         self.setModel(QStringListModel(names, self))
