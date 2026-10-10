@@ -14,7 +14,10 @@ from mediatagger.test_viewer import make_image, show_exposed, shown_texts, SILEN
 from mediatagger.test_viewer_library import decline_noting_the_question_in, drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, made_read_only, make_tag_library_drive, overwrite_tags_db_with_garbage, status_bar_texts
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger import viewer as viewer_module
-from mediatagger.viewer import BACKED_UP_TEXT, BACKING_UP_TEXT, BACKUP_FAILED_TEXT, Viewer
+from mediatagger.viewer import (
+    BACKED_UP_TEXT, BACKING_UP_TEXT, BACKUP_FAILED_TEXT, CANT_RESTORE_TO_READ_ONLY_DRIVE_TEXT, CREATE_LIBRARY_QUESTION, DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT,
+    LIBRARY_CANT_BE_OPENED_TEXT, RESTORE_FAILED_TEXT, RESTORE_LIBRARY_QUESTION, RESTORED_BACKUP_TEXT, Viewer,
+)
 
 
 def viewer_backing_up_into(qtbot, backup_root, folder, *drives, **options):
@@ -201,8 +204,6 @@ def test_when_writing_the_drives_drive_json_fails_during_a_backup_the_status_bar
 
 
 def test_opening_a_folder_on_a_drive_whose_tags_db_is_garbage_with_backups_for_a_drive_of_the_same_name_asks_to_restore_the_newest_backup(qtbot, tmp_path):
-    from mediatagger.viewer import RESTORE_LIBRARY_QUESTION
-
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     backup_root = tmp_path / "backups"
     taken_at = datetime(2026, 10, 9, 15, 30, tzinfo=timezone.utc)
@@ -216,8 +217,6 @@ def test_opening_a_folder_on_a_drive_whose_tags_db_is_garbage_with_backups_for_a
 
 
 def test_a_viewer_given_no_backup_root_finds_restore_backups_under_the_default_backup_root(qtbot, tmp_path):
-    from mediatagger.viewer import RESTORE_LIBRARY_QUESTION
-
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     taken_at = datetime(2026, 10, 9, 15, 30, tzinfo=timezone.utc)
     back_up(Library.open(drive), default_backup_root(), clock=lambda: taken_at)
@@ -262,8 +261,6 @@ def test_the_restore_question_names_the_drive_as_missing_or_damaged_and_shows_th
 
 
 def test_opening_a_folder_on_a_drive_whose_tags_db_is_garbage_with_no_backups_for_a_drive_of_that_name_asks_nothing_and_says_the_library_cant_be_opened_viewing_only(qtbot, tmp_path):
-    from mediatagger.viewer import LIBRARY_CANT_BE_OPENED_TEXT
-
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     overwrite_tags_db_with_garbage(drive)
     asked = []
@@ -291,8 +288,6 @@ def test_answering_yes_to_the_restore_question_opens_the_library_with_the_backed
 
 
 def test_answering_no_to_the_restore_question_says_the_library_cant_be_opened_viewing_only(qtbot, tmp_path):
-    from mediatagger.viewer import LIBRARY_CANT_BE_OPENED_TEXT
-
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     backup_root = tmp_path / "backups"
     back_up(Library.open(drive), backup_root, clock=lambda: datetime(2026, 10, 9, 15, 30, tzinfo=timezone.utc))
@@ -304,8 +299,6 @@ def test_answering_no_to_the_restore_question_says_the_library_cant_be_opened_vi
 
 
 def test_opening_a_folder_on_a_drive_whose_library_folder_exists_without_tags_db_with_backups_for_a_drive_of_the_same_name_asks_the_restore_question(qtbot, tmp_path):
-    from mediatagger.viewer import RESTORE_LIBRARY_QUESTION
-
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     backup_root = tmp_path / "backups"
     taken_at = datetime(2026, 10, 9, 15, 30, tzinfo=timezone.utc)
@@ -320,8 +313,6 @@ def test_opening_a_folder_on_a_drive_whose_library_folder_exists_without_tags_db
 
 
 def test_answering_no_to_the_restore_question_for_a_missing_tags_db_asks_the_create_library_question(qtbot, tmp_path):
-    from mediatagger.viewer import CREATE_LIBRARY_QUESTION, RESTORE_LIBRARY_QUESTION
-
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     backup_root = tmp_path / "backups"
     taken_at = datetime(2026, 10, 9, 15, 30, tzinfo=timezone.utc)
@@ -339,8 +330,6 @@ def test_answering_no_to_the_restore_question_for_a_missing_tags_db_asks_the_cre
 
 
 def test_answering_yes_to_the_restore_question_for_a_missing_tags_db_opens_the_library_with_the_backed_up_tags_shown_and_says_restored_backup_from_its_local_time(qtbot, tmp_path):
-    from mediatagger.viewer import RESTORED_BACKUP_TEXT
-
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     backup_root = tmp_path / "backups"
     library = Library.open(drive)
@@ -357,8 +346,6 @@ def test_answering_yes_to_the_restore_question_for_a_missing_tags_db_opens_the_l
 
 
 def test_answering_yes_to_the_restore_question_when_the_newest_backup_is_garbage_says_restore_failed_and_the_library_cant_be_opened_and_puts_the_damaged_tags_db_back(qtbot, tmp_path):
-    from mediatagger.viewer import LIBRARY_CANT_BE_OPENED_TEXT, RESTORE_FAILED_TEXT
-
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     backup_root = tmp_path / "backups"
     back_up(Library.open(drive), backup_root, clock=lambda: datetime(2026, 10, 9, 15, 30, tzinfo=timezone.utc))
@@ -374,8 +361,6 @@ def test_answering_yes_to_the_restore_question_when_the_newest_backup_is_garbage
 
 
 def test_answering_yes_to_the_restore_question_for_a_missing_tags_db_when_the_newest_backup_is_garbage_says_restore_failed_and_the_drive_has_no_tag_library_and_leaves_no_tags_db(qtbot, tmp_path):
-    from mediatagger.viewer import DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT, RESTORE_FAILED_TEXT
-
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     backup_root = tmp_path / "backups"
     back_up(Library.open(drive), backup_root, clock=lambda: datetime(2026, 10, 9, 15, 30, tzinfo=timezone.utc))
@@ -390,8 +375,6 @@ def test_answering_yes_to_the_restore_question_for_a_missing_tags_db_when_the_ne
 
 
 def test_opening_a_folder_on_a_read_only_drive_whose_tags_db_is_garbage_with_backups_for_a_drive_of_the_same_name_asks_nothing_and_says_the_backup_cant_be_restored_to_a_read_only_drive(qtbot, tmp_path):
-    from mediatagger.viewer import CANT_RESTORE_TO_READ_ONLY_DRIVE_TEXT
-
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     backup_root = tmp_path / "backups"
     back_up(Library.open(drive), backup_root, clock=lambda: datetime(2026, 10, 9, 15, 30, tzinfo=timezone.utc))
