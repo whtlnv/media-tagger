@@ -305,3 +305,19 @@ def test_answering_no_to_the_restore_question_says_the_library_cant_be_opened_vi
     viewer = viewer_backing_up_into(qtbot, backup_root, folder, drive, ask_to_restore_library=lambda question: False)
 
     assert status_bar_texts(viewer) == [LIBRARY_CANT_BE_OPENED_TEXT.format(drive.name)]
+
+
+def test_opening_a_folder_on_a_drive_whose_library_folder_exists_without_tags_db_with_backups_for_a_drive_of_the_same_name_asks_the_restore_question(qtbot, tmp_path):
+    from mediatagger.viewer import RESTORE_LIBRARY_QUESTION
+
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    backup_root = tmp_path / "backups"
+    taken_at = datetime(2026, 10, 9, 15, 30, tzinfo=timezone.utc)
+    back_up(Library.open(drive), backup_root, clock=lambda: taken_at)
+    tags_db_path(drive).unlink()
+    asked = []
+
+    viewer_backing_up_into(qtbot, backup_root, folder, drive, ask_to_restore_library=lambda question: asked.append(question) or False)
+
+    assert tags_db_path(drive).parent.is_dir()
+    assert asked == [RESTORE_LIBRARY_QUESTION.format(drive.name, taken_at.astimezone())]
