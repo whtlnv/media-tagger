@@ -7,10 +7,11 @@ from PySide6.QtWidgets import QLabel, QStackedWidget
 
 from mediatagger.backup import back_up
 from mediatagger.drive_session import BACKUP_FAILED_TEXT, CREATE_LIBRARY_QUESTION, RESTORE_LIBRARY_QUESTION
-from mediatagger.grid import TILE_ROLE, Grid
+from mediatagger.grid import TAG_BADGE, TILE_ROLE, Grid
 from mediatagger.library import Library
 from mediatagger.status_bar import READ_ONLY_STATUS_TEXT, StatusBar
 
+from mediatagger.test_grid import painted_texts
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import SILENT, make_image, make_surface_ready, show_exposed, wait_until_loaded
 from mediatagger.test_viewer_library import (
@@ -427,3 +428,18 @@ def test_scrolled_to_the_end_the_windows_grid_keeps_its_last_row_of_tiles_just_a
     last_tile_bottom = grid.viewport().mapTo(window, last_tile.bottomLeft()).y()
     status_bar_top = window.status_bar.geometry().top()
     assert status_bar_top - grid.frameWidth() - grid.spacing() - 1 <= last_tile_bottom < status_bar_top
+
+
+def test_after_tagging_a_file_in_the_windows_viewer_esc_shows_its_grid_tile_with_the_updated_tag_badge(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    stack = window.findChild(QStackedWidget)
+    enter_in_tag_prompt(qtbot, stack.currentWidget(), "beach family")
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    grid = stack.currentWidget()
+    assert isinstance(grid, Grid)
+    assert f"{TAG_BADGE}2" in painted_texts(grid, grid.currentIndex().row())

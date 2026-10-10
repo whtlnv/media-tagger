@@ -65,7 +65,7 @@ class Window(QWidget):
         self._show_parent_of(folder)
 
     def _show_parent_of(self, path):
-        self._show(Grid(path.parent, at=path))
+        self._show(Grid(path.parent, at=path, library=self.session.library))
 
     def _open_tile(self, index):
         path = index.data(TILE_ROLE).path
