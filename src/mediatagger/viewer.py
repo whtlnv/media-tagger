@@ -216,7 +216,7 @@ class Viewer(QWidget):
         if event.key() == Qt.Key.Key_Escape and self._tag_prompt_has_focus():
             self._close_tag_prompt()
             return
-        if event.key() == Qt.Key.Key_Escape:  # interim: a lone viewer quits until the grid (Phase 7) makes Esc "back to grid"
+        if event.key() == Qt.Key.Key_Escape:
             self.on_escape()
             return
         if event.key() == Qt.Key.Key_F:
