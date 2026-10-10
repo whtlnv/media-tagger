@@ -29,7 +29,7 @@ def default_backup_root():
     return Path(data_home) / "mediatagger" / "backups"
 
 
-def back_up(library, backup_root=None, clock=None):
+def back_up(library, backup_root=None, *, clock):
     """Copy the library's database into its drive's backup folder; any failure comes back as a BackupOutcome, never raised."""
     if backup_root is None:
         backup_root = default_backup_root()
