@@ -5,6 +5,7 @@ from mediatagger.grid import Grid
 
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import SILENT, make_image, make_surface_ready, show_exposed, wait_until_loaded
+from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, visible_tag_prompts
 from mediatagger.viewer import Viewer
 from mediatagger.window import Window
 
@@ -62,3 +63,18 @@ def test_in_the_windows_viewer_on_a_playing_video_esc_to_the_grid_stops_the_vide
     qtbot.keyClick(viewer, Qt.Key.Key_Escape)
 
     assert viewer.video_player.engine.path is None
+
+
+def test_in_the_windows_viewer_with_the_tag_prompt_open_esc_closes_the_prompt_and_stays_in_the_viewer(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    stack = window.findChild(QStackedWidget)
+    viewer = stack.currentWidget()
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    qtbot.keyClick(viewer.focusWidget(), Qt.Key.Key_Escape)
+
+    assert visible_tag_prompts(viewer) == []
+    assert stack.currentWidget() is viewer
