@@ -41,7 +41,7 @@ class DriveSession:
         self.backup_clock = backup_clock
         self.ask_to_create_library = ask_to_create_library or self._ask_yes_or_no
         self.ask_to_restore_library = ask_to_restore_library or self._ask_yes_or_no
-        self.declined_drives = set()
+        self.declined_create_drives = set()
         self.declined_restore_drives = set()
         self.library = None  # the open Library of the current drive, if it has one
         self.drive = None
@@ -139,10 +139,10 @@ class DriveSession:
         return True
 
     def _agrees_to_create_library(self, drive):
-        if drive in self.declined_drives:
+        if drive in self.declined_create_drives:
             return False
         if not self.ask_to_create_library(CREATE_LIBRARY_QUESTION.format(drive.name)):
-            self.declined_drives.add(drive)
+            self.declined_create_drives.add(drive)
             return False
         return True
 
