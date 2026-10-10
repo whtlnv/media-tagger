@@ -401,6 +401,8 @@ class Viewer(QWidget):
         self._show_current_tags()
 
     def _open_library(self, path):
+        if self.library:
+            self._back_up_library()
         self.library = None
         drive = next(folder for folder in (path, *path.parents) if self.is_mount_point(folder))
         if self._never_holds_a_library(drive):

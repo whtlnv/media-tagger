@@ -2,8 +2,9 @@ import shutil
 
 from mediatagger.backup import newest_backup
 from mediatagger.library import Library, tags_db_path
-from mediatagger.test_viewer import SILENT
-from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, overwrite_tags_db_with_garbage
+from mediatagger.test_viewer import make_image, SILENT
+from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, make_tag_library_drive, overwrite_tags_db_with_garbage
+from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger.viewer import Viewer
 
 
@@ -54,4 +55,28 @@ def test_closing_the_viewer_after_tagging_an_item_leaves_a_backup_containing_tha
     restored_drive = tmp_path / "restored"
     tags_db_path(restored_drive).parent.mkdir(parents=True)
     shutil.copy(newest_backup(backup_root, drive.name).path, tags_db_path(restored_drive))
+    assert Library.open(restored_drive).tags(restored_drive / "Photos" / "IMG_1.png") == ["sunset"]
+
+
+def test_opening_a_folder_on_another_drive_after_tagging_an_item_leaves_a_backup_of_the_first_drive_containing_that_tag(qtbot, tmp_path):
+    first_drive, viewed = drive_with_a_tag_library_holding_one_image(tmp_path)
+    second_drive = make_tag_library_drive(tmp_path / "BACKUP")
+    [dropped] = make_folders(second_drive, "Videos")
+    make_image(dropped / "IMG_1.png", "green")
+    backup_root = tmp_path / "backups"
+    viewer = Viewer(
+        viewed, player_options=SILENT, is_mount_point=lambda path: path in (first_drive, second_drive),
+        ask_to_create_library=lambda question: False, backup_root=backup_root,
+    )
+    qtbot.addWidget(viewer)
+    viewer.resize(400, 300)
+    viewer.show()
+    qtbot.waitExposed(viewer)
+    enter_in_tag_prompt(qtbot, viewer, "sunset")
+
+    drag_and_drop_onto(viewer, dropped)
+
+    restored_drive = tmp_path / "restored"
+    tags_db_path(restored_drive).parent.mkdir(parents=True)
+    shutil.copy(newest_backup(backup_root, first_drive.name).path, tags_db_path(restored_drive))
     assert Library.open(restored_drive).tags(restored_drive / "Photos" / "IMG_1.png") == ["sunset"]
