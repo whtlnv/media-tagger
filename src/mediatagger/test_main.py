@@ -351,3 +351,28 @@ def test_running_the_mediatagger_command_with_xdg_data_home_set_on_a_drive_with_
     backup_root = data_home / "mediatagger" / "backups"
     assert newest_backup(backup_root, drive.name).path.parent == backup_root / drive_id
     assert tags_in_newest_backup(backup_root, drive, tmp_path / "restored", folder.relative_to(drive) / "IMG_1.png") == ["beach"]
+
+REPORT_SHOWN_GRID_WITH_NO_PATH_ON_A_DRIVE_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT + (
+    "from PySide6.QtCore import QTimer\n"
+    "from PySide6.QtWidgets import QApplication\n"
+    "from mediatagger.grid import Grid\n"
+    "app = QApplication([])\n"
+    "def report():\n"
+    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    grids = [grid for grid in window.findChildren(Grid) if grid.isVisible()]\n"
+    "    print(f'grids={[str(grid.folder) for grid in grids]} cursor={[grid.currentIndex().data() for grid in grids]}', flush=True)\n"
+    "    QApplication.closeAllWindows()\n"
+    "    QApplication.quit()\n"
+    "QTimer.singleShot(1000, report)\n"
+    "sys.argv = ['mediatagger']\n"
+) + RUN_MEDIATAGGER_COMMAND
+
+
+def test_running_the_mediatagger_command_with_no_path_after_a_folder_was_viewed_opens_that_folders_grid(tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    viewed = run_python_offscreen(REPORT_SHOWN_TEXTS_ON_A_DRIVE_SCRIPT, str(drive), str(folder))
+    assert viewed.returncode == 0, viewed.stderr
+
+    result = run_python_offscreen(REPORT_SHOWN_GRID_WITH_NO_PATH_ON_A_DRIVE_SCRIPT, str(drive))
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == f"grids={[str(folder)]} cursor=['IMG_1.png']"

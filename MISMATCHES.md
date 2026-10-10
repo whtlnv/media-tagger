@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 11:24 · `src/mediatagger/test_main.py::test_running_the_mediatagger_command_with_no_path_after_a_folder_was_viewed_opens_that_folders_grid`
+- Behavior: Running the shipped `mediatagger` command with no path, after a folder was viewed, opens that folder's grid
+- Predicted: passes on first run, since 107812e made `main()` build `Window(None)`, which already reads `state.json` from the inherited `XDG_CONFIG_HOME`. The right-reason alternative would have been an AssertionError with `grids=[]`
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: not vacuous. The same no-path run without the earlier `mediatagger <folder>` run reports `grids=[] cursor=[]`, so the test does exercise the remembered folder. The behavior was already delivered as a side effect of 107812e. The test was kept as an end-to-end pin of the shipped command rather than rewritten into an artificial failure
+
 ## 2026-10-10 10:12 · `src/mediatagger/test_window.py::test_launching_the_window_with_no_path_and_no_state_file_then_closing_it_leaves_no_state_file`
 - Behavior: Launching the window with no path and no state file, then closing it, leaves no state file
 - Predicted: AssertionError — `Window.__init__` calls `_record_state(None)` and writes a state file holding folder "None"
