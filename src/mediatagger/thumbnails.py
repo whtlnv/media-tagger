@@ -28,8 +28,6 @@ def video_duration(path):
 
 
 def video_thumbnail(path, timeout=None):
-    if shutil.which("ffmpeg") is None:
-        return None
     duration = video_duration(path)
     if duration is None:
         return None
