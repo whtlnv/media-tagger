@@ -382,3 +382,15 @@ def test_asking_the_library_for_a_folders_tag_counts_gives_an_item_with_two_own_
     counts = library.tag_counts(folder)
 
     assert counts[photo] == 2
+
+
+def test_asking_the_library_for_a_folders_tag_counts_gives_an_untagged_item_no_count(tmp_path):
+    library = Library.create(tmp_path)
+    folder = tmp_path / "holiday"
+    folder.mkdir()
+    photo = folder / "beach.jpg"
+    photo.touch()
+
+    counts = library.tag_counts(folder)
+
+    assert photo not in counts

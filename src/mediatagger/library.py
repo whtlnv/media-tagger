@@ -111,7 +111,8 @@ class Library:
         return names
 
     def tag_counts(self, folder):
-        return {path: len(self.tags(path)) for path in folder.iterdir()}
+        counts = {path: len(self.tags(path)) for path in folder.iterdir()}
+        return {path: count for path, count in counts.items() if count}
 
     def tags(self, path):
         if self.schema_version < 2:
