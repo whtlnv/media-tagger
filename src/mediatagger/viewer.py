@@ -431,9 +431,7 @@ class Viewer(QWidget):
             try:
                 self.library = Library.open(drive)
             except (sqlite3.DatabaseError, OSError):
-                backup = self.backup_root and newest_backup(self.backup_root, drive.name)
-                if backup:
-                    self.ask_to_restore_library(RESTORE_LIBRARY_QUESTION.format(drive.name, backup.taken_at))
+                self._offer_to_restore_library(drive)
                 self._show_library_status(LIBRARY_CANT_BE_OPENED_TEXT.format(drive.name), read_only=False)
                 return
             self._back_up_library()
@@ -460,6 +458,11 @@ class Viewer(QWidget):
 
     def _never_holds_a_library(self, drive):
         return drive == Path("/") or drive in self.app_location.parents
+
+    def _offer_to_restore_library(self, drive):
+        backup = self.backup_root and newest_backup(self.backup_root, drive.name)
+        if backup:
+            self.ask_to_restore_library(RESTORE_LIBRARY_QUESTION.format(drive.name, backup.taken_at))
 
     def _agrees_to_create_library(self, drive):
         if drive in self.declined_drives:
