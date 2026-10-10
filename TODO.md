@@ -26,7 +26,7 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 - [x] In the grid, `→` moves the cursor to the next tile and `←` back
 - [x] In the grid, `↓` moves the cursor one row down
 - [x] In the grid, `+` makes the tiles bigger than their starting size of about 200 px
-- [ ] In the grid, `-` makes the tiles smaller than their starting size
+- [x] In the grid, `-` makes the tiles smaller than their starting size
 - [ ] In the grid, pressing `+` repeatedly stops growing the tiles at about 400 px
 - [ ] In the grid, pressing `-` repeatedly stops shrinking the tiles at about 100 px
 - [ ] Repainting the grid after its files have been deleted from disk still paints their tiles, without reading the files

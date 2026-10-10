@@ -59,4 +59,7 @@ class Grid(QListView):
         if event.key() == Qt.Key.Key_Plus:
             self.setGridSize(self.gridSize() + ZOOM_STEP)
             return
+        if event.key() == Qt.Key.Key_Minus:
+            self.setGridSize(self.gridSize() - ZOOM_STEP)
+            return
         super().keyPressEvent(event)
