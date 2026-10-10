@@ -210,3 +210,18 @@ def test_in_the_grid_pressing_minus_repeatedly_stops_shrinking_the_tiles_at_abou
         qtbot.keyClick(grid, Qt.Key.Key_Minus)
 
     assert abs(tile_width(grid) - 100) <= 20
+
+
+def test_repainting_the_grid_after_its_files_are_deleted_from_disk_still_paints_their_tiles_without_reading_them(qtbot, tmp_path):
+    (tmp_path / "day1").mkdir()
+    touch(tmp_path, "clip.mp4", "photo.jpg")
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+
+    (tmp_path / "day1").rmdir()
+    (tmp_path / "clip.mp4").unlink()
+    (tmp_path / "photo.jpg").unlink()
+
+    assert FOLDER_GLYPH in painted_texts(grid, 0)
+    assert VIDEO_GLYPH in painted_texts(grid, 1)
+    assert IMAGE_GLYPH in painted_texts(grid, 2)

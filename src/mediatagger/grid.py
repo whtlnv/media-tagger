@@ -32,11 +32,12 @@ class _TileDelegate(QStyledItemDelegate):
     def __init__(self, entries, tag_counts, parent):
         super().__init__(parent)
         self._entries = entries
+        self._glyphs = [_glyph(entry) for entry in entries]
         self._tag_counts = tag_counts
 
     def paint(self, painter, option, index):
         entry = self._entries[index.row()]
-        painter.drawText(option.rect, Qt.AlignmentFlag.AlignCenter, _glyph(entry))
+        painter.drawText(option.rect, Qt.AlignmentFlag.AlignCenter, self._glyphs[index.row()])
         name = painter.fontMetrics().elidedText(entry.name, Qt.TextElideMode.ElideRight, option.rect.width())
         painter.drawText(option.rect, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignHCenter, name)
         if is_video(entry):
