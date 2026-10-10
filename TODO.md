@@ -6,7 +6,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 ## Phase 8 — Thumbnails
 
 ### Generating one thumbnail
-- [ ] A 1600×800 image yields a thumbnail of 400×200 (fits ~400 px, aspect ratio kept)
+- [x] A 1600×800 image yields a thumbnail of 400×200 (fits ~400 px, aspect ratio kept)
 - [ ] A 300×600 image yields a thumbnail of 200×400 (the long side, not always the width, is fitted)
 - [ ] An image whose EXIF orientation says "rotated 90°" yields a thumbnail in its displayed (rotated) orientation
 - [ ] A corrupt image file yields a "no thumbnail" result instead of raising
