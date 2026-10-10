@@ -438,11 +438,10 @@ def test_after_restoring_a_missing_tags_db_the_viewer_asks_no_create_question_an
     tags_db_path(drive).unlink()
     asked_to_create = []
 
-    viewer = Viewer(
-        folder, player_options=SILENT, is_mount_point=lambda path: path == drive, backup_root=backup_root,
+    viewer = viewer_backing_up_into(
+        qtbot, backup_root, folder, drive,
         ask_to_restore_library=lambda question: True, ask_to_create_library=lambda question: asked_to_create.append(question) or False,
     )
-    qtbot.addWidget(viewer)
 
     assert asked_to_create == []
     assert "Library: MEDIATAGGER" in status_bar_texts(viewer)
