@@ -56,6 +56,9 @@ On the Pi, not the drive: `~/.cache/mediatagger/<drive_id>/thumbs.db` (thumbnail
 - `beach family` adds both; `-sunset` removes `sunset`.
 - `Enter` saves the entry; `Esc` closes the prompt without changing tags.
 - Autocomplete over existing tags, most used first; typing `people:` lists all `people:*` tags.
+  A word starting with `-` suggests the item's own tags; otherwise tags the item already has, and words already entered, aren't suggested.
+  With the suggestion popup open, `↓`/`↑` move the highlight, `Tab` or `Enter` completes the last word with the highlighted tag (without saving), and `Esc` closes only the popup.
+- If saving fails, the prompt stays open with its text and the status bar says `Couldn't save tags — is the drive still connected?`.
 
 ## Search
 
