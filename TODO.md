@@ -58,7 +58,8 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 - [x] Going from the viewer to the grid and back on the same drive does not ask again to create its library
 - [x] Going from the viewer to the grid and back on a drive whose `tags.db` is damaged, after answering No to the restore question, asks no restore question again
 - [x] Opening a file from the grid takes the grid's selected-item tags off the status bar (the viewer shows the file's tags in its corner overlay instead)
-- [ ] Scrolled to the end, the grid's last row of tiles sits fully above the status bar, not under it
+- [ ] In a 400x330 window (one 200px tile per row) showing a folder of several tiles, scrolled fully down, the last tile's bottom edge (mapped to the window) is at or above the status bar's top edge — the grid keeps the status bar's height clear below its last row instead of running to the window bottom
+- [ ] In the same 400x330 window scrolled fully down, the gap between the last tile's bottom edge and the status bar's top edge is no taller than the grid's spacing between rows — the grid reserves only the status bar's height, not extra empty space
 - [ ] After tagging a file in the viewer, `Esc` shows its grid tile with the updated tag badge
 - [ ] Closing the window shuts down the viewer's video player and leaves a backup of the open library
 - [ ] Showing a folder's grid records that folder and its drive's mount point in `state.json` under `$XDG_CONFIG_HOME/mediatagger/`
