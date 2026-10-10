@@ -275,7 +275,7 @@ def shown_status_bar_texts(window):
     return [label.text() for bar in window.findChildren(StatusBar) for label in bar.findChildren(QLabel) if label.isVisible()]
 
 
-def test_moving_the_windows_grid_cursor_onto_a_tagged_item_shows_its_own_tags_space_separated_in_the_status_bar(qtbot, tmp_path):
+def window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     make_image(folder / "IMG_2.png", "blue")
     Library.open(drive).enter(folder / "IMG_2.png", "beach family")
@@ -284,6 +284,11 @@ def test_moving_the_windows_grid_cursor_onto_a_tagged_item_shows_its_own_tags_sp
     show_exposed(qtbot, window)
     stack = window.findChild(QStackedWidget)
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    return window, stack
+
+
+def test_moving_the_windows_grid_cursor_onto_a_tagged_item_shows_its_own_tags_space_separated_in_the_status_bar(qtbot, tmp_path):
+    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
 
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
 
@@ -291,14 +296,7 @@ def test_moving_the_windows_grid_cursor_onto_a_tagged_item_shows_its_own_tags_sp
 
 
 def test_moving_the_windows_grid_cursor_onto_an_untagged_item_shows_no_tags_in_the_status_bar(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    make_image(folder / "IMG_2.png", "blue")
-    Library.open(drive).enter(folder / "IMG_2.png", "beach family")
-    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
-    qtbot.addWidget(window)
-    show_exposed(qtbot, window)
-    stack = window.findChild(QStackedWidget)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
 
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Left)
