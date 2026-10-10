@@ -183,6 +183,8 @@ class Viewer(QWidget):
             self.surface.release()
         if self.video_player.engine.handle is not None:  # a second close must not call into a destroyed mpv handle
             self.video_player.engine.terminate()
+        if self.library:
+            back_up(self.library, self.backup_root, clock=lambda: datetime.now(timezone.utc))
         super().closeEvent(event)
 
     def resizeEvent(self, event):
