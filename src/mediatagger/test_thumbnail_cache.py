@@ -160,6 +160,19 @@ def test_a_file_that_was_never_stored_is_a_miss(tmp_path):
     assert cache.lookup("Photos/never-seen.jpg", size=1234, mtime=1700000000.5) is None
 
 
+def test_each_stored_video_comes_back_with_its_own_stored_duration(tmp_path):
+    from mediatagger.thumbnail_cache import ThumbnailCache
+
+    cache = ThumbnailCache(tmp_path / "thumbs.db")
+
+    cache.store("Videos/long.mp4", size=1234, mtime=1700000000.5, thumbnail=solid_thumbnail("red"), duration=42)
+    cache.store("Videos/short.mp4", size=1234, mtime=1700000000.5, thumbnail=solid_thumbnail("blue"), duration=7.25)
+    long_duration = cache.lookup_duration("Videos/long.mp4", size=1234, mtime=1700000000.5)
+    short_duration = cache.lookup_duration("Videos/short.mp4", size=1234, mtime=1700000000.5)
+
+    assert (long_duration, short_duration) == (42, 7.25)
+
+
 def solid_thumbnail(color):
     from PySide6.QtGui import QColor, QImage
 

@@ -25,18 +25,20 @@ class ThumbnailCache:
         self._root = root
         self._db = sqlite3.connect(path)
         self._db.execute(
-            "CREATE TABLE IF NOT EXISTS thumbnails (path TEXT PRIMARY KEY, size INTEGER, mtime REAL, png BLOB)"
+            "CREATE TABLE IF NOT EXISTS thumbnails (path TEXT PRIMARY KEY, size INTEGER, mtime REAL, png BLOB, duration REAL)"
         )
 
     def store(self, file_path, size, mtime, thumbnail, duration=None):
-        self._put(file_path, size, mtime, png_bytes(thumbnail))
+        self._put(file_path, size, mtime, png_bytes(thumbnail), duration)
 
     def store_failure(self, file_path, size, mtime):
         self._put(file_path, size, mtime, None)
 
-    def _put(self, file_path, size, mtime, png):
+    def _put(self, file_path, size, mtime, png, duration=None):
         with self._db:
-            self._db.execute("INSERT OR REPLACE INTO thumbnails VALUES (?, ?, ?, ?)", (self._key(file_path), size, mtime, png))
+            self._db.execute(
+                "INSERT OR REPLACE INTO thumbnails VALUES (?, ?, ?, ?, ?)", (self._key(file_path), size, mtime, png, duration)
+            )
 
     def _key(self, path):
         if self._root is None:
@@ -57,7 +59,8 @@ class ThumbnailCache:
         return QImage.fromData(png)
 
     def lookup_duration(self, file_path, size, mtime):
-        return 7.25
+        (duration,) = self._db.execute("SELECT duration FROM thumbnails WHERE path = ?", (self._key(file_path),)).fetchone()
+        return duration
 
 
 def open_thumbnail_cache(drive_id, home):
