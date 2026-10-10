@@ -22,6 +22,13 @@ def _backup_names(backup_root, library):
     return sorted(path.name for path in (backup_root / library.drive_id).glob("tags-*.db"))
 
 
+def _restored_tags(backup, tmp_path):
+    restored_drive = tmp_path / "restored"
+    tags_db_path(restored_drive).parent.mkdir(parents=True)
+    shutil.copy(backup, tags_db_path(restored_drive))
+    return Library.open(restored_drive).tags(restored_drive / "beach.jpg")
+
+
 def test_backing_up_a_library_writes_a_copy_of_its_tags_db_named_by_utc_time_under_the_drive_id_that_opens_with_its_tags(tmp_path):
     library, photo = _library_with_photo(tmp_path)
     library.enter(photo, "beach family")
@@ -31,10 +38,7 @@ def test_backing_up_a_library_writes_a_copy_of_its_tags_db_named_by_utc_time_und
 
     backup = backup_root / library.drive_id / "tags-20261009T153000Z.db"
     assert backup.is_file()
-    restored_drive = tmp_path / "restored"
-    tags_db_path(restored_drive).parent.mkdir(parents=True)
-    shutil.copy(backup, tags_db_path(restored_drive))
-    assert Library.open(restored_drive).tags(restored_drive / "beach.jpg") == ["beach", "family"]
+    assert _restored_tags(backup, tmp_path) == ["beach", "family"]
 
 
 def test_backing_up_without_a_backup_root_writes_under_xdg_data_home_when_it_is_set(tmp_path, monkeypatch):
@@ -127,7 +131,4 @@ def test_backing_up_again_at_the_same_clock_second_after_tagging_leaves_a_backup
     back_up(library, backup_root=backup_root, clock=_clock_at_october(9))
 
     assert _backup_names(backup_root, library) == ["tags-20261009T153000Z.db"]
-    restored_drive = tmp_path / "restored"
-    tags_db_path(restored_drive).parent.mkdir(parents=True)
-    shutil.copy(backup_root / library.drive_id / "tags-20261009T153000Z.db", tags_db_path(restored_drive))
-    assert Library.open(restored_drive).tags(restored_drive / "beach.jpg") == ["beach", "sunset"]
+    assert _restored_tags(backup_root / library.drive_id / "tags-20261009T153000Z.db", tmp_path) == ["beach", "sunset"]
