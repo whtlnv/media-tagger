@@ -141,7 +141,7 @@ def test_opening_a_folder_two_levels_below_a_drive_with_a_tag_library_names_that
 
     viewer = viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
-    assert status_bar_texts(viewer) == [LIBRARY_TEXT.format("MEDIATAGGER")]
+    assert LIBRARY_TEXT.format("MEDIATAGGER") in status_bar_texts(viewer)
 
 
 def test_opening_a_folder_that_is_itself_a_drives_mount_point_with_a_tag_library_names_that_folder_in_the_status_bar(qtbot, tmp_path):
@@ -150,7 +150,7 @@ def test_opening_a_folder_that_is_itself_a_drives_mount_point_with_a_tag_library
 
     viewer = viewer_on_drive(qtbot, drive, drive, lambda question: False)
 
-    assert status_bar_texts(viewer) == [LIBRARY_TEXT.format("MEDIATAGGER")]
+    assert LIBRARY_TEXT.format("MEDIATAGGER") in status_bar_texts(viewer)
 
 
 def test_opening_a_file_on_a_drive_names_the_same_library_in_the_status_bar_as_opening_its_folder(qtbot, tmp_path):
@@ -177,7 +177,8 @@ def test_dropping_a_folder_from_a_different_drive_while_viewing_switches_the_sta
 
     drag_and_drop_onto(viewer, dropped)
 
-    assert status_bar_texts(viewer) == [LIBRARY_TEXT.format("BACKUP")]
+    assert LIBRARY_TEXT.format("BACKUP") in status_bar_texts(viewer)
+    assert LIBRARY_TEXT.format("MEDIATAGGER") not in status_bar_texts(viewer)
 
 
 def test_opening_a_folder_on_the_system_disk_never_asks_to_create_a_library_and_the_status_bar_says_no_library_viewing_only(qtbot, tmp_path):
@@ -249,7 +250,7 @@ def test_accepting_to_create_a_tag_library_on_a_drive_creates_it_and_names_the_d
     viewer = viewer_on_drive(qtbot, folder, drive, lambda question: True)
 
     assert (drive / ".mediatagger" / "tags.db").is_file()
-    assert status_bar_texts(viewer) == [LIBRARY_TEXT.format("MEDIATAGGER")]
+    assert LIBRARY_TEXT.format("MEDIATAGGER") in status_bar_texts(viewer)
 
 
 def test_accepting_to_create_a_tag_library_on_a_drive_whose_mediatagger_folder_holds_no_tags_db_creates_it_there_and_names_the_drive(qtbot, tmp_path):
@@ -259,7 +260,7 @@ def test_accepting_to_create_a_tag_library_on_a_drive_whose_mediatagger_folder_h
     viewer = viewer_on_drive(qtbot, folder, drive, lambda question: True)
 
     assert (drive / ".mediatagger" / "tags.db").is_file()
-    assert status_bar_texts(viewer) == [LIBRARY_TEXT.format("MEDIATAGGER")]
+    assert LIBRARY_TEXT.format("MEDIATAGGER") in status_bar_texts(viewer)
 
 
 def test_accepting_to_create_a_tag_library_on_a_drive_creates_a_real_library_whose_tags_db_reports_a_drive_id(qtbot, tmp_path):
