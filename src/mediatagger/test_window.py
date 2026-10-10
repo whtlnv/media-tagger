@@ -1,6 +1,10 @@
+import errno
+import os
+
 from PySide6.QtCore import QCoreApplication, QEvent, Qt
 from PySide6.QtWidgets import QLabel, QStackedWidget
 
+from mediatagger.drive_session import BACKUP_FAILED_TEXT
 from mediatagger.grid import TILE_ROLE, Grid
 from mediatagger.library import Library
 from mediatagger.status_bar import READ_ONLY_STATUS_TEXT, StatusBar
@@ -318,3 +322,18 @@ def test_the_library_status_of_a_read_only_drive_stays_visible_in_the_status_bar
 
     assert isinstance(stack.currentWidget(), Grid)
     assert READ_ONLY_STATUS_TEXT in shown_status_bar_texts(window)
+
+
+def test_a_backup_failure_shown_in_the_windows_viewer_stays_visible_in_the_status_bar_after_esc_shows_the_grid(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    backup_root = tmp_path / "backups"
+    (backup_root / Library.open(drive).drive_id / "drive.json").mkdir(parents=True)
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False, backup_root=backup_root)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    stack = window.findChild(QStackedWidget)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    assert isinstance(stack.currentWidget(), Grid)
+    assert BACKUP_FAILED_TEXT.format(os.strerror(errno.EISDIR)) in shown_status_bar_texts(window)

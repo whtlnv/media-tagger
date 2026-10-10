@@ -37,6 +37,8 @@ class Window(QWidget):
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
         self.status_bar.read_only_status.setVisible(self.viewer.session.read_only)
+        self.status_bar.background_status.setText(self.viewer.status_bar.background_status.text())
+        self.status_bar.background_status.setVisible(self.viewer.status_bar.background_status.isVisibleTo(self.viewer.status_bar))
 
     def _show_tags_of(self, index):
         library = self.viewer.session.library

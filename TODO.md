@@ -53,7 +53,7 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 - [x] Moving the grid cursor onto a tagged item shows its own tags, space-separated, in the status bar
 - [x] Moving the grid cursor onto an untagged item shows no tags in the status bar
 - [x] The library status (e.g. the read-only notice) stays visible in the status bar while the grid is shown
-- [ ] A backup message started in the viewer stays visible in the status bar after `Esc` shows the grid
+- [x] A backup message started in the viewer stays visible in the status bar after `Esc` shows the grid
 - [ ] Going from the viewer to the grid and back on the same drive makes no new backup
 - [ ] Going from the viewer to the grid and back on the same drive does not ask again to create its library
 - [ ] After tagging a file in the viewer, `Esc` shows its grid tile with the updated tag badge
