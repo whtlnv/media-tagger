@@ -78,3 +78,4 @@ class Window(QWidget):
     def _open(self, path):
         self.viewer.open(path)
         self.stack.setCurrentWidget(self.viewer)
+        self.status_bar.show_tags("")

@@ -397,3 +397,13 @@ def test_going_from_the_windows_viewer_to_the_grid_and_back_on_a_drive_whose_tag
 
     assert isinstance(stack.currentWidget(), Viewer)
     assert asked == [RESTORE_LIBRARY_QUESTION.format(drive.name, taken_at.astimezone())]
+
+
+def test_opening_a_file_from_the_windows_grid_takes_the_grids_selected_item_tags_off_the_status_bar(qtbot, tmp_path):
+    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+
+    assert isinstance(stack.currentWidget(), Viewer)
+    assert "beach family" not in shown_status_bar_texts(window)
