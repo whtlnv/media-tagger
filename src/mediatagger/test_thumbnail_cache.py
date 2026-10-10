@@ -122,6 +122,23 @@ def test_a_thumbnail_stored_in_one_session_is_returned_after_the_cache_is_reopen
     assert (found.size(), found.pixelColor(200, 100)) == (QSize(400, 200), QColor("red"))
 
 
+def test_a_thumbnail_stored_while_the_drive_was_mounted_at_one_path_is_returned_when_it_is_mounted_at_another(tmp_path):
+    from PySide6.QtGui import QColor
+
+    from mediatagger.thumbnail_cache import ThumbnailCache
+
+    original_mount = tmp_path / "original"
+    new_mount = tmp_path / "new"
+
+    ThumbnailCache(tmp_path / "thumbs.db", root=original_mount).store(
+        original_mount / "Photos" / "beach.jpg", size=1234, mtime=1700000000.5, thumbnail=solid_thumbnail("red")
+    )
+    remounted = ThumbnailCache(tmp_path / "thumbs.db", root=new_mount)
+    found = remounted.lookup(new_mount / "Photos" / "beach.jpg", size=1234, mtime=1700000000.5)
+
+    assert found.pixelColor(200, 100) == QColor("red")
+
+
 def solid_thumbnail(color):
     from PySide6.QtGui import QColor, QImage
 

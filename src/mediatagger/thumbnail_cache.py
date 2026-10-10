@@ -21,7 +21,8 @@ def png_bytes(image):
 
 
 class ThumbnailCache:
-    def __init__(self, path):
+    def __init__(self, path, root=None):
+        self._root = root
         self._db = sqlite3.connect(path)
         self._db.execute(
             "CREATE TABLE IF NOT EXISTS thumbnails (path TEXT PRIMARY KEY, size INTEGER, mtime REAL, png BLOB)"
@@ -35,11 +36,16 @@ class ThumbnailCache:
 
     def _put(self, relative_path, size, mtime, png):
         with self._db:
-            self._db.execute("INSERT OR REPLACE INTO thumbnails VALUES (?, ?, ?, ?)", (relative_path, size, mtime, png))
+            self._db.execute("INSERT OR REPLACE INTO thumbnails VALUES (?, ?, ?, ?)", (self._key(relative_path), size, mtime, png))
+
+    def _key(self, path):
+        if self._root is None:
+            return path
+        return str(path.relative_to(self._root))
 
     def lookup(self, relative_path, size, mtime):
         stored_size, stored_mtime, png = self._db.execute(
-            "SELECT size, mtime, png FROM thumbnails WHERE path = ?", (relative_path,)
+            "SELECT size, mtime, png FROM thumbnails WHERE path = ?", (self._key(relative_path),)
         ).fetchone()
         if size != stored_size or mtime != stored_mtime:
             return None
