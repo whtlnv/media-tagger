@@ -9,10 +9,10 @@ from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger.viewer import BACKING_UP_TEXT, Viewer
 
 
-def viewer_backing_up_into(qtbot, backup_root, folder, *drives):
+def viewer_backing_up_into(qtbot, backup_root, folder, *drives, **options):
     viewer = Viewer(
         folder, player_options=SILENT, is_mount_point=lambda path: path in drives,
-        ask_to_create_library=lambda question: False, backup_root=backup_root,
+        ask_to_create_library=lambda question: False, backup_root=backup_root, **options,
     )
     qtbot.addWidget(viewer)
     return viewer
@@ -87,11 +87,7 @@ def test_while_a_backup_is_running_the_status_bar_shows_backing_up_database(qtbo
             status_while_backing_up.append(status_bar_texts(viewer))
         return datetime(2026, 10, 9, 15, 30, tzinfo=timezone.utc)
 
-    viewer = Viewer(
-        folder, player_options=SILENT, is_mount_point=lambda path: path == drive,
-        backup_root=tmp_path / "backups", backup_clock=clock_noting_the_status_bar,
-    )
-    qtbot.addWidget(viewer)
+    viewer = viewer_backing_up_into(qtbot, tmp_path / "backups", folder, drive, backup_clock=clock_noting_the_status_bar)
 
     viewer.close()
 
