@@ -168,7 +168,7 @@ TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT = (
 RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT = "sys.argv = ['mediatagger', sys.argv[2]]\n" + RUN_MEDIATAGGER_COMMAND
 
 # The question comes up only once the viewer has settled fullscreen, so poll for it rather than guess when.
-DECLINE_THE_QUESTION_ONCE_ASKED = (
+ANSWER_THE_QUESTION_ONCE_ASKED = (
     "polling = QTimer()\n"
     "polling.timeout.connect(answer)\n"
     "polling.start(100)\n"
@@ -196,7 +196,7 @@ DECLINE_CREATING_A_LIBRARY_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT + (
     "    print(f'asked={asked} centre={centre_colour(window).name()} status={status_bar_texts(window)}', flush=True)\n"
     "    QApplication.closeAllWindows()\n"
     "    QApplication.quit()\n"
-    + DECLINE_THE_QUESTION_ONCE_ASKED
+    + ANSWER_THE_QUESTION_ONCE_ASKED
 ) + RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT
 
 
@@ -223,7 +223,7 @@ NOTE_WHETHER_THE_VIEWER_IS_SHOWN_WHEN_ASKED_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_M
     "    print(f'viewer_shown_when_asked={viewer_shown_when_asked}', flush=True)\n"
     "    QApplication.closeAllWindows()\n"
     "    QApplication.quit()\n"
-    + DECLINE_THE_QUESTION_ONCE_ASKED
+    + ANSWER_THE_QUESTION_ONCE_ASKED
 ) + RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT
 
 
@@ -313,7 +313,7 @@ ANSWER_YES_TO_THE_QUESTION_THEN_REPORT_SHOWN_TEXTS_SCRIPT = TREAT_FIRST_ARGUMENT
     "        print(text, flush=True)\n"
     "    QApplication.closeAllWindows()\n"
     "    QApplication.quit()\n"
-    + DECLINE_THE_QUESTION_ONCE_ASKED
+    + ANSWER_THE_QUESTION_ONCE_ASKED
 ) + RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT
 
 
