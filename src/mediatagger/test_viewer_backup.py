@@ -3,7 +3,7 @@ import os
 import shutil
 from datetime import datetime, timezone
 
-from PySide6.QtCore import QEvent, QObject
+from PySide6.QtCore import QEvent, QObject, QTimer
 from PySide6.QtWidgets import QLabel
 
 from mediatagger.backup import newest_backup
@@ -177,3 +177,13 @@ def test_when_a_backup_fails_tagging_the_current_item_still_saves_its_tags(qtbot
         drives_backup_folder.chmod(0o700)
 
     assert Library.open(drive).tags(folder / "IMG_1.png") == ["sunset"]
+
+
+def test_building_a_viewer_on_a_drive_whose_library_opens_runs_no_timer_already_due_before_it_returns(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    fired_during_construction = []
+    QTimer.singleShot(0, lambda: fired_during_construction.append(True))  # like a caller's timer that expects the viewer shown
+
+    viewer_backing_up_into(qtbot, tmp_path / "backups", folder, drive)
+
+    assert fired_during_construction == []

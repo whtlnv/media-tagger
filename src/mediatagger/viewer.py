@@ -437,8 +437,10 @@ class Viewer(QWidget):
     def _back_up_library(self):
         self.backup_status.setText(BACKING_UP_TEXT)
         self.backup_status.show()
-        # paint it before the backup blocks the event loop; user input waits, so no queued key runs mid-open or mid-close
-        QApplication.processEvents(QEventLoop.ProcessEventsFlag.ExcludeUserInputEvents)
+        # Paint it before the backup blocks the event loop; user input waits, so no queued key runs mid-open or mid-close.
+        # Not while the viewer is still unshown (being built): there is nothing to paint, and a caller's timer would fire too early.
+        if self.isVisible():
+            QApplication.processEvents(QEventLoop.ProcessEventsFlag.ExcludeUserInputEvents)
         outcome = back_up(self.library, self.backup_root, clock=self.backup_clock)
         if outcome is not None:
             self.backup_status.setText(BACKUP_FAILED_TEXT.format(outcome.failure))
