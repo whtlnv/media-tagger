@@ -18,6 +18,7 @@ class Window(QWidget):
     def __init__(self, path=None, player_options=None, folder_picker=None, home=None, **session_options):
         super().__init__()
         self._home = home or Path.home()
+        remembered = self._remembered_folder() if path is None else None
         collect_garbage_on_the_gui_thread()
         self.stack = QStackedWidget(self)
         layout = QVBoxLayout(self)
@@ -28,6 +29,8 @@ class Window(QWidget):
         self.viewer = Viewer(path, player_options=player_options, folder_picker=folder_picker, on_escape=self._escape, session=self.session)
         self.stack.addWidget(self.viewer)
         self._record_state(path)
+        if remembered:
+            self._show(Grid(remembered))
 
     def resizeEvent(self, event):
         self.status_bar.place_along_the_bottom_of(self.rect())
@@ -61,9 +64,18 @@ class Window(QWidget):
         self.status_bar.raise_()
         self._record_state(grid.folder)
 
-    def _record_state(self, folder):
+    def _state_file(self):
         config_home = os.environ.get("XDG_CONFIG_HOME", self._home / ".config")
-        state_file = Path(config_home) / "mediatagger" / "state.json"
+        return Path(config_home) / "mediatagger" / "state.json"
+
+    def _remembered_folder(self):
+        state_file = self._state_file()
+        if not state_file.exists():
+            return None
+        return Path(json.loads(state_file.read_text())["folder"])
+
+    def _record_state(self, folder):
+        state_file = self._state_file()
         if self._is_on_the_apps_own_drive(state_file) or self._is_on_the_drive_being_viewed(state_file):
             return
         state_file.parent.mkdir(parents=True, exist_ok=True)

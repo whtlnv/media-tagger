@@ -534,3 +534,17 @@ def test_the_state_file_is_not_written_when_it_would_land_on_the_drive_being_vie
     qtbot.addWidget(window)
 
     assert not (config_home / "mediatagger" / "state.json").exists()
+
+
+def test_launching_the_window_with_no_path_when_the_remembered_folder_exists_opens_that_folders_grid(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    earlier = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(earlier)
+    earlier.close()
+
+    window = Window(player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+
+    shown = window.findChild(QStackedWidget).currentWidget()
+    assert isinstance(shown, Grid)
+    assert shown.folder == folder

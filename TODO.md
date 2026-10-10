@@ -66,7 +66,7 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 - [x] With `XDG_CONFIG_HOME` unset, the state is recorded under `<home>/.config/mediatagger/` of the injected home
 - [x] The state file is not written when it would land on the app's own drive
 - [x] The state file is not written when it would land on the drive being viewed
-- [ ] Launching the window with no path, when the remembered folder exists, opens that folder's grid
+- [x] Launching the window with no path, when the remembered folder exists, opens that folder's grid
 - [ ] Launching the window with no path into a remembered folder's grid opens that drive's library
 - [ ] Launching the window with no path, when the remembered folder no longer exists, shows the launch screen
 - [ ] Launching the window with no path and no state file shows the launch screen
