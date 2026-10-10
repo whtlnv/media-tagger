@@ -22,3 +22,19 @@ def test_with_the_cache_home_unset_a_drives_cache_is_thumbs_db_under_the_homes_d
     monkeypatch.delenv("XDG_CACHE_HOME")
 
     assert cache_file("drive-1234", home=tmp_path / "home") == tmp_path / "home" / ".cache" / "mediatagger" / "drive-1234" / "thumbs.db"
+
+
+def test_a_stored_thumbnail_is_returned_for_a_file_whose_size_and_mtime_are_unchanged(tmp_path):
+    from PySide6.QtCore import QSize
+    from PySide6.QtGui import QColor, QImage
+
+    from mediatagger.thumbnail_cache import ThumbnailCache
+
+    thumbnail = QImage(400, 200, QImage.Format_RGB32)
+    thumbnail.fill(QColor("red"))
+    cache = ThumbnailCache(tmp_path / "thumbs.db")
+
+    cache.store("Photos/beach.jpg", size=1234, mtime=1700000000.5, thumbnail=thumbnail)
+    found = cache.lookup("Photos/beach.jpg", size=1234, mtime=1700000000.5)
+
+    assert (found.size(), found.pixelColor(200, 100)) == (QSize(400, 200), QColor("red"))
