@@ -28,24 +28,24 @@ class ThumbnailCache:
             "CREATE TABLE IF NOT EXISTS thumbnails (path TEXT PRIMARY KEY, size INTEGER, mtime REAL, png BLOB)"
         )
 
-    def store(self, relative_path, size, mtime, thumbnail, duration=None):
-        self._put(relative_path, size, mtime, png_bytes(thumbnail))
+    def store(self, file_path, size, mtime, thumbnail, duration=None):
+        self._put(file_path, size, mtime, png_bytes(thumbnail))
 
-    def store_failure(self, relative_path, size, mtime):
-        self._put(relative_path, size, mtime, None)
+    def store_failure(self, file_path, size, mtime):
+        self._put(file_path, size, mtime, None)
 
-    def _put(self, relative_path, size, mtime, png):
+    def _put(self, file_path, size, mtime, png):
         with self._db:
-            self._db.execute("INSERT OR REPLACE INTO thumbnails VALUES (?, ?, ?, ?)", (self._key(relative_path), size, mtime, png))
+            self._db.execute("INSERT OR REPLACE INTO thumbnails VALUES (?, ?, ?, ?)", (self._key(file_path), size, mtime, png))
 
     def _key(self, path):
         if self._root is None:
             return path
         return str(path.relative_to(self._root))
 
-    def lookup(self, relative_path, size, mtime):
+    def lookup(self, file_path, size, mtime):
         stored_size, stored_mtime, png = self._db.execute(
-            "SELECT size, mtime, png FROM thumbnails WHERE path = ?", (self._key(relative_path),)
+            "SELECT size, mtime, png FROM thumbnails WHERE path = ?", (self._key(file_path),)
         ).fetchone()
         if size != stored_size or mtime != stored_mtime:
             return None
@@ -53,5 +53,5 @@ class ThumbnailCache:
             return NO_THUMBNAIL
         return QImage.fromData(png)
 
-    def lookup_duration(self, relative_path, size, mtime):
+    def lookup_duration(self, file_path, size, mtime):
         return 7.25
