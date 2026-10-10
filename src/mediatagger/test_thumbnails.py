@@ -21,3 +21,10 @@ def test_an_image_tagged_rotated_90_is_thumbnailed_in_its_displayed_orientation(
     path = make_jpeg_tagged_rotate_90(tmp_path / "rotated.jpg", "red", width=1600, height=800)
 
     assert image_thumbnail(path).size() == QSize(200, 400)
+
+
+def test_a_corrupt_image_yields_no_thumbnail(tmp_path):
+    path = tmp_path / "corrupt.jpg"
+    path.write_bytes(b"this is not a jpeg")
+
+    assert image_thumbnail(path) is None
