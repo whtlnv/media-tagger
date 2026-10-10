@@ -9,7 +9,7 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 - [x] Subfolders are listed in natural, case-blind order (`day2` before `day10`, `alpha` before `Beta`)
 - [x] A folder listing leaves out non-media files
 - [x] A folder listing leaves out folders whose name starts with `.` (`.mediatagger`, `.Trashes`, `.Spotlight-V100`, `.fseventsd`, `.hidden`) while listing a plain folder beside them
-- [ ] Asking the library for a folder's tag counts gives an item with two own tags a count of 2
+- [x] Asking the library for a folder's tag counts gives an item with two own tags a count of 2
 - [ ] Asking the library for a folder's tag counts gives an untagged item no count
 - [ ] A folder's tag counts leave out tagged items that live in other folders (including its subfolders)
 - [ ] Asking the library for the tag counts of a folder of 5,000 items runs one SQL query

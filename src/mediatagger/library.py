@@ -110,6 +110,9 @@ class Library:
         connection.close()
         return names
 
+    def tag_counts(self, folder):
+        return {path: len(self.tags(path)) for path in folder.iterdir()}
+
     def tags(self, path):
         if self.schema_version < 2:
             return []

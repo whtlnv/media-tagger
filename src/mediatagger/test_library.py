@@ -369,3 +369,16 @@ def test_removing_a_tag_from_the_last_file_that_has_it_removes_the_tags_row_from
     tags = _query(tmp_path, "SELECT name FROM tags ORDER BY name")
 
     assert tags == [("beach",)]
+
+
+def test_asking_the_library_for_a_folders_tag_counts_gives_an_item_with_two_own_tags_a_count_of_2(tmp_path):
+    library = Library.create(tmp_path)
+    folder = tmp_path / "holiday"
+    folder.mkdir()
+    photo = folder / "beach.jpg"
+    photo.touch()
+    library.enter(photo, "beach family")
+
+    counts = library.tag_counts(folder)
+
+    assert counts[photo] == 2
