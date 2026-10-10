@@ -115,3 +115,19 @@ def test_backing_up_a_library_whose_tags_changed_since_the_drives_last_backup_wr
     back_up(library, backup_root=backup_root, clock=_clock_at_october(10))
 
     assert _backup_names(backup_root, library) == ["tags-20261009T153000Z.db", "tags-20261010T153000Z.db"]
+
+
+def test_backing_up_again_at_the_same_clock_second_after_tagging_leaves_a_backup_holding_the_new_tags(tmp_path):
+    library, photo = _library_with_photo(tmp_path)
+    library.enter(photo, "beach")
+    backup_root = tmp_path / "backups"
+    back_up(library, backup_root=backup_root, clock=_clock_at_october(9))
+    library.enter(photo, "sunset")
+
+    back_up(library, backup_root=backup_root, clock=_clock_at_october(9))
+
+    assert _backup_names(backup_root, library) == ["tags-20261009T153000Z.db"]
+    restored_drive = tmp_path / "restored"
+    tags_db_path(restored_drive).parent.mkdir(parents=True)
+    shutil.copy(backup_root / library.drive_id / "tags-20261009T153000Z.db", tags_db_path(restored_drive))
+    assert Library.open(restored_drive).tags(restored_drive / "beach.jpg") == ["beach", "sunset"]

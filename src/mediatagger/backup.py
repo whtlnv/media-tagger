@@ -16,8 +16,8 @@ def back_up(library, backup_root=None, clock=None):
         backup_root = default_backup_root()
     backup_dir = backup_root / library.drive_id
     backup_dir.mkdir(parents=True, exist_ok=True)
-    previous_backups = sorted(backup_dir.glob("tags-*.db"))
     new_backup = backup_dir / f"tags-{clock():%Y%m%dT%H%M%SZ}.db"
+    previous_backups = sorted(backup for backup in backup_dir.glob("tags-*.db") if backup != new_backup)
     _copy_database(library._tags_db, new_backup)
     if _duplicates_latest(new_backup, previous_backups):
         new_backup.unlink()
