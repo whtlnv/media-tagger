@@ -63,9 +63,11 @@ class ThumbnailCache:
         return duration
 
 
-def open_thumbnail_cache(drive_id, home):
+def open_thumbnail_cache(drive_id, home, app_drive=None):
     if drive_id is None:
         return ThumbnailCache(":memory:")
     path = cache_file(drive_id, home)
+    if app_drive is not None and path.is_relative_to(app_drive):
+        return ThumbnailCache(":memory:")
     path.parent.mkdir(parents=True, exist_ok=True)
     return ThumbnailCache(path)

@@ -201,6 +201,19 @@ def test_with_no_drive_id_storing_a_thumbnail_writes_nothing_to_disk(monkeypatch
     assert (list(cache_home.rglob("*")), list(tmp_path.rglob("*"))) == ([], [working_folder])
 
 
+def test_a_drives_cache_is_not_written_when_its_location_falls_on_the_apps_own_drive(monkeypatch, tmp_path):
+    from mediatagger.thumbnail_cache import open_thumbnail_cache
+
+    app_drive = tmp_path / "APP"
+    app_drive.mkdir()
+    monkeypatch.setenv("XDG_CACHE_HOME", str(app_drive / "cache"))
+
+    cache = open_thumbnail_cache(drive_id="drive-1234", home=tmp_path / "home", app_drive=app_drive)
+    cache.store("Photos/beach.jpg", size=1234, mtime=1700000000.5, thumbnail=solid_thumbnail("red"))
+
+    assert list(app_drive.rglob("*")) == []
+
+
 def solid_thumbnail(color):
     from PySide6.QtGui import QColor, QImage
 
