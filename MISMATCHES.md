@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 16:52 · `src/mediatagger/test_thumbnail_cache.py::test_with_no_drive_id_storing_a_thumbnail_writes_nothing_to_disk`
+- Behavior: With no drive id, nothing is written to disk
+- Predicted: pass on first run — `open_thumbnail_cache(None, …)` already returns a `ThumbnailCache(":memory:")` since 1d47c16
+- Actual: passed
+- Type: passed unexpectedly (for a Red step; matched the prediction)
+- Resolution: the behavior was already delivered by the in-memory branch from the earlier "no drive id, returned again within the session" item. The test is kept as a characterization pin rather than rewritten into a contrived failure; it would fail if the no-drive-id path ever opened a file under the cache home, the home folder, or the working folder.
+
 ## 2026-10-10 15:54 · `src/mediatagger/test_thumbnail_cache.py::test_a_stored_failure_is_a_miss_once_the_files_mtime_changes`
 - Behavior: A stored failure is a miss once the file's mtime changes
 - Predicted: test passes (predicted before running, after reading the code). The TODO item assumed this behavior was missing, but it wasn't

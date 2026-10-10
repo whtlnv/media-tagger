@@ -187,6 +187,20 @@ def test_a_drives_cache_opened_by_its_drive_id_returns_its_thumbnails_after_bein
     assert found.pixelColor(200, 100) == QColor("red")
 
 
+def test_with_no_drive_id_storing_a_thumbnail_writes_nothing_to_disk(monkeypatch, tmp_path):
+    from mediatagger.thumbnail_cache import open_thumbnail_cache
+
+    cache_home = Path(os.environ["XDG_CACHE_HOME"])
+    working_folder = tmp_path / "working"
+    working_folder.mkdir()
+    monkeypatch.chdir(working_folder)
+
+    cache = open_thumbnail_cache(drive_id=None, home=tmp_path / "home")
+    cache.store("Photos/beach.jpg", size=1234, mtime=1700000000.5, thumbnail=solid_thumbnail("red"))
+
+    assert (list(cache_home.rglob("*")), list(tmp_path.rglob("*"))) == ([], [working_folder])
+
+
 def solid_thumbnail(color):
     from PySide6.QtGui import QColor, QImage
 

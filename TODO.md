@@ -42,7 +42,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] A file that was never stored is a miss (looking it up does not fail)
 - [x] A stored video's duration of 42 s comes back as 42 s, and a 7.25 s one as 7.25 s (the stored duration, not a fixed value)
 - [x] A drive's cache opened by its drive id keeps its thumbnails on disk: closing it and opening it again by the same drive id returns them
-- [ ] With no drive id, nothing is written to disk
+- [x] With no drive id, nothing is written to disk
 - [ ] The cache is never written when its location falls on the app's own drive
 - [ ] The cache is never written when its location falls on the drive being viewed
 
