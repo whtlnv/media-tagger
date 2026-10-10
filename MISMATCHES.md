@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-09 23:55 · `src/mediatagger/test_main.py::test_running_the_mediatagger_command_on_a_drive_whose_tags_db_is_garbage_with_a_backup_under_xdg_data_home_asks_to_restore_over_the_shown_viewer_and_yes_shows_the_restored_tags`
+- Behavior: the shipped `mediatagger <folder>` asks the restore question in a Yes/No dialog over the shown viewer by default, and Yes shows the restored tags
+- Predicted: AssertionError on returncode, stderr `TypeError: 'NoneType' object is not callable` from the viewer's missing default `ask_to_restore_library`
+- Actual: TypeError: 'NoneType' object is not callable raised in the test's own setup — `back_up(library)` with no `clock=` calls `None()`
+- Type: wrong-reason
+- Resolution: `back_up` has no default clock (only a default root); passed a fixed UTC clock in setup, re-ran, and got the predicted failure from `Viewer._offer_to_restore_library`
+
 ## 2026-10-09 23:20 · `src/mediatagger/test_viewer_backup.py::test_answering_no_to_the_restore_question_for_a_missing_tags_db_asks_the_create_library_question`
 - Behavior: Answering No to the restore question for a missing `tags.db` asks the create-library question
 - Predicted: passes on first run — `_open_library` already falls through from `_offer_to_restore_library` to `_agrees_to_create_library` on the missing-`tags.db` path (added by the previous cycle's green)

@@ -1,12 +1,14 @@
 import subprocess
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 from PySide6.QtGui import QColor
 
 from mediatagger.test_viewer import make_image, offscreen_environment, run_python_offscreen, shown_launch_viewer, shown_texts, shown_viewer_on
+from mediatagger.backup import back_up
 from mediatagger.library import Library
-from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image
+from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image, overwrite_tags_db_with_garbage
 from mediatagger.viewer import DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT
 
 RUN_MEDIATAGGER_COMMAND = (
@@ -290,3 +292,40 @@ def test_running_the_mediatagger_command_on_a_drive_whose_library_has_beach_pres
     result = run_python_offscreen(REPORT_SUGGESTIONS_AFTER_TYPING_IN_THE_TAG_PROMPT_SCRIPT, str(drive), str(folder / "IMG_2.png"), "b")
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == "suggestions=[['beach']]"
+
+ANSWER_YES_TO_THE_QUESTION_THEN_REPORT_SHOWN_TEXTS_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT + (
+    "from PySide6.QtCore import QTimer\n"
+    "from PySide6.QtWidgets import QApplication, QMessageBox\n"
+    "from mediatagger.test_viewer import shown_texts\n"
+    "from mediatagger.viewer import Viewer\n"
+    "app = QApplication([])\n"
+    "viewer_shown_when_asked = []\n"
+    "def decline():\n"
+    "    question = QApplication.activeModalWidget()\n"
+    "    if question is not None:\n"
+    "        viewer_shown_when_asked.append(any(isinstance(window, Viewer) and window.isVisible() for window in QApplication.topLevelWidgets()))\n"
+    "        question.button(QMessageBox.StandardButton.Yes).click()\n"
+    "        report_soon()\n"
+    "def report():\n"
+    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    print(f'viewer_shown_when_asked={viewer_shown_when_asked}', flush=True)\n"
+    "    for text in shown_texts(window):\n"
+    "        print(text, flush=True)\n"
+    "    QApplication.closeAllWindows()\n"
+    "    QApplication.quit()\n"
+    + DECLINE_THE_QUESTION_ONCE_ASKED
+) + RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT
+
+
+def test_running_the_mediatagger_command_on_a_drive_whose_tags_db_is_garbage_with_a_backup_under_xdg_data_home_asks_to_restore_over_the_shown_viewer_and_yes_shows_the_restored_tags(tmp_path, monkeypatch):
+    monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path / "data-home"))
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    library = Library.open(drive)
+    library.enter(folder / "IMG_1.png", "beach")
+    back_up(library, clock=lambda: datetime(2026, 10, 9, 15, 30, tzinfo=timezone.utc))
+    overwrite_tags_db_with_garbage(drive)
+    result = run_python_offscreen(ANSWER_YES_TO_THE_QUESTION_THEN_REPORT_SHOWN_TEXTS_SCRIPT, str(drive), str(folder))
+    assert result.returncode == 0, result.stderr
+    asked, *shown = result.stdout.splitlines()
+    assert asked == "viewer_shown_when_asked=[True]"
+    assert "beach" in shown

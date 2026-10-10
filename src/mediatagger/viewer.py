@@ -136,7 +136,7 @@ class Viewer(QWidget):
         self.backup_root = backup_root or default_backup_root()
         self.backup_clock = backup_clock
         self.ask_to_create_library = ask_to_create_library or self._ask_to_create_library
-        self.ask_to_restore_library = ask_to_restore_library
+        self.ask_to_restore_library = ask_to_restore_library or self._ask_to_create_library
         self.declined_drives = set()
         self.library = None  # the open Library of the current drive, if it has one
         self.folder_picker = folder_picker or self._pick_folder
