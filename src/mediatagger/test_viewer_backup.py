@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from PySide6.QtCore import QEvent, QObject, QTimer
 from PySide6.QtWidgets import QLabel
 
-from mediatagger.backup import newest_backup
+from mediatagger.backup import back_up, newest_backup
 from mediatagger.library import Library, tags_db_path
 from mediatagger.test_viewer import make_image, SILENT
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, make_tag_library_drive, overwrite_tags_db_with_garbage, status_bar_texts
@@ -198,3 +198,18 @@ def test_when_writing_the_drives_drive_json_fails_during_a_backup_the_status_bar
 
     assert BACKUP_FAILED_TEXT.format(os.strerror(errno.EISDIR)) in status_bar_texts(viewer)
     assert viewer.slideshow.current == folder / "IMG_1.png"
+
+
+def test_opening_a_folder_on_a_drive_whose_tags_db_is_garbage_with_backups_for_a_drive_of_the_same_name_asks_to_restore_the_newest_backup(qtbot, tmp_path):
+    from mediatagger.viewer import RESTORE_LIBRARY_QUESTION
+
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    backup_root = tmp_path / "backups"
+    taken_at = datetime(2026, 10, 9, 15, 30, tzinfo=timezone.utc)
+    back_up(Library.open(drive), backup_root, clock=lambda: taken_at)
+    overwrite_tags_db_with_garbage(drive)
+    asked = []
+
+    viewer_backing_up_into(qtbot, backup_root, folder, drive, ask_to_restore_library=lambda question: asked.append(question) or False)
+
+    assert asked == [RESTORE_LIBRARY_QUESTION.format(drive.name, taken_at)]

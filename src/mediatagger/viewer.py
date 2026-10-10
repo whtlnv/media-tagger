@@ -7,7 +7,7 @@ from PySide6.QtCore import QEvent, QEventLoop, QPoint, QRect, Qt, QTimer
 from PySide6.QtGui import QImageIOHandler, QImageReader, QPainter
 from PySide6.QtWidgets import QApplication, QCompleter, QFileDialog, QHBoxLayout, QLabel, QLineEdit, QMessageBox, QWidget
 
-from mediatagger.backup import back_up
+from mediatagger.backup import back_up, newest_backup
 from mediatagger.folder import is_video
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
 from mediatagger.library import Library, tags_db_path
@@ -33,6 +33,7 @@ NO_LIBRARY_VIEWING_ONLY_TEXT = "No library — viewing only"
 DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT = "{} has no tag library — viewing only"
 LIBRARY_CANT_BE_OPENED_TEXT = "Library on {} can't be opened — viewing only"
 CREATE_LIBRARY_QUESTION = "Create a tag library on {}?"
+RESTORE_LIBRARY_QUESTION = "The library on {} can't be opened. Restore the backup from {:%Y-%m-%d %H:%M}?"
 READ_ONLY_BANNER_TEXT = "This drive is read-only — tags can't be saved"
 READ_ONLY_STATUS_TEXT = "Read-only — tags can't be saved"
 TAGS_CANT_BE_SAVED_HERE_TEXT = "Tags can't be saved here"
@@ -123,7 +124,7 @@ def decode_fitted(path, bounds):
 
 class Viewer(QWidget):
     def __init__(self, path=None, player_options=None, folder_picker=None, is_mount_point=os.path.ismount, ask_to_create_library=None,
-        app_location=APP_PACKAGE, backup_root=None, backup_clock=lambda: datetime.now(timezone.utc),
+        app_location=APP_PACKAGE, backup_root=None, backup_clock=lambda: datetime.now(timezone.utc), ask_to_restore_library=None,
     ):
         super().__init__()
         collect_garbage_on_the_gui_thread()
@@ -132,6 +133,7 @@ class Viewer(QWidget):
         self.backup_root = backup_root
         self.backup_clock = backup_clock
         self.ask_to_create_library = ask_to_create_library or self._ask_to_create_library
+        self.ask_to_restore_library = ask_to_restore_library
         self.declined_drives = set()
         self.library = None  # the open Library of the current drive, if it has one
         self.folder_picker = folder_picker or self._pick_folder
@@ -429,6 +431,9 @@ class Viewer(QWidget):
             try:
                 self.library = Library.open(drive)
             except (sqlite3.DatabaseError, OSError):
+                backup = self.backup_root and newest_backup(self.backup_root, drive.name)
+                if backup:
+                    self.ask_to_restore_library(RESTORE_LIBRARY_QUESTION.format(drive.name, backup.taken_at))
                 self._show_library_status(LIBRARY_CANT_BE_OPENED_TEXT.format(drive.name), read_only=False)
                 return
             self._back_up_library()
