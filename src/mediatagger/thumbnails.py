@@ -16,21 +16,24 @@ def image_thumbnail(path):
     return image.scaled(400, 400, Qt.KeepAspectRatio)
 
 
-def video_duration(path):
+def video_duration(path, timeout=None):
     if shutil.which("ffmpeg") is None:
         return None
-    result = subprocess.run(
-        ["ffprobe", "-v", "error", "-show_entries", "format=duration",
-         "-of", "default=noprint_wrappers=1:nokey=1", str(path)],
-        capture_output=True, text=True,
-    )
+    try:
+        result = subprocess.run(
+            ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+             "-of", "default=noprint_wrappers=1:nokey=1", str(path)],
+            capture_output=True, text=True, timeout=timeout,
+        )
+    except subprocess.TimeoutExpired:
+        return None
     if result.returncode != 0:
         return None
     return float(result.stdout)
 
 
 def video_thumbnail(path, timeout=None):
-    duration = video_duration(path)
+    duration = video_duration(path, timeout=timeout)
     if duration is None:
         return None
     seek_seconds = duration * 0.1

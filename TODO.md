@@ -23,7 +23,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] A duration of 75 s reads `1:15`
 - [x] A duration of 3,725 s reads `1:02:05` (hours shown from an hour)
 - [x] A fractional duration of 75.6 s, as `ffprobe` reports it, reads `1:15` (whole seconds only)
-- [ ] When `ffprobe` runs past its timeout, the video yields no duration and no thumbnail and generation returns promptly
+- [x] When `ffprobe` runs past its timeout, the video yields no duration and no thumbnail and generation returns promptly
 
 ### Cache
 - [ ] Tests that write a thumbnail cache write it under a per-test temp folder, never the real `~/.cache`

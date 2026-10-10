@@ -134,6 +134,22 @@ def test_when_ffmpeg_runs_past_its_timeout_a_video_yields_no_thumbnail_promptly(
 
 
 @pytest.mark.skipif(shutil.which("ffmpeg") is None, reason="ffmpeg is not installed")
+def test_when_ffprobe_runs_past_its_timeout_a_video_yields_no_duration_and_no_thumbnail_promptly(tmp_path, monkeypatch):
+    path = make_clip(tmp_path / "clip.mp4", duration=3)
+    make_fake_tool(tmp_path / "bin", "ffprobe", "exec /bin/sleep 30")
+    make_fake_tool(tmp_path / "bin", "ffmpeg", "exit 1")
+    monkeypatch.setenv("PATH", str(tmp_path / "bin"))
+
+    started = time.monotonic()
+    duration = video_duration(path, timeout=0.5)
+    thumbnail = video_thumbnail(path, timeout=0.5)
+
+    assert duration is None
+    assert thumbnail is None
+    assert time.monotonic() - started < 5
+
+
+@pytest.mark.skipif(shutil.which("ffmpeg") is None, reason="ffmpeg is not installed")
 def test_a_corrupt_video_yields_no_thumbnail_and_no_duration(tmp_path):
     path = tmp_path / "corrupt.mp4"
     path.write_bytes(b"this is not an mp4")
