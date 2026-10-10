@@ -523,3 +523,14 @@ def test_the_state_file_is_not_written_when_it_would_land_on_the_apps_own_drive(
     qtbot.addWidget(window)
 
     assert not (config_home / "mediatagger" / "state.json").exists()
+
+
+def test_the_state_file_is_not_written_when_it_would_land_on_the_drive_being_viewed(qtbot, tmp_path, monkeypatch):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    config_home = drive / "config"
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(config_home))
+
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+
+    assert not (config_home / "mediatagger" / "state.json").exists()

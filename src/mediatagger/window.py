@@ -64,7 +64,7 @@ class Window(QWidget):
     def _record_state(self, folder):
         config_home = os.environ.get("XDG_CONFIG_HOME", self._home / ".config")
         state_file = Path(config_home) / "mediatagger" / "state.json"
-        if self._is_on_the_apps_own_drive(state_file):
+        if self._is_on_the_apps_own_drive(state_file) or self.session.drive in state_file.parents:
             return
         state_file.parent.mkdir(parents=True, exist_ok=True)
         state_file.write_text(json.dumps({"folder": str(folder), "mount_point": str(self.session.drive)}))
