@@ -8,7 +8,8 @@ from pathlib import Path
 from mediatagger.library import tags_db_path
 
 BACKUPS_KEPT_PER_DRIVE = 10
-BACKUP_NAME_FORMAT = "tags-%Y%m%dT%H%M%SZ"
+TIMESTAMP_FORMAT = "%Y%m%dT%H%M%SZ"
+BACKUP_NAME_FORMAT = f"tags-{TIMESTAMP_FORMAT}"
 BACKUP_GLOB = "tags-*.db"
 
 
@@ -62,7 +63,7 @@ def newest_backup(backup_root, drive_name):
 
 def restore(drive, backup, clock):
     tags_db = tags_db_path(drive)
-    tags_db.rename(tags_db.parent / f"tags.db.damaged-{clock():%Y%m%dT%H%M%SZ}")
+    tags_db.rename(tags_db.parent / f"tags.db.damaged-{clock():{TIMESTAMP_FORMAT}}")
     _copy_database(backup, tags_db)
 
 
