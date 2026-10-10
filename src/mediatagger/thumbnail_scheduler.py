@@ -8,6 +8,7 @@ class ThumbnailScheduler:
         self._executor = ThreadPoolExecutor(max_workers=3)
         self._pending = []
         self._unrequested = []
+        self._taken = set()  # started or done: never generated twice
         self._lock = threading.Lock()
 
     def enter_folder(self, paths):
@@ -18,6 +19,8 @@ class ThumbnailScheduler:
 
     def request(self, path):
         with self._lock:
+            if path in self._taken:
+                return
             already_queued = self._withdraw(path)
             self._pending.append(path)
         if not already_queued:
@@ -32,4 +35,5 @@ class ThumbnailScheduler:
     def _generate_next(self):
         with self._lock:
             path = self._pending.pop() if self._pending else self._unrequested.pop(0)
+            self._taken.add(path)
         self._generate(path)

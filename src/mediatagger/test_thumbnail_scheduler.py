@@ -117,3 +117,26 @@ def test_once_requested_thumbnails_are_done_the_rest_of_the_folder_is_generated_
     qtbot.waitUntil(lambda: len(generated) == len(folder))
 
     assert sorted(generated) == sorted(folder)
+
+
+def test_a_thumbnail_requested_while_it_is_generating_is_not_generated_again(qtbot, tmp_path):
+    lock = threading.Lock()
+    release = threading.Event()
+    started = []
+
+    def generate(path):
+        with lock:
+            started.append(path)
+        release.wait(timeout=10)
+
+    scheduler = ThumbnailScheduler(generate=generate)
+    path = tmp_path / "busy.jpg"
+    try:
+        scheduler.request(path)
+        qtbot.waitUntil(lambda: len(started) == 1)
+        scheduler.request(path)
+        qtbot.wait(200)
+    finally:
+        release.set()
+
+    assert started == [path]
