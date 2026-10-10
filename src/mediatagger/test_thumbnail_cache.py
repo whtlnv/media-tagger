@@ -26,12 +26,11 @@ def test_with_the_cache_home_unset_a_drives_cache_is_thumbs_db_under_the_homes_d
 
 def test_a_stored_thumbnail_is_returned_for_a_file_whose_size_and_mtime_are_unchanged(tmp_path):
     from PySide6.QtCore import QSize
-    from PySide6.QtGui import QColor, QImage
+    from PySide6.QtGui import QColor
 
     from mediatagger.thumbnail_cache import ThumbnailCache
 
-    thumbnail = QImage(400, 200, QImage.Format_RGB32)
-    thumbnail.fill(QColor("red"))
+    thumbnail = red_thumbnail()
     cache = ThumbnailCache(tmp_path / "thumbs.db")
 
     cache.store("Photos/beach.jpg", size=1234, mtime=1700000000.5, thumbnail=thumbnail)
@@ -41,12 +40,9 @@ def test_a_stored_thumbnail_is_returned_for_a_file_whose_size_and_mtime_are_unch
 
 
 def test_a_stored_thumbnail_is_not_returned_once_the_files_mtime_changes(tmp_path):
-    from PySide6.QtGui import QColor, QImage
-
     from mediatagger.thumbnail_cache import ThumbnailCache
 
-    thumbnail = QImage(400, 200, QImage.Format_RGB32)
-    thumbnail.fill(QColor("red"))
+    thumbnail = red_thumbnail()
     cache = ThumbnailCache(tmp_path / "thumbs.db")
 
     cache.store("Photos/beach.jpg", size=1234, mtime=1700000000.5, thumbnail=thumbnail)
@@ -55,14 +51,19 @@ def test_a_stored_thumbnail_is_not_returned_once_the_files_mtime_changes(tmp_pat
 
 
 def test_a_stored_thumbnail_is_not_returned_once_the_files_size_changes(tmp_path):
-    from PySide6.QtGui import QColor, QImage
-
     from mediatagger.thumbnail_cache import ThumbnailCache
 
-    thumbnail = QImage(400, 200, QImage.Format_RGB32)
-    thumbnail.fill(QColor("red"))
+    thumbnail = red_thumbnail()
     cache = ThumbnailCache(tmp_path / "thumbs.db")
 
     cache.store("Photos/beach.jpg", size=1234, mtime=1700000000.5, thumbnail=thumbnail)
 
     assert cache.lookup("Photos/beach.jpg", size=5678, mtime=1700000000.5) is None
+
+
+def red_thumbnail():
+    from PySide6.QtGui import QColor, QImage
+
+    thumbnail = QImage(400, 200, QImage.Format_RGB32)
+    thumbnail.fill(QColor("red"))
+    return thumbnail
