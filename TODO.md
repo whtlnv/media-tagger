@@ -49,7 +49,7 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 - [x] Dropping a file onto the grid starts its folder's slideshow at that file
 - [x] In a window launched with no path, after a folder is dropped onto the launch screen, `Esc` in its slideshow shows that folder's grid instead of quitting
 - [x] In the grid, pressing `f` twice leaves fullscreen again
-- [ ] After going back and forth between grids and the viewer many times, the window holds only the grid currently shown (earlier grids are deleted, not kept in the stack)
+- [x] After going back and forth between grids and the viewer many times, the window holds only the grid currently shown (earlier grids are deleted, not kept in the stack)
 - [ ] Moving the grid cursor onto a tagged item shows its own tags, space-separated, in the status bar
 - [ ] Moving the grid cursor onto an untagged item shows no tags in the status bar
 - [ ] The library status (e.g. the read-only notice) stays visible in the status bar while the grid is shown

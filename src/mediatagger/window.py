@@ -27,6 +27,8 @@ class Window(QWidget):
         grid.up.connect(lambda: self._leave(grid.folder))
         grid.escaped.connect(self.close)
         grid.dropped.connect(self._open)
+        for old in self.findChildren(Grid):
+            old.deleteLater()
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
 

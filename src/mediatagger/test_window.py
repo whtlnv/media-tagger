@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QCoreApplication, QEvent, Qt
 from PySide6.QtWidgets import QStackedWidget
 
 from mediatagger.grid import TILE_ROLE, Grid
@@ -251,3 +251,19 @@ def test_dropping_a_file_onto_the_windows_grid_starts_its_folders_slideshow_at_t
     shown = stack.currentWidget()
     assert isinstance(shown, Viewer)
     assert shown.slideshow.current == dropped / "y.jpg"
+
+
+def test_after_going_back_and_forth_between_grids_and_the_viewer_many_times_the_window_holds_only_the_grid_shown(qtbot, tmp_path):
+    make_image(tmp_path / "a.jpg", "red")
+    make_image(tmp_path / "b.jpg", "blue")
+    window = Window(tmp_path, player_options=SILENT)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+
+    for _ in range(5):
+        qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+        qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+
+    assert window.findChildren(Grid) == [stack.currentWidget()]
