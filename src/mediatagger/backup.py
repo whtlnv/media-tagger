@@ -4,7 +4,8 @@ from pathlib import Path
 
 
 def default_backup_root():
-    return Path(os.environ["XDG_DATA_HOME"]) / "mediatagger" / "backups"
+    data_home = os.environ.get("XDG_DATA_HOME", Path.home() / ".local" / "share")
+    return Path(data_home) / "mediatagger" / "backups"
 
 
 def back_up(library, backup_root=None, clock=None):

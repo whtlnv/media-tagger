@@ -34,3 +34,16 @@ def test_backing_up_without_a_backup_root_writes_under_xdg_data_home_when_it_is_
     back_up(library, clock=lambda: datetime(2026, 10, 9, 15, 30, 0, tzinfo=timezone.utc))
 
     assert (data_home / "mediatagger" / "backups" / library.drive_id / "tags-20261009T153000Z.db").is_file()
+
+
+def test_backing_up_without_a_backup_root_writes_under_home_local_share_when_xdg_data_home_is_unset(tmp_path, monkeypatch):
+    drive = tmp_path / "drive"
+    drive.mkdir()
+    library = Library.create(drive)
+    home = tmp_path / "home"
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.delenv("XDG_DATA_HOME", raising=False)
+
+    back_up(library, clock=lambda: datetime(2026, 10, 9, 15, 30, 0, tzinfo=timezone.utc))
+
+    assert (home / ".local" / "share" / "mediatagger" / "backups" / library.drive_id / "tags-20261009T153000Z.db").is_file()
