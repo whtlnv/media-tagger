@@ -187,3 +187,14 @@ def test_building_a_viewer_on_a_drive_whose_library_opens_runs_no_timer_already_
     viewer_backing_up_into(qtbot, tmp_path / "backups", folder, drive)
 
     assert fired_during_construction == []
+
+
+def test_when_writing_the_drives_drive_json_fails_during_a_backup_the_status_bar_shows_backup_failed_with_its_reason_and_the_viewer_keeps_showing_the_item(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    backup_root = tmp_path / "backups"
+    (backup_root / Library.open(drive).drive_id / "drive.json").mkdir(parents=True)
+
+    viewer = viewer_backing_up_into(qtbot, backup_root, folder, drive)
+
+    assert BACKUP_FAILED_TEXT.format(os.strerror(errno.EISDIR)) in status_bar_texts(viewer)
+    assert viewer.slideshow.current == folder / "IMG_1.png"

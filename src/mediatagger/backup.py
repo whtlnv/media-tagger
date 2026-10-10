@@ -30,22 +30,29 @@ def default_backup_root():
 
 
 def back_up(library, backup_root=None, clock=None):
+    """Copy the library's database into its drive's backup folder; any failure comes back as a BackupOutcome, never raised."""
     if backup_root is None:
         backup_root = default_backup_root()
-    backup_dir = backup_root / library.drive_id
     try:
-        backup_dir.mkdir(parents=True, exist_ok=True)
-    except PermissionError as error:
-        return BackupOutcome(failure=error.strerror)
+        _back_up(library, backup_root / library.drive_id, clock)
+    except (OSError, sqlite3.Error) as error:
+        return BackupOutcome(failure=getattr(error, "strerror", None) or str(error))
+
+
+def _back_up(library, backup_dir, clock):
+    backup_dir.mkdir(parents=True, exist_ok=True)
     new_backup = backup_dir / f"{clock():{BACKUP_NAME_FORMAT}}.db"
-    previous_backups = sorted(backup for backup in backup_dir.glob(BACKUP_GLOB) if backup != new_backup)
+    partial = new_backup.with_name(new_backup.name + ".partial")  # a half-written copy must never pass for a backup
     try:
-        _copy_database(library._tags_db, new_backup)
-    except sqlite3.DatabaseError as error:
-        new_backup.unlink(missing_ok=True)
-        return BackupOutcome(failure=str(error))
-    if _duplicates_latest(new_backup, previous_backups):
-        new_backup.unlink()
+        _copy_database(library._tags_db, partial)
+    except (OSError, sqlite3.Error):
+        partial.unlink(missing_ok=True)
+        raise
+    backups = sorted(backup_dir.glob(BACKUP_GLOB))
+    if backups and backups[-1].read_bytes() == partial.read_bytes():
+        partial.unlink()  # nothing changed since the latest backup
+    else:
+        partial.replace(new_backup)
     for old_backup in sorted(backup_dir.glob(BACKUP_GLOB))[:-BACKUPS_KEPT_PER_DRIVE]:
         old_backup.unlink()
     drive_root = library._tags_db.parent.parent
@@ -69,10 +76,6 @@ def restore(drive, backup, clock):
     tags_db = tags_db_path(drive)
     tags_db.rename(tags_db.parent / f"tags.db.damaged-{clock():{TIMESTAMP_FORMAT}}")
     _copy_database(backup, tags_db)
-
-
-def _duplicates_latest(new_backup, previous_backups):
-    return bool(previous_backups) and previous_backups[-1].read_bytes() == new_backup.read_bytes()
 
 
 def _copy_database(source, destination):
