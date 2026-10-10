@@ -20,7 +20,7 @@ Phase 7 notes for every cycle. Architecture: `viewer.py` must not grow. The grid
 - [x] An image tile shows no ▶ badge
 - [x] A tile whose filename is wider than the tile shows it truncated with an ellipsis
 - [x] A tile whose filename fits shows it whole, with no ellipsis
-- [ ] A tile for an item with 3 own tags shows a `🏷3` badge
+- [x] A tile for an item with 3 own tags shows a `🏷3` badge
 - [ ] A tile for an untagged item shows no tag badge
 - [ ] A grid with no library (viewing only) shows no tag badges
 - [ ] In the grid, `→` moves the cursor to the next tile and `←` back

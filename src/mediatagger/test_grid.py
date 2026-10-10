@@ -3,7 +3,8 @@ from PySide6.QtGui import QImage, QPainter
 from PySide6.QtWidgets import QStyleOptionViewItem
 
 from mediatagger.folder import folder_entries
-from mediatagger.grid import FOLDER_GLYPH, IMAGE_GLYPH, VIDEO_BADGE, VIDEO_GLYPH, Grid
+from mediatagger.grid import FOLDER_GLYPH, IMAGE_GLYPH, TAG_BADGE, VIDEO_BADGE, VIDEO_GLYPH, Grid
+from mediatagger.library import Library
 from mediatagger.test_folder import touch
 
 
@@ -99,3 +100,13 @@ def test_a_tile_whose_filename_fits_shows_it_whole_with_no_ellipsis(qtbot, tmp_p
 
     assert "cat.jpg" in texts
     assert not any("…" in text for text in texts)
+
+
+def test_a_tile_for_an_item_with_3_own_tags_shows_a_tag_badge_with_its_count(qtbot, tmp_path):
+    library = Library.create(tmp_path)
+    touch(tmp_path, "beach.jpg")
+    library.enter(tmp_path / "beach.jpg", "beach family summer")
+    grid = Grid(tmp_path, library=library)
+    qtbot.addWidget(grid)
+
+    assert f"{TAG_BADGE}3" in painted_texts(grid, 0)
