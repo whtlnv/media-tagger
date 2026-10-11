@@ -31,6 +31,9 @@ class ThumbnailCache:
         self._root = root
         # Workers store what they generate while the GUI thread may look up: one connection, one at a time.
         self._db = sqlite3.connect(path, check_same_thread=False)
+        # A cache: losing the last few thumbnails to a power cut is fine, waiting for the SD card after each one is not.
+        self._db.execute("PRAGMA journal_mode = WAL")
+        self._db.execute("PRAGMA synchronous = NORMAL")
         self._lock = threading.Lock()
         self._db.execute(
             "CREATE TABLE IF NOT EXISTS thumbnails (path TEXT PRIMARY KEY, size INTEGER, mtime REAL, png BLOB, duration REAL)"

@@ -343,6 +343,20 @@ def test_a_thumbnail_stored_as_png_by_an_earlier_version_still_reads(tmp_path):
     assert found.pixelColor(200, 100).name() == "#ff0000"
 
 
+def test_a_cache_on_disk_writes_ahead_and_does_not_wait_for_the_disk_on_every_thumbnail(tmp_path):
+    import sqlite3
+
+    from mediatagger.thumbnail_cache import ThumbnailCache
+
+    cache = ThumbnailCache(tmp_path / "thumbs.db")
+    cache.store("Photos/beach.jpg", size=1234, mtime=1700000000.5, thumbnail=solid_thumbnail("red"))
+    connection = sqlite3.connect(tmp_path / "thumbs.db")
+    (journal_mode,) = connection.execute("PRAGMA journal_mode").fetchone()
+    connection.close()
+
+    assert journal_mode == "wal"
+
+
 def solid_colour(colour):
     """The pure colour a stored pixel stands for: thumbnails are kept as JPEG, which shifts colours by a few levels."""
     from PySide6.QtGui import QColor
