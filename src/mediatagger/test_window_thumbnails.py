@@ -42,3 +42,25 @@ def test_starting_a_slideshow_from_the_windows_grid_stops_generating_that_folder
 
     with lock:
         assert started == busy
+
+
+def test_going_in_and_out_of_a_subfolder_many_times_leaves_no_thumbnail_workers_behind(qtbot, tmp_path):
+    import threading
+
+    (tmp_path / "day1").mkdir()
+    make_image(tmp_path / "day1" / "a.jpg", "red")
+    make_image(tmp_path / "b.jpg", "blue")
+    window = Window(tmp_path / "b.jpg", player_options=SILENT)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    qtbot.wait(200)
+    before = threading.active_count()
+
+    for _ in range(10):
+        stack.currentWidget().setCurrentIndex(stack.currentWidget().model().index(0, 0))
+        qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+        qtbot.wait(50)
+        qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Backspace)
+        qtbot.wait(50)
+    qtbot.waitUntil(lambda: threading.active_count() <= before + 3, timeout=3000)
