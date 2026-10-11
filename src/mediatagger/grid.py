@@ -94,7 +94,8 @@ class _TileDelegate(QStyledItemDelegate):
             picture = QRect(option.rect.topLeft(), tile.thumbnail.size().scaled(picture_area.size(), Qt.AspectRatioMode.KeepAspectRatio))
             picture.moveCenter(picture_area.center())
             painter.drawImage(picture, tile.thumbnail)
-        painter.drawText(option.rect, Qt.AlignmentFlag.AlignCenter, tile.kind.value)
+        else:
+            painter.drawText(option.rect, Qt.AlignmentFlag.AlignCenter, tile.kind.value)
         name = painter.fontMetrics().elidedText(tile.name, Qt.TextElideMode.ElideRight, option.rect.width())
         painter.drawText(option.rect, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignHCenter, name)
         if tile.kind is _Kind.VIDEO:

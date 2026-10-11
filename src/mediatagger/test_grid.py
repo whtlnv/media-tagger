@@ -483,3 +483,18 @@ def test_a_tile_with_a_thumbnail_paints_the_picture_above_the_filename_aspect_ra
     assert picture is not None
     assert picture.width() / picture.height() == pytest.approx(2, rel=0.05)
     assert picture.bottom() < filename_top
+
+
+def test_a_tile_paints_its_type_glyph_only_while_it_has_no_thumbnail(qtbot, tmp_path):
+    touch(tmp_path, "photo.jpg")
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+    without_thumbnail = painted_texts(grid, 0)
+    thumbnail = QImage(400, 200, QImage.Format.Format_RGB32)
+    thumbnail.fill(Qt.GlobalColor.red)
+    grid.model().index(0, 0).data(TILE_ROLE).thumbnail = thumbnail
+
+    with_thumbnail = painted_texts(grid, 0)
+
+    assert IMAGE_GLYPH in without_thumbnail
+    assert IMAGE_GLYPH not in with_thumbnail
