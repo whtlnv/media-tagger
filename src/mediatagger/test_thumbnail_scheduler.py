@@ -196,7 +196,9 @@ def test_a_scheduler_dropped_while_its_workers_run_is_never_freed_off_the_gui_th
     """The last reference to a scheduler must not die on a worker thread: its Qt object would be destroyed there while
     the result it just posted waits in the GUI thread's queue, and delivering that result crashes the app."""
     import gc
+    import weakref
 
+    freed_on = []
     was_enabled = gc.isenabled()
     gc.disable()  # as in the app (gui_thread_gc): objects die by reference count, on whichever thread drops the last one
     try:
@@ -210,6 +212,7 @@ def test_a_scheduler_dropped_while_its_workers_run_is_never_freed_off_the_gui_th
             scheduler = ThumbnailScheduler(generate=generate)
             scheduler.generated.connect(lambda path, thumbnail: None)
             scheduler.enter_folder([tmp_path / f"{index}.jpg" for index in range(3)])
+            weakref.finalize(scheduler, lambda: freed_on.append(threading.current_thread()))
             del scheduler
             release.set()
             qtbot.wait(50)
@@ -217,6 +220,7 @@ def test_a_scheduler_dropped_while_its_workers_run_is_never_freed_off_the_gui_th
         if was_enabled:
             gc.enable()
 
+    assert freed_on == [threading.main_thread()] * 20
 
 
 _STARTS_A_SCHEDULER_IN_A_FRESH_APP = """
