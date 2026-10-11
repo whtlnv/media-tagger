@@ -418,6 +418,23 @@ def test_when_saving_from_the_windows_grid_tag_prompt_fails_because_the_drive_ha
     assert _COULDNT_SAVE_TAGS_TEXT in shown_status_bar_texts(window)
 
 
+def test_esc_with_the_suggestion_popup_open_in_the_windows_grid_tag_prompt_closes_only_the_popup_leaving_the_prompt_open_with_its_text(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    [trip] = make_folders(folder, "trip")
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_T)
+    [prompt] = visible_tag_prompts(window)
+    qtbot.waitUntil(prompt.hasFocus)
+    qtbot.keyClicks(prompt, "b")
+    suggestions = prompt.completer().popup()
+    qtbot.waitUntil(suggestions.isVisible)
+
+    qtbot.keyClick(suggestions, Qt.Key.Key_Escape)
+
+    assert (suggestions.isVisible(), visible_tag_prompt_texts(window)) == (False, ["b"])
+
+
 def test_moving_the_windows_grid_cursor_onto_an_untagged_item_shows_no_tags_in_the_status_bar(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)

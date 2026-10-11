@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 16:41 · `src/mediatagger/test_window.py::test_esc_with_the_suggestion_popup_open_in_the_windows_grid_tag_prompt_closes_only_the_popup_leaving_the_prompt_open_with_its_text`
+- Behavior: With the grid's tag prompt open, the first `Esc` closes the suggestion popup and leaves the prompt open
+- Predicted: passes on first run — the grid opens the shared TagPrompt, whose completer popup already eats the first Esc (pinned for the viewer in test_tag_prompt.py)
+- Actual: passed on first run; without the Esc it fails (`assert (True, ['b']) == (False, ['b'])`), so the pin is not vacuous. Dropping the `trip` folder from the setup makes the prompt's focus wait time out, so the folder stays
+- Type: passed unexpectedly
+- Resolution: The behavior arrived with the shared TagPrompt, so the test stays as a pin and /green has nothing to implement.
+
 ## 2026-10-11 16:35 · `src/mediatagger/test_window.py::test_when_saving_from_the_windows_grid_tag_prompt_fails_because_the_drive_has_gone_away_the_prompt_stays_open_with_its_text_and_the_status_bar_says_it_couldnt_save_tags`
 - Behavior: When saving from the grid's tag prompt fails because the drive has gone away, the prompt stays open with its text and the status bar says `Couldn't save tags — is the drive still connected?`
 - Predicted: passes on first run — the grid opens the shared TagPrompt, whose `_record_tags` already catches `sqlite3.Error`/`OSError` and shows the couldn't-save message on the window's status bar without closing
