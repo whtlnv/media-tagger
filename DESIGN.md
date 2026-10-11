@@ -41,7 +41,7 @@ When a library opens, before switching to another drive, and on exit, copy `tags
 
 ### Thumbnail cache
 
-On the Pi, not the drive: `~/.cache/mediatagger/<drive_id>/thumbs.db` (thumbnails as blobs in one SQLite file). Keyed by relative path + size + mtime, so each is generated once and regenerated only when the file changes.
+On the Pi, not the drive: `$XDG_CACHE_HOME/mediatagger/<drive_id>/thumbs.db` (default `~/.cache/mediatagger/<drive_id>/thumbs.db`; thumbnails as blobs in one SQLite file). Keyed by relative path + size + mtime, so each is generated once and regenerated only when the file changes; a file that yields no thumbnail is not retried until it changes. With no library, or when that location falls on the app's own drive or the drive being viewed, thumbnails are kept in memory for the session only.
 
 ## Tags
 
@@ -136,9 +136,9 @@ Search history is remembered (`↑` in the search box).
 | `Esc` | quit; (in search) clear search, back to the folder |
 | `f` | toggle fullscreen |
 
-- Tiles ~200 px: thumbnail, truncated filename, tag-count badge when the item has own tags.
+- Tiles ~200 px: thumbnail (a large type glyph until it arrives, or when there is none), truncated filename, tag-count badge when the item has own tags.
 - Video tiles: frame at ~10%, ▶ badge, duration.
-- Folder tiles: first image inside.
+- Folder tiles: first image directly inside (natural order); none there, no thumbnail.
 - Selected item's own tags shown in the status bar.
 
 ### Status bar (always visible)

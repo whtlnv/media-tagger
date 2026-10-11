@@ -18,7 +18,7 @@ State of the project and how it has been run, for the next session. Read `DESIGN
 | 10 Search | not started |
 | 11 Run from the drive on the Pi | not started (spike tooling exists in `spikes/drive/`) |
 
-Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), `grid.py`, `viewer.py`, `status_bar.py`, `drive_session.py` (library open/create/restore/backup), `library.py` (SQLite, schema v2), `backup.py`, `state.py` (last folder, `$XDG_CONFIG_HOME`), `folder.py`, `slideshow.py`, `video.py` + `mpv_surface.py` (libmpv render API), `gui_thread_gc.py`. Tests are co-located (`test_*.py`). Open structural debt is in `BACKLOG.md`.
+Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), `grid.py`, `viewer.py`, `status_bar.py`, `drive_session.py` (library open/create/restore/backup), `library.py` (SQLite, schema v2), `backup.py`, `state.py` (last folder, `$XDG_CONFIG_HOME`), `folder.py`, `slideshow.py`, `thumbnails.py` (image/video/folder thumbnails, `ffmpeg`/`ffprobe`), `thumbnail_cache.py`, `thumbnail_scheduler.py` (3 workers + prefetch), `folder_thumbnails.py` (a folder's thumbnails for its grid), `video.py` + `mpv_surface.py` (libmpv render API), `gui_thread_gc.py`. Tests are co-located (`test_*.py`). Open structural debt is in `BACKLOG.md`.
 
 ## How the work has been run
 
@@ -35,14 +35,12 @@ Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), 
 
 - Tiles look sparse (tiny glyphs, badges at cell edges) — Phase 8's thumbnails should redo the tile look; check it on the native display.
 - On relaunch, a single tile was once drawn one row down from the top — uninvestigated.
-- `Library.tag_counts` is one query but reads every tagged row in the library and filters in Python; narrow it to the folder (`rel_path LIKE 'folder/%'` without deeper slashes) before libraries get big.
 - The selected item's tags are fetched with one query per cursor move — fine now, cache if it shows on the Pi.
-- `test_window.py` is ~700 lines; split by topic when touched.
 - Incident: before conftest pinned `XDG_CONFIG_HOME`, one test run wrote `~/.config/mediatagger/state.json` in the real home; it was deleted. Any new on-disk location needs a conftest guard **before** the first test that writes it.
 
 ## Lessons to put in every phase brief
 
-1. Tests run offscreen (`conftest.py`), must be **silent** (`player_options={"ao": "null"}`), and never touch real drives or `~`: `XDG_DATA_HOME` and `XDG_CONFIG_HOME` are pointed at temp dirs by conftest; drives are faked with seams (`is_mount_point=`, `app_location=`, `ask_to_create_library=`, `ask_to_restore_library=`, `backup_root=`, `folder_picker=`).
+1. Tests run offscreen (`conftest.py`), must be **silent** (`player_options={"ao": "null"}`), and never touch real drives or `~`: `XDG_DATA_HOME`, `XDG_CONFIG_HOME` and `XDG_CACHE_HOME` are pointed at temp dirs by conftest; drives are faked with seams (`is_mount_point=`, `app_location=`, `ask_to_create_library=`, `ask_to_restore_library=`, `backup_root=`, `folder_picker=`).
 2. Create mpv players only via `video.new_engine()` (sets `LC_NUMERIC=C`; libmpv otherwise returns NULL → segfault).
 3. `gui_thread_gc` disables automatic GC and collects on a GUI-thread timer — Python's GC running on mpv's event thread freed Qt widgets mid-paint (segfault). Keep it in force for any new top-level window.
 4. **Offscreen hides real bugs.** Every phase found bugs only on the native display (clipped text, widgets behind video, modal timing, fullscreen loss, popups replacing whole text). Native check recipe: throwaway exFAT image (`hdiutil create -size 64m -fs ExFAT -volname MTFAKE …; hdiutil attach`), scratch `XDG_*` dirs, drive the real `main()` from a scratch script outside the repo, `screencapture -x main.png second.png`. The user's main display is 2560x1080; a rotated 1080x1920 second display often hosts the app.
