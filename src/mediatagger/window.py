@@ -27,7 +27,7 @@ class Window(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.stack)
         self.status_bar = StatusBar(self)
-        self.tag_prompt = TagPrompt(self, self.status_bar, on_close=self._show_tag_count_of)
+        self.tag_prompt = TagPrompt(self, self.status_bar, on_close=self._show_tag_badge)
         self.session = DriveSession(self.status_bar, self, home=home or Path.home(), **session_options)
         self.viewer = Viewer(player_options=player_options, folder_picker=folder_picker, on_escape=self._escape, session=self.session,
             on_drop=self._record_state)
@@ -140,7 +140,7 @@ class Window(QWidget):
             return
         self.tag_prompt.open(self.session.library, index.data(TILE_ROLE).path)
 
-    def _show_tag_count_of(self, library, path):
+    def _show_tag_badge(self, library, path):
         grid = self.stack.currentWidget()
         index = grid.currentIndex()
         index.data(TILE_ROLE).tag_count = len(library.tags(path))
