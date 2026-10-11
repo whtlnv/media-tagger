@@ -39,7 +39,7 @@ class _Kind(Enum):
 @dataclass
 class _Tile:
     """Everything a tile paints, gathered when the folder is listed so painting never touches the disk.
-    Phase 8 adds the thumbnail here."""
+    The thumbnail and a video's duration arrive later, from the thumbnail workers."""
 
     path: Path
     name: str
