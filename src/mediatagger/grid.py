@@ -57,6 +57,16 @@ def _tiles(folder, tag_counts):
     return [_Tile(folder / name, name, kind, counts_by_name.get(name, 0)) for name, kind in zip(subfolders + media, kinds)]
 
 
+_generated = {}
+
+
+def _remembered_thumbnail_and_duration(path):
+    """Generated once per run: opening a folder's grid again reuses what its first visit generated."""
+    if path not in _generated:
+        _generated[path] = thumbnail_and_duration(path)
+    return _generated[path]
+
+
 def _receive(tile, generated):
     tile.thumbnail, tile.duration = generated
 
@@ -121,7 +131,7 @@ class Grid(QListView):
 
     def _generate_thumbnails(self, tiles):
         rows = {tile.path: row for row, tile in enumerate(tiles)}
-        self._thumbnails = ThumbnailScheduler(thumbnail_and_duration, parent=self)
+        self._thumbnails = ThumbnailScheduler(_remembered_thumbnail_and_duration, parent=self)
         self._thumbnails.generated.connect(lambda path, generated: self._show_thumbnail(tiles, rows[path], generated))
         paths = list(rows)
         self.verticalScrollBar().valueChanged.connect(lambda: self._request_visible(tiles))

@@ -64,3 +64,30 @@ def test_going_in_and_out_of_a_subfolder_many_times_leaves_no_thumbnail_workers_
         qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Backspace)
         qtbot.wait(50)
     qtbot.waitUntil(lambda: threading.active_count() <= before + 3, timeout=3000)
+
+
+def test_opening_a_folders_grid_a_second_time_generates_nothing(qtbot, tmp_path, monkeypatch):
+    from mediatagger import grid as grid_module
+    from mediatagger.grid import TILE_ROLE
+    from mediatagger.thumbnails import thumbnail_and_duration
+
+    generated = []
+
+    def generate(path):
+        generated.append(path)
+        return thumbnail_and_duration(path)
+
+    monkeypatch.setattr(grid_module, "thumbnail_and_duration", generate)
+    make_image(tmp_path / "b.jpg", "blue")
+    window = Window(tmp_path / "b.jpg", player_options=SILENT)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    first_tile = stack.currentWidget().model().index(0, 0).data(TILE_ROLE)
+    qtbot.waitUntil(lambda: first_tile.thumbnail is not None)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    qtbot.wait(200)  # long enough for the second grid's workers to start generating
+
+    assert generated == [tmp_path / "b.jpg"]
