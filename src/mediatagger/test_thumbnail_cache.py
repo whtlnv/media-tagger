@@ -83,7 +83,7 @@ def test_a_stored_video_thumbnail_comes_back_with_its_duration(tmp_path):
 
     cache.store("Videos/party.mp4", size=1234, mtime=1700000000.5, thumbnail=solid_thumbnail("red"), duration=7.25)
 
-    assert cache.lookup_duration("Videos/party.mp4", size=1234, mtime=1700000000.5) == 7.25
+    assert cache.lookup_duration("Videos/party.mp4") == 7.25
 
 
 def test_a_stored_failure_comes_back_as_no_thumbnail_rather_than_a_miss_while_the_file_is_unchanged(tmp_path):
@@ -167,8 +167,8 @@ def test_each_stored_video_comes_back_with_its_own_stored_duration(tmp_path):
 
     cache.store("Videos/long.mp4", size=1234, mtime=1700000000.5, thumbnail=solid_thumbnail("red"), duration=42)
     cache.store("Videos/short.mp4", size=1234, mtime=1700000000.5, thumbnail=solid_thumbnail("blue"), duration=7.25)
-    long_duration = cache.lookup_duration("Videos/long.mp4", size=1234, mtime=1700000000.5)
-    short_duration = cache.lookup_duration("Videos/short.mp4", size=1234, mtime=1700000000.5)
+    long_duration = cache.lookup_duration("Videos/long.mp4")
+    short_duration = cache.lookup_duration("Videos/short.mp4")
 
     assert (long_duration, short_duration) == (42, 7.25)
 

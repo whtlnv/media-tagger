@@ -84,7 +84,7 @@ class ThumbnailCache:
                 missing.append(path)
         return missing
 
-    def lookup_duration(self, file_path, size, mtime):
+    def lookup_duration(self, file_path):
         with self._lock:
             (duration,) = self._db.execute("SELECT duration FROM thumbnails WHERE path = ?", (self._key(file_path),)).fetchone()
         return duration
@@ -101,7 +101,7 @@ def generate_through_cache(cache, generate, path):
     if found is NO_THUMBNAIL:
         return None, None, False
     if found is not None:
-        return found, cache.lookup_duration(path, stat.st_size, stat.st_mtime), False
+        return found, cache.lookup_duration(path), False
     thumbnail, duration = generate(path)
     if thumbnail is None:
         cache.store_failure(path, stat.st_size, stat.st_mtime)
