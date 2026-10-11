@@ -283,9 +283,13 @@ def test_opening_the_grid_of_a_folder_of_5000_images_with_an_empty_cache_and_sta
 
 def fastest_of_three(qtbot, open_grid):
     """The quickest of three openings: a single one can be held up by whatever else the machine is doing at that moment.
-    Each grid's thumbnail workers are stopped before the next opening, so none slows another down."""
+    Each grid's thumbnail workers are stopped before the next opening, so none slows another down, and earlier tests'
+    garbage is collected first, so collecting it isn't counted as opening the grid."""
+    import gc
+
     timings = []
     for _ in range(3):
+        gc.collect()
         started = time.perf_counter()
         grid = open_grid()
         timings.append(time.perf_counter() - started)
