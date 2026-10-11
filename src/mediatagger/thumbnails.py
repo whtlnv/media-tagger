@@ -1,4 +1,3 @@
-import shutil
 import subprocess
 
 from PySide6.QtCore import Qt
@@ -21,13 +20,11 @@ def image_thumbnail(path):
 def _run_with_timeout(args, timeout, **kwargs):
     try:
         return subprocess.run(args, capture_output=True, timeout=timeout or TOOL_TIMEOUT_S, **kwargs)
-    except subprocess.TimeoutExpired:
+    except (subprocess.TimeoutExpired, OSError):  # hung, or not installed
         return None
 
 
 def video_duration(path, timeout=None):
-    if shutil.which("ffmpeg") is None:
-        return None
     result = _run_with_timeout(
         ["ffprobe", "-v", "error", "-show_entries", "format=duration",
          "-of", "default=noprint_wrappers=1:nokey=1", str(path)],

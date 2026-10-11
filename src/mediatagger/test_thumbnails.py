@@ -232,3 +232,12 @@ def test_a_video_whose_duration_ffprobe_reports_as_not_available_yields_no_durat
     monkeypatch.setenv("PATH", str(tmp_path / "bin"))
 
     assert video_duration(path) is None
+
+
+def test_with_ffmpeg_but_no_ffprobe_on_the_path_a_video_yields_no_duration_and_no_thumbnail(tmp_path, monkeypatch):
+    path = tmp_path / "clip.mp4"
+    path.write_bytes(b"a video")
+    make_fake_tool(tmp_path / "bin", "ffmpeg", "exit 1")
+    monkeypatch.setenv("PATH", str(tmp_path / "bin"))
+
+    assert (video_duration(path), video_thumbnail(path)) == (None, None)
