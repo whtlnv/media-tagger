@@ -5,7 +5,7 @@ Phase 9 notes for every cycle. Architecture: `viewer.py` must not grow — it sh
 - [x] Entering `beach` for a folder makes `beach` that folder's own tag when its tags are read back, also after reopening the library
 - [x] A tagged folder is recorded in the library as a folder (`kind` `'dir'`)
 - [x] A tagged file is still recorded in the library as a file (`kind` `'file'`), next to a tagged folder
-- [ ] Tagging a folder leaves every file inside it with no own tags
+- [x] Tagging a folder leaves every file inside it with no own tags
 - [ ] Entering tags for the drive's mount point itself stores nothing: its own tags read back empty
 - [ ] Entering tags for a folder directly under the drive's mount point stores them
 - [ ] A file's effective tags include its own tags

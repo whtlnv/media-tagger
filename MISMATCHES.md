@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 13:42 · `src/mediatagger/test_library.py::test_tagging_a_folder_leaves_every_file_inside_it_with_no_own_tags`
+- Behavior: Tagging a folder leaves every file inside it with no own tags
+- Predicted: pass. `Library.enter` writes one `items` row for the folder only, and `Library.tags` matches the exact `rel_path`, so files inside (direct and nested) have no rows
+- Actual: pass
+- Type: passed unexpectedly (for Red; foreseen at prediction time)
+- Resolution: This item is a guard against folder tags spreading into files' own tags, not new behaviour. No honest rewrite can make it fail. Kept as a regression pin before effective tags (inherited) are added; /green has nothing to implement.
+
 ## 2026-10-11 13:35 · `src/mediatagger/test_library.py::test_a_tagged_files_row_in_items_still_records_its_kind_as_file_next_to_a_tagged_folder`
 - Behavior: A tagged file is still recorded in the library as a file (`kind` `'file'`), next to a tagged folder
 - Predicted: pass — `Library.enter` already chooses `kind` per path (`"dir" if path.is_dir() else "file"`, added in cb80c4a)

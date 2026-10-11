@@ -484,3 +484,17 @@ def test_entering_beach_for_a_folder_makes_beach_its_own_tag_also_after_the_libr
 
     assert library.tags(folder) == ["beach"]
     assert Library.open(tmp_path).tags(folder) == ["beach"]
+
+
+def test_tagging_a_folder_leaves_every_file_inside_it_with_no_own_tags(tmp_path):
+    library = Library.create(tmp_path)
+    folder = tmp_path / "trip"
+    subfolder = folder / "day1"
+    subfolder.mkdir(parents=True)
+    photos = [folder / "beach.jpg", subfolder / "dunes.jpg"]
+    for photo in photos:
+        photo.touch()
+
+    library.enter(folder, "beach")
+
+    assert [library.tags(photo) for photo in photos] == [[], []]
