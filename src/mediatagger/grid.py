@@ -62,7 +62,8 @@ def _thumbnail_and_duration(path):
     if is_video_name(path.name):
         return video_thumbnail(path), video_duration(path)
     if path.is_dir():
-        return image_thumbnail(path / subfolder_and_media_names(path)[1][0]), None
+        images = [name for name in subfolder_and_media_names(path)[1] if not is_video_name(name)]
+        return (image_thumbnail(path / images[0]) if images else None), None
     return image_thumbnail(path), None
 
 

@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 19:48 · `src/mediatagger/test_grid.py::test_in_a_folders_grid_a_folder_tile_with_no_image_directly_inside_keeps_no_thumbnail`
+- Behavior: In a folder's grid, a folder tile with no image directly inside keeps no thumbnail
+- Predicted: AssertionError — the folder tile gets a QImage, because the grid decodes the folder's first media file (`loop.gif`, a video here) as an image
+- Actual: TypeError in the Qt event loop, `cannot unpack non-iterable NoneType object` in `grid._receive`
+- Type: wrong-reason
+- Resolution: Qt has no GIF writer, so `QImage.save("loop.gif")` silently wrote nothing and the subfolder was empty. `_thumbnail_and_duration` then raised IndexError, and the scheduler's catch-all emitted a bare `None` that `_receive` can't unpack. That is a separate latent bug: an empty subfolder crashes the grid's result handler. Rewrote the test to write a real one-pixel GIF from its bytes; it now fails with the predicted AssertionError (a 400×400 QImage).
+
 ## 2026-10-10 19:20 · `src/mediatagger/test_grid.py::test_in_a_folders_grid_a_corrupt_images_tile_keeps_no_thumbnail_and_its_glyph_stays`
 - Behavior: In a folder's grid, a corrupt image's tile keeps no thumbnail (its glyph stays)
 - Predicted: pass — read before writing: `image_thumbnail` returns None for a corrupt file, the grid stores whatever is emitted, and the delegate always paints the glyph

@@ -1,3 +1,4 @@
+import base64
 import shutil
 import time
 
@@ -313,3 +314,21 @@ def test_in_a_folders_grid_a_folder_tile_gets_the_thumbnail_of_its_first_image(q
     qtbot.waitUntil(lambda: tile.thumbnail is not None)
 
     assert tile.thumbnail.size() == QSize(400, 200)
+
+
+def test_in_a_folders_grid_a_folder_tile_with_no_image_directly_inside_keeps_no_thumbnail(qtbot, tmp_path):
+    (tmp_path / "clips").mkdir()
+    one_pixel_gif = base64.b64decode("R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==")
+    (tmp_path / "clips" / "loop.gif").write_bytes(one_pixel_gif)  # a GIF is a video here, though Qt can read it as an image
+    image = QImage(800, 400, QImage.Format.Format_RGB32)
+    image.fill(Qt.GlobalColor.red)
+    image.save(str(tmp_path / "photo.jpg"))
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+    grid.show()
+    folder_tile = grid.model().index(0, 0).data(TILE_ROLE)
+    image_tile = grid.model().index(1, 0).data(TILE_ROLE)
+
+    qtbot.waitUntil(lambda: image_tile.thumbnail is not None)  # queued after the folder: its result has come in too
+
+    assert folder_tile.thumbnail is None
