@@ -130,6 +130,9 @@ class Window(QWidget):
             self.status_bar.show_tags(" ".join(library.tags(index.data(TILE_ROLE).path)))
 
     def _tag(self, index):
+        if not self.session.tags_can_be_saved():
+            self.status_bar.flash_cant_save()
+            return
         self.tag_prompt.open(self.session.library, index.data(TILE_ROLE).path)
 
     def _leave(self, folder):

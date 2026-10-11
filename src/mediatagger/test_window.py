@@ -9,7 +9,7 @@ from mediatagger.backup import back_up
 from mediatagger.drive_session import BACKUP_FAILED_TEXT, CREATE_LIBRARY_QUESTION, RESTORE_LIBRARY_QUESTION
 from mediatagger.grid import TAG_BADGE, TILE_ROLE, Grid
 from mediatagger.library import Library
-from mediatagger.status_bar import READ_ONLY_STATUS_TEXT, StatusBar
+from mediatagger.status_bar import READ_ONLY_STATUS_TEXT, TAGS_CANT_BE_SAVED_HERE_TEXT, StatusBar
 from mediatagger.test_grid import painted_texts
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer_backup import tags_in_newest_backup
@@ -313,6 +313,21 @@ def test_pressing_t_in_the_windows_grid_on_a_file_tile_tagged_beach_family_opens
 
     assert [prompt.text() for prompt in window.findChildren(QLineEdit) if prompt.isVisible()] == [""]
     assert "beach family" in [label.text() for label in window.findChildren(QLabel) if label.isVisible() and not window.status_bar.isAncestorOf(label)]
+
+
+def test_pressing_t_in_the_windows_grid_on_a_read_only_drive_opens_no_tag_prompt_and_says_tags_cant_be_saved_here(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    with made_read_only(drive):
+        window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+        qtbot.addWidget(window)
+        show_exposed(qtbot, window)
+        stack = window.findChild(QStackedWidget)
+        qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+        qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_T)
+
+    assert visible_tag_prompts(window) == []
+    assert TAGS_CANT_BE_SAVED_HERE_TEXT in shown_status_bar_texts(window)
 
 
 def test_moving_the_windows_grid_cursor_onto_an_untagged_item_shows_no_tags_in_the_status_bar(qtbot, tmp_path):
