@@ -37,7 +37,7 @@ class Window(QWidget):
             self._open(path)
         if remembered and remembered.exists():
             self.session.open_library(remembered)
-            grid = Grid(remembered, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache())
+            grid = self._grid_of(remembered)
             self._show(grid)
             grid.setCurrentIndex(grid.model().index(0, 0))
 
@@ -80,6 +80,9 @@ class Window(QWidget):
     def _show_grid(self):
         self.viewer.stop_video()
         self._show_parent_of(self.viewer.slideshow.current)
+
+    def _grid_of(self, folder, at=None):
+        return Grid(folder, at=at, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache())
 
     def _show(self, grid):
         grid.activated.connect(self._open_tile)
@@ -129,12 +132,12 @@ class Window(QWidget):
         self._show_parent_of(folder)
 
     def _show_parent_of(self, path):
-        self._show(Grid(path.parent, at=path, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache()))
+        self._show(self._grid_of(path.parent, at=path))
 
     def _open_tile(self, index):
         path = index.data(TILE_ROLE).path
         if path.is_dir():
-            grid = Grid(path, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache())
+            grid = self._grid_of(path)
             grid.setCurrentIndex(grid.model().index(0, 0))
             self._show(grid)
             return
