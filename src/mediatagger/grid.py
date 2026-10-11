@@ -126,7 +126,13 @@ class Grid(QListView):
         paths = list(rows)
         self.verticalScrollBar().valueChanged.connect(lambda: self._request_visible(tiles))
         # Started once the grid is up: workers decoding from the first moment would slow opening a big folder.
-        QTimer.singleShot(0, self, lambda: self._thumbnails.enter_folder(self._current_first(paths)))
+        QTimer.singleShot(0, self, lambda: self._start_generating(tiles, paths))
+
+    def _start_generating(self, tiles, paths):
+        self._thumbnails.enter_folder(paths)
+        self._request_visible(tiles)
+        if self.currentIndex().isValid():
+            self._thumbnails.request(tiles[self.currentIndex().row()].path)  # requested last, so generated first
 
     def stop_generating_thumbnails(self):
         self._thumbnails.shut_down()
@@ -137,13 +143,16 @@ class Grid(QListView):
         self.model().dataChanged.emit(index, index)
 
     def _request_visible(self, tiles):
-        for row, tile in enumerate(tiles):
-            if self.visualRect(self.model().index(row, 0)).intersects(self.viewport().rect()):
-                self._thumbnails.request(tile.path)
-
-    def _current_first(self, paths):
-        current = self.currentIndex().data()
-        return sorted(paths, key=lambda path: path.name != current)
+        """The tiles in view, bottom-right first: the most recent request is generated first, so the top-left
+        tile comes first. Only the rows from the first to the last visible tile are looked at, however big the folder."""
+        viewport = self.viewport().rect()
+        first = self.indexAt(viewport.topLeft())
+        last = self.indexAt(viewport.bottomRight())
+        if not first.isValid():
+            return
+        last_row = last.row() if last.isValid() else len(tiles) - 1
+        for row in range(last_row, first.row() - 1, -1):
+            self._thumbnails.request(tiles[row].path)
 
     def keep_clear_at_the_bottom(self, height):
         """Room below the last row for what lies over the grid's bottom edge (the window's status bar)."""
