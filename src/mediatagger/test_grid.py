@@ -547,3 +547,21 @@ def test_a_tiles_tag_count_contrasts_with_its_surroundings_over_both_a_white_and
                        for x in range(count_area.left(), count_area.right() + 1)]
 
         assert max(lightnesses) - min(lightnesses) > 128, f"tag count unreadable over a {color.name} thumbnail"
+
+
+def test_painting_a_tile_with_a_thumbnail_after_its_file_and_library_are_gone_from_disk_still_paints_its_picture_and_tag_badge(qtbot, tmp_path):
+    library = Library.create(tmp_path)
+    touch(tmp_path, "photo.jpg")
+    library.enter(tmp_path / "photo.jpg", "beach family summer")
+    grid = Grid(tmp_path, library=library)
+    qtbot.addWidget(grid)
+    grid.stop_generating_thumbnails()
+    thumbnail = QImage(400, 200, QImage.Format.Format_RGB32)
+    thumbnail.fill(Qt.GlobalColor.red)
+    grid.model().index(0, 0).data(TILE_ROLE).thumbnail = thumbnail
+
+    for entry in tmp_path.iterdir():  # the file, and the library's tags.db with it: nothing left to stat, decode or query
+        shutil.rmtree(entry) if entry.is_dir() else entry.unlink()
+
+    assert painted_red_area(painted_tile(grid, 0, selected=False)) is not None
+    assert f"{TAG_BADGE}3" in painted_texts(grid, 0)

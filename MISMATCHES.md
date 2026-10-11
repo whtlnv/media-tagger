@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 23:39 · `src/mediatagger/test_grid.py::test_painting_a_tile_with_a_thumbnail_after_its_file_and_library_are_gone_from_disk_still_paints_its_picture_and_tag_badge`
+- Behavior: Painting a tile that has a thumbnail stats, decodes and queries nothing
+- Predicted: passes on first run (a pin: the delegate already paints only from `TILE_ROLE`, and tag counts are gathered when the folder is listed)
+- Actual: passes
+- Type: passed unexpectedly (predicted pin)
+- Resolution: Kept as a pin. It isn't vacuous: when paint was temporarily changed to decode `tile.path`, the test failed with `assert None is not None` (no picture). When paint was changed to open the library and query tag counts, it failed with `sqlite3.OperationalError: unable to open database file`. Production was restored after each check.
+
 ## 2026-10-10 23:27 · `src/mediatagger/test_grid.py::test_a_tiles_tag_count_contrasts_with_its_surroundings_over_both_a_white_and_a_black_thumbnail`
 - Behavior: The tag-count, ▶ and duration badges are painted on a contrasting backing, readable over both a white and a black thumbnail
 - Predicted: AssertionError — the whole tag badge (🏷 + count) shows no light/dark spread over a black thumbnail

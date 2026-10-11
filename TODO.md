@@ -79,7 +79,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] A video tile paints its duration next to the ▶ badge
 - [x] An image tile paints no duration
 - [x] The tag-count, ▶ and duration badges are painted on a contrasting backing, readable over both a white and a black thumbnail
-- [ ] Painting a tile that has a thumbnail stats, decodes and queries nothing
+- [x] Painting a tile that has a thumbnail stats, decodes and queries nothing
 
 ### Status bar
 - [ ] While thumbnails generate, the status bar shows `⟳ Generating thumbnails <done> / <total>`, counting only the ones that had to be generated
