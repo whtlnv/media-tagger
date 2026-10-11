@@ -1,5 +1,7 @@
+import shutil
 import time
 
+import pytest
 from PySide6.QtCore import QRect, QSize, Qt
 from PySide6.QtGui import QImage, QPainter
 from PySide6.QtWidgets import QStyle, QStyleOptionViewItem
@@ -8,6 +10,7 @@ from mediatagger.folder import folder_entries
 from mediatagger.grid import FOLDER_GLYPH, IMAGE_GLYPH, TAG_BADGE, TILE_ROLE, VIDEO_BADGE, VIDEO_GLYPH, Grid
 from mediatagger.library import Library
 from mediatagger.test_folder import touch
+from mediatagger.test_video import make_clip
 
 
 def tile_names(grid):
@@ -281,3 +284,17 @@ def test_in_a_folders_grid_an_image_tile_gets_its_thumbnail_once_generation_fini
     qtbot.waitUntil(lambda: tile.thumbnail is not None)
 
     assert tile.thumbnail.size() == QSize(400, 200)
+
+
+@pytest.mark.skipif(shutil.which("ffmpeg") is None, reason="ffmpeg is not installed")
+def test_in_a_folders_grid_a_video_tile_gets_its_thumbnail_and_its_duration(qtbot, tmp_path):
+    make_clip(tmp_path / "clip.mp4", duration=3)
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+    grid.show()
+    tile = grid.model().index(0, 0).data(TILE_ROLE)
+
+    qtbot.waitUntil(lambda: tile.thumbnail is not None)
+
+    assert tile.thumbnail.size() == QSize(400, 300)
+    assert tile.duration == pytest.approx(3, abs=0.2)

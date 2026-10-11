@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QListView, QStyle, QStyledItemDelegate
 
 from mediatagger.folder import is_video_name, subfolder_and_media_names
 from mediatagger.thumbnail_scheduler import ThumbnailScheduler
-from mediatagger.thumbnails import image_thumbnail
+from mediatagger.thumbnails import image_thumbnail, video_duration, video_thumbnail
 
 FOLDER_GLYPH = "📁"
 
@@ -46,6 +46,7 @@ class _Tile:
     kind: _Kind
     tag_count: int = 0
     thumbnail: object = None
+    duration: float = None
 
 
 def _tiles(folder, tag_counts):
@@ -54,6 +55,17 @@ def _tiles(folder, tag_counts):
     subfolders, media = subfolder_and_media_names(folder)
     kinds = [_Kind.FOLDER] * len(subfolders) + [_Kind.VIDEO if is_video_name(name) else _Kind.IMAGE for name in media]
     return [_Tile(folder / name, name, kind, counts_by_name.get(name, 0)) for name, kind in zip(subfolders + media, kinds)]
+
+
+def _thumbnail_and_duration(path):
+    """Runs on a worker thread: a video's duration comes with its thumbnail; an image has none."""
+    if is_video_name(path.name):
+        return video_thumbnail(path), video_duration(path)
+    return image_thumbnail(path), None
+
+
+def _receive(tile, generated):
+    tile.thumbnail, tile.duration = generated
 
 
 class _FolderModel(QAbstractListModel):
@@ -115,10 +127,10 @@ class Grid(QListView):
             self.setCurrentIndex(self.model().index(names.index(at.name), 0))
 
     def _generate_thumbnails(self, tiles):
-        images = {tile.path: tile for tile in tiles if tile.kind is _Kind.IMAGE}
-        self._thumbnails = ThumbnailScheduler(image_thumbnail, parent=self)
-        self._thumbnails.generated.connect(lambda path, thumbnail: setattr(images[path], "thumbnail", thumbnail))
-        self._thumbnails.enter_folder(list(images))
+        media = {tile.path: tile for tile in tiles if tile.kind is not _Kind.FOLDER}
+        self._thumbnails = ThumbnailScheduler(_thumbnail_and_duration, parent=self)
+        self._thumbnails.generated.connect(lambda path, generated: _receive(media[path], generated))
+        self._thumbnails.enter_folder(list(media))
 
     def keep_clear_at_the_bottom(self, height):
         """Room below the last row for what lies over the grid's bottom edge (the window's status bar)."""
