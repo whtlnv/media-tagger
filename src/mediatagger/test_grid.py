@@ -12,6 +12,7 @@ from mediatagger.grid import FOLDER_GLYPH, IMAGE_GLYPH, TAG_BADGE, TILE_ROLE, VI
 from mediatagger.library import Library
 from mediatagger.test_folder import touch
 from mediatagger.test_video import make_clip
+from mediatagger.thumbnails import format_duration
 
 
 def tile_names(grid):
@@ -498,3 +499,14 @@ def test_a_tile_paints_its_type_glyph_only_while_it_has_no_thumbnail(qtbot, tmp_
 
     assert IMAGE_GLYPH in without_thumbnail
     assert IMAGE_GLYPH not in with_thumbnail
+
+
+def test_a_video_tile_paints_its_duration_next_to_the_play_badge(qtbot, tmp_path):
+    touch(tmp_path, "clip.mp4")
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+    grid.model().index(0, 0).data(TILE_ROLE).duration = 75
+
+    texts = painted_texts(grid, 0)
+
+    assert any(VIDEO_BADGE in text and format_duration(75) in text for text in texts)

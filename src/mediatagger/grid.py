@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QListView, QStyle, QStyledItemDelegate
 from mediatagger.folder import is_video_name, subfolder_and_media_names
 from mediatagger.thumbnail_cache import ThumbnailCache, generate_through_cache
 from mediatagger.thumbnail_scheduler import ThumbnailScheduler
-from mediatagger.thumbnails import thumbnail_and_duration
+from mediatagger.thumbnails import format_duration, thumbnail_and_duration
 
 FOLDER_GLYPH = "📁"
 
@@ -99,7 +99,8 @@ class _TileDelegate(QStyledItemDelegate):
         name = painter.fontMetrics().elidedText(tile.name, Qt.TextElideMode.ElideRight, option.rect.width())
         painter.drawText(option.rect, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignHCenter, name)
         if tile.kind is _Kind.VIDEO:
-            painter.drawText(option.rect, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignRight, VIDEO_BADGE)
+            badge = VIDEO_BADGE if tile.duration is None else f"{VIDEO_BADGE} {format_duration(tile.duration)}"
+            painter.drawText(option.rect, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignRight, badge)
         if tile.tag_count:
             painter.drawText(option.rect, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{TAG_BADGE}{tile.tag_count}")
 
