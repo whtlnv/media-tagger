@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 23:11 · `src/mediatagger/test_grid.py::test_an_image_tile_paints_no_duration`
+- Behavior: An image tile paints no duration
+- Predicted: passes on first run (predicted from reading the code, not a right-reason failure)
+- Actual: passes
+- Type: passed unexpectedly
+- Resolution: The previous cycle already drew the duration only inside the delegate's `_Kind.VIDEO` branch, and `thumbnail_and_duration` never gives an image a duration. Even when the image tile is forced to have a duration, nothing is painted, so the item can't go red without changing the test into something contrived. Kept the test as a regression guard on the kind check.
+
 ## 2026-10-10 21:52 · `src/mediatagger/test_window_thumbnails.py::test_on_the_system_disk_the_grids_thumbnails_are_written_nowhere_on_disk`
 - Behavior: On the system disk (no library), the grid's thumbnails are written nowhere on disk
 - Predicted: passes — `open_thumbnail_cache(None, ...)` already returns an in-memory cache, shipped with the previous cycle's drive-cache wiring

@@ -514,3 +514,14 @@ def test_a_video_tile_paints_its_duration_next_to_the_play_badge(qtbot, tmp_path
     texts = painted_texts(grid, 0)
 
     assert any(VIDEO_BADGE in text and format_duration(75) in text for text in texts)
+
+
+def test_an_image_tile_paints_no_duration(qtbot, tmp_path):
+    touch(tmp_path, "photo.jpg")
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+    grid.model().index(0, 0).data(TILE_ROLE).duration = 75
+
+    texts = painted_texts(grid, 0)
+
+    assert not any(format_duration(75) in text for text in texts)
