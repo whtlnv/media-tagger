@@ -90,7 +90,7 @@ class Window(QWidget):
         grid.activated.connect(self._open_tile)
         grid.up.connect(lambda: self._leave(grid.folder))
         grid.escaped.connect(self.close)
-        grid.tag.connect(lambda: self.tag_prompt.open(self.session.library, grid.currentIndex().data(TILE_ROLE).path))
+        grid.tag.connect(lambda: self._tag(grid.currentIndex()))
         grid.dropped.connect(self._open)
         grid.selectionModel().currentChanged.connect(self._show_tags_of)
         grid.thumbnail_progress.connect(self._show_thumbnail_progress)
@@ -128,6 +128,9 @@ class Window(QWidget):
         library = self.session.library
         if library:
             self.status_bar.show_tags(" ".join(library.tags(index.data(TILE_ROLE).path)))
+
+    def _tag(self, index):
+        self.tag_prompt.open(self.session.library, index.data(TILE_ROLE).path)
 
     def _leave(self, folder):
         if self.session.is_mount_point(folder):
