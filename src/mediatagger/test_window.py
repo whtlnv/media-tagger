@@ -3,7 +3,7 @@ import os
 from datetime import datetime, timezone
 
 from PySide6.QtCore import QCoreApplication, QEvent, Qt
-from PySide6.QtWidgets import QLabel, QLineEdit, QStackedWidget
+from PySide6.QtWidgets import QLabel, QStackedWidget
 
 from mediatagger.backup import back_up
 from mediatagger.drive_session import BACKUP_FAILED_TEXT, CREATE_LIBRARY_QUESTION, RESTORE_LIBRARY_QUESTION
@@ -16,7 +16,7 @@ from mediatagger.test_viewer_backup import tags_in_newest_backup
 from mediatagger.test_viewer import SILENT, make_image, make_surface_ready, show_exposed, wait_until_loaded
 from mediatagger.test_viewer_library import (
     decline_noting_the_question_in, drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image, enter_in_tag_prompt,
-    made_read_only, overwrite_tags_db_with_garbage, visible_tag_prompts,
+    made_read_only, overwrite_tags_db_with_garbage, visible_tag_prompt_texts, visible_tag_prompts,
 )
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger.viewer import Viewer
@@ -285,6 +285,10 @@ def shown_status_bar_texts(window):
     return [label.text() for bar in window.findChildren(StatusBar) for label in bar.findChildren(QLabel) if label.isVisible()]
 
 
+def shown_texts_outside_the_status_bar(window):
+    return [label.text() for label in window.findChildren(QLabel) if label.isVisible() and not window.status_bar.isAncestorOf(label)]
+
+
 def window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     make_image(folder / "IMG_2.png", "blue")
@@ -311,8 +315,8 @@ def test_pressing_t_in_the_windows_grid_on_a_file_tile_tagged_beach_family_opens
 
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_T)
 
-    assert [prompt.text() for prompt in window.findChildren(QLineEdit) if prompt.isVisible()] == [""]
-    assert "beach family" in [label.text() for label in window.findChildren(QLabel) if label.isVisible() and not window.status_bar.isAncestorOf(label)]
+    assert visible_tag_prompt_texts(window) == [""]
+    assert "beach family" in shown_texts_outside_the_status_bar(window)
 
 
 def test_pressing_t_in_the_windows_grid_on_a_read_only_drive_opens_no_tag_prompt_and_says_tags_cant_be_saved_here(qtbot, tmp_path):
@@ -343,8 +347,8 @@ def test_pressing_t_in_the_windows_grid_on_a_folder_tile_tagged_beach_family_ope
 
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_T)
 
-    assert [prompt.text() for prompt in visible_tag_prompts(window)] == [""]
-    assert "beach family" in [label.text() for label in window.findChildren(QLabel) if label.isVisible() and not window.status_bar.isAncestorOf(label)]
+    assert visible_tag_prompt_texts(window) == [""]
+    assert "beach family" in shown_texts_outside_the_status_bar(window)
 
 
 def test_moving_the_windows_grid_cursor_onto_an_untagged_item_shows_no_tags_in_the_status_bar(qtbot, tmp_path):
