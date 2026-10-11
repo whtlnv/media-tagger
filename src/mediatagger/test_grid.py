@@ -362,3 +362,38 @@ def test_in_a_large_folders_grid_tiles_in_view_get_their_thumbnails_before_tiles
 
     with lock:
         assert far_out_of_view not in started[: started.index(in_view)]
+
+
+def test_scrolling_a_large_folders_grid_makes_the_newly_visible_tiles_thumbnails_arrive_before_still_hidden_ones(qtbot, tmp_path, monkeypatch):
+    import threading
+
+    from mediatagger import grid as grid_module
+
+    lock = threading.Lock()
+    started = []
+    scrolled = threading.Event()
+
+    def generate(path):
+        with lock:
+            started.append(path)
+        scrolled.wait(timeout=5)  # the workers' first thumbnails stay busy until the grid has been scrolled
+        return None, None
+
+    monkeypatch.setattr(grid_module, "thumbnail_and_duration", generate)
+    names = [f"IMG_{i:04}.jpg" for i in range(1000)]
+    touch(tmp_path, *names)
+    newly_visible = tmp_path / names[-1]
+    still_hidden = tmp_path / names[500]
+    grid = Grid(tmp_path, at=tmp_path / names[0])
+    qtbot.addWidget(grid)
+    grid.resize(800, 600)
+    grid.show()
+    qtbot.waitExposed(grid)
+    qtbot.waitUntil(lambda: len(started) == 3)
+
+    grid.scrollToBottom()
+    scrolled.set()
+    qtbot.waitUntil(lambda: newly_visible in started)
+
+    with lock:
+        assert still_hidden not in started[: started.index(newly_visible)]
