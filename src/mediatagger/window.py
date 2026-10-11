@@ -4,6 +4,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QStackedWidget, QVBoxLayout, QWidget
 
 from mediatagger.drive_session import DriveSession
+from mediatagger.folder_thumbnails import progress_text
 from mediatagger.grid import TILE_ROLE, Grid
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
 from mediatagger.state import remember, remembered_folder, state_file
@@ -86,6 +87,7 @@ class Window(QWidget):
         grid.escaped.connect(self.close)
         grid.dropped.connect(self._open)
         grid.selectionModel().currentChanged.connect(self._show_tags_of)
+        grid.thumbnail_progress.connect(self._show_thumbnail_progress)
         for old in self.findChildren(Grid):
             old.deleteLater()
         grid.keep_clear_at_the_bottom(self.status_bar.sizeHint().height())
@@ -93,6 +95,9 @@ class Window(QWidget):
         self.stack.setCurrentWidget(grid)
         self.status_bar.raise_()
         self._record_state(grid.folder)
+
+    def _show_thumbnail_progress(self, done, total):
+        self.status_bar.show_background(progress_text(done, total), finished=done == total)
 
     def _record_state(self, folder):
         if self._is_on_the_apps_own_drive(self._state_file) or self._is_on_the_drive_being_viewed(self._state_file):

@@ -95,3 +95,9 @@ def test_progress_counts_only_the_thumbnails_that_had_to_be_generated(qtbot, tmp
     qtbot.waitUntil(lambda: progress[-1:] == [(2, 2)])
 
     assert progress[0] == (0, 2)
+
+
+def test_a_total_of_1204_thumbnails_reads_with_thousands_separated():
+    from mediatagger.folder_thumbnails import progress_text
+
+    assert progress_text(132, 1204) == "⟳ Generating thumbnails 132 / 1,204"

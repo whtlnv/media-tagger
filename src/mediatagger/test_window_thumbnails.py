@@ -132,3 +132,31 @@ def test_on_the_system_disk_the_grids_thumbnails_are_written_nowhere_on_disk(qtb
     qtbot.waitUntil(lambda: tile.thumbnail is not None)
 
     assert list(Path(os.environ["XDG_CACHE_HOME"]).rglob("*")) == []
+
+
+def window_on_the_grid_of(qtbot, folder, first_file):
+    from mediatagger.test_viewer import show_exposed
+    from mediatagger.test_window import shown_status_bar_texts
+
+    window = Window(first_file, player_options=SILENT)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    seen = []
+    original = window.status_bar.show_background
+    window.status_bar.show_background = lambda text, finished=False: (seen.append(text), original(text, finished))
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    return window, seen, lambda: shown_status_bar_texts(window)
+
+
+def test_while_a_folders_thumbnails_generate_the_status_bar_counts_them_then_says_they_are_ready(qtbot, tmp_path):
+    for name in ("a.jpg", "b.jpg", "c.jpg"):
+        make_image(tmp_path / name, "red")
+    window, seen, shown = window_on_the_grid_of(qtbot, tmp_path, tmp_path / "a.jpg")
+
+    qtbot.waitUntil(lambda: "✓ Thumbnails ready" in shown())
+
+    import re
+
+    generating = [text for text in seen if text.startswith("⟳")]
+    assert generating and all(re.fullmatch(r"⟳ Generating thumbnails [0-2] / 3", text) for text in generating)

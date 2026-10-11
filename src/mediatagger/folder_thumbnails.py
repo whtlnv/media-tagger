@@ -5,6 +5,14 @@ from mediatagger.thumbnail_scheduler import ThumbnailScheduler
 from mediatagger.thumbnails import thumbnail_and_duration
 
 
+GENERATING_THUMBNAILS_TEXT = "⟳ Generating thumbnails {:,} / {:,}"
+THUMBNAILS_READY_TEXT = "✓ Thumbnails ready"
+
+
+def progress_text(done, total):
+    return GENERATING_THUMBNAILS_TEXT.format(done, total) if done < total else THUMBNAILS_READY_TEXT
+
+
 class FolderThumbnails(QObject):
     """One folder's thumbnails, for its grid. Requested files (the tiles in view) come back through `arrived`, from the
     cache or freshly generated. The rest of the folder is only generated into the cache, never decoded for display, so
