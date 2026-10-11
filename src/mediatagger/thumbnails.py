@@ -52,9 +52,8 @@ def _video_frame(path, duration, timeout):
          "-frames:v", "1", "-f", "image2pipe", "-c:v", "png", "-"],
         timeout,
     )
-    if result is None:
-        return None
-    return QImage.fromData(result.stdout).scaled(400, 400, Qt.KeepAspectRatio)
+    frame = QImage.fromData(result.stdout) if result is not None else QImage()
+    return None if frame.isNull() else frame.scaled(400, 400, Qt.KeepAspectRatio)
 
 
 def folder_thumbnail(folder):

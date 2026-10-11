@@ -212,3 +212,13 @@ def test_a_tiles_video_generation_with_no_timeout_given_still_gives_up_on_a_hung
     generated = thumbnails.thumbnail_and_duration(path)
 
     assert (generated, time.monotonic() - started < 5) == ((None, None), True)
+
+
+def test_a_video_whose_frame_ffmpeg_cannot_extract_yields_no_thumbnail(tmp_path, monkeypatch):
+    path = tmp_path / "clip.mp4"
+    path.write_bytes(b"a video ffmpeg chokes on")
+    make_fake_tool(tmp_path / "bin", "ffprobe", "echo 3.0")
+    make_fake_tool(tmp_path / "bin", "ffmpeg", "exit 1")
+    monkeypatch.setenv("PATH", str(tmp_path / "bin"))
+
+    assert video_thumbnail(path) is None
