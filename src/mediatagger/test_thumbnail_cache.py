@@ -322,6 +322,27 @@ def test_a_stored_thumbnail_is_kept_as_a_jpeg(tmp_path):
     assert blob[:3] == b"\xff\xd8\xff"
 
 
+def test_a_thumbnail_stored_as_png_by_an_earlier_version_still_reads(tmp_path):
+    import sqlite3
+
+    from PySide6.QtCore import QBuffer
+
+    from mediatagger.thumbnail_cache import ThumbnailCache
+
+    ThumbnailCache(tmp_path / "thumbs.db")  # creates the table as every version does
+    buffer = QBuffer()
+    buffer.open(QBuffer.OpenModeFlag.WriteOnly)
+    solid_thumbnail("red").save(buffer, "PNG")
+    connection = sqlite3.connect(tmp_path / "thumbs.db")
+    with connection:
+        connection.execute("INSERT INTO thumbnails VALUES (?, ?, ?, ?, ?)", ("beach.jpg", 1234, 1700000000.5, bytes(buffer.data()), None))
+    connection.close()
+
+    found = ThumbnailCache(tmp_path / "thumbs.db").lookup("beach.jpg", size=1234, mtime=1700000000.5)
+
+    assert found.pixelColor(200, 100).name() == "#ff0000"
+
+
 def solid_colour(colour):
     """The pure colour a stored pixel stands for: thumbnails are kept as JPEG, which shifts colours by a few levels."""
     from PySide6.QtGui import QColor
