@@ -78,7 +78,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] A tile without a thumbnail paints its type glyph
 - [x] A video tile paints its duration next to the ▶ badge
 - [x] An image tile paints no duration
-- [ ] The tag-count, ▶ and duration badges are painted on a contrasting backing, readable over both a white and a black thumbnail
+- [x] The tag-count, ▶ and duration badges are painted on a contrasting backing, readable over both a white and a black thumbnail
 - [ ] Painting a tile that has a thumbnail stats, decodes and queries nothing
 
 ### Status bar

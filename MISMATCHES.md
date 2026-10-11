@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 23:27 · `src/mediatagger/test_grid.py::test_a_tiles_tag_count_contrasts_with_its_surroundings_over_both_a_white_and_a_black_thumbnail`
+- Behavior: The tag-count, ▶ and duration badges are painted on a contrasting backing, readable over both a white and a black thumbnail
+- Predicted: AssertionError — the whole tag badge (🏷 + count) shows no light/dark spread over a black thumbnail
+- Actual: passed — 🏷 is a colour emoji glyph (light tan, ~lightness 210), so it already contrasts with black; only the count digit is drawn in the default black pen
+- Type: passed unexpectedly
+- Resolution: Narrowed the measured area to the count's digits at the badge's right end; it now fails with "tag count unreadable over a black thumbnail".
+
 ## 2026-10-10 23:11 · `src/mediatagger/test_grid.py::test_an_image_tile_paints_no_duration`
 - Behavior: An image tile paints no duration
 - Predicted: passes on first run (predicted from reading the code, not a right-reason failure)

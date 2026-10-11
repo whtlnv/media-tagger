@@ -102,7 +102,10 @@ class _TileDelegate(QStyledItemDelegate):
             badge = VIDEO_BADGE if tile.duration is None else f"{VIDEO_BADGE} {format_duration(tile.duration)}"
             painter.drawText(option.rect, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignRight, badge)
         if tile.tag_count:
-            painter.drawText(option.rect, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{TAG_BADGE}{tile.tag_count}")
+            badge = f"{TAG_BADGE}{tile.tag_count}"
+            flags = Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight
+            painter.fillRect(painter.boundingRect(option.rect, flags, badge), Qt.GlobalColor.white)  # a backing the count reads against over any thumbnail
+            painter.drawText(option.rect, flags, badge)
 
 
 class Grid(QListView):
