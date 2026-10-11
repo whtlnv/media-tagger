@@ -230,6 +230,8 @@ def test_a_drives_cache_is_not_written_when_its_location_falls_on_the_drive_bein
 def test_a_thumbnail_stored_from_a_worker_thread_is_returned_on_the_gui_thread(tmp_path):
     import threading
 
+    from PySide6.QtGui import QColor
+
     from mediatagger.thumbnail_cache import ThumbnailCache
 
     cache = ThumbnailCache(tmp_path / "thumbs.db", root=tmp_path)
@@ -238,7 +240,7 @@ def test_a_thumbnail_stored_from_a_worker_thread_is_returned_on_the_gui_thread(t
     worker.start()
     worker.join()
 
-    assert cache.lookup(photo, size=1234, mtime=1700000000.5) is not None
+    assert cache.lookup(photo, size=1234, mtime=1700000000.5).pixelColor(200, 100) == QColor("red")
 
 
 def test_generating_through_the_cache_returns_a_stored_thumbnail_without_generating_it_again(tmp_path):
