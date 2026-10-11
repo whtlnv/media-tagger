@@ -8,6 +8,8 @@ from PySide6.QtGui import QImage
 
 NO_THUMBNAIL = object()
 
+_VALUES_PER_QUERY = 500  # SQLite caps how many values one query may take
+
 
 def cache_file(drive_id, home):
     cache_home = os.environ.get("XDG_CACHE_HOME", home / ".cache")
@@ -68,8 +70,8 @@ class ThumbnailCache:
         keys = [self._key(path) for path in paths]
         stored = {}
         with self._lock:
-            for start in range(0, len(keys), 500):  # SQLite caps how many values one query may take
-                chunk = keys[start:start + 500]
+            for start in range(0, len(keys), _VALUES_PER_QUERY):
+                chunk = keys[start:start + _VALUES_PER_QUERY]
                 rows = self._db.execute(
                     f"SELECT path, size, mtime FROM thumbnails WHERE path IN ({','.join('?' * len(chunk))})", chunk
                 )
