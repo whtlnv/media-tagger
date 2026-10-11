@@ -308,3 +308,31 @@ def test_a_scheduler_dropped_while_its_workers_run_is_never_freed_off_the_gui_th
     finally:
         if was_enabled:
             gc.enable()
+
+
+
+_STARTS_A_SCHEDULER_IN_A_FRESH_APP = """
+import PySide6.QtCore
+import PySide6.QtGui
+from PySide6.QtGui import QGuiApplication
+
+from mediatagger.thumbnail_scheduler import ThumbnailScheduler
+
+app = QGuiApplication([])
+ThumbnailScheduler(generate=lambda path: None)
+for module in (PySide6.QtCore, PySide6.QtGui):
+    print(*sorted(set(dir(module)) - set(vars(module))))
+"""
+
+
+def test_starting_a_scheduler_creates_every_qt_type_its_workers_may_use_on_the_gui_thread():
+    """PySide creates its Python types lazily, on first use, and that creation is not thread-safe: workers decoding
+    the first images of a freshly started app crashed it creating QImageReader's types side by side."""
+    import os
+    import subprocess
+    import sys
+
+    environment = {**os.environ, "QT_QPA_PLATFORM": "offscreen"}
+    result = subprocess.run([sys.executable, "-c", _STARTS_A_SCHEDULER_IN_A_FRESH_APP], env=environment, capture_output=True, text=True, timeout=60)
+
+    assert (result.returncode, result.stdout.split()) == (0, [])

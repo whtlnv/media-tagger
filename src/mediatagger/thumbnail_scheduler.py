@@ -1,6 +1,8 @@
 import threading
 from concurrent.futures import ThreadPoolExecutor
 
+import PySide6.QtCore
+import PySide6.QtGui
 from PySide6.QtCore import QCoreApplication, QObject, Signal
 
 WORKERS = 3
@@ -18,6 +20,16 @@ def _store(cache, path, thumbnail):
 def _is_cached(cache, path):
     stat = path.stat()
     return cache.lookup(path, stat.st_size, stat.st_mtime) is not None
+
+
+def _create_qt_types_on_this_thread():
+    """PySide creates a module's Python types lazily, the first time each is used, and that creation is not
+    thread-safe: workers constructing their first QImageReader side by side crashed the app inside Shiboken. So every
+    QtCore and QtGui type (all the workers' code may touch) is created here, on the GUI thread, before any worker runs.
+    Once per process; about 0.1 s."""
+    for module in (PySide6.QtCore, PySide6.QtGui):
+        for name in dir(module):
+            getattr(module, name)
 
 
 class _Work:
@@ -70,7 +82,12 @@ class _Work:
 
 
 class ThumbnailScheduler:
+    _qt_types_created = False
+
     def __init__(self, generate, cache=None, parent=None):
+        if not ThumbnailScheduler._qt_types_created:
+            _create_qt_types_on_this_thread()
+            ThumbnailScheduler._qt_types_created = True
         self._cache = cache
         emitter = _Generated(parent or QCoreApplication.instance())
         self.generated = emitter.done
