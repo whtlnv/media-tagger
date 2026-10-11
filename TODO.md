@@ -9,7 +9,7 @@ Phase 9 notes for every cycle. Architecture: `viewer.py` must not grow — it sh
 - [x] Entering tags for the drive's mount point itself stores nothing: its own tags read back empty
 - [x] Entering tags for a folder directly under the drive's mount point stores them
 - [x] A file's effective tags include its own tags
-- [ ] A file's effective tags include the own tags of its parent folder, reported as inherited
+- [x] A file's effective tags include the own tags of its parent folder, reported as inherited
 - [ ] A file's effective tags include the own tags of every ancestor folder up to the drive root (grandparent and above), reported as inherited
 - [ ] A file's effective tags exclude the tags of folders that aren't its ancestors (a sibling folder, and a folder whose name is a prefix of its parent's, such as `trip` for a file in `trip2/`)
 - [ ] A tag a file has both as its own and from an ancestor folder appears once in its effective tags, as own

@@ -531,3 +531,15 @@ def test_a_files_effective_tags_include_its_own_tags(tmp_path):
     library.enter(photo, "beach family")
 
     assert library.effective_tags(photo).own == ["beach", "family"]
+
+
+def test_a_files_effective_tags_include_the_own_tags_of_its_parent_folder_reported_as_inherited(tmp_path):
+    library = Library.create(tmp_path)
+    folder = tmp_path / "trip"
+    folder.mkdir()
+    photo = folder / "dunes.jpg"
+    photo.touch()
+
+    library.enter(folder, "beach")
+
+    assert library.effective_tags(photo).inherited == ["beach"]

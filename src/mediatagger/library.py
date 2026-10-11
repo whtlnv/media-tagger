@@ -55,6 +55,7 @@ def _parse_entry(text):
 
 class EffectiveTags(NamedTuple):
     own: list
+    inherited: list
 
 
 class Library:
@@ -153,4 +154,4 @@ class Library:
         return tags
 
     def effective_tags(self, path):
-        return EffectiveTags(own=self.tags(path))
+        return EffectiveTags(own=self.tags(path), inherited=self.tags(path.parent))
