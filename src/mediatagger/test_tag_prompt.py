@@ -119,6 +119,22 @@ def test_a_tag_on_one_folder_holding_three_files_ranks_below_a_tag_on_two_files_
     assert listed(suggestions) == ["bird", "beach"]
 
 
+def test_a_tag_on_two_folders_ranks_above_a_tag_on_one_file_typing_b_lists_bird_before_beach(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    trip, hike = make_folders(drive, "Trip", "Hike")
+    make_image(folder / "IMG_2.png", "blue")
+    library = Library.open(drive)
+    library.enter(trip, "bird")
+    library.enter(hike, "bird")
+    library.enter(folder / "IMG_2.png", "beach")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    type_in_tag_prompt(qtbot, viewer, "b")
+
+    [suggestions] = visible_suggestion_lists()
+    assert listed(suggestions) == ["bird", "beach"]
+
+
 @pytest.mark.parametrize(
     "viewed_item_tags, other_item_tags, typed, expected",
     [

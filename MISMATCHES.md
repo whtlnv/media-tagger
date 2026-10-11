@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 15:09 · `src/mediatagger/test_tag_prompt.py::test_a_tag_on_two_folders_ranks_above_a_tag_on_one_file_typing_b_lists_bird_before_beach`
+- Behavior: A tag carried by two folders ranks above a tag carried by one file in the tag prompt's suggestions
+- Predicted: pass (stated before running) — `Library.all_tags` orders by `COUNT(*)` of `item_tags` rows, and each tagged folder is its own `dir` row, so two folders count 2
+- Actual: passed
+- Type: passed unexpectedly
+- Resolution: The behavior already exists because folders are counted as items in their own right, so no rewrite could make the test fail without changing which behavior it checks; I kept it as a pin, naming the tags so the alphabetical tie-break would give the opposite order (`bird` on the folders, `beach` on the file).
+
 ## 2026-10-11 15:01 · `src/mediatagger/test_tag_prompt.py::test_a_tag_on_one_folder_holding_three_files_ranks_below_a_tag_on_two_files_typing_b_lists_bird_before_beach`
 - Behavior: A tag carried by one folder holding three files ranks below a tag carried by two files in the tag prompt's suggestions (the folder counts as one item)
 - Predicted: pass (stated before running) — `Library.all_tags` orders by `COUNT(*)` of `item_tags` rows, and a tagged folder is one `dir` row whose files get no own tags
