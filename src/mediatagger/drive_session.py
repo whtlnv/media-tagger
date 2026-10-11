@@ -75,12 +75,13 @@ class DriveSession:
         session. One per drive, kept while it stays the current one."""
         drive_id = self.library.drive_id if self.library else None
         if self._thumbnail_cache_for != (self.drive, drive_id):
-            self._thumbnail_cache = open_thumbnail_cache(drive_id, self.home, self._app_drive(), self.drive)
+            self._thumbnail_cache = open_thumbnail_cache(drive_id, self.home, self.app_drive(), self.drive)
             self._thumbnail_cache_for = (self.drive, drive_id)
         return self._thumbnail_cache
 
-    def _app_drive(self):
-        """The drive the app runs from, unless that is the system disk, which the cache home may well be on."""
+    def app_drive(self):
+        """The drive the app runs from, unless that is the system disk, which the home folder (and with it the cache
+        home and the state file) may well be on."""
         app_drive = next((folder for folder in self.app_location.parents if self.is_mount_point(folder)), Path("/"))
         return None if app_drive == Path("/") else app_drive
 
