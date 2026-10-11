@@ -1,20 +1,25 @@
 import subprocess
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QImage, QImageReader
 
 from mediatagger.folder import is_video_name, subfolder_and_media_names
 
+THUMBNAIL_SIZE = QSize(400, 400)  # the largest tile
 TOOL_TIMEOUT_S = 15  # ffprobe/ffmpeg on a slow drive on a Pi; past this a hung tool leaves the tile's glyph
 
 
 def image_thumbnail(path):
+    """Decoded straight at thumbnail size: a 24-megapixel photo is never held whole in memory on a Pi."""
     reader = QImageReader(str(path))
     reader.setAutoTransform(True)
+    size = reader.size()
+    if size.isValid():
+        reader.setScaledSize(size.scaled(THUMBNAIL_SIZE, Qt.KeepAspectRatio))  # the stored size: rotation comes after
     image = reader.read()
     if image.isNull():
         return None
-    return image.scaled(400, 400, Qt.KeepAspectRatio)
+    return image.scaled(THUMBNAIL_SIZE, Qt.KeepAspectRatio)
 
 
 def _run_with_timeout(args, timeout, **kwargs):
@@ -53,7 +58,7 @@ def _video_frame(path, duration, timeout):
         timeout,
     )
     frame = QImage.fromData(result.stdout) if result is not None else QImage()
-    return None if frame.isNull() else frame.scaled(400, 400, Qt.KeepAspectRatio)
+    return None if frame.isNull() else frame.scaled(THUMBNAIL_SIZE, Qt.KeepAspectRatio)
 
 
 def folder_thumbnail(folder):
