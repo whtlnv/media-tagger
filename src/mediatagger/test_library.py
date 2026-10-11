@@ -599,3 +599,26 @@ def test_a_folders_effective_tags_include_the_own_tags_of_its_ancestor_folders_r
     library.enter(day, "sunset")
 
     assert sorted(library.effective_tags(morning).inherited) == ["beach", "sunset"]
+
+
+def test_reading_the_effective_tags_of_a_file_five_folders_deep_runs_one_sql_query(tmp_path, monkeypatch):
+    library = Library.create(tmp_path)
+    folder = tmp_path / "a" / "b" / "c" / "d" / "e"
+    folder.mkdir(parents=True)
+    photo = folder / "dunes.jpg"
+    photo.touch()
+    library.enter(tmp_path / "a", "beach")
+    library.enter(photo, "sunset")
+    statements = []
+    connect = sqlite3.connect
+
+    def traced_connect(*args, **kwargs):
+        connection = connect(*args, **kwargs)
+        connection.set_trace_callback(statements.append)
+        return connection
+
+    monkeypatch.setattr(sqlite3, "connect", traced_connect)
+
+    library.effective_tags(photo)
+
+    assert len(statements) == 1

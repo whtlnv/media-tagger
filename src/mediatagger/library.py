@@ -154,7 +154,21 @@ class Library:
         return tags
 
     def effective_tags(self, path):
-        ancestors = [self.root / folder for folder in path.relative_to(self.root).parents]
-        own = self.tags(path)
-        inherited = [tag for folder in ancestors for tag in self.tags(folder) if tag not in own]
+        ancestor_keys = [str(folder) for folder in path.relative_to(self.root).parents]
+        key = self._key(path)
+        keys = [key, *ancestor_keys]
+        connection = sqlite3.connect(self._tags_db)
+        rows = connection.execute(
+            "SELECT items.rel_path, tags.name FROM item_tags"
+            " JOIN items ON items.id = item_tags.item_id"
+            " JOIN tags ON tags.id = item_tags.tag_id"
+            f" WHERE items.rel_path IN ({', '.join('?' * len(keys))}) ORDER BY tags.name",
+            keys,
+        )
+        tags_by_key = {k: [] for k in keys}
+        for rel_path, tag in rows:
+            tags_by_key[rel_path].append(tag)
+        connection.close()
+        own = tags_by_key[key]
+        inherited = [tag for k in ancestor_keys for tag in tags_by_key[k] if tag not in own]
         return EffectiveTags(own=own, inherited=inherited)

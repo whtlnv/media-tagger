@@ -14,7 +14,7 @@ Phase 9 notes for every cycle. Architecture: `viewer.py` must not grow — it sh
 - [x] A file's effective tags exclude the tags of folders that aren't its ancestors (a sibling folder, and a folder whose name is a prefix of its parent's, such as `trip` for a file in `trip2/`)
 - [x] A tag a file has both as its own and from an ancestor folder appears once in its effective tags, as own
 - [x] A folder's effective tags include its ancestor folders' tags as inherited
-- [ ] Reading the effective tags of a file five folders deep runs one SQL query
+- [x] Reading the effective tags of a file five folders deep runs one SQL query
 - [ ] A tag carried by one folder holding three files ranks below a tag carried by two files in the tag prompt's suggestions (the folder counts as one item)
 - [ ] A tag carried by two folders ranks above a tag carried by one file in the tag prompt's suggestions
 - [ ] A folder tile whose folder has own tags shows a `🏷N` badge with its own-tag count
