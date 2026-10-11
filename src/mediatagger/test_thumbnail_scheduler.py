@@ -253,3 +253,32 @@ def test_generated_thumbnails_are_delivered_on_the_gui_thread(qtbot, tmp_path):
     qtbot.waitUntil(lambda: len(delivered) == 1)
 
     assert delivered == [(path, "thumbnail of photo.jpg", threading.main_thread())]
+
+
+def test_requesting_thumbnails_that_are_all_cached_generates_nothing(qtbot, tmp_path):
+    from PySide6.QtGui import QColor, QImage
+
+    from mediatagger.thumbnail_cache import ThumbnailCache
+
+    lock = threading.Lock()
+    generated = []
+
+    def generate(path):
+        with lock:
+            generated.append(path)
+        return QImage(400, 200, QImage.Format_RGB32)
+
+    cache = ThumbnailCache(":memory:", root=tmp_path)
+    paths = [tmp_path / f"{index}.jpg" for index in range(3)]
+    for path in paths:
+        path.write_bytes(b"photo")
+        stat = path.stat()
+        thumbnail = QImage(400, 200, QImage.Format_RGB32)
+        thumbnail.fill(QColor("red"))
+        cache.store(path, stat.st_size, stat.st_mtime, thumbnail)
+    scheduler = ThumbnailScheduler(generate=generate, cache=cache)
+    for path in paths:
+        scheduler.request(path)
+    qtbot.wait(200)
+
+    assert generated == []

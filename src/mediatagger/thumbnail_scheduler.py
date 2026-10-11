@@ -16,6 +16,7 @@ def _store(cache, path, thumbnail):
 class ThumbnailScheduler:
     def __init__(self, generate, cache=None):
         self._generate = generate
+        self._cache = cache
         self._generated = _Generated()
         self.generated = self._generated.done
         if cache is not None:
@@ -34,6 +35,10 @@ class ThumbnailScheduler:
             self._executor.submit(self._generate_next)
 
     def request(self, path):
+        if self._cache is not None:
+            stat = path.stat()
+            if self._cache.lookup(path, stat.st_size, stat.st_mtime) is not None:
+                return
         with self._lock:
             if path in self._taken:
                 return

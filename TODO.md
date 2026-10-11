@@ -55,7 +55,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] Leaving a folder drops its pending thumbnails: they are never generated
 - [x] A thumbnail already generating when its folder is left still finishes and is cached
 - [x] Generated thumbnails are delivered on the GUI thread
-- [ ] Requesting thumbnails that are all cached generates nothing
+- [x] Requesting thumbnails that are all cached generates nothing
 
 ### Grid
 - [ ] In a folder's grid, an image tile gets its thumbnail once generation finishes

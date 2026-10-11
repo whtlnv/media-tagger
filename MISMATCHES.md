@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 18:36 · `src/mediatagger/test_thumbnail_scheduler.py::test_requesting_thumbnails_that_are_all_cached_generates_nothing`
+- Behavior: Requesting thumbnails that are all cached generates nothing
+- Predicted: AssertionError — generate called for all three cached paths
+- Actual: AttributeError in the cache-store slot ('NoneType' has no 'save') plus the assertion failure
+- Type: wrong-reason
+- Resolution: with a cache attached, every generated result is stored, so the fake generate must return a QImage; made it return one, and the test now fails only on the assertion.
+
 ## 2026-10-10 18:01 · `src/mediatagger/test_thumbnail_scheduler.py::test_a_thumbnail_requested_while_the_folder_is_prefetching_is_generated_before_the_remaining_prefetch`
 - Behavior: A thumbnail requested while the rest of the folder is prefetching is generated before the remaining prefetch
 - Predicted: pass on first run (predicted before running, after reading the code). `request` withdraws the path from `_unrequested` into `_pending`, and `_generate_next` serves `_pending` first. The right-reason alternative would have been an AssertionError with the fourth start `folder[3]`
