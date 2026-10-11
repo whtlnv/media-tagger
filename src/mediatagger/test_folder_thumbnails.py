@@ -1,14 +1,8 @@
 from PySide6.QtCore import QObject
-from PySide6.QtGui import QColor, QImage
 
 from mediatagger.folder_thumbnails import FolderThumbnails
+from mediatagger.test_thumbnail_cache import solid_thumbnail
 from mediatagger.thumbnail_cache import ThumbnailCache
-
-
-def solid(color):
-    image = QImage(400, 200, QImage.Format.Format_RGB32)
-    image.fill(QColor(color))
-    return image
 
 
 def folder_of(tmp_path, *names):
@@ -21,7 +15,7 @@ def folder_of(tmp_path, *names):
 def test_a_requested_files_thumbnail_and_duration_arrive_on_the_gui_thread(qtbot, tmp_path):
     [clip] = folder_of(tmp_path, "clip.mp4")
     owner = QObject()
-    thumbnails = FolderThumbnails([clip], ThumbnailCache(":memory:"), owner, generate=lambda path: (solid("blue"), 42.0))
+    thumbnails = FolderThumbnails([clip], ThumbnailCache(":memory:"), owner, generate=lambda path: (solid_thumbnail("blue"), 42.0))
     arrived = []
     thumbnails.arrived.connect(lambda path, thumbnail, duration: arrived.append((path, thumbnail.pixelColor(0, 0).name(), duration)))
 
@@ -42,7 +36,7 @@ def test_a_thumbnail_already_generating_when_its_folder_is_left_still_finishes_a
     def generate(path):
         started.set()
         release.wait(timeout=10)
-        return solid("red"), None
+        return solid_thumbnail("red"), None
 
     cache = ThumbnailCache(":memory:")
     owner = QObject()
@@ -63,10 +57,10 @@ def test_a_folder_whose_thumbnails_are_all_cached_generates_nothing_and_reports_
     paths = folder_of(tmp_path, "a.jpg", "b.jpg", "c.jpg")
     cache = ThumbnailCache(":memory:")
     for path in paths:
-        cache.store(path, path.stat().st_size, path.stat().st_mtime, solid("red"))
+        cache.store(path, path.stat().st_size, path.stat().st_mtime, solid_thumbnail("red"))
     generated = []
     owner = QObject()
-    thumbnails = FolderThumbnails(paths, cache, owner, generate=lambda path: generated.append(path) or (solid("blue"), None))
+    thumbnails = FolderThumbnails(paths, cache, owner, generate=lambda path: generated.append(path) or (solid_thumbnail("blue"), None))
     progress = []
     arrived = []
     thumbnails.progress.connect(lambda done, total: progress.append((done, total)))
@@ -85,9 +79,9 @@ def test_a_folder_whose_thumbnails_are_all_cached_generates_nothing_and_reports_
 def test_progress_counts_only_the_thumbnails_that_had_to_be_generated(qtbot, tmp_path):
     cached, new, other = folder_of(tmp_path, "cached.jpg", "new.jpg", "other.jpg")
     cache = ThumbnailCache(":memory:")
-    cache.store(cached, cached.stat().st_size, cached.stat().st_mtime, solid("red"))
+    cache.store(cached, cached.stat().st_size, cached.stat().st_mtime, solid_thumbnail("red"))
     owner = QObject()
-    thumbnails = FolderThumbnails([cached, new, other], cache, owner, generate=lambda path: (solid("blue"), None))
+    thumbnails = FolderThumbnails([cached, new, other], cache, owner, generate=lambda path: (solid_thumbnail("blue"), None))
     progress = []
     thumbnails.progress.connect(lambda done, total: progress.append((done, total)))
 
