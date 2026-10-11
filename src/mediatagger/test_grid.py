@@ -473,13 +473,17 @@ def painted_red_area(image):
     return QRect(min(xs), min(ys), max(xs) - min(xs) + 1, max(ys) - min(ys) + 1)
 
 
+def give_red_thumbnail(grid, row):
+    thumbnail = QImage(400, 200, QImage.Format.Format_RGB32)
+    thumbnail.fill(Qt.GlobalColor.red)
+    grid.model().index(row, 0).data(TILE_ROLE).thumbnail = thumbnail
+
+
 def test_a_tile_with_a_thumbnail_paints_the_picture_above_the_filename_aspect_ratio_kept(qtbot, tmp_path):
     touch(tmp_path, "photo.jpg")
     grid = Grid(tmp_path)
     qtbot.addWidget(grid)
-    thumbnail = QImage(400, 200, QImage.Format.Format_RGB32)
-    thumbnail.fill(Qt.GlobalColor.red)
-    grid.model().index(0, 0).data(TILE_ROLE).thumbnail = thumbnail
+    give_red_thumbnail(grid, 0)
 
     image = painted_tile(grid, 0, selected=False)
     filename_top = image.height() - QFontMetrics(QGuiApplication.font()).height()  # the filename is painted along the bottom
@@ -495,9 +499,7 @@ def test_a_tile_paints_its_type_glyph_only_while_it_has_no_thumbnail(qtbot, tmp_
     grid = Grid(tmp_path)
     qtbot.addWidget(grid)
     without_thumbnail = painted_texts(grid, 0)
-    thumbnail = QImage(400, 200, QImage.Format.Format_RGB32)
-    thumbnail.fill(Qt.GlobalColor.red)
-    grid.model().index(0, 0).data(TILE_ROLE).thumbnail = thumbnail
+    give_red_thumbnail(grid, 0)
 
     with_thumbnail = painted_texts(grid, 0)
 
@@ -556,9 +558,7 @@ def test_painting_a_tile_with_a_thumbnail_after_its_file_and_library_are_gone_fr
     grid = Grid(tmp_path, library=library)
     qtbot.addWidget(grid)
     grid.stop_generating_thumbnails()
-    thumbnail = QImage(400, 200, QImage.Format.Format_RGB32)
-    thumbnail.fill(Qt.GlobalColor.red)
-    grid.model().index(0, 0).data(TILE_ROLE).thumbnail = thumbnail
+    give_red_thumbnail(grid, 0)
 
     for entry in tmp_path.iterdir():  # the file, and the library's tags.db with it: nothing left to stat, decode or query
         shutil.rmtree(entry) if entry.is_dir() else entry.unlink()
