@@ -367,6 +367,21 @@ def test_a_tagged_folders_row_in_items_records_its_kind_as_dir(tmp_path):
     assert items == [("trip", "dir")]
 
 
+def test_a_tagged_files_row_in_items_still_records_its_kind_as_file_next_to_a_tagged_folder(tmp_path):
+    library = Library.create(tmp_path)
+    folder = tmp_path / "trip"
+    folder.mkdir()
+    photo = tmp_path / "beach.jpg"
+    photo.touch()
+
+    library.enter(folder, "beach")
+    library.enter(photo, "beach")
+
+    items = _query(tmp_path, "SELECT rel_path, kind FROM items ORDER BY rel_path")
+
+    assert items == [("beach.jpg", "file"), ("trip", "dir")]
+
+
 def test_removing_a_tag_from_the_last_file_that_has_it_removes_the_tags_row_from_tags(tmp_path):
     library = Library.create(tmp_path)
     photo = tmp_path / "beach.jpg"
