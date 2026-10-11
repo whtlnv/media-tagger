@@ -62,9 +62,14 @@ def _thumbnail_and_duration(path):
     if is_video_name(path.name):
         return video_thumbnail(path), video_duration(path)
     if path.is_dir():
-        images = [name for name in subfolder_and_media_names(path)[1] if not is_video_name(name)]
-        return (image_thumbnail(path / images[0]) if images else None), None
+        return _folder_thumbnail(path), None
     return image_thumbnail(path), None
+
+
+def _folder_thumbnail(folder):
+    """A folder shows its first image directly inside; with none there, it has no thumbnail."""
+    first_image = next((name for name in subfolder_and_media_names(folder)[1] if not is_video_name(name)), None)
+    return image_thumbnail(folder / first_image) if first_image else None
 
 
 def _receive(tile, generated):
