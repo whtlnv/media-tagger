@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 
-from PySide6.QtCore import QAbstractListModel, QModelIndex, QSize, Qt, Signal
+from PySide6.QtCore import QAbstractListModel, QModelIndex, QSize, Qt, QTimer, Signal
 from PySide6.QtWidgets import QListView, QStyle, QStyledItemDelegate
 
 from mediatagger.folder import is_video_name, subfolder_and_media_names
@@ -138,7 +138,9 @@ class Grid(QListView):
         by_path = {tile.path: tile for tile in tiles}
         self._thumbnails = ThumbnailScheduler(_thumbnail_and_duration, parent=self)
         self._thumbnails.generated.connect(lambda path, generated: _receive(by_path[path], generated))
-        self._thumbnails.enter_folder(list(by_path))
+        paths = list(by_path)
+        # Started once the grid is up: workers decoding from the first moment would slow opening a big folder.
+        QTimer.singleShot(0, self, lambda: self._thumbnails.enter_folder(paths))
 
     def keep_clear_at_the_bottom(self, height):
         """Room below the last row for what lies over the grid's bottom edge (the window's status bar)."""
