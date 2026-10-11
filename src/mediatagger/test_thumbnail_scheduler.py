@@ -282,3 +282,29 @@ def test_requesting_thumbnails_that_are_all_cached_generates_nothing(qtbot, tmp_
     qtbot.wait(200)
 
     assert generated == []
+
+
+def test_a_scheduler_dropped_while_its_workers_run_is_never_freed_off_the_gui_thread(qtbot, tmp_path):
+    """The last reference to a scheduler must not die on a worker thread: its Qt object would be destroyed there while
+    the result it just posted waits in the GUI thread's queue, and delivering that result crashes the app."""
+    import gc
+
+    was_enabled = gc.isenabled()
+    gc.disable()  # as in the app (gui_thread_gc): objects die by reference count, on whichever thread drops the last one
+    try:
+        for _ in range(20):
+            release = threading.Event()
+
+            def generate(path):
+                release.wait(timeout=10)
+                return path.name
+
+            scheduler = ThumbnailScheduler(generate=generate)
+            scheduler.generated.connect(lambda path, thumbnail: None)
+            scheduler.enter_folder([tmp_path / f"{index}.jpg" for index in range(3)])
+            del scheduler
+            release.set()
+            qtbot.wait(50)
+    finally:
+        if was_enabled:
+            gc.enable()

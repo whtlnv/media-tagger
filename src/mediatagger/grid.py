@@ -116,7 +116,7 @@ class Grid(QListView):
 
     def _generate_thumbnails(self, tiles):
         images = {tile.path: tile for tile in tiles if tile.kind is _Kind.IMAGE}
-        self._thumbnails = ThumbnailScheduler(image_thumbnail)
+        self._thumbnails = ThumbnailScheduler(image_thumbnail, parent=self)
         self._thumbnails.generated.connect(lambda path, thumbnail: setattr(images[path], "thumbnail", thumbnail))
         self._thumbnails.enter_folder(list(images))
 
