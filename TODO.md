@@ -58,7 +58,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] Requesting thumbnails that are all cached generates nothing
 
 ### Grid
-- [ ] In a folder's grid, an image tile gets its thumbnail once generation finishes
+- [x] In a folder's grid, an image tile gets its thumbnail once generation finishes
 - [ ] In a folder's grid, a corrupt image's tile keeps no thumbnail (its glyph stays)
 - [ ] In a folder's grid, a video tile gets its thumbnail and its duration
 - [ ] In a folder's grid, a folder tile gets the thumbnail of its first image

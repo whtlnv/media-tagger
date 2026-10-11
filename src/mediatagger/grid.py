@@ -6,6 +6,8 @@ from PySide6.QtCore import QAbstractListModel, QModelIndex, QSize, Qt, Signal
 from PySide6.QtWidgets import QListView, QStyle, QStyledItemDelegate
 
 from mediatagger.folder import is_video_name, subfolder_and_media_names
+from mediatagger.thumbnail_scheduler import ThumbnailScheduler
+from mediatagger.thumbnails import image_thumbnail
 
 FOLDER_GLYPH = "📁"
 
@@ -43,6 +45,7 @@ class _Tile:
     name: str
     kind: _Kind
     tag_count: int = 0
+    thumbnail: object = None
 
 
 def _tiles(folder, tag_counts):
@@ -105,6 +108,10 @@ class Grid(QListView):
         tiles = _tiles(folder, library.tag_counts(folder) if library else {})
         self.setModel(_FolderModel(tiles, self))
         self.setItemDelegate(_TileDelegate(self))
+        images = {tile.path: tile for tile in tiles if tile.kind is _Kind.IMAGE}
+        self._thumbnails = ThumbnailScheduler(image_thumbnail)
+        self._thumbnails.generated.connect(lambda path, thumbnail: setattr(images[path], "thumbnail", thumbnail))
+        self._thumbnails.enter_folder(list(images))
         self.setAcceptDrops(True)
         if at is not None:
             names = [tile.name for tile in tiles]

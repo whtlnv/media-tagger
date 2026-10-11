@@ -1,11 +1,11 @@
 import time
 
-from PySide6.QtCore import QRect, Qt
+from PySide6.QtCore import QRect, QSize, Qt
 from PySide6.QtGui import QImage, QPainter
 from PySide6.QtWidgets import QStyle, QStyleOptionViewItem
 
 from mediatagger.folder import folder_entries
-from mediatagger.grid import FOLDER_GLYPH, IMAGE_GLYPH, TAG_BADGE, VIDEO_BADGE, VIDEO_GLYPH, Grid
+from mediatagger.grid import FOLDER_GLYPH, IMAGE_GLYPH, TAG_BADGE, TILE_ROLE, VIDEO_BADGE, VIDEO_GLYPH, Grid
 from mediatagger.library import Library
 from mediatagger.test_folder import touch
 
@@ -267,3 +267,17 @@ def test_the_tile_under_the_grid_cursor_is_painted_highlighted_so_the_cursor_can
 
     corner = (10, 10)
     assert painted_tile(grid, 0, selected=True).pixelColor(*corner) != painted_tile(grid, 0, selected=False).pixelColor(*corner)
+
+
+def test_in_a_folders_grid_an_image_tile_gets_its_thumbnail_once_generation_finishes(qtbot, tmp_path):
+    image = QImage(800, 400, QImage.Format.Format_RGB32)
+    image.fill(Qt.GlobalColor.red)
+    image.save(str(tmp_path / "photo.jpg"))
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+    grid.show()
+    tile = grid.model().index(0, 0).data(TILE_ROLE)
+
+    qtbot.waitUntil(lambda: tile.thumbnail is not None)
+
+    assert tile.thumbnail.size() == QSize(400, 200)
