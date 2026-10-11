@@ -115,14 +115,17 @@ class Library:
         return names
 
     def tag_counts(self, folder):
+        """The own-tag counts of the folder's direct items, read in one query that looks only at that folder's rows."""
+        prefix = "" if folder == self.root else f"{self._key(folder)}/"
         connection = sqlite3.connect(self._tags_db)
         rows = connection.execute(
             "SELECT items.rel_path, COUNT(*) FROM item_tags"
             " JOIN items ON items.id = item_tags.item_id"
-            " GROUP BY items.rel_path"
+            " WHERE substr(items.rel_path, 1, ?) = ? AND instr(substr(items.rel_path, ?), '/') = 0"
+            " GROUP BY items.rel_path",
+            (len(prefix), prefix, len(prefix) + 1),
         )
-        paths = ((self.root / rel_path, count) for rel_path, count in rows)
-        counts = {path: count for path, count in paths if path.parent == folder}
+        counts = {self.root / rel_path: count for rel_path, count in rows}
         connection.close()
         return counts
 

@@ -415,6 +415,16 @@ def test_a_folders_tag_counts_leave_out_tagged_items_that_live_in_other_folders_
     assert counts == {}
 
 
+def test_the_tag_counts_of_the_drives_top_folder_give_only_the_items_directly_in_it(tmp_path):
+    library = Library.create(tmp_path)
+    (tmp_path / "holiday").mkdir()
+    for path in (tmp_path / "top.jpg", tmp_path / "holiday" / "beach.jpg"):
+        path.touch()
+        library.enter(path, "beach family")
+
+    assert library.tag_counts(tmp_path) == {tmp_path / "top.jpg": 2}
+
+
 def test_asking_the_library_for_the_tag_counts_of_a_folder_of_5000_items_runs_one_sql_query(tmp_path, monkeypatch):
     library = Library.create(tmp_path)
     folder = tmp_path / "holiday"
