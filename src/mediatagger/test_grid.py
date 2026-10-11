@@ -333,6 +333,15 @@ def test_the_grid_cursor_outlines_the_tiles_picture_on_all_four_sides_over_the_p
     assert [selected.pixelColor(x, y).name() for x, y in edges] == [highlight.name()] * 4
 
 
+def test_a_folder_tile_showing_a_picture_carries_the_folder_badge_so_it_cannot_pass_for_an_image(qtbot, tmp_path):
+    (tmp_path / "beach").mkdir()
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+    give_red_thumbnail(grid, 0)
+
+    assert FOLDER_GLYPH in painted_texts(grid, 0)
+
+
 def painted_red_area(image):
     """The bounding box of the red pixels painted on a tile, or None if there are none."""
     red = [(x, y) for y in range(image.height()) for x in range(image.width())
