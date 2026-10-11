@@ -13,6 +13,7 @@ class ThumbnailScheduler:
 
     def enter_folder(self, paths):
         with self._lock:
+            self._pending = []
             self._unrequested = list(paths)
         for _ in paths:
             self._executor.submit(self._generate_next)

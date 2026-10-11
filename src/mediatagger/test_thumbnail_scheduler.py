@@ -173,3 +173,34 @@ def test_a_thumbnail_requested_while_the_folder_is_prefetching_is_generated_befo
     qtbot.waitUntil(lambda: len(generated) == len(folder))
 
     assert fourth == folder[6]
+
+
+def test_leaving_a_folder_drops_its_pending_thumbnails_so_they_are_never_generated(qtbot, tmp_path):
+    lock = threading.Lock()
+    started = []
+    generated = []
+
+    def generate(path):
+        with lock:
+            started.append(path)
+        if path in busy:
+            release.wait(timeout=10)
+        with lock:
+            generated.append(path)
+
+    scheduler = ThumbnailScheduler(generate=generate)
+    release = threading.Event()
+    busy = [tmp_path / "left" / f"busy{index}.jpg" for index in range(3)]
+    pending = [tmp_path / "left" / f"pending{index}.jpg" for index in range(3)]
+    next_folder = [tmp_path / "next" / f"{index}.jpg" for index in range(2)]
+    try:
+        scheduler.enter_folder(busy + pending)
+        qtbot.waitUntil(lambda: len(started) == 3)
+        for path in pending:
+            scheduler.request(path)
+        scheduler.enter_folder(next_folder)
+    finally:
+        release.set()
+    qtbot.waitUntil(lambda: all(path in generated for path in next_folder))
+
+    assert not set(pending) & set(generated)

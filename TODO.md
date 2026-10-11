@@ -52,7 +52,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] Re-requesting a thumbnail that is already pending moves it ahead of the others
 - [x] Once the requested thumbnails are done, the rest of the folder's thumbnails are generated without being requested
 - [x] A thumbnail requested while the rest of the folder is prefetching is generated before the remaining prefetch
-- [ ] Leaving a folder drops its pending thumbnails: they are never generated
+- [x] Leaving a folder drops its pending thumbnails: they are never generated
 - [ ] A thumbnail already generating when its folder is left still finishes and is cached
 - [ ] Generated thumbnails are delivered on the GUI thread
 - [ ] Requesting thumbnails that are all cached generates nothing
