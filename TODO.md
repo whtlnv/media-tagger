@@ -6,7 +6,7 @@ Phase 9 notes for every cycle. Architecture: `viewer.py` must not grow — it sh
 - [x] A tagged folder is recorded in the library as a folder (`kind` `'dir'`)
 - [x] A tagged file is still recorded in the library as a file (`kind` `'file'`), next to a tagged folder
 - [x] Tagging a folder leaves every file inside it with no own tags
-- [ ] Entering tags for the drive's mount point itself stores nothing: its own tags read back empty
+- [x] Entering tags for the drive's mount point itself stores nothing: its own tags read back empty
 - [ ] Entering tags for a folder directly under the drive's mount point stores them
 - [ ] A file's effective tags include its own tags
 - [ ] A file's effective tags include the own tags of its parent folder, reported as inherited

@@ -498,3 +498,13 @@ def test_tagging_a_folder_leaves_every_file_inside_it_with_no_own_tags(tmp_path)
     library.enter(folder, "beach")
 
     assert [library.tags(photo) for photo in photos] == [[], []]
+
+
+def test_entering_tags_for_the_drives_mount_point_itself_stores_nothing_so_its_own_tags_read_back_empty(tmp_path):
+    library = Library.create(tmp_path)
+    (tmp_path / "beach.jpg").touch()
+
+    library.enter(tmp_path, "beach")
+
+    assert library.tags(tmp_path) == []
+    assert Library.open(tmp_path).tags(tmp_path) == []

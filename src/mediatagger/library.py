@@ -92,6 +92,8 @@ class Library:
         return str(path.relative_to(self.root))
 
     def enter(self, path, text):
+        if path == self.root:
+            return
         added, removed = _parse_entry(text)
         tags = (set(self.tags(path)) | added) - removed
         key = self._key(path)
