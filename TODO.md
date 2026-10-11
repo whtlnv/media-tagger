@@ -67,7 +67,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] In a large folder's grid, tiles in view get their thumbnails before tiles far out of view
 - [x] Scrolling a large folder's grid makes the newly visible tiles' thumbnails arrive before still-hidden ones
 - [x] A thumbnail arriving reports a change for its own tile's row only
-- [ ] Entering a subfolder, going up, or starting a slideshow stops generating the left folder's pending thumbnails
+- [x] Entering a subfolder, going up, or starting a slideshow stops generating the left folder's pending thumbnails
 - [ ] Opening a folder's grid a second time generates nothing
 - [ ] On a drive with a library, the grid's thumbnails are written to that drive's cache
 - [ ] On the system disk (no library), the grid's thumbnails are written nowhere on disk

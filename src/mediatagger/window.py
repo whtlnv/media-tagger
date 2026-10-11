@@ -127,6 +127,7 @@ class Window(QWidget):
             grid.setCurrentIndex(grid.model().index(0, 0))
             self._show(grid)
             return
+        self.stack.currentWidget().stop_generating_thumbnails()
         self._open(path)
 
     def _open(self, path):

@@ -128,6 +128,9 @@ class Grid(QListView):
         # Started once the grid is up: workers decoding from the first moment would slow opening a big folder.
         QTimer.singleShot(0, self, lambda: self._thumbnails.enter_folder(self._current_first(paths)))
 
+    def stop_generating_thumbnails(self):
+        self._thumbnails.shut_down()
+
     def _show_thumbnail(self, tiles, row, generated):
         _receive(tiles[row], generated)
         index = self.model().index(row, 0)

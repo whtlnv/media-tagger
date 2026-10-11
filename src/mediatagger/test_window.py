@@ -15,6 +15,7 @@ from mediatagger.grid import TAG_BADGE, TILE_ROLE, Grid
 from mediatagger.library import Library
 from mediatagger.status_bar import READ_ONLY_STATUS_TEXT, StatusBar
 
+from mediatagger.test_folder import touch
 from mediatagger.test_grid import painted_texts
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer_backup import tags_in_newest_backup
@@ -691,3 +692,40 @@ def test_entering_a_subfolder_from_the_windows_grid_shows_tag_badges_for_its_tag
     grid = stack.currentWidget()
     assert grid.folder == folder / "day1"
     assert f"{TAG_BADGE}2" in painted_texts(grid, 0)
+
+
+def test_starting_a_slideshow_from_the_windows_grid_stops_generating_that_folders_pending_thumbnails(qtbot, tmp_path, monkeypatch):
+    import threading
+
+    from mediatagger import grid as grid_module
+
+    lock = threading.Lock()
+    started = []
+    finished = []
+    release = threading.Event()
+
+    def generate(path):
+        with lock:
+            started.append(path)
+        release.wait(timeout=10)
+        with lock:
+            finished.append(path)
+        return None, None
+
+    monkeypatch.setattr(grid_module, "thumbnail_and_duration", generate)
+    make_image(tmp_path / "a.jpg", "red")
+    touch(tmp_path, *(f"IMG_{i:02}.jpg" for i in range(20)))
+    window = Window(tmp_path, player_options=SILENT)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    qtbot.waitUntil(lambda: len(started) == 3)
+    busy = list(started)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+    release.set()
+    qtbot.waitUntil(lambda: all(path in finished for path in busy))
+    qtbot.wait(200)  # long enough for a worker still fed by the grid to start its next thumbnail
+
+    with lock:
+        assert started == busy
