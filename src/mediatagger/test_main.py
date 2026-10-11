@@ -280,7 +280,7 @@ REPORT_SUGGESTIONS_AFTER_TYPING_IN_THE_TAG_PROMPT_SCRIPT = TREAT_FIRST_ARGUMENT_
     "from PySide6.QtCore import Qt, QTimer\n"
     "from PySide6.QtTest import QTest\n"
     "from PySide6.QtWidgets import QApplication\n"
-    "from mediatagger.test_viewer_tag_prompt import listed, visible_suggestion_lists\n"
+    "from mediatagger.test_tag_prompt import listed, visible_suggestion_lists\n"
     "app = QApplication([])\n"
     "typed = sys.argv[3]\n"
     "def type_then_report():\n"
