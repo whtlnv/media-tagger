@@ -25,7 +25,7 @@ Phase 9 notes for every cycle. Architecture: `viewer.py` must not grow — it sh
 - [x] Entering `beach family` in the grid's tag prompt on a folder tile saves both as that folder's own tags and closes the prompt
 - [x] Entering `-sunset` in the grid's tag prompt removes `sunset` from the selected item's own tags
 - [x] Typing in the grid's tag prompt shows autocomplete suggestions from the drive's library
-- [ ] When saving from the grid's tag prompt fails because the drive has gone away, the prompt stays open with its text and the status bar says `Couldn't save tags — is the drive still connected?`
+- [x] When saving from the grid's tag prompt fails because the drive has gone away, the prompt stays open with its text and the status bar says `Couldn't save tags — is the drive still connected?`
 - [ ] With the grid's tag prompt open, the first `Esc` closes the suggestion popup and leaves the prompt open
 - [ ] With the grid's tag prompt open and no popup, `Esc` closes the prompt and the app keeps running with the grid shown
 - [ ] While the grid's tag prompt is open, arrows, `Backspace`, `+` and `-` leave the grid's cursor, folder and tile size unchanged

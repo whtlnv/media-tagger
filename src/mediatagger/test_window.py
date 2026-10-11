@@ -1,5 +1,6 @@
 import errno
 import os
+import sqlite3
 from datetime import datetime, timezone
 
 from PySide6.QtCore import QCoreApplication, QEvent, Qt
@@ -9,7 +10,7 @@ from mediatagger.backup import back_up
 from mediatagger.drive_session import BACKUP_FAILED_TEXT, CREATE_LIBRARY_QUESTION, RESTORE_LIBRARY_QUESTION
 from mediatagger.grid import TAG_BADGE, TILE_ROLE, Grid
 from mediatagger.library import Library
-from mediatagger.status_bar import READ_ONLY_STATUS_TEXT, TAGS_CANT_BE_SAVED_HERE_TEXT, StatusBar
+from mediatagger.status_bar import _COULDNT_SAVE_TAGS_TEXT, READ_ONLY_STATUS_TEXT, TAGS_CANT_BE_SAVED_HERE_TEXT, StatusBar
 from mediatagger.test_grid import painted_texts
 from mediatagger.test_tag_prompt import listed
 from mediatagger.test_video import make_clip
@@ -400,6 +401,21 @@ def test_typing_b_in_the_windows_grid_tag_prompt_on_a_drive_whose_library_has_be
     suggestions = prompt.completer().popup()
     qtbot.waitUntil(suggestions.isVisible)
     assert listed(suggestions) == ["beach"]
+
+
+def test_when_saving_from_the_windows_grid_tag_prompt_fails_because_the_drive_has_gone_away_the_prompt_stays_open_with_its_text_and_the_status_bar_says_it_couldnt_save_tags(qtbot, tmp_path, monkeypatch):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+
+    def enter_on_an_unplugged_drive(self, path, text):
+        raise sqlite3.OperationalError("disk I/O error")
+
+    monkeypatch.setattr(Library, "enter", enter_on_an_unplugged_drive)
+
+    enter_in_the_grids_tag_prompt(qtbot, window, stack, "beach")
+
+    assert visible_tag_prompt_texts(window) == ["beach"]
+    assert _COULDNT_SAVE_TAGS_TEXT in shown_status_bar_texts(window)
 
 
 def test_moving_the_windows_grid_cursor_onto_an_untagged_item_shows_no_tags_in_the_status_bar(qtbot, tmp_path):
