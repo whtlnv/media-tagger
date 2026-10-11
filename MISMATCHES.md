@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 15:46 · `src/mediatagger/test_window.py::test_pressing_t_in_the_windows_grid_on_a_folder_tile_tagged_beach_family_opens_the_tag_prompt_showing_beach_family_above_its_empty_input`
+- Behavior: Pressing `t` in the grid on a folder tile opens the tag prompt showing that folder's own tags
+- Predicted: passes on first run — `Window._tag` opens the prompt on the current tile's path whatever its kind, and `Library.tags` looks up by `rel_path` regardless of `kind`
+- Actual: passed on first run; removing the `library.enter` on the folder makes it fail (`assert 'beach family' in []`), so the pin is not vacuous
+- Type: passed unexpectedly
+- Resolution: the behavior came for free with the file-tile `t` cycle; kept the test as a pin for folder tiles — /green has nothing to implement
+
 ## 2026-10-11 15:23 · `src/mediatagger/test_grid.py::test_a_folder_tile_whose_folder_has_no_own_tags_but_whose_parent_has_tags_shows_no_tag_badge`
 - Behavior: A folder tile whose folder has no own tags but whose parent has tags shows no badge
 - Predicted: passes on first run — `Library.tag_counts` counts only each item's own `item_tags` rows, so the parent's tags never reach the child folder's tile

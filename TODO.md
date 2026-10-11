@@ -21,7 +21,7 @@ Phase 9 notes for every cycle. Architecture: `viewer.py` must not grow — it sh
 - [x] A folder tile whose folder has no own tags but whose parent has tags shows no badge
 - [x] Pressing `t` in the grid on a file tile opens the tag prompt showing that file's own tags
 - [x] Pressing `t` in the grid where tags can't be saved (viewing only, read-only drive) opens no prompt and briefly shows `Tags can't be saved here`
-- [ ] Pressing `t` in the grid on a folder tile opens the tag prompt showing that folder's own tags
+- [x] Pressing `t` in the grid on a folder tile opens the tag prompt showing that folder's own tags
 - [ ] Entering `beach family` in the grid's tag prompt on a folder tile saves both as that folder's own tags and closes the prompt
 - [ ] Entering `-sunset` in the grid's tag prompt removes `sunset` from the selected item's own tags
 - [ ] Typing in the grid's tag prompt shows autocomplete suggestions from the drive's library

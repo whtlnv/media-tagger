@@ -330,6 +330,23 @@ def test_pressing_t_in_the_windows_grid_on_a_read_only_drive_opens_no_tag_prompt
     assert TAGS_CANT_BE_SAVED_HERE_TEXT in shown_status_bar_texts(window)
 
 
+def test_pressing_t_in_the_windows_grid_on_a_folder_tile_tagged_beach_family_opens_the_tag_prompt_showing_beach_family_above_its_empty_input(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    [trip] = make_folders(folder, "trip")
+    Library.open(drive).enter(trip, "beach family")
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Left)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_T)
+
+    assert [prompt.text() for prompt in visible_tag_prompts(window)] == [""]
+    assert "beach family" in [label.text() for label in window.findChildren(QLabel) if label.isVisible() and not window.status_bar.isAncestorOf(label)]
+
+
 def test_moving_the_windows_grid_cursor_onto_an_untagged_item_shows_no_tags_in_the_status_bar(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
