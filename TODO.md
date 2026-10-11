@@ -30,7 +30,7 @@ Phase 9 notes for every cycle. Architecture: `viewer.py` must not grow — it sh
 - [x] With the grid's tag prompt open and no popup, `Esc` closes the prompt and the app keeps running with the grid shown
 - [x] While the grid's tag prompt is open, arrows, `Backspace`, `+` and `-` leave the grid's cursor, folder and tile size unchanged
 - [x] After the grid's tag prompt closes, arrows move the grid cursor again
-- [ ] The grid's tag prompt sits at the bottom centre above the status bar, entirely inside the window
+- [x] The grid's tag prompt sits at the bottom centre above the status bar, entirely inside the window
 - [ ] After saving tags in the grid, the selected tile's `🏷N` badge shows the new own-tag count without re-listing the folder
 - [ ] After saving tags in the grid, the status bar shows the selected item's new own tags
 - [ ] Moving the grid cursor onto an item inside a tagged folder shows its own tags in the status bar followed by the folder's inherited tags

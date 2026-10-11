@@ -46,6 +46,7 @@ class Window(QWidget):
     def resizeEvent(self, event):
         self.status_bar.place_along_the_bottom_of(self.rect())
         self.status_bar.raise_()
+        self.tag_prompt.place()
 
     def keyPressEvent(self, event):
         if self.tag_prompt.has_focus():

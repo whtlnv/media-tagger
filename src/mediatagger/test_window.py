@@ -18,7 +18,7 @@ from mediatagger.test_viewer_backup import tags_in_newest_backup
 from mediatagger.test_viewer import SILENT, make_image, make_surface_ready, show_exposed, wait_until_loaded
 from mediatagger.test_viewer_library import (
     decline_noting_the_question_in, drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image, enter_in_tag_prompt,
-    made_read_only, overwrite_tags_db_with_garbage, visible_tag_prompt_texts, visible_tag_prompts,
+    frame_in, made_read_only, overwrite_tags_db_with_garbage, resize_and_wait, visible_tag_prompt_texts, visible_tag_prompts,
 )
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger.viewer import Viewer
@@ -472,6 +472,19 @@ def test_after_the_windows_grid_tag_prompt_closes_arrows_move_the_grids_cursor_a
     qtbot.keyClick(window.focusWidget(), Qt.Key.Key_Right)
 
     assert grid.currentIndex().row() == 1
+
+
+def test_the_windows_grid_tag_prompt_sits_at_the_bottom_centre_just_above_the_status_bar_entirely_inside_the_window_also_after_a_resize(qtbot, tmp_path):
+    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_T)
+
+    resize_and_wait(qtbot, window, 900, 700)
+
+    [prompt] = visible_tag_prompts(window)
+    frame = frame_in(window, prompt)
+    assert window.rect().contains(frame)
+    assert abs(frame.center().x() - window.rect().center().x()) <= 1
+    assert frame.bottom() == window.status_bar.geometry().top() - 1
 
 
 def test_moving_the_windows_grid_cursor_onto_an_untagged_item_shows_no_tags_in_the_status_bar(qtbot, tmp_path):
