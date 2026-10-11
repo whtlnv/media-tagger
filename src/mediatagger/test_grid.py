@@ -142,6 +142,16 @@ def test_a_folder_tile_whose_folder_has_2_own_tags_shows_a_tag_badge_with_its_co
     assert f"{TAG_BADGE}2" in painted_texts(grid, 0)
 
 
+def test_a_folder_tile_whose_folder_has_no_own_tags_but_whose_parent_has_tags_shows_no_tag_badge(qtbot, tmp_path):
+    library = Library.create(tmp_path)
+    (tmp_path / "trip" / "day1").mkdir(parents=True)
+    library.enter(tmp_path / "trip", "beach family")
+    grid = Grid(tmp_path / "trip", library=library)
+    qtbot.addWidget(grid)
+
+    assert not any(TAG_BADGE in text for text in painted_texts(grid, 0))
+
+
 def test_a_tile_for_an_untagged_item_shows_no_tag_badge(qtbot, tmp_path):
     library = Library.create(tmp_path)
     touch(tmp_path, "beach.jpg", "cat.jpg")

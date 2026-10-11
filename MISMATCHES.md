@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 15:23 · `src/mediatagger/test_grid.py::test_a_folder_tile_whose_folder_has_no_own_tags_but_whose_parent_has_tags_shows_no_tag_badge`
+- Behavior: A folder tile whose folder has no own tags but whose parent has tags shows no badge
+- Predicted: passes on first run — `Library.tag_counts` counts only each item's own `item_tags` rows, so the parent's tags never reach the child folder's tile
+- Actual: passed on first run; also tagging `trip/day1` itself makes it fail (`assert not True`), so the pin is not vacuous
+- Type: passed unexpectedly
+- Resolution: badges are own-tag only by construction; kept the test as a regression pin against badges ever switching to effective (inherited) tags — /green has nothing to implement
+
 ## 2026-10-11 15:14 · `src/mediatagger/test_grid.py::test_a_folder_tile_whose_folder_has_2_own_tags_shows_a_tag_badge_with_its_count`
 - Behavior: A folder tile whose folder has own tags shows a `🏷N` badge with its own-tag count
 - Predicted: passes on first run — `Library.tag_counts` already counts direct child rows by `rel_path` regardless of `kind`, and `_tiles` looks counts up by name for folder tiles too
