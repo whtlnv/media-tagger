@@ -196,3 +196,19 @@ def test_a_duration_of_3725_seconds_reads_1_02_05_with_hours_shown():
 
 def test_a_fractional_duration_of_75_6_seconds_reads_1_15_in_whole_seconds():
     assert format_duration(75.6) == "1:15"
+
+
+@pytest.mark.skipif(shutil.which("ffmpeg") is None, reason="ffmpeg is not installed")
+def test_a_tiles_video_generation_with_no_timeout_given_still_gives_up_on_a_hung_ffmpeg(tmp_path, monkeypatch):
+    from mediatagger import thumbnails
+
+    path = make_clip(tmp_path / "clip.mp4", duration=3)
+    make_fake_tool(tmp_path / "bin", "ffprobe", "exec /bin/sleep 30")
+    make_fake_tool(tmp_path / "bin", "ffmpeg", "exec /bin/sleep 30")
+    monkeypatch.setenv("PATH", str(tmp_path / "bin"))
+    monkeypatch.setattr(thumbnails, "TOOL_TIMEOUT_S", 0.5)
+
+    started = time.monotonic()
+    generated = thumbnails.thumbnail_and_duration(path)
+
+    assert (generated, time.monotonic() - started < 5) == ((None, None), True)

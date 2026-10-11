@@ -6,6 +6,8 @@ from PySide6.QtGui import QImage, QImageReader
 
 from mediatagger.folder import is_video_name, subfolder_and_media_names
 
+TOOL_TIMEOUT_S = 15  # ffprobe/ffmpeg on a slow drive on a Pi; past this a hung tool leaves the tile's glyph
+
 
 def image_thumbnail(path):
     reader = QImageReader(str(path))
@@ -18,7 +20,7 @@ def image_thumbnail(path):
 
 def _run_with_timeout(args, timeout, **kwargs):
     try:
-        return subprocess.run(args, capture_output=True, timeout=timeout, **kwargs)
+        return subprocess.run(args, capture_output=True, timeout=timeout or TOOL_TIMEOUT_S, **kwargs)
     except subprocess.TimeoutExpired:
         return None
 
@@ -40,9 +42,13 @@ def video_thumbnail(path, timeout=None):
     duration = video_duration(path, timeout=timeout)
     if duration is None:
         return None
-    seek_seconds = duration * 0.1
+    return _video_frame(path, duration, timeout)
+
+
+def _video_frame(path, duration, timeout):
+    """A frame from about 10% in: past any fade-in or black first frame."""
     result = _run_with_timeout(
-        ["ffmpeg", "-v", "error", "-ss", str(seek_seconds), "-i", str(path),
+        ["ffmpeg", "-v", "error", "-ss", str(duration * 0.1), "-i", str(path),
          "-frames:v", "1", "-f", "image2pipe", "-c:v", "png", "-"],
         timeout,
     )
@@ -60,7 +66,8 @@ def folder_thumbnail(folder):
 def thumbnail_and_duration(path):
     """What a grid tile shows for a file or folder; runs on a worker thread. Only a video has a duration."""
     if is_video_name(path.name):
-        return video_thumbnail(path), video_duration(path)
+        duration = video_duration(path)  # probed once: the frame is taken relative to it
+        return (_video_frame(path, duration, None) if duration is not None else None), duration
     if path.is_dir():
         return folder_thumbnail(path), None
     return image_thumbnail(path), None
