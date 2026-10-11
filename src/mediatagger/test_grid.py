@@ -10,6 +10,7 @@ from mediatagger.folder import folder_entries
 from mediatagger.grid import FOLDER_GLYPH, IMAGE_GLYPH, TAG_BADGE, TILE_ROLE, VIDEO_BADGE, VIDEO_GLYPH, Grid
 from mediatagger.library import Library
 from mediatagger.test_folder import touch
+from mediatagger.test_thumbnail_cache import solid_thumbnail
 from mediatagger.thumbnails import format_duration
 
 
@@ -329,9 +330,7 @@ def painted_red_area(image):
 
 
 def give_red_thumbnail(grid, row):
-    thumbnail = QImage(400, 200, QImage.Format.Format_RGB32)
-    thumbnail.fill(Qt.GlobalColor.red)
-    grid.model().index(row, 0).data(TILE_ROLE).thumbnail = thumbnail
+    grid.model().index(row, 0).data(TILE_ROLE).thumbnail = solid_thumbnail("red")
 
 
 def test_a_tile_with_a_thumbnail_paints_the_picture_above_the_filename_aspect_ratio_kept(qtbot, tmp_path):
