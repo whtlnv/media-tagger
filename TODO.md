@@ -6,86 +6,15 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 ## Phase 8 — Thumbnails
 
 ### Generating one thumbnail
-- [x] A 1600×800 image yields a thumbnail of 400×200 (fits ~400 px, aspect ratio kept)
-- [x] A 300×600 image yields a thumbnail of 200×400 (the long side, not always the width, is fitted)
-- [x] An image whose EXIF orientation says "rotated 90°" yields a thumbnail in its displayed (rotated) orientation
-- [x] A corrupt image file yields a "no thumbnail" result instead of raising
-- [x] A video yields its duration in seconds
-- [x] A video yields a frame taken at ~10% of its duration, not its first frame (a test video whose colour changes after the first 5% gives the later colour)
-- [x] A video's frame thumbnail fits within ~400 px, aspect ratio kept
-- [x] When `ffmpeg`/`ffprobe` are not on PATH, a video yields "no thumbnail" and no duration instead of raising
-- [x] A 7-second video yields a duration of about 7 s (read from the file with `ffprobe`, not assumed)
-- [x] An 800×600 video that is green at 10% of its length yields a green 400×300 thumbnail (the frame is taken from the file with `ffmpeg`, not made up)
-- [x] When `ffmpeg` runs past its timeout, the video yields "no thumbnail" and generation returns promptly
-- [x] A corrupt video file yields "no thumbnail" and no duration instead of raising
-- [x] A folder whose images are `10.jpg` and `2.jpg` yields the thumbnail of `2.jpg` (first image in natural order)
-- [x] A folder holding only videos, or images only in its subfolders, yields "no thumbnail"
-- [x] A duration of 75 s reads `1:15`
-- [x] A duration of 3,725 s reads `1:02:05` (hours shown from an hour)
-- [x] A fractional duration of 75.6 s, as `ffprobe` reports it, reads `1:15` (whole seconds only)
-- [x] When `ffprobe` runs past its timeout, the video yields no duration and no thumbnail and generation returns promptly
 
 ### Cache
-- [x] Tests that write a thumbnail cache write it under a per-test temp folder, never the real `~/.cache`
-- [x] With `$XDG_CACHE_HOME` set, a drive's cache is `$XDG_CACHE_HOME/mediatagger/<drive_id>/thumbs.db`
-- [x] With `$XDG_CACHE_HOME` unset, a drive's cache is `~/.cache/mediatagger/<drive_id>/thumbs.db` (home injectable)
-- [x] A stored thumbnail is returned for a file whose size and mtime are unchanged
-- [x] A stored thumbnail is not returned once the file's mtime changes
-- [x] A stored thumbnail is not returned once the file's size changes
-- [x] Thumbnails stored for two different files are each returned for their own file
-- [x] A stored video thumbnail comes back with its duration
-- [x] A stored failure comes back as a hit meaning "no thumbnail", distinguishable from a miss (which stays as it is today), while the file is unchanged
-- [x] A stored failure is a miss once the file's mtime changes
-- [x] Thumbnails stored in one session are returned after the cache is reopened (survives restarting the app)
-- [x] A thumbnail stored while the drive was mounted at one path is returned when the drive is mounted at another
-- [x] With no drive id (no library), a generated thumbnail is returned again within the session from memory
-- [x] A file that was never stored is a miss (looking it up does not fail)
-- [x] A stored video's duration of 42 s comes back as 42 s, and a 7.25 s one as 7.25 s (the stored duration, not a fixed value)
-- [x] A drive's cache opened by its drive id keeps its thumbnails on disk: closing it and opening it again by the same drive id returns them
-- [x] With no drive id, nothing is written to disk
-- [x] The cache is never written when its location falls on the app's own drive
-- [x] The cache is never written when its location falls on the drive being viewed
 
 ### Order of work
-- [x] With more than three thumbnails pending, exactly three generate at once
-- [x] While workers are busy, the most recently requested thumbnail is generated before earlier pending ones
-- [x] Re-requesting a thumbnail that is already pending moves it ahead of the others
-- [x] Once the requested thumbnails are done, the rest of the folder's thumbnails are generated without being requested
-- [x] A thumbnail requested while the rest of the folder is prefetching is generated before the remaining prefetch
-- [x] Leaving a folder drops its pending thumbnails: they are never generated
-- [x] A thumbnail already generating when its folder is left still finishes and is cached
-- [x] Generated thumbnails are delivered on the GUI thread
-- [x] Requesting thumbnails that are all cached generates nothing
 
 ### Grid
-- [x] In a folder's grid, an image tile gets its thumbnail once generation finishes
-- [x] In a folder's grid, a corrupt image's tile keeps no thumbnail (its glyph stays)
-  - covered without new code: a corrupt image yields no thumbnail (test_thumbnails), a tile without one paints its glyph (test_grid); a grid-level pin had no deterministic point to assert at and was dropped
-- [x] In a folder's grid, a video tile gets its thumbnail and its duration
-- [x] In a folder's grid, a folder tile gets the thumbnail of its first image
-- [x] In a folder's grid, a folder tile with no image directly inside keeps no thumbnail
-- [x] In a large folder's grid, tiles in view get their thumbnails before tiles far out of view
-- [x] Scrolling a large folder's grid makes the newly visible tiles' thumbnails arrive before still-hidden ones
-- [x] A thumbnail arriving reports a change for its own tile's row only
-- [x] Entering a subfolder, going up, or starting a slideshow stops generating the left folder's pending thumbnails
-- [x] Opening a folder's grid a second time generates nothing
-- [x] On a drive with a library, the grid's thumbnails are written to that drive's cache
-- [x] On the system disk (no library), the grid's thumbnails are written nowhere on disk
-- [x] Opening the grid of a 5,000-file folder with an empty cache stays within the Phase 7 timing bound
 
 ### Painting
-- [x] A tile with a thumbnail paints the picture above the filename, aspect ratio kept
-- [x] A tile without a thumbnail paints its type glyph
-- [x] A video tile paints its duration next to the ▶ badge
-- [x] An image tile paints no duration
-- [x] The tag-count, ▶ and duration badges are painted on a contrasting backing, readable over both a white and a black thumbnail
-- [x] Painting a tile that has a thumbnail stats, decodes and queries nothing
 
 ### Status bar
-- [x] While thumbnails generate, the status bar shows `⟳ Generating thumbnails <done> / <total>`, counting only the ones that had to be generated
-- [x] A total of 1,204 reads `1,204` (thousands separated)
-- [x] When the folder's thumbnails are done, the status bar shows `✓ Thumbnails ready`, then clears it like other finished background messages
-- [x] Opening a folder whose thumbnails are all cached shows no thumbnail message
 
 ### Shipped
-- [x] The shipped `mediatagger` command's grid (launch on a folder, `Esc` to the grid) shows a generated thumbnail on an image tile
