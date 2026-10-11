@@ -100,6 +100,25 @@ def test_suggestions_are_ordered_by_item_count_and_then_alphabetically_typing_b_
     assert listed(suggestions) == expected
 
 
+def test_a_tag_on_one_folder_holding_three_files_ranks_below_a_tag_on_two_files_typing_b_lists_bird_before_beach(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    [trip] = make_folders(drive, "Trip")
+    for name in ("IMG_1.png", "IMG_2.png", "IMG_3.png"):
+        make_image(trip / name, "green")
+    for name in ("IMG_2.png", "IMG_3.png"):
+        make_image(folder / name, "blue")
+    library = Library.open(drive)
+    library.enter(trip, "beach")
+    library.enter(folder / "IMG_2.png", "bird")
+    library.enter(folder / "IMG_3.png", "bird")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    type_in_tag_prompt(qtbot, viewer, "b")
+
+    [suggestions] = visible_suggestion_lists()
+    assert listed(suggestions) == ["bird", "beach"]
+
+
 @pytest.mark.parametrize(
     "viewed_item_tags, other_item_tags, typed, expected",
     [

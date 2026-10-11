@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 15:01 · `src/mediatagger/test_tag_prompt.py::test_a_tag_on_one_folder_holding_three_files_ranks_below_a_tag_on_two_files_typing_b_lists_bird_before_beach`
+- Behavior: A tag carried by one folder holding three files ranks below a tag carried by two files in the tag prompt's suggestions (the folder counts as one item)
+- Predicted: pass (stated before running) — `Library.all_tags` orders by `COUNT(*)` of `item_tags` rows, and a tagged folder is one `dir` row whose files get no own tags
+- Actual: passed
+- Type: passed unexpectedly
+- Resolution: The behavior already exists because folder tags are stored on the folder's own row (an earlier cycle), so no rewrite could make the test fail without changing which behavior it checks; I kept it as a pin against a future change that spreads folder tags onto their files or counts inherited tags.
+
 ## 2026-10-11 14:45 · `src/mediatagger/test_library.py::test_a_folders_effective_tags_include_the_own_tags_of_its_ancestor_folders_reported_as_inherited`
 - Behavior: A folder's effective tags include its ancestor folders' tags as inherited
 - Predicted: passes — `effective_tags` walks `path.relative_to(root).parents` with exact `rel_path` lookups, which is the same for a folder as for a file
