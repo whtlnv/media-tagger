@@ -10,6 +10,7 @@ WORKERS = 3
 
 class _Generated(QObject):
     done = Signal(object, object)
+    prefetched = Signal(object, object)
 
 
 def _store(cache, path, thumbnail):
@@ -37,35 +38,40 @@ class _Work:
     workers hold this, never the scheduler, and the Qt object belongs to a GUI-thread parent, so a worker dropping
     its reference can never destroy it off the GUI thread."""
 
-    def __init__(self, generate, emitter):
+    def __init__(self, generate, prefetch, emitter):
         self.generate = generate
+        self.prefetch = prefetch
         self.emitter = emitter
         self.pending = []
         self.unrequested = {}  # the rest of the folder, in order; a dict so a request finds and withdraws one at once
-        self.taken = set()  # started or done: never generated twice
+        self.generating = set()  # never started twice at once
         self.stopped = False
         self.workers = 0
         self.lock = threading.Lock()
 
     def run(self):
         """One worker: generates until nothing is left, so a folder of thousands costs a few tasks, not one each."""
-        while (path := self._take_next()) is not None:
+        while (taken := self._take_next()) is not None:
+            path, requested = taken
+            requested = requested or self.prefetch is None  # with no prefetch of its own, the rest is generated like requests
             try:
-                thumbnail = self.generate(path)
+                outcome = (self.generate if requested else self.prefetch)(path)
             except Exception:  # one unreadable file must not take its worker, and the rest of the folder, down with it
-                thumbnail = None
+                outcome = None
             with self.lock:  # held while posting, so the emitter cannot be destroyed mid-emit once stopped
+                self.generating.discard(path)
                 if not self.stopped:
-                    self.emitter.done.emit(path, thumbnail)
+                    (self.emitter.done if requested else self.emitter.prefetched).emit(path, outcome)
 
     def _take_next(self):
         with self.lock:
             if self.stopped or not (self.pending or self.unrequested):
                 self.workers -= 1
                 return None
-            path = self.pending.pop() if self.pending else self._take_first_unrequested()
-            self.taken.add(path)
-            return path
+            requested = bool(self.pending)
+            path = self.pending.pop() if requested else self._take_first_unrequested()
+            self.generating.add(path)
+            return path, requested
 
     def _take_first_unrequested(self):
         path = next(iter(self.unrequested))
@@ -89,16 +95,19 @@ class _Work:
 class ThumbnailScheduler:
     _qt_types_created = False
 
-    def __init__(self, generate, cache=None, parent=None):
+    def __init__(self, generate, cache=None, parent=None, prefetch=None):
+        """Requested files go through `generate` and come back through `generated`. The rest of the folder goes
+        through `prefetch`, if given, and comes back through `prefetched`; else it is generated like a request."""
         if not ThumbnailScheduler._qt_types_created:
             _create_qt_types_on_this_thread()
             ThumbnailScheduler._qt_types_created = True
         self._cache = cache
         emitter = _Generated(parent or QCoreApplication.instance())
         self.generated = emitter.done
+        self.prefetched = emitter.prefetched
         if cache is not None:
             emitter.done.connect(lambda path, thumbnail: _store(cache, path, thumbnail))
-        self._work = _Work(generate, emitter)
+        self._work = _Work(generate, prefetch, emitter)
         work = self._work
         emitter.destroyed.connect(lambda: work.stop())  # its parent went first: nothing may be posted through it any more
         self._executor = ThreadPoolExecutor(max_workers=WORKERS)
@@ -113,7 +122,7 @@ class ThumbnailScheduler:
         if self._cache is not None and _is_cached(self._cache, path):
             return
         with self._work.lock:
-            if path in self._work.taken:
+            if path in self._work.generating:
                 return
             self._withdraw(path)
             self._work.pending.append(path)

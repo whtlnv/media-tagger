@@ -336,3 +336,49 @@ def test_starting_a_scheduler_creates_every_qt_type_its_workers_may_use_on_the_g
     result = subprocess.run([sys.executable, "-c", _STARTS_A_SCHEDULER_IN_A_FRESH_APP], env=environment, capture_output=True, text=True, timeout=60)
 
     assert (result.returncode, result.stdout.split()) == (0, [])
+
+
+def test_a_thumbnail_requested_again_after_it_was_delivered_is_generated_again(qtbot, tmp_path):
+    """A tile that scrolled far away may have let its thumbnail go; scrolled back, it asks again (and the cache answers)."""
+    delivered = []
+    scheduler = ThumbnailScheduler(generate=lambda path: path.name)
+    scheduler.generated.connect(lambda path, thumbnail: delivered.append(thumbnail))
+    path = tmp_path / "photo.jpg"
+
+    scheduler.request(path)
+    qtbot.waitUntil(lambda: len(delivered) == 1)
+    scheduler.request(path)
+    qtbot.waitUntil(lambda: len(delivered) == 2, timeout=1000)
+
+    assert delivered == ["photo.jpg", "photo.jpg"]
+
+
+def test_the_rest_of_a_folder_goes_through_the_prefetch_and_requested_thumbnails_through_generation(qtbot, tmp_path):
+    lock = threading.Lock()
+    calls = []
+
+    def generate(path):
+        with lock:
+            calls.append(("generate", path.name))
+        return path.name
+
+    def prefetch(path):
+        with lock:
+            calls.append(("prefetch", path.name))
+        return f"{path.name} cached"
+
+    scheduler = ThumbnailScheduler(generate=generate, prefetch=prefetch)
+    delivered = []
+    prefetched = []
+    scheduler.generated.connect(lambda path, thumbnail: delivered.append(thumbnail))
+    scheduler.prefetched.connect(lambda path, outcome: prefetched.append(outcome))
+    folder = [tmp_path / f"{index}.jpg" for index in range(4)]
+    scheduler.enter_folder([path for path in folder if path != folder[2]])
+    scheduler.request(folder[2])
+    qtbot.waitUntil(lambda: len(delivered) + len(prefetched) == 4)
+
+    assert (sorted(calls), delivered, sorted(prefetched)) == (
+        [("generate", "2.jpg"), ("prefetch", "0.jpg"), ("prefetch", "1.jpg"), ("prefetch", "3.jpg")],
+        ["2.jpg"],
+        ["0.jpg cached", "1.jpg cached", "3.jpg cached"],
+    )
