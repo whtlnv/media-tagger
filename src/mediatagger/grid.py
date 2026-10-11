@@ -31,7 +31,7 @@ MIN_TILE_SIZE = QSize(100, 100)
 
 TILE_ROLE = Qt.ItemDataRole.UserRole
 
-HELD_THUMBNAILS = 300  # pictures kept in memory at once: about 150 MB at the largest tile size, fine on a Pi
+HELD_THUMBNAILS = 500  # pictures kept in memory at once (about 240 MB), beyond those in view, which are always kept
 
 
 class _Kind(Enum):
@@ -156,10 +156,19 @@ class Grid(QListView):
         tiles[row].thumbnail, tiles[row].duration = thumbnail, duration
         self._answered[row] = None
         self._answered.move_to_end(row)
-        if len(self._answered) > HELD_THUMBNAILS:  # a tile scrolled far away lets its picture go; back in view, it asks again
-            tiles[self._answered.popitem(last=False)[0]].thumbnail = None
+        if len(self._answered) > HELD_THUMBNAILS:
+            self._let_go_of_a_picture_out_of_view(tiles)
         index = self.model().index(row, 0)
         self.model().dataChanged.emit(index, index)
+
+    def _let_go_of_a_picture_out_of_view(self, tiles):
+        """The tile that got its picture longest ago and is out of view lets it go; back in view, it asks again."""
+        viewport = self.viewport().rect()
+        for row in self._answered:
+            if not self.visualRect(self.model().index(row, 0)).intersects(viewport):
+                del self._answered[row]
+                tiles[row].thumbnail = None
+                return
 
     def _request_visible(self):
         """The tiles in view, bottom-right first, and the cursor's tile last: the most recent request is generated

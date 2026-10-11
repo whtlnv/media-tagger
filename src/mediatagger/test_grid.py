@@ -567,3 +567,24 @@ def test_painting_a_tile_with_a_thumbnail_after_its_file_and_library_are_gone_fr
 
     assert painted_red_area(painted_tile(grid, 0, selected=False)) is not None
     assert f"{TAG_BADGE}3" in painted_texts(grid, 0)
+
+
+def test_tiles_out_of_view_let_go_of_their_pictures_beyond_the_ones_the_grid_holds(qtbot, tmp_path, monkeypatch):
+    from mediatagger import grid as grid_module
+
+    monkeypatch.setattr(grid_module, "HELD_THUMBNAILS", 4)
+    monkeypatch.setattr(grid_module, "thumbnail_and_duration", lambda path: (QImage(40, 40, QImage.Format.Format_RGB32), None))
+    touch(tmp_path, *[f"IMG_{i:02}.jpg" for i in range(40)])
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+    grid.resize(450, 250)  # two tiles in view
+    grid.show()
+    tiles = [grid.model().index(row, 0).data(TILE_ROLE) for row in range(40)]
+    qtbot.waitUntil(lambda: tiles[0].thumbnail is not None)
+
+    for row in range(0, 40, 2):
+        grid.scrollTo(grid.model().index(row, 0))
+        qtbot.waitUntil(lambda: tiles[row].thumbnail is not None)
+
+    holding = [row for row, tile in enumerate(tiles) if tile.thumbnail is not None]
+    assert (len(holding) <= 4, tiles[38].thumbnail is not None) == (True, True)
