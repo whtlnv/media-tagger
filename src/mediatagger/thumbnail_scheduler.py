@@ -1,10 +1,21 @@
 import threading
 from concurrent.futures import ThreadPoolExecutor
 
+from PySide6.QtCore import QObject, Signal
+
+
+class _Generated(QObject):
+    done = Signal(object, object)
+
 
 class ThumbnailScheduler:
-    def __init__(self, generate):
+    def __init__(self, generate, cache=None):
         self._generate = generate
+        self._generated = _Generated()
+        if cache is not None:
+            self._generated.done.connect(
+                lambda path, thumbnail: cache.store(path, path.stat().st_size, path.stat().st_mtime, thumbnail)
+            )
         self._executor = ThreadPoolExecutor(max_workers=3)
         self._pending = []
         self._unrequested = []
@@ -37,4 +48,4 @@ class ThumbnailScheduler:
         with self._lock:
             path = self._pending.pop() if self._pending else self._unrequested.pop(0)
             self._taken.add(path)
-        self._generate(path)
+        self._generated.done.emit(path, self._generate(path))

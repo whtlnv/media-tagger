@@ -204,3 +204,35 @@ def test_leaving_a_folder_drops_its_pending_thumbnails_so_they_are_never_generat
     qtbot.waitUntil(lambda: all(path in generated for path in next_folder))
 
     assert not set(pending) & set(generated)
+
+
+def test_a_thumbnail_already_generating_when_its_folder_is_left_still_finishes_and_is_cached(qtbot, tmp_path):
+    from PySide6.QtGui import QColor, QImage
+
+    from mediatagger.thumbnail_cache import ThumbnailCache
+
+    started = threading.Event()
+    release = threading.Event()
+
+    def generate(path):
+        started.set()
+        release.wait(timeout=10)
+        thumbnail = QImage(400, 200, QImage.Format_RGB32)
+        thumbnail.fill(QColor("red"))
+        return thumbnail
+
+    (tmp_path / "left").mkdir()
+    busy = tmp_path / "left" / "busy.jpg"
+    busy.write_bytes(b"photo")
+    stat = busy.stat()
+    cache = ThumbnailCache(":memory:", root=tmp_path)
+    scheduler = ThumbnailScheduler(generate=generate, cache=cache)
+    try:
+        scheduler.enter_folder([busy])
+        qtbot.waitUntil(started.is_set)
+        scheduler.enter_folder([])
+    finally:
+        release.set()
+    qtbot.waitUntil(lambda: cache.lookup(busy, size=stat.st_size, mtime=stat.st_mtime) is not None)
+
+    assert cache.lookup(busy, size=stat.st_size, mtime=stat.st_mtime).pixelColor(200, 100) == QColor("red")
