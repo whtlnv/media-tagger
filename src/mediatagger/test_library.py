@@ -355,6 +355,18 @@ def test_a_tagged_files_row_in_items_records_its_kind_as_file(tmp_path):
     assert items == [("beach.jpg", "file")]
 
 
+def test_a_tagged_folders_row_in_items_records_its_kind_as_dir(tmp_path):
+    library = Library.create(tmp_path)
+    folder = tmp_path / "trip"
+    folder.mkdir()
+
+    library.enter(folder, "beach")
+
+    items = _query(tmp_path, "SELECT rel_path, kind FROM items")
+
+    assert items == [("trip", "dir")]
+
+
 def test_removing_a_tag_from_the_last_file_that_has_it_removes_the_tags_row_from_tags(tmp_path):
     library = Library.create(tmp_path)
     photo = tmp_path / "beach.jpg"

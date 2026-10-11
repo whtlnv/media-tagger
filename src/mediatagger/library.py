@@ -29,8 +29,8 @@ def _migrate_to_schema_version_2(connection):
     connection.execute("UPDATE meta SET value = '2' WHERE key = 'schema_version' AND value = '1'")
 
 
-def _ensure_item_id(connection, rel_path):
-    connection.execute("INSERT OR IGNORE INTO items (rel_path) VALUES (?)", (rel_path,))
+def _ensure_item_id(connection, rel_path, kind):
+    connection.execute("INSERT OR IGNORE INTO items (rel_path, kind) VALUES (?, ?)", (rel_path, kind))
     (item_id,) = connection.execute("SELECT id FROM items WHERE rel_path = ?", (rel_path,)).fetchone()
     return item_id
 
@@ -97,7 +97,7 @@ class Library:
         key = self._key(path)
         connection = sqlite3.connect(self._tags_db)
         with connection:
-            _set_item_tags(connection, _ensure_item_id(connection, key), tags)
+            _set_item_tags(connection, _ensure_item_id(connection, key, "dir" if path.is_dir() else "file"), tags)
             if not tags:
                 connection.execute("DELETE FROM items WHERE rel_path = ?", (key,))
         connection.close()
