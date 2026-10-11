@@ -370,6 +370,20 @@ def test_entering_beach_family_in_the_windows_grid_tag_prompt_on_a_folder_tile_s
     assert visible_tag_prompts(window) == []
 
 
+def test_entering_minus_sunset_in_the_windows_grid_tag_prompt_removes_sunset_from_the_selected_items_own_tags(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    [trip] = make_folders(folder, "trip")
+    Library.open(drive).enter(trip, "beach sunset")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_T)
+    [prompt] = visible_tag_prompts(window)
+
+    qtbot.keyClicks(prompt, "-sunset")
+    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+
+    assert Library.open(drive).tags(trip) == ["beach"]
+
+
 def test_moving_the_windows_grid_cursor_onto_an_untagged_item_shows_no_tags_in_the_status_bar(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)

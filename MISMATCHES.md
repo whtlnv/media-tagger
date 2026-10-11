@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 16:12 · `src/mediatagger/test_window.py::test_entering_minus_sunset_in_the_windows_grid_tag_prompt_removes_sunset_from_the_selected_items_own_tags`
+- Behavior: Entering `-sunset` in the grid's tag prompt removes `sunset` from the selected item's own tags
+- Predicted: passes on first run (no right-reason failure was possible: the grid opens the shared TagPrompt, whose Enter calls Library.enter, and that already parses `-word` as a removal)
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: The behavior was already delivered when the grid got the shared TagPrompt and Library.enter's `-` parsing, so this TODO item had nothing left to drive; the test was kept, not rewritten, because it asserts the real end-to-end removal through the grid rather than being vacuous. Making it fail would mean contradicting shipped behavior.
+
 ## 2026-10-11 16:00 · `src/mediatagger/test_window.py::test_entering_beach_family_in_the_windows_grid_tag_prompt_on_a_folder_tile_saves_both_as_that_folders_own_tags_and_closes_the_prompt`
 - Behavior: Entering `beach family` in the grid's tag prompt on a folder tile saves both as that folder's own tags and closes the prompt
 - Predicted: AssertionError — folder's own tags read back `[]` (flagged as likely to pass, since the grid uses the shared `TagPrompt`)
