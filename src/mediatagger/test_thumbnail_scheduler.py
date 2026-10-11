@@ -175,69 +175,6 @@ def test_a_thumbnail_requested_while_the_folder_is_prefetching_is_generated_befo
     assert fourth == folder[6]
 
 
-def test_leaving_a_folder_drops_its_pending_thumbnails_so_they_are_never_generated(qtbot, tmp_path):
-    lock = threading.Lock()
-    started = []
-    generated = []
-
-    def generate(path):
-        with lock:
-            started.append(path)
-        if path in busy:
-            release.wait(timeout=10)
-        with lock:
-            generated.append(path)
-
-    scheduler = ThumbnailScheduler(generate=generate)
-    release = threading.Event()
-    busy = [tmp_path / "left" / f"busy{index}.jpg" for index in range(3)]
-    pending = [tmp_path / "left" / f"pending{index}.jpg" for index in range(3)]
-    next_folder = [tmp_path / "next" / f"{index}.jpg" for index in range(2)]
-    try:
-        scheduler.enter_folder(busy + pending)
-        qtbot.waitUntil(lambda: len(started) == 3)
-        for path in pending:
-            scheduler.request(path)
-        scheduler.enter_folder(next_folder)
-    finally:
-        release.set()
-    qtbot.waitUntil(lambda: all(path in generated for path in next_folder))
-
-    assert not set(pending) & set(generated)
-
-
-def test_a_thumbnail_already_generating_when_its_folder_is_left_still_finishes_and_is_cached(qtbot, tmp_path):
-    from PySide6.QtGui import QColor, QImage
-
-    from mediatagger.thumbnail_cache import ThumbnailCache
-
-    started = threading.Event()
-    release = threading.Event()
-
-    def generate(path):
-        started.set()
-        release.wait(timeout=10)
-        thumbnail = QImage(400, 200, QImage.Format_RGB32)
-        thumbnail.fill(QColor("red"))
-        return thumbnail
-
-    (tmp_path / "left").mkdir()
-    busy = tmp_path / "left" / "busy.jpg"
-    busy.write_bytes(b"photo")
-    stat = busy.stat()
-    cache = ThumbnailCache(":memory:", root=tmp_path)
-    scheduler = ThumbnailScheduler(generate=generate, cache=cache)
-    try:
-        scheduler.enter_folder([busy])
-        qtbot.waitUntil(started.is_set)
-        scheduler.enter_folder([])
-    finally:
-        release.set()
-    qtbot.waitUntil(lambda: cache.lookup(busy, size=stat.st_size, mtime=stat.st_mtime) is not None)
-
-    assert cache.lookup(busy, size=stat.st_size, mtime=stat.st_mtime).pixelColor(200, 100) == QColor("red")
-
-
 def test_generated_thumbnails_are_delivered_on_the_gui_thread(qtbot, tmp_path):
     delivered = []
 
@@ -253,35 +190,6 @@ def test_generated_thumbnails_are_delivered_on_the_gui_thread(qtbot, tmp_path):
     qtbot.waitUntil(lambda: len(delivered) == 1)
 
     assert delivered == [(path, "thumbnail of photo.jpg", threading.main_thread())]
-
-
-def test_requesting_thumbnails_that_are_all_cached_generates_nothing(qtbot, tmp_path):
-    from PySide6.QtGui import QColor, QImage
-
-    from mediatagger.thumbnail_cache import ThumbnailCache
-
-    lock = threading.Lock()
-    generated = []
-
-    def generate(path):
-        with lock:
-            generated.append(path)
-        return QImage(400, 200, QImage.Format_RGB32)
-
-    cache = ThumbnailCache(":memory:", root=tmp_path)
-    paths = [tmp_path / f"{index}.jpg" for index in range(3)]
-    for path in paths:
-        path.write_bytes(b"photo")
-        stat = path.stat()
-        thumbnail = QImage(400, 200, QImage.Format_RGB32)
-        thumbnail.fill(QColor("red"))
-        cache.store(path, stat.st_size, stat.st_mtime, thumbnail)
-    scheduler = ThumbnailScheduler(generate=generate, cache=cache)
-    for path in paths:
-        scheduler.request(path)
-    qtbot.wait(200)
-
-    assert generated == []
 
 
 def test_a_scheduler_dropped_while_its_workers_run_is_never_freed_off_the_gui_thread(qtbot, tmp_path):
@@ -399,3 +307,32 @@ def test_a_survey_runs_off_the_gui_thread_beside_busy_workers_and_its_result_arr
 
     [(surveying_thread, receiving_thread)] = surveyed
     assert (surveying_thread is not threading.main_thread(), receiving_thread) == (True, threading.main_thread())
+
+
+def test_shutting_a_scheduler_down_drops_its_pending_thumbnails_so_they_are_never_generated(qtbot, tmp_path):
+    lock = threading.Lock()
+    release = threading.Event()
+    started = []
+
+    def generate(path):
+        with lock:
+            started.append(path)
+        release.wait(timeout=10)
+
+    scheduler = ThumbnailScheduler(generate=generate)
+    busy = [tmp_path / f"busy{index}.jpg" for index in range(3)]
+    pending = [tmp_path / f"pending{index}.jpg" for index in range(3)]
+    try:
+        for path in busy:
+            scheduler.request(path)
+        qtbot.waitUntil(lambda: len(started) == 3)
+        for path in pending:
+            scheduler.request(path)
+        scheduler.enter_folder([tmp_path / "rest.jpg"])
+        scheduler.shut_down()
+    finally:
+        release.set()
+    qtbot.wait(200)
+
+    with lock:
+        assert sorted(started) == busy

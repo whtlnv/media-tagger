@@ -14,16 +14,6 @@ class _Generated(QObject):
     surveyed = Signal(object)
 
 
-def _store(cache, path, thumbnail):
-    stat = path.stat()
-    cache.store(path, stat.st_size, stat.st_mtime, thumbnail)
-
-
-def _is_cached(cache, path):
-    stat = path.stat()
-    return cache.lookup(path, stat.st_size, stat.st_mtime) is not None
-
-
 def _create_qt_types_on_this_thread():
     """PySide creates a module's Python types lazily, the first time each is used, and that creation is not
     thread-safe: workers constructing their first QImageReader side by side crashed the app inside Shiboken. So every
@@ -102,19 +92,16 @@ class _Work:
 class ThumbnailScheduler:
     _qt_types_created = False
 
-    def __init__(self, generate, cache=None, parent=None, prefetch=None):
+    def __init__(self, generate, parent=None, prefetch=None):
         """Requested files go through `generate` and come back through `generated`. The rest of the folder goes
         through `prefetch`, if given, and comes back through `prefetched`; else it is generated like a request."""
         if not ThumbnailScheduler._qt_types_created:
             _create_qt_types_on_this_thread()
             ThumbnailScheduler._qt_types_created = True
-        self._cache = cache
         emitter = _Generated(parent or QCoreApplication.instance())
         self.generated = emitter.done
         self.prefetched = emitter.prefetched
         self.surveyed = emitter.surveyed
-        if cache is not None:
-            emitter.done.connect(lambda path, thumbnail: _store(cache, path, thumbnail))
         self._work = _Work(generate, prefetch, emitter)
         work = self._work
         emitter.destroyed.connect(lambda: work.stop())  # its parent went first: nothing may be posted through it any more
@@ -122,14 +109,12 @@ class ThumbnailScheduler:
         self._surveyor = ThreadPoolExecutor(max_workers=1)  # beside the workers, which may all be busy for a while
 
     def enter_folder(self, paths):
+        """Queues the rest of the folder, behind every request, skipping what is already being generated."""
         with self._work.lock:
-            self._work.pending = []
-            self._work.unrequested = dict.fromkeys(paths)
+            self._work.unrequested = dict.fromkeys(path for path in paths if path not in self._work.generating)
         self._start_workers()
 
     def request(self, path):
-        if self._cache is not None and _is_cached(self._cache, path):
-            return
         with self._work.lock:
             if path in self._work.generating:
                 return
