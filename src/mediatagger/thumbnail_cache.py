@@ -95,4 +95,4 @@ def open_thumbnail_cache(drive_id, home, app_drive=None, viewed_drive=None):
     if any(drive is not None and path.is_relative_to(drive) for drive in (app_drive, viewed_drive)):
         return ThumbnailCache(":memory:")
     path.parent.mkdir(parents=True, exist_ok=True)
-    return ThumbnailCache(path)
+    return ThumbnailCache(path, root=viewed_drive)  # keyed relative to the drive, wherever it is mounted

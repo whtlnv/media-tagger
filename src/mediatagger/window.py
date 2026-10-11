@@ -25,7 +25,7 @@ class Window(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.stack)
         self.status_bar = StatusBar(self)
-        self.session = DriveSession(self.status_bar, self, **session_options)
+        self.session = DriveSession(self.status_bar, self, home=home or Path.home(), **session_options)
         self.viewer = Viewer(player_options=player_options, folder_picker=folder_picker, on_escape=self._escape, session=self.session,
             on_drop=self._record_state)
         self.stack.addWidget(self.viewer)
@@ -36,7 +36,7 @@ class Window(QWidget):
             self._open(path)
         if remembered and remembered.exists():
             self.session.open_library(remembered)
-            grid = Grid(remembered, library=self.session.library)
+            grid = Grid(remembered, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache())
             self._show(grid)
             grid.setCurrentIndex(grid.model().index(0, 0))
 
@@ -118,12 +118,12 @@ class Window(QWidget):
         self._show_parent_of(folder)
 
     def _show_parent_of(self, path):
-        self._show(Grid(path.parent, at=path, library=self.session.library))
+        self._show(Grid(path.parent, at=path, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache()))
 
     def _open_tile(self, index):
         path = index.data(TILE_ROLE).path
         if path.is_dir():
-            grid = Grid(path, library=self.session.library)
+            grid = Grid(path, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache())
             grid.setCurrentIndex(grid.model().index(0, 0))
             self._show(grid)
             return

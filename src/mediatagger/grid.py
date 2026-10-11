@@ -6,6 +6,7 @@ from PySide6.QtCore import QAbstractListModel, QModelIndex, QSize, Qt, QTimer, S
 from PySide6.QtWidgets import QListView, QStyle, QStyledItemDelegate
 
 from mediatagger.folder import is_video_name, subfolder_and_media_names
+from mediatagger.thumbnail_cache import ThumbnailCache, generate_through_cache
 from mediatagger.thumbnail_scheduler import ThumbnailScheduler
 from mediatagger.thumbnails import thumbnail_and_duration
 
@@ -57,18 +58,8 @@ def _tiles(folder, tag_counts):
     return [_Tile(folder / name, name, kind, counts_by_name.get(name, 0)) for name, kind in zip(subfolders + media, kinds)]
 
 
-_generated = {}
-
-
-def _remembered_thumbnail_and_duration(path):
-    """Generated once per run: opening a folder's grid again reuses what its first visit generated."""
-    if path not in _generated:
-        _generated[path] = thumbnail_and_duration(path)
-    return _generated[path]
-
-
 def _receive(tile, generated):
-    tile.thumbnail, tile.duration = generated
+    tile.thumbnail, tile.duration, _ = generated
 
 
 class _FolderModel(QAbstractListModel):
@@ -112,7 +103,7 @@ class Grid(QListView):
     escaped = Signal()
     dropped = Signal(Path)
 
-    def __init__(self, folder, at=None, library=None):
+    def __init__(self, folder, at=None, library=None, thumbnail_cache=None):
         super().__init__()
         self.folder = folder
         self.setFlow(QListView.Flow.LeftToRight)
@@ -123,15 +114,15 @@ class Grid(QListView):
         tiles = _tiles(folder, library.tag_counts(folder) if library else {})
         self.setModel(_FolderModel(tiles, self))
         self.setItemDelegate(_TileDelegate(self))
-        self._generate_thumbnails(tiles)
+        self._generate_thumbnails(tiles, thumbnail_cache or ThumbnailCache(":memory:"))
         self.setAcceptDrops(True)
         if at is not None:
             names = [tile.name for tile in tiles]
             self.setCurrentIndex(self.model().index(names.index(at.name), 0))
 
-    def _generate_thumbnails(self, tiles):
+    def _generate_thumbnails(self, tiles, cache):
         rows = {tile.path: row for row, tile in enumerate(tiles)}
-        self._thumbnails = ThumbnailScheduler(_remembered_thumbnail_and_duration, parent=self)
+        self._thumbnails = ThumbnailScheduler(lambda path: generate_through_cache(cache, thumbnail_and_duration, path), parent=self)
         self._thumbnails.generated.connect(lambda path, generated: self._show_thumbnail(tiles, rows[path], generated))
         paths = list(rows)
         self.verticalScrollBar().valueChanged.connect(lambda: self._request_visible(tiles))

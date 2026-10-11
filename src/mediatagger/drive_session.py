@@ -9,6 +9,7 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 from mediatagger.backup import back_up, default_backup_root, failure_reason, newest_backup, restore
 from mediatagger.library import Library, tags_db_path
 from mediatagger.status_bar import NO_LIBRARY_TEXT
+from mediatagger.thumbnail_cache import open_thumbnail_cache
 
 APP_PACKAGE = Path(__file__).parent  # its drive is never written while the app runs
 _FULLSCREEN_SETTLE_MS = 1000
@@ -31,7 +32,7 @@ class DriveSession:
     so in the status bar. One per window, shared by everything that shows that drive's media."""
 
     def __init__(self, status_bar, window, is_mount_point=os.path.ismount, ask_to_create_library=None, app_location=APP_PACKAGE,
-        backup_root=None, backup_clock=lambda: datetime.now(timezone.utc), ask_to_restore_library=None,
+        backup_root=None, backup_clock=lambda: datetime.now(timezone.utc), ask_to_restore_library=None, home=None,
     ):
         self.status_bar = status_bar
         self.window = window  # questions are asked over it
@@ -46,6 +47,9 @@ class DriveSession:
         self.library = None  # the open Library of the current drive, if it has one
         self.drive = None
         self.read_only = False
+        self.home = home or Path.home()  # the cache home falls back to its .cache folder
+        self._thumbnail_cache = None
+        self._thumbnail_cache_for = None
 
     def open_library(self, path):
         drive = next(folder for folder in (path, *path.parents) if self.is_mount_point(folder))
@@ -65,6 +69,20 @@ class DriveSession:
         elif not self._open_existing_library(drive, read_only):
             return
         self._show_library_status(LIBRARY_TEXT.format(drive.name), read_only)
+
+    def thumbnail_cache(self):
+        """The current drive's thumbnails: on disk under its drive id when it has a library, else in memory for the
+        session. One per drive, kept while it stays the current one."""
+        drive_id = self.library.drive_id if self.library else None
+        if self._thumbnail_cache_for != (self.drive, drive_id):
+            self._thumbnail_cache = open_thumbnail_cache(drive_id, self.home, self._app_drive(), self.drive)
+            self._thumbnail_cache_for = (self.drive, drive_id)
+        return self._thumbnail_cache
+
+    def _app_drive(self):
+        """The drive the app runs from, unless that is the system disk, which the cache home may well be on."""
+        app_drive = next((folder for folder in self.app_location.parents if self.is_mount_point(folder)), Path("/"))
+        return None if app_drive == Path("/") else app_drive
 
     def tags_can_be_saved(self):
         return self.library is not None and not self.read_only

@@ -69,7 +69,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] A thumbnail arriving reports a change for its own tile's row only
 - [x] Entering a subfolder, going up, or starting a slideshow stops generating the left folder's pending thumbnails
 - [x] Opening a folder's grid a second time generates nothing
-- [ ] On a drive with a library, the grid's thumbnails are written to that drive's cache
+- [x] On a drive with a library, the grid's thumbnails are written to that drive's cache
 - [ ] On the system disk (no library), the grid's thumbnails are written nowhere on disk
 - [ ] Opening the grid of a 5,000-file folder with an empty cache stays within the Phase 7 timing bound
 

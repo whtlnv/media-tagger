@@ -91,3 +91,27 @@ def test_opening_a_folders_grid_a_second_time_generates_nothing(qtbot, tmp_path,
     qtbot.wait(200)  # long enough for the second grid's workers to start generating
 
     assert generated == [tmp_path / "b.jpg"]
+
+
+def test_on_a_drive_with_a_library_the_grids_thumbnails_are_written_to_that_drives_cache(qtbot, tmp_path):
+    import os
+    import sqlite3
+    from pathlib import Path
+
+    from mediatagger.grid import TILE_ROLE
+    from mediatagger.library import Library
+    from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image
+
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    tile = stack.currentWidget().model().index(0, 0).data(TILE_ROLE)
+    qtbot.waitUntil(lambda: tile.thumbnail is not None)
+
+    thumbs_db = Path(os.environ["XDG_CACHE_HOME"]) / "mediatagger" / Library.open(drive).drive_id / "thumbs.db"
+    connection = sqlite3.connect(thumbs_db)
+    stored = [path for (path,) in connection.execute("SELECT path FROM thumbnails")]
+    connection.close()
+    assert stored == ["Photos/IMG_1.png"]
