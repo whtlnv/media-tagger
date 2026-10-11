@@ -11,6 +11,7 @@ from mediatagger.grid import TAG_BADGE, TILE_ROLE, Grid
 from mediatagger.library import Library
 from mediatagger.status_bar import READ_ONLY_STATUS_TEXT, TAGS_CANT_BE_SAVED_HERE_TEXT, StatusBar
 from mediatagger.test_grid import painted_texts
+from mediatagger.test_tag_prompt import listed
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer_backup import tags_in_newest_backup
 from mediatagger.test_viewer import SILENT, make_image, make_surface_ready, show_exposed, wait_until_loaded
@@ -383,6 +384,22 @@ def test_entering_minus_sunset_in_the_windows_grid_tag_prompt_removes_sunset_fro
     enter_in_the_grids_tag_prompt(qtbot, window, stack, "-sunset")
 
     assert Library.open(drive).tags(trip) == ["beach"]
+
+
+def test_typing_b_in_the_windows_grid_tag_prompt_on_a_drive_whose_library_has_beach_lists_beach_in_the_suggestion_popup(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    [trip] = make_folders(folder, "trip")
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_T)
+    [prompt] = visible_tag_prompts(window)
+    qtbot.waitUntil(prompt.hasFocus)
+
+    qtbot.keyClicks(prompt, "b")
+
+    suggestions = prompt.completer().popup()
+    qtbot.waitUntil(suggestions.isVisible)
+    assert listed(suggestions) == ["beach"]
 
 
 def test_moving_the_windows_grid_cursor_onto_an_untagged_item_shows_no_tags_in_the_status_bar(qtbot, tmp_path):

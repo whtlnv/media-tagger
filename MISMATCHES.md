@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 16:21 · `src/mediatagger/test_window.py::test_typing_b_in_the_windows_grid_tag_prompt_on_a_drive_whose_library_has_beach_shows_the_suggestion_popup_listing_beach`
+- Behavior: Typing in the grid's tag prompt shows autocomplete suggestions from the drive's library
+- Predicted: passes on first run — the grid opens the shared TagPrompt, whose `open` loads suggestions from `library.all_tags()`
+- Actual: first ValueError (too many values to unpack) — `visible_suggestion_lists()` matches every visible `QAbstractItemView`, and the Grid is one; after excluding the Grid, passed on first run. Swapping the library tag to `zebra` makes it fail (no popup), so the pin is not vacuous
+- Type: wrong-reason, then passed unexpectedly
+- Resolution: The viewer-era helper assumes the popup is the only visible item view, which isn't true over the grid; the test filters out the Grid in place. The behavior arrived with the shared TagPrompt, so the test was kept as a pin — /green has nothing to implement.
+
 ## 2026-10-11 16:12 · `src/mediatagger/test_window.py::test_entering_minus_sunset_in_the_windows_grid_tag_prompt_removes_sunset_from_the_selected_items_own_tags`
 - Behavior: Entering `-sunset` in the grid's tag prompt removes `sunset` from the selected item's own tags
 - Predicted: passes on first run (no right-reason failure was possible: the grid opens the shared TagPrompt, whose Enter calls Library.enter, and that already parses `-word` as a removal)
