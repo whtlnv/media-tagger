@@ -23,6 +23,12 @@ def test_a_tall_image_is_fitted_to_400_px_on_its_long_side(tmp_path):
     assert image_thumbnail(path).size() == QSize(200, 400)
 
 
+def test_an_image_smaller_than_a_thumbnail_keeps_its_own_size(tmp_path):
+    path = make_image(tmp_path / "small.png", "red", width=120, height=90)
+
+    assert image_thumbnail(path).size() == QSize(120, 90)
+
+
 def test_an_image_tagged_rotated_90_is_thumbnailed_in_its_displayed_orientation(tmp_path):
     path = make_jpeg_tagged_rotate_90(tmp_path / "rotated.jpg", "red", width=1600, height=800)
 

@@ -33,7 +33,7 @@ def test_in_a_folders_grid_a_video_tile_gets_its_thumbnail_and_its_duration(qtbo
 
     qtbot.waitUntil(lambda: tile.thumbnail is not None)
 
-    assert tile.thumbnail.size() == QSize(400, 300)
+    assert tile.thumbnail.size() == QSize(64, 48)  # the clip's own size: smaller than a thumbnail, it is never enlarged
     assert tile.duration == pytest.approx(3, abs=0.2)
 
 

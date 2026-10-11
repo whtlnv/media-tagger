@@ -14,12 +14,21 @@ def image_thumbnail(path):
     reader = QImageReader(str(path))
     reader.setAutoTransform(True)
     size = reader.size()
-    if size.isValid():
+    if size.isValid() and _larger_than_a_thumbnail(size):
         reader.setScaledSize(size.scaled(THUMBNAIL_SIZE, Qt.KeepAspectRatio))  # the stored size: rotation comes after
     image = reader.read()
     if image.isNull():
         return None
-    return image.scaled(THUMBNAIL_SIZE, Qt.KeepAspectRatio)
+    return _shrunk_to_fit(image)
+
+
+def _larger_than_a_thumbnail(size):
+    return size.width() > THUMBNAIL_SIZE.width() or size.height() > THUMBNAIL_SIZE.height()
+
+
+def _shrunk_to_fit(image):
+    """Only ever smaller: a small picture keeps its own size, and the tile scales it when painting."""
+    return image.scaled(THUMBNAIL_SIZE, Qt.KeepAspectRatio) if _larger_than_a_thumbnail(image.size()) else image
 
 
 def _run_with_timeout(args, timeout, **kwargs):
@@ -55,7 +64,7 @@ def video_thumbnail(path, timeout=None, duration=None):
         timeout,
     )
     frame = QImage.fromData(result.stdout) if result is not None else QImage()
-    return None if frame.isNull() else frame.scaled(THUMBNAIL_SIZE, Qt.KeepAspectRatio)
+    return None if frame.isNull() else _shrunk_to_fit(frame)
 
 
 def folder_thumbnail(folder):
