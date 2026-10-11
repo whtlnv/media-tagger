@@ -145,6 +145,7 @@ class Window(QWidget):
         index = grid.currentIndex()
         index.data(TILE_ROLE).tag_count = len(library.tags(path))
         grid.update(index)
+        self._show_tags_of(index)
 
     def _leave(self, folder):
         if self.session.is_mount_point(folder):

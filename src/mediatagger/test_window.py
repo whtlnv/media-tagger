@@ -398,6 +398,16 @@ def test_after_entering_beach_family_in_the_windows_grid_tag_prompt_the_selected
     assert f"{TAG_BADGE}2" in painted_texts(grid, grid.currentIndex().row())
 
 
+def test_after_entering_beach_family_in_the_windows_grid_tag_prompt_the_status_bar_shows_beach_family(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_folders(folder, "trip")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+
+    enter_in_the_grids_tag_prompt(qtbot, window, stack, "beach family")
+
+    assert "beach family" in shown_status_bar_texts(window)
+
+
 def window_with_the_grids_tag_prompt_focused_on_a_drive_whose_library_has_beach(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     [trip] = make_folders(folder, "trip")
