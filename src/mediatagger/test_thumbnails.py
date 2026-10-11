@@ -186,16 +186,13 @@ def test_a_folder_holding_only_a_gif_video_and_a_subfolder_with_an_image_yields_
     assert folder_thumbnail(folder) is None
 
 
-def test_a_duration_of_75_seconds_reads_1_15():
-    assert format_duration(75) == "1:15"
-
-
-def test_a_duration_of_3725_seconds_reads_1_02_05_with_hours_shown():
-    assert format_duration(3725) == "1:02:05"
-
-
-def test_a_fractional_duration_of_75_6_seconds_reads_1_15_in_whole_seconds():
-    assert format_duration(75.6) == "1:15"
+@pytest.mark.parametrize("seconds, text", [
+    pytest.param(75, "1:15", id="75 seconds reads 1:15"),
+    pytest.param(3725, "1:02:05", id="3725 seconds reads 1:02:05 with hours shown"),
+    pytest.param(75.6, "1:15", id="a fractional 75.6 seconds reads 1:15 in whole seconds"),
+])
+def test_a_duration_reads_as_minutes_and_seconds(seconds, text):
+    assert format_duration(seconds) == text
 
 
 @pytest.mark.skipif(shutil.which("ffmpeg") is None, reason="ffmpeg is not installed")
