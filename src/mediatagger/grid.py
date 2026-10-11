@@ -125,7 +125,11 @@ class Grid(QListView):
         self._thumbnails.generated.connect(lambda path, generated: _receive(by_path[path], generated))
         paths = list(by_path)
         # Started once the grid is up: workers decoding from the first moment would slow opening a big folder.
-        QTimer.singleShot(0, self, lambda: self._thumbnails.enter_folder(paths))
+        QTimer.singleShot(0, self, lambda: self._thumbnails.enter_folder(self._current_first(paths)))
+
+    def _current_first(self, paths):
+        current = self.currentIndex().data()
+        return sorted(paths, key=lambda path: path.name != current)
 
     def keep_clear_at_the_bottom(self, height):
         """Room below the last row for what lies over the grid's bottom edge (the window's status bar)."""

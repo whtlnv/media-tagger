@@ -332,3 +332,33 @@ def test_in_a_folders_grid_a_folder_tile_with_no_image_directly_inside_keeps_no_
     qtbot.waitUntil(lambda: image_tile.thumbnail is not None)  # queued after the folder: its result has come in too
 
     assert folder_tile.thumbnail is None
+
+
+def test_in_a_large_folders_grid_tiles_in_view_get_their_thumbnails_before_tiles_far_out_of_view(qtbot, tmp_path, monkeypatch):
+    import threading
+
+    from mediatagger import grid as grid_module
+
+    lock = threading.Lock()
+    started = []
+
+    def generate(path):
+        with lock:
+            started.append(path)
+        return None, None
+
+    monkeypatch.setattr(grid_module, "thumbnail_and_duration", generate)
+    names = [f"IMG_{i:04}.jpg" for i in range(1000)]
+    touch(tmp_path, *names)
+    in_view = tmp_path / names[-1]
+    far_out_of_view = tmp_path / names[0]
+    grid = Grid(tmp_path, at=in_view)
+    qtbot.addWidget(grid)
+    grid.resize(800, 600)
+    grid.show()
+    qtbot.waitExposed(grid)
+
+    qtbot.waitUntil(lambda: in_view in started)
+
+    with lock:
+        assert far_out_of_view not in started[: started.index(in_view)]
