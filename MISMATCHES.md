@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 15:14 · `src/mediatagger/test_grid.py::test_a_folder_tile_whose_folder_has_2_own_tags_shows_a_tag_badge_with_its_count`
+- Behavior: A folder tile whose folder has own tags shows a `🏷N` badge with its own-tag count
+- Predicted: passes on first run — `Library.tag_counts` already counts direct child rows by `rel_path` regardless of `kind`, and `_tiles` looks counts up by name for folder tiles too
+- Actual: passed on first run; removing the `library.enter` on the folder makes it fail (`'🏷2' not in ['📁', 'trip']`), so the pin is not vacuous
+- Type: passed unexpectedly
+- Resolution: the behavior came for free once folders became taggable (Phase 9 folder-tag items); kept the test as a pin for it rather than inventing a failing variant — /green has nothing to implement
+
 ## 2026-10-11 15:09 · `src/mediatagger/test_tag_prompt.py::test_a_tag_on_two_folders_ranks_above_a_tag_on_one_file_typing_b_lists_bird_before_beach`
 - Behavior: A tag carried by two folders ranks above a tag carried by one file in the tag prompt's suggestions
 - Predicted: pass (stated before running) — `Library.all_tags` orders by `COUNT(*)` of `item_tags` rows, and each tagged folder is its own `dir` row, so two folders count 2

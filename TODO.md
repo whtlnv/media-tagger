@@ -17,7 +17,7 @@ Phase 9 notes for every cycle. Architecture: `viewer.py` must not grow — it sh
 - [x] Reading the effective tags of a file five folders deep runs one SQL query
 - [x] A tag carried by one folder holding three files ranks below a tag carried by two files in the tag prompt's suggestions (the folder counts as one item)
 - [x] A tag carried by two folders ranks above a tag carried by one file in the tag prompt's suggestions
-- [ ] A folder tile whose folder has own tags shows a `🏷N` badge with its own-tag count
+- [x] A folder tile whose folder has own tags shows a `🏷N` badge with its own-tag count
 - [ ] A folder tile whose folder has no own tags but whose parent has tags shows no badge
 - [ ] Pressing `t` in the grid on a file tile opens the tag prompt showing that file's own tags
 - [ ] Pressing `t` in the grid where tags can't be saved (viewing only, read-only drive) opens no prompt and briefly shows `Tags can't be saved here`

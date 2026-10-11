@@ -132,6 +132,16 @@ def test_a_tile_for_an_item_with_3_own_tags_shows_a_tag_badge_with_its_count(qtb
     assert f"{TAG_BADGE}3" in painted_texts(grid, 0)
 
 
+def test_a_folder_tile_whose_folder_has_2_own_tags_shows_a_tag_badge_with_its_count(qtbot, tmp_path):
+    library = Library.create(tmp_path)
+    (tmp_path / "trip").mkdir()
+    library.enter(tmp_path / "trip", "beach family")
+    grid = Grid(tmp_path, library=library)
+    qtbot.addWidget(grid)
+
+    assert f"{TAG_BADGE}2" in painted_texts(grid, 0)
+
+
 def test_a_tile_for_an_untagged_item_shows_no_tag_badge(qtbot, tmp_path):
     library = Library.create(tmp_path)
     touch(tmp_path, "beach.jpg", "cat.jpg")
