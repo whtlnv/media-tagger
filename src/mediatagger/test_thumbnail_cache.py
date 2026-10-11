@@ -256,6 +256,41 @@ def test_generating_through_the_cache_returns_a_stored_thumbnail_without_generat
     assert (thumbnail.pixelColor(0, 0).name(), duration, was_generated, generated) == ("#ff0000", None, False, [])
 
 
+def test_generating_through_the_cache_generates_a_file_it_lacks_and_keeps_it_with_its_duration_for_next_time(tmp_path):
+    from mediatagger.thumbnail_cache import ThumbnailCache, generate_through_cache
+
+    clip = tmp_path / "clip.mp4"
+    clip.write_bytes(b"a video")
+    cache = ThumbnailCache(":memory:")
+
+    first = generate_through_cache(cache, lambda path: (solid_thumbnail("blue"), 42.0), clip)
+    second = generate_through_cache(cache, lambda path: (solid_thumbnail("green"), 7.0), clip)
+
+    assert [(thumbnail.pixelColor(0, 0).name(), duration, generated) for thumbnail, duration, generated in (first, second)] == [
+        ("#0000ff", 42.0, True), ("#0000ff", 42.0, False),
+    ]
+
+
+def test_generating_through_the_cache_does_not_retry_a_file_that_got_no_thumbnail_until_it_changes(tmp_path):
+    from mediatagger.thumbnail_cache import ThumbnailCache, generate_through_cache
+
+    broken = tmp_path / "broken.jpg"
+    broken.write_bytes(b"not a jpeg")
+    cache = ThumbnailCache(":memory:")
+    attempts = []
+
+    def generate(path):
+        attempts.append(path)
+        return None, None
+
+    generate_through_cache(cache, generate, broken)
+    again = generate_through_cache(cache, generate, broken)
+    broken.write_bytes(b"still not a jpeg, but longer")
+    generate_through_cache(cache, generate, broken)
+
+    assert (again, len(attempts)) == ((None, None, False), 2)
+
+
 def solid_thumbnail(color):
     from PySide6.QtGui import QColor, QImage
 
