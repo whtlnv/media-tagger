@@ -95,9 +95,10 @@ class Library:
         added, removed = _parse_entry(text)
         tags = (set(self.tags(path)) | added) - removed
         key = self._key(path)
+        kind = "dir" if path.is_dir() else "file"
         connection = sqlite3.connect(self._tags_db)
         with connection:
-            _set_item_tags(connection, _ensure_item_id(connection, key, "dir" if path.is_dir() else "file"), tags)
+            _set_item_tags(connection, _ensure_item_id(connection, key, kind), tags)
             if not tags:
                 connection.execute("DELETE FROM items WHERE rel_path = ?", (key,))
         connection.close()
