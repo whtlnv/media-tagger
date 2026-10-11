@@ -344,6 +344,13 @@ def window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, fold
     return window, stack
 
 
+def enter_in_the_grids_tag_prompt(qtbot, window, stack, text):
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_T)
+    [prompt] = visible_tag_prompts(window)
+    qtbot.keyClicks(prompt, text)
+    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+
+
 def test_pressing_t_in_the_windows_grid_on_a_folder_tile_tagged_beach_family_opens_the_tag_prompt_showing_beach_family_above_its_empty_input(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     [trip] = make_folders(folder, "trip")
@@ -360,11 +367,8 @@ def test_entering_beach_family_in_the_windows_grid_tag_prompt_on_a_folder_tile_s
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     [trip] = make_folders(folder, "trip")
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_T)
-    [prompt] = visible_tag_prompts(window)
 
-    qtbot.keyClicks(prompt, "beach family")
-    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+    enter_in_the_grids_tag_prompt(qtbot, window, stack, "beach family")
 
     assert Library.open(drive).tags(trip) == ["beach", "family"]
     assert visible_tag_prompts(window) == []
@@ -375,11 +379,8 @@ def test_entering_minus_sunset_in_the_windows_grid_tag_prompt_removes_sunset_fro
     [trip] = make_folders(folder, "trip")
     Library.open(drive).enter(trip, "beach sunset")
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_T)
-    [prompt] = visible_tag_prompts(window)
 
-    qtbot.keyClicks(prompt, "-sunset")
-    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+    enter_in_the_grids_tag_prompt(qtbot, window, stack, "-sunset")
 
     assert Library.open(drive).tags(trip) == ["beach"]
 
