@@ -2,18 +2,17 @@ import base64
 import shutil
 
 import pytest
-from PySide6.QtCore import QSize, Qt
+from PySide6.QtCore import QSize
 from PySide6.QtGui import QImage
 
 from mediatagger.grid import TILE_ROLE, Grid
 from mediatagger.test_folder import touch
 from mediatagger.test_video import make_clip
+from mediatagger.test_viewer import make_image
 
 
 def test_in_a_folders_grid_an_image_tile_gets_its_thumbnail_once_generation_finishes(qtbot, tmp_path):
-    image = QImage(800, 400, QImage.Format.Format_RGB32)
-    image.fill(Qt.GlobalColor.red)
-    image.save(str(tmp_path / "photo.jpg"))
+    make_image(tmp_path / "photo.jpg", "red", width=800, height=400)
     grid = Grid(tmp_path)
     qtbot.addWidget(grid)
     grid.show()
@@ -40,9 +39,7 @@ def test_in_a_folders_grid_a_video_tile_gets_its_thumbnail_and_its_duration(qtbo
 
 def test_in_a_folders_grid_a_folder_tile_gets_the_thumbnail_of_its_first_image(qtbot, tmp_path):
     (tmp_path / "trip").mkdir()
-    image = QImage(1600, 800, QImage.Format.Format_RGB32)
-    image.fill(Qt.GlobalColor.red)
-    image.save(str(tmp_path / "trip" / "photo.jpg"))
+    make_image(tmp_path / "trip" / "photo.jpg", "red", width=1600, height=800)
     grid = Grid(tmp_path)
     qtbot.addWidget(grid)
     grid.show()
@@ -57,9 +54,7 @@ def test_in_a_folders_grid_a_folder_tile_with_no_image_directly_inside_keeps_no_
     (tmp_path / "clips").mkdir()
     one_pixel_gif = base64.b64decode("R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==")
     (tmp_path / "clips" / "loop.gif").write_bytes(one_pixel_gif)  # a GIF is a video here, though Qt can read it as an image
-    image = QImage(800, 400, QImage.Format.Format_RGB32)
-    image.fill(Qt.GlobalColor.red)
-    image.save(str(tmp_path / "photo.jpg"))
+    make_image(tmp_path / "photo.jpg", "red", width=800, height=400)
     grid = Grid(tmp_path)
     qtbot.addWidget(grid)
     grid.resize(800, 600)  # both tiles in view: only those get their pictures
@@ -139,9 +134,7 @@ def test_scrolling_a_large_folders_grid_makes_the_newly_visible_tiles_thumbnails
 
 def test_a_thumbnail_arriving_reports_a_change_for_its_own_tiles_row_only(qtbot, tmp_path):
     for name in ("a.jpg", "b.jpg", "c.jpg"):
-        image = QImage(800, 400, QImage.Format.Format_RGB32)
-        image.fill(Qt.GlobalColor.red)
-        image.save(str(tmp_path / name))
+        make_image(tmp_path / name, "red", width=800, height=400)
     grid = Grid(tmp_path)
     qtbot.addWidget(grid)
     changed_rows = []
