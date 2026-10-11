@@ -437,6 +437,15 @@ def test_esc_with_the_suggestion_popup_open_in_the_windows_grid_tag_prompt_close
     assert (suggestions.isVisible(), visible_tag_prompt_texts(window)) == (False, ["b"])
 
 
+def test_esc_with_no_suggestion_popup_in_the_windows_grid_tag_prompt_closes_the_prompt_and_keeps_the_app_running_with_the_grid_shown(qtbot, tmp_path):
+    window, prompt = window_with_the_grids_tag_prompt_focused_on_a_drive_whose_library_has_beach(qtbot, tmp_path)
+
+    qtbot.keyClick(prompt, Qt.Key.Key_Escape)
+
+    shown = window.findChild(QStackedWidget).currentWidget()
+    assert (visible_tag_prompts(window), window.isVisible(), isinstance(shown, Grid)) == ([], True, True)
+
+
 def test_moving_the_windows_grid_cursor_onto_an_untagged_item_shows_no_tags_in_the_status_bar(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
