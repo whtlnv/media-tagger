@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 18:01 · `src/mediatagger/test_thumbnail_scheduler.py::test_a_thumbnail_requested_while_the_folder_is_prefetching_is_generated_before_the_remaining_prefetch`
+- Behavior: A thumbnail requested while the rest of the folder is prefetching is generated before the remaining prefetch
+- Predicted: pass on first run (predicted before running, after reading the code). `request` withdraws the path from `_unrequested` into `_pending`, and `_generate_next` serves `_pending` first. The right-reason alternative would have been an AssertionError with the fourth start `folder[3]`
+- Actual: passed
+- Type: passed unexpectedly (for a Red step; matched the prediction)
+- Resolution: the behavior was already delivered by 3025692, which built the prefetch queue as a fallback behind `_pending`. The test isn't vacuous: without the `request` call the fourth start is `folder[3]`. It is kept as a regression pin rather than rewritten into a contrived failure, and `/green` has nothing to implement
+
 ## 2026-10-10 16:52 · `src/mediatagger/test_thumbnail_cache.py::test_with_no_drive_id_storing_a_thumbnail_writes_nothing_to_disk`
 - Behavior: With no drive id, nothing is written to disk
 - Predicted: pass on first run — `open_thumbnail_cache(None, …)` already returns a `ThumbnailCache(":memory:")` since 1d47c16

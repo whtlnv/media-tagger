@@ -140,3 +140,36 @@ def test_a_thumbnail_requested_while_it_is_generating_is_not_generated_again(qtb
         release.set()
 
     assert started == [path]
+
+
+def test_a_thumbnail_requested_while_the_folder_is_prefetching_is_generated_before_the_remaining_prefetch(qtbot, tmp_path):
+    lock = threading.Lock()
+    started = []
+    generated = []
+
+    def generate(path):
+        with lock:
+            started.append(path)
+        releases[path].wait(timeout=10)
+        with lock:
+            generated.append(path)
+
+    scheduler = ThumbnailScheduler(generate=generate)
+    folder = [tmp_path / f"{index}.jpg" for index in range(8)]
+    releases = {path: threading.Event() for path in folder}
+    for path in folder[3:]:
+        releases[path].set()
+    try:
+        scheduler.enter_folder(folder)
+        qtbot.waitUntil(lambda: len(started) == 3)
+        scheduler.request(folder[6])
+        releases[started[0]].set()
+        qtbot.waitUntil(lambda: len(started) >= 4)
+        with lock:
+            fourth = started[3]
+    finally:
+        for event in releases.values():
+            event.set()
+    qtbot.waitUntil(lambda: len(generated) == len(folder))
+
+    assert fourth == folder[6]
