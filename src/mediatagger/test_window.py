@@ -464,6 +464,16 @@ def test_while_the_windows_grid_tag_prompt_is_open_arrows_backspace_plus_and_min
     assert (stack.currentWidget(), (grid.currentIndex().row(), grid.folder, grid.gridSize())) == (grid, before)
 
 
+def test_after_the_windows_grid_tag_prompt_closes_arrows_move_the_grids_cursor_again(qtbot, tmp_path):
+    window, prompt = window_with_the_grids_tag_prompt_focused_on_a_drive_whose_library_has_beach(qtbot, tmp_path)
+    grid = window.findChild(QStackedWidget).currentWidget()
+    qtbot.keyClick(prompt, Qt.Key.Key_Escape)
+
+    qtbot.keyClick(window.focusWidget(), Qt.Key.Key_Right)
+
+    assert grid.currentIndex().row() == 1
+
+
 def test_moving_the_windows_grid_cursor_onto_an_untagged_item_shows_no_tags_in_the_status_bar(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
