@@ -297,12 +297,12 @@ def fastest_of_three(qtbot, open_grid):
     return min(timings), grid
 
 
-def painted_tile(grid, row, selected):
-    image = QImage(200, 200, QImage.Format.Format_ARGB32)
+def painted_tile(grid, row, selected, size=200):
+    image = QImage(size, size, QImage.Format.Format_ARGB32)
     image.fill(0)
     painter = QPainter(image)
     option = QStyleOptionViewItem()
-    option.rect = QRect(0, 0, 200, 200)
+    option.rect = QRect(0, 0, size, size)
     if selected:
         option.state |= QStyle.StateFlag.State_Selected
     grid.itemDelegate().paint(painter, option, grid.model().index(row, 0))
@@ -357,6 +357,21 @@ def test_a_wide_picture_leaves_a_gap_to_the_tiles_edges_so_neighbouring_pictures
     picture = painted_red_area(painted_tile(grid, 0, selected=False))
 
     assert (picture.left() >= 6, picture.top() >= 6, picture.right() <= 200 - 1 - 6) == (True, True, True)
+
+
+@pytest.mark.parametrize("size", [100, 200, 400])
+def test_a_tall_picture_stays_inside_its_tile_above_the_filename_band_at_every_tile_size(qtbot, tmp_path, size):
+    touch(tmp_path, "portrait.jpg")
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+    tall = QImage(300, 400, QImage.Format.Format_RGB32)
+    tall.fill(Qt.GlobalColor.red)
+    grid.model().index(0, 0).data(TILE_ROLE).thumbnail = tall
+    line_height = QFontMetrics(QGuiApplication.font()).height()
+
+    picture = painted_red_area(painted_tile(grid, 0, selected=False, size=size))
+
+    assert (picture.top() > 0, picture.bottom() < size - line_height - 2) == (True, True)
 
 
 def test_a_tile_paints_its_type_glyph_only_while_it_has_no_thumbnail(qtbot, tmp_path):
