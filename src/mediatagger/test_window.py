@@ -387,7 +387,7 @@ def test_entering_minus_sunset_in_the_windows_grid_tag_prompt_removes_sunset_fro
     assert Library.open(drive).tags(trip) == ["beach"]
 
 
-def test_typing_b_in_the_windows_grid_tag_prompt_on_a_drive_whose_library_has_beach_lists_beach_in_the_suggestion_popup(qtbot, tmp_path):
+def window_with_the_grids_tag_prompt_focused_on_a_drive_whose_library_has_beach(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     [trip] = make_folders(folder, "trip")
     Library.open(drive).enter(folder / "IMG_1.png", "beach")
@@ -395,11 +395,21 @@ def test_typing_b_in_the_windows_grid_tag_prompt_on_a_drive_whose_library_has_be
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_T)
     [prompt] = visible_tag_prompts(window)
     qtbot.waitUntil(prompt.hasFocus)
+    return window, prompt
 
-    qtbot.keyClicks(prompt, "b")
 
+def suggestion_popup_after_typing(qtbot, prompt, text):
+    qtbot.keyClicks(prompt, text)
     suggestions = prompt.completer().popup()
     qtbot.waitUntil(suggestions.isVisible)
+    return suggestions
+
+
+def test_typing_b_in_the_windows_grid_tag_prompt_on_a_drive_whose_library_has_beach_lists_beach_in_the_suggestion_popup(qtbot, tmp_path):
+    window, prompt = window_with_the_grids_tag_prompt_focused_on_a_drive_whose_library_has_beach(qtbot, tmp_path)
+
+    suggestions = suggestion_popup_after_typing(qtbot, prompt, "b")
+
     assert listed(suggestions) == ["beach"]
 
 
@@ -419,16 +429,8 @@ def test_when_saving_from_the_windows_grid_tag_prompt_fails_because_the_drive_ha
 
 
 def test_esc_with_the_suggestion_popup_open_in_the_windows_grid_tag_prompt_closes_only_the_popup_leaving_the_prompt_open_with_its_text(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    [trip] = make_folders(folder, "trip")
-    Library.open(drive).enter(folder / "IMG_1.png", "beach")
-    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_T)
-    [prompt] = visible_tag_prompts(window)
-    qtbot.waitUntil(prompt.hasFocus)
-    qtbot.keyClicks(prompt, "b")
-    suggestions = prompt.completer().popup()
-    qtbot.waitUntil(suggestions.isVisible)
+    window, prompt = window_with_the_grids_tag_prompt_focused_on_a_drive_whose_library_has_beach(qtbot, tmp_path)
+    suggestions = suggestion_popup_after_typing(qtbot, prompt, "b")
 
     qtbot.keyClick(suggestions, Qt.Key.Key_Escape)
 
