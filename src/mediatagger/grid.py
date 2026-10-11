@@ -4,6 +4,7 @@ from enum import Enum
 from pathlib import Path
 
 from PySide6.QtCore import QAbstractListModel, QModelIndex, QRect, QSize, Qt, QTimer, Signal
+from PySide6.QtGui import QColor, QPainter
 from PySide6.QtWidgets import QListView, QStyle, QStyledItemDelegate
 
 from mediatagger.folder import is_video_name, subfolder_and_media_names
@@ -30,6 +31,10 @@ MAX_TILE_SIZE = QSize(400, 400)
 MIN_TILE_SIZE = QSize(100, 100)
 
 TILE_ROLE = Qt.ItemDataRole.UserRole
+
+BADGE_PADDING = 4
+
+BADGE_BACKING = QColor(0, 0, 0, 180)
 
 HELD_THUMBNAILS = 500  # pictures kept in memory at once (about 240 MB), beyond those in view, which are always kept
 
@@ -81,6 +86,9 @@ class _FolderModel(QAbstractListModel):
 
 
 class _TileDelegate(QStyledItemDelegate):
+    """Paints a tile from its _Tile alone: the picture (or a large type glyph) fills the tile above the filename, and
+    the badges sit over the picture's corners on dark backings, legible over any picture."""
+
     def sizeHint(self, option, index):
         return self.parent().gridSize()  # a tile fills its grid cell
 
@@ -88,25 +96,47 @@ class _TileDelegate(QStyledItemDelegate):
         tile = index.data(TILE_ROLE)
         if option.state & QStyle.StateFlag.State_Selected:
             painter.fillRect(option.rect.adjusted(2, 2, -2, -2), option.palette.highlight())  # the grid cursor
+        picture_area = option.rect.adjusted(0, 0, 0, -painter.fontMetrics().height())  # leaves the filename's line free
         if tile.thumbnail is not None:
-            picture_area = option.rect.adjusted(0, 0, 0, -painter.fontMetrics().height())  # leaves the filename's line free
             picture = QRect(option.rect.topLeft(), tile.thumbnail.size().scaled(picture_area.size(), Qt.AspectRatioMode.KeepAspectRatio))
             picture.moveCenter(picture_area.center())
             painter.drawImage(picture, tile.thumbnail)
         else:
-            painter.drawText(option.rect, Qt.AlignmentFlag.AlignCenter, tile.kind.value)
+            _draw_glyph(painter, picture_area, tile.kind.value)
         name = painter.fontMetrics().elidedText(tile.name, Qt.TextElideMode.ElideRight, option.rect.width())
         painter.drawText(option.rect, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignHCenter, name)
         if tile.kind is _Kind.VIDEO:
             badge = VIDEO_BADGE if tile.duration is None else f"{VIDEO_BADGE} {format_duration(tile.duration)}"
-            painter.drawText(option.rect, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignRight, badge)
+            _draw_backed_badge(painter, picture_area, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignRight, badge)
         if tile.tag_count:
             _draw_backed_badge(painter, option.rect, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{TAG_BADGE}{tile.tag_count}")
 
 
+def _draw_glyph(painter, area, glyph):
+    """Large enough to read across the room: about a third of the picture area's height."""
+    painter.save()
+    font = painter.font()
+    font.setPixelSize(max(12, area.height() // 3))
+    painter.setFont(font)
+    painter.drawText(area, Qt.AlignmentFlag.AlignCenter, glyph)
+    painter.restore()
+
+
 def _draw_backed_badge(painter, rect, flags, badge):
-    painter.fillRect(painter.boundingRect(rect, flags, badge), Qt.GlobalColor.white)  # a backing the badge reads against over any thumbnail
-    painter.drawText(rect, flags, badge)
+    """White text on a dark, rounded backing: reads over a white picture, a black one, and anything between."""
+    painter.save()
+    font = painter.font()
+    font.setBold(True)
+    painter.setFont(font)
+    inside = rect.adjusted(2 * BADGE_PADDING, BADGE_PADDING, -2 * BADGE_PADDING, -BADGE_PADDING)  # off the tile's edges
+    backing = painter.boundingRect(inside, flags, badge).adjusted(-BADGE_PADDING, 0, BADGE_PADDING, 0)
+    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+    painter.setPen(Qt.PenStyle.NoPen)
+    painter.setBrush(BADGE_BACKING)
+    painter.drawRoundedRect(backing, BADGE_PADDING, BADGE_PADDING)
+    painter.setPen(Qt.GlobalColor.white)
+    painter.drawText(inside, flags, badge)
+    painter.restore()
 
 
 class Grid(QListView):

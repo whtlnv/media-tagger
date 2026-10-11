@@ -538,8 +538,7 @@ def test_a_tiles_tag_count_contrasts_with_its_surroundings_over_both_a_white_and
     tile = grid.model().index(0, 0).data(TILE_ROLE)
     tile.tag_count = 3
     metrics = QFontMetrics(QGuiApplication.font())
-    count_width = metrics.horizontalAdvance(str(tile.tag_count))
-    count_area = QRect(200 - count_width, 0, count_width, metrics.height())  # the count ends the tag badge in the top-right corner
+    count_area = QRect(100, 0, 100, 2 * metrics.height())  # the tag badge sits in the tile's top-right corner
 
     for color in (Qt.GlobalColor.white, Qt.GlobalColor.black):
         thumbnail = QImage(200, 200 - metrics.height(), QImage.Format.Format_RGB32)  # fills the tile's picture area
