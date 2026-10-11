@@ -13,8 +13,8 @@ State of the project and how it has been run, for the next session. Read `DESIGN
 | 5 Autocomplete | done, validated |
 | 6 Database backups | done, validated |
 | 7 Folder grid | done, validated (415 tests) |
-| 8 Thumbnails | **next** — includes video duration and folder-tile first-image previews (moved here from Phase 7) |
-| 9 Tag folders & inherited tags | not started (`t` in the grid lives here) |
+| 8 Thumbnails | done, validated on the Mac (pending the Pi check) — includes video duration and folder-tile first-image previews |
+| 9 Tag folders & inherited tags | **next** (`t` in the grid lives here) |
 | 10 Search | not started |
 | 11 Run from the drive on the Pi | not started (spike tooling exists in `spikes/drive/`) |
 
