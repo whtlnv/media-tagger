@@ -108,14 +108,17 @@ class Grid(QListView):
         tiles = _tiles(folder, library.tag_counts(folder) if library else {})
         self.setModel(_FolderModel(tiles, self))
         self.setItemDelegate(_TileDelegate(self))
-        images = {tile.path: tile for tile in tiles if tile.kind is _Kind.IMAGE}
-        self._thumbnails = ThumbnailScheduler(image_thumbnail)
-        self._thumbnails.generated.connect(lambda path, thumbnail: setattr(images[path], "thumbnail", thumbnail))
-        self._thumbnails.enter_folder(list(images))
+        self._generate_thumbnails(tiles)
         self.setAcceptDrops(True)
         if at is not None:
             names = [tile.name for tile in tiles]
             self.setCurrentIndex(self.model().index(names.index(at.name), 0))
+
+    def _generate_thumbnails(self, tiles):
+        images = {tile.path: tile for tile in tiles if tile.kind is _Kind.IMAGE}
+        self._thumbnails = ThumbnailScheduler(image_thumbnail)
+        self._thumbnails.generated.connect(lambda path, thumbnail: setattr(images[path], "thumbnail", thumbnail))
+        self._thumbnails.enter_folder(list(images))
 
     def keep_clear_at_the_bottom(self, height):
         """Room below the last row for what lies over the grid's bottom edge (the window's status bar)."""
