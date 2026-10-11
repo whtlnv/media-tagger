@@ -1,5 +1,4 @@
 import os
-import sqlite3
 from pathlib import Path
 
 from PySide6.QtCore import QPoint, QRect, Qt
@@ -12,7 +11,7 @@ from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
 from mediatagger.mpv_surface import MpvSurface
 from mediatagger.status_bar import CORNER_MARGIN, StatusBar, overlay_label
 from mediatagger.slideshow import Slideshow
-from mediatagger.tag_prompt import _LastWordCompleter, _SUGGESTION_POPUP_STYLE, _TAG_INPUT_STYLE, _TAG_PROMPT_WIDTH, _TagInput, _last_word
+from mediatagger.tag_prompt import TagPrompt
 from mediatagger.video import VideoPlayer, new_engine
 
 _PLAYER_OPTIONS = {"vo": "libmpv"}
@@ -65,17 +64,7 @@ class Viewer(QWidget):
         self.video_player = VideoPlayer(new_engine(**{**_PLAYER_OPTIONS, **(player_options or {})}))
         self.surface = None
         self._decoded_key = self._decoded = None
-        self._tagging = None  # (library, path) of the item being tagged while the tag prompt is open
-        self.tag_input = _TagInput(self)
-        self.tag_input.setStyleSheet(_TAG_INPUT_STYLE)
-        self.tag_input.returnPressed.connect(self._record_tags)
-        self.tag_input.textEdited.connect(self._offer_suggestions)
-        self.tag_input.setCompleter(_LastWordCompleter([], self.tag_input))
-        self.tag_input.completer().setCaseSensitivity(Qt.CaseInsensitive)
-        self.tag_input.completer().popup().setStyleSheet(_SUGGESTION_POPUP_STYLE)
-        self.tag_input.hide()
-        self.prompt_tags = overlay_label("", self)
-        self.prompt_tags.hide()
+        self.tag_prompt = TagPrompt(self, self.status_bar, on_close=self._show_tag_overlay)
         self.tag_overlay = overlay_label("", self)
         self.tag_overlay.hide()
         self.info = overlay_label("", self)
@@ -107,7 +96,7 @@ class Viewer(QWidget):
         self._centre(self.placeholder)
         self._pin_top_centre(self.read_only_banner)
         self._pin_top_right(self.tag_overlay)
-        self._pin_bottom_centre(self.tag_input)
+        self.tag_prompt.place()
 
     def _centre(self, label):
         label.adjustSize()
@@ -128,18 +117,6 @@ class Viewer(QWidget):
             top = self.read_only_banner.geometry().bottom() + CORNER_MARGIN // 2
         frame.moveTopRight(QPoint(self.rect().right() - CORNER_MARGIN, top))
         label.setGeometry(frame)
-
-    def _pin_above(self, label, widget):
-        frame = label.geometry()
-        frame.moveCenter(widget.geometry().center())
-        frame.moveBottom(widget.geometry().top() - CORNER_MARGIN // 2)
-        label.setGeometry(frame)
-
-    def _pin_bottom_centre(self, widget):
-        frame = widget.geometry()
-        frame.moveCenter(self.rect().center())
-        frame.moveBottom(self.mapFromGlobal(self.status_bar.mapToGlobal(QPoint(0, 0))).y() - 1)
-        widget.setGeometry(frame)
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -163,8 +140,8 @@ class Viewer(QWidget):
         self.video_player.press("Right")  # leaving the current item is what stops its video
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key.Key_Escape and self._tag_prompt_has_focus():
-            self._close_tag_prompt()
+        if event.key() == Qt.Key.Key_Escape and self.tag_prompt.has_focus():
+            self.tag_prompt.close()
             return
         if event.key() == Qt.Key.Key_Escape:
             self.on_escape()
@@ -182,11 +159,12 @@ class Viewer(QWidget):
             return
         if event.key() == Qt.Key.Key_T:
             if self.session.tags_can_be_saved():
-                self._open_tag_prompt()
+                self.tag_overlay.hide()
+                self.tag_prompt.open(self.session.library, self.slideshow.current)
             else:
                 self.status_bar.flash_cant_save()
             return
-        if self._tag_prompt_has_focus():
+        if self.tag_prompt.has_focus():
             return  # keys the open tag prompt ignores must not reach the slideshow or video
         if event.key() in _VIDEO_KEYS:
             self.video_player.press(_VIDEO_KEYS[event.key()])
@@ -198,54 +176,6 @@ class Viewer(QWidget):
         self.video_player.press(key)
         self._refresh()
         self._show_current_tags()
-
-    def _tag_prompt_has_focus(self):
-        return self.focusWidget() is self.tag_input and self.tag_input.isVisible()
-
-    def _open_tag_prompt(self):
-        library = self.session.library
-        path = self.slideshow.current
-        self._tagging = (library, path)
-        self.tag_overlay.hide()
-        item_tags = library.tags(path)
-        tags = " ".join(item_tags)
-        self.prompt_tags.setText(tags)
-        self.prompt_tags.adjustSize()
-        self.tag_input.clear()
-        self._suggestions = ([tag for tag in library.all_tags() if tag not in item_tags], item_tags)
-        self._offer_suggestions("")
-        self.tag_input.resize(min(_TAG_PROMPT_WIDTH, self.width() - 2 * CORNER_MARGIN), self.tag_input.sizeHint().height())
-        self._pin_bottom_centre(self.tag_input)
-        self._pin_above(self.prompt_tags, self.tag_input)
-        self.tag_input.show()
-        self.tag_input.raise_()
-        self.prompt_tags.setVisible(bool(tags))
-        self.prompt_tags.raise_()
-        self.tag_input.setFocus()
-
-    def _offer_suggestions(self, text):
-        to_add, to_remove = self._suggestions
-        removing = _last_word(text).startswith("-")
-        candidates = to_remove if removing else to_add
-        entered = [word.removeprefix("-") for word in text.lower().split(" ")[:-1]]
-        self.tag_input.completer().model().setStringList([tag for tag in candidates if tag not in entered])
-
-    def _record_tags(self):
-        library, path = self._tagging
-        try:
-            library.enter(path, self.tag_input.text())
-        except (sqlite3.Error, OSError):
-            self.status_bar.show_couldnt_save(True)
-            return
-        self._close_tag_prompt()
-
-    def _close_tag_prompt(self):
-        self._show_tag_overlay(*self._tagging)
-        self._tagging = None
-        self.tag_input.hide()
-        self.prompt_tags.hide()
-        self.status_bar.show_couldnt_save(False)  # it was about this prompt's entry
-        self.setFocus()  # keys go back to the viewer, not to the hidden input
 
     def _show_current_tags(self):
         if self.session.library:
@@ -274,8 +204,8 @@ class Viewer(QWidget):
     def open(self, path):
         if path is None:
             return
-        if self._tagging:  # whatever opens next, the prompt must not go on targeting the previous item
-            self._close_tag_prompt()
+        if self.tag_prompt.is_open():  # whatever opens next, the prompt must not go on targeting the previous item
+            self.tag_prompt.close()
         if not _is_openable(path):
             self._show_cant_open(path)
             return
@@ -337,7 +267,7 @@ class Viewer(QWidget):
             self.surface = self.surface or MpvSurface(self.video_player.engine, self)
             self.surface.setGeometry(self.rect())
             self.surface.show()
-            for overlay in (self.info, self.status_bar, self.read_only_banner, self.tag_overlay, self.prompt_tags, self.tag_input):
+            for overlay in (self.info, self.status_bar, self.read_only_banner, self.tag_overlay, self.tag_prompt):
                 overlay.raise_()
             self.surface.when_ready(lambda clip=self.slideshow.current: self._play(clip))
         elif self.surface:
