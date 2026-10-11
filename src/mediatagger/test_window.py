@@ -3,7 +3,7 @@ import os
 from datetime import datetime, timezone
 
 from PySide6.QtCore import QCoreApplication, QEvent, Qt
-from PySide6.QtWidgets import QLabel, QStackedWidget
+from PySide6.QtWidgets import QLabel, QLineEdit, QStackedWidget
 
 from mediatagger.backup import back_up
 from mediatagger.drive_session import BACKUP_FAILED_TEXT, CREATE_LIBRARY_QUESTION, RESTORE_LIBRARY_QUESTION
@@ -303,6 +303,16 @@ def test_moving_the_windows_grid_cursor_onto_a_tagged_item_shows_its_own_tags_sp
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
 
     assert "beach family" in shown_status_bar_texts(window)
+
+
+def test_pressing_t_in_the_windows_grid_on_a_file_tile_tagged_beach_family_opens_the_tag_prompt_showing_beach_family_above_its_empty_input(qtbot, tmp_path):
+    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_T)
+
+    assert [prompt.text() for prompt in window.findChildren(QLineEdit) if prompt.isVisible()] == [""]
+    assert "beach family" in [label.text() for label in window.findChildren(QLabel) if label.isVisible() and not window.status_bar.isAncestorOf(label)]
 
 
 def test_moving_the_windows_grid_cursor_onto_an_untagged_item_shows_no_tags_in_the_status_bar(qtbot, tmp_path):

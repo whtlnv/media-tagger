@@ -176,6 +176,7 @@ def _draw_backed_badge(painter, rect, flags, badge):
 class Grid(QListView):
     up = Signal()
     escaped = Signal()
+    tag = Signal()
     dropped = Signal(Path)
 
     def __init__(self, folder, at=None, library=None, thumbnail_cache=None):
@@ -277,6 +278,9 @@ class Grid(QListView):
             return
         if event.key() == Qt.Key.Key_Escape:
             self.escaped.emit()
+            return
+        if event.key() == Qt.Key.Key_T:
+            self.tag.emit()
             return
         if event.key() == Qt.Key.Key_F:
             if self.window().isFullScreen():

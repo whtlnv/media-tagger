@@ -9,6 +9,7 @@ from mediatagger.grid import TILE_ROLE, Grid
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
 from mediatagger.state import remember, remembered_folder, state_file
 from mediatagger.status_bar import StatusBar
+from mediatagger.tag_prompt import TagPrompt
 from mediatagger.viewer import Viewer
 
 
@@ -26,6 +27,7 @@ class Window(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.stack)
         self.status_bar = StatusBar(self)
+        self.tag_prompt = TagPrompt(self, self.status_bar)
         self.session = DriveSession(self.status_bar, self, home=home or Path.home(), **session_options)
         self.viewer = Viewer(player_options=player_options, folder_picker=folder_picker, on_escape=self._escape, session=self.session,
             on_drop=self._record_state)
@@ -88,6 +90,7 @@ class Window(QWidget):
         grid.activated.connect(self._open_tile)
         grid.up.connect(lambda: self._leave(grid.folder))
         grid.escaped.connect(self.close)
+        grid.tag.connect(lambda: self.tag_prompt.open(self.session.library, grid.currentIndex().data(TILE_ROLE).path))
         grid.dropped.connect(self._open)
         grid.selectionModel().currentChanged.connect(self._show_tags_of)
         grid.thumbnail_progress.connect(self._show_thumbnail_progress)
