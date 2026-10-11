@@ -62,7 +62,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] In a folder's grid, a corrupt image's tile keeps no thumbnail (its glyph stays)
   - covered without new code: a corrupt image yields no thumbnail (test_thumbnails), a tile without one paints its glyph (test_grid); a grid-level pin had no deterministic point to assert at and was dropped
 - [x] In a folder's grid, a video tile gets its thumbnail and its duration
-- [ ] In a folder's grid, a folder tile gets the thumbnail of its first image
+- [x] In a folder's grid, a folder tile gets the thumbnail of its first image
 - [ ] In a folder's grid, a folder tile with no image directly inside keeps no thumbnail
 - [ ] In a large folder's grid, tiles in view get their thumbnails before tiles far out of view
 - [ ] Scrolling a large folder's grid makes the newly visible tiles' thumbnails arrive before still-hidden ones

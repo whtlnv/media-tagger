@@ -298,3 +298,18 @@ def test_in_a_folders_grid_a_video_tile_gets_its_thumbnail_and_its_duration(qtbo
 
     assert tile.thumbnail.size() == QSize(400, 300)
     assert tile.duration == pytest.approx(3, abs=0.2)
+
+
+def test_in_a_folders_grid_a_folder_tile_gets_the_thumbnail_of_its_first_image(qtbot, tmp_path):
+    (tmp_path / "trip").mkdir()
+    image = QImage(1600, 800, QImage.Format.Format_RGB32)
+    image.fill(Qt.GlobalColor.red)
+    image.save(str(tmp_path / "trip" / "photo.jpg"))
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+    grid.show()
+    tile = grid.model().index(0, 0).data(TILE_ROLE)
+
+    qtbot.waitUntil(lambda: tile.thumbnail is not None)
+
+    assert tile.thumbnail.size() == QSize(400, 200)

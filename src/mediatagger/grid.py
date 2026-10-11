@@ -61,6 +61,8 @@ def _thumbnail_and_duration(path):
     """Runs on a worker thread: a video's duration comes with its thumbnail; an image has none."""
     if is_video_name(path.name):
         return video_thumbnail(path), video_duration(path)
+    if path.is_dir():
+        return image_thumbnail(path / subfolder_and_media_names(path)[1][0]), None
     return image_thumbnail(path), None
 
 
@@ -127,10 +129,10 @@ class Grid(QListView):
             self.setCurrentIndex(self.model().index(names.index(at.name), 0))
 
     def _generate_thumbnails(self, tiles):
-        media = {tile.path: tile for tile in tiles if tile.kind is not _Kind.FOLDER}
+        by_path = {tile.path: tile for tile in tiles}
         self._thumbnails = ThumbnailScheduler(_thumbnail_and_duration, parent=self)
-        self._thumbnails.generated.connect(lambda path, generated: _receive(media[path], generated))
-        self._thumbnails.enter_folder(list(media))
+        self._thumbnails.generated.connect(lambda path, generated: _receive(by_path[path], generated))
+        self._thumbnails.enter_folder(list(by_path))
 
     def keep_clear_at_the_bottom(self, height):
         """Room below the last row for what lies over the grid's bottom edge (the window's status bar)."""
