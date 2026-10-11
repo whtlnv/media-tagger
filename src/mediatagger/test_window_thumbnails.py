@@ -135,7 +135,7 @@ def test_on_the_system_disk_the_grids_thumbnails_are_written_nowhere_on_disk(qtb
     assert list(Path(os.environ["XDG_CACHE_HOME"]).rglob("*")) == []
 
 
-def window_on_the_grid_of(qtbot, folder, first_file):
+def window_on_the_grid_of(qtbot, first_file):
     from mediatagger.test_viewer import show_exposed
     from mediatagger.test_window import shown_status_bar_texts
 
@@ -153,7 +153,7 @@ def window_on_the_grid_of(qtbot, folder, first_file):
 def test_while_a_folders_thumbnails_generate_the_status_bar_counts_them_then_says_they_are_ready(qtbot, tmp_path):
     for name in ("a.jpg", "b.jpg", "c.jpg"):
         make_image(tmp_path / name, "red")
-    window, seen, shown = window_on_the_grid_of(qtbot, tmp_path, tmp_path / "a.jpg")
+    window, seen, shown = window_on_the_grid_of(qtbot, tmp_path / "a.jpg")
 
     qtbot.waitUntil(lambda: "✓ Thumbnails ready" in shown())
 
@@ -166,7 +166,7 @@ def test_while_a_folders_thumbnails_generate_the_status_bar_counts_them_then_say
 def test_opening_a_folder_whose_thumbnails_are_all_cached_shows_no_thumbnail_message(qtbot, tmp_path):
     for name in ("a.jpg", "b.jpg"):
         make_image(tmp_path / name, "red")
-    window, seen, shown = window_on_the_grid_of(qtbot, tmp_path, tmp_path / "a.jpg")
+    window, seen, shown = window_on_the_grid_of(qtbot, tmp_path / "a.jpg")
     qtbot.waitUntil(lambda: "✓ Thumbnails ready" in shown())
     stack = window.findChild(QStackedWidget)
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
@@ -189,7 +189,7 @@ def test_starting_a_slideshow_while_thumbnails_generate_takes_their_progress_off
     monkeypatch.setattr(grid_module, "thumbnail_and_duration", lambda path: release.wait(timeout=10) and (None, None))
     for name in ("a.jpg", "b.jpg"):
         make_image(tmp_path / name, "red")
-    window, seen, shown = window_on_the_grid_of(qtbot, tmp_path, tmp_path / "a.jpg")
+    window, seen, shown = window_on_the_grid_of(qtbot, tmp_path / "a.jpg")
     try:
         qtbot.waitUntil(lambda: any(text.startswith("⟳") for text in shown()))
         stack = window.findChild(QStackedWidget)
