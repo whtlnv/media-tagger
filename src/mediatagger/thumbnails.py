@@ -43,15 +43,12 @@ def video_duration(path, timeout=None):
         return None
 
 
-def video_thumbnail(path, timeout=None):
-    duration = video_duration(path, timeout=timeout)
+def video_thumbnail(path, timeout=None, duration=None):
+    """A frame from about 10% in, past any fade-in or black first frame. The duration is probed unless given."""
+    if duration is None:
+        duration = video_duration(path, timeout=timeout)
     if duration is None:
         return None
-    return _video_frame(path, duration, timeout)
-
-
-def _video_frame(path, duration, timeout):
-    """A frame from about 10% in: past any fade-in or black first frame."""
     result = _run_with_timeout(
         ["ffmpeg", "-v", "error", "-ss", str(duration * 0.1), "-i", str(path),
          "-frames:v", "1", "-f", "image2pipe", "-c:v", "png", "-"],
@@ -71,7 +68,7 @@ def thumbnail_and_duration(path):
     """What a grid tile shows for a file or folder; runs on a worker thread. Only a video has a duration."""
     if is_video_name(path.name):
         duration = video_duration(path)  # probed once: the frame is taken relative to it
-        return (_video_frame(path, duration, None) if duration is not None else None), duration
+        return (video_thumbnail(path, duration=duration) if duration is not None else None), duration
     if path.is_dir():
         return folder_thumbnail(path), None
     return image_thumbnail(path), None

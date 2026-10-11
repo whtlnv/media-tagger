@@ -14,7 +14,7 @@ def cache_file(drive_id, home):
     return Path(cache_home) / "mediatagger" / drive_id / "thumbs.db"
 
 
-def png_bytes(image):
+def _png_bytes(image):
     buffer = QBuffer()
     buffer.open(QBuffer.OpenModeFlag.WriteOnly)
     image.save(buffer, "PNG")
@@ -32,7 +32,7 @@ class ThumbnailCache:
         )
 
     def store(self, file_path, size, mtime, thumbnail, duration=None):
-        self._put(file_path, size, mtime, png_bytes(thumbnail), duration)
+        self._put(file_path, size, mtime, _png_bytes(thumbnail), duration)
 
     def store_failure(self, file_path, size, mtime):
         self._put(file_path, size, mtime, None)
