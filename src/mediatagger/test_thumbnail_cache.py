@@ -241,6 +241,21 @@ def test_a_thumbnail_stored_from_a_worker_thread_is_returned_on_the_gui_thread(t
     assert cache.lookup(photo, size=1234, mtime=1700000000.5) is not None
 
 
+def test_generating_through_the_cache_returns_a_stored_thumbnail_without_generating_it_again(tmp_path):
+    from mediatagger.thumbnail_cache import ThumbnailCache, generate_through_cache
+
+    photo = tmp_path / "beach.jpg"
+    photo.write_bytes(b"a photo")
+    stat = photo.stat()
+    cache = ThumbnailCache(":memory:")
+    cache.store(photo, stat.st_size, stat.st_mtime, solid_thumbnail("red"))
+    generated = []
+
+    thumbnail, duration, was_generated = generate_through_cache(cache, lambda path: generated.append(path), photo)
+
+    assert (thumbnail.pixelColor(0, 0).name(), duration, was_generated, generated) == ("#ff0000", None, False, [])
+
+
 def solid_thumbnail(color):
     from PySide6.QtGui import QColor, QImage
 

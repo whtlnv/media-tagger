@@ -68,6 +68,26 @@ class ThumbnailCache:
         return duration
 
 
+def generate_through_cache(cache, generate, path):
+    """Runs on a worker thread: a file's (thumbnail, duration, whether it had to be generated). A file whose size and
+    mtime match what the cache holds is not generated again, nor is a stored failure retried until the file changes."""
+    try:
+        stat = path.stat()
+    except OSError:  # gone since its folder was listed
+        return None, None, False
+    found = cache.lookup(path, stat.st_size, stat.st_mtime)
+    if found is NO_THUMBNAIL:
+        return None, None, False
+    if found is not None:
+        return found, cache.lookup_duration(path, stat.st_size, stat.st_mtime), False
+    thumbnail, duration = generate(path)
+    if thumbnail is None:
+        cache.store_failure(path, stat.st_size, stat.st_mtime)
+    else:
+        cache.store(path, stat.st_size, stat.st_mtime, thumbnail, duration)
+    return thumbnail, duration, True
+
+
 def open_thumbnail_cache(drive_id, home, app_drive=None, viewed_drive=None):
     if drive_id is None:
         return ThumbnailCache(":memory:")
