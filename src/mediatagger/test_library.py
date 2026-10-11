@@ -572,3 +572,17 @@ def test_a_files_effective_tags_exclude_the_tags_of_a_sibling_folder_whose_name_
     library.enter(trip, "beach")
 
     assert library.effective_tags(photo).inherited == []
+
+
+def test_a_tag_a_file_has_both_as_its_own_and_from_an_ancestor_folder_appears_once_in_its_effective_tags_as_own(tmp_path):
+    library = Library.create(tmp_path)
+    folder = tmp_path / "trip"
+    folder.mkdir()
+    photo = folder / "dunes.jpg"
+    photo.touch()
+
+    library.enter(folder, "beach")
+    library.enter(photo, "beach")
+
+    effective = library.effective_tags(photo)
+    assert (effective.own, effective.inherited) == (["beach"], [])
