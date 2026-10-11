@@ -2,6 +2,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QStackedWidget
 
+from mediatagger.grid import TILE_ROLE
 from mediatagger.test_folder import touch
 from mediatagger.test_viewer import SILENT, make_image
 from mediatagger.window import Window
@@ -160,3 +161,20 @@ def test_while_a_folders_thumbnails_generate_the_status_bar_counts_them_then_say
 
     generating = [text for text in seen if text.startswith("⟳")]
     assert generating and all(re.fullmatch(r"⟳ Generating thumbnails [0-2] / 3", text) for text in generating)
+
+
+def test_opening_a_folder_whose_thumbnails_are_all_cached_shows_no_thumbnail_message(qtbot, tmp_path):
+    for name in ("a.jpg", "b.jpg"):
+        make_image(tmp_path / name, "red")
+    window, seen, shown = window_on_the_grid_of(qtbot, tmp_path, tmp_path / "a.jpg")
+    qtbot.waitUntil(lambda: "✓ Thumbnails ready" in shown())
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+    seen.clear()
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    tile = stack.currentWidget().model().index(0, 0).data(TILE_ROLE)
+    qtbot.waitUntil(lambda: tile.thumbnail is not None)
+    qtbot.wait(200)
+
+    assert [text for text in seen if "humbnail" in text] == []

@@ -85,7 +85,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] While thumbnails generate, the status bar shows `⟳ Generating thumbnails <done> / <total>`, counting only the ones that had to be generated
 - [x] A total of 1,204 reads `1,204` (thousands separated)
 - [x] When the folder's thumbnails are done, the status bar shows `✓ Thumbnails ready`, then clears it like other finished background messages
-- [ ] Opening a folder whose thumbnails are all cached shows no thumbnail message
+- [x] Opening a folder whose thumbnails are all cached shows no thumbnail message
 
 ### Shipped
 - [ ] The shipped `mediatagger` command's grid (launch on a folder, `Esc` to the grid) shows a generated thumbnail on an image tile
