@@ -1,5 +1,6 @@
 import sqlite3
 import uuid
+from typing import NamedTuple
 
 LIBRARY_FOLDER = ".mediatagger"
 CREATE_TAGS_TABLES = """
@@ -50,6 +51,10 @@ def _parse_entry(text):
     added = {word for word in words if not word.startswith("-")}
     removed = {word[1:] for word in words if word.startswith("-")}
     return added, removed
+
+
+class EffectiveTags(NamedTuple):
+    own: list
 
 
 class Library:
@@ -146,3 +151,6 @@ class Library:
         tags = [tag for (tag,) in rows]
         connection.close()
         return tags
+
+    def effective_tags(self, path):
+        return EffectiveTags(own=self.tags(path))

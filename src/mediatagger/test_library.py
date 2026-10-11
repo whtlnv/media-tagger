@@ -521,3 +521,13 @@ def test_entering_tags_for_a_folder_directly_under_the_drives_mount_point_stores
     assert library.tags(folder) == ["beach"]
     assert library.tags(tmp_path) == []
     assert _query(tmp_path, "SELECT rel_path, kind FROM items") == [("trip", "dir")]
+
+
+def test_a_files_effective_tags_include_its_own_tags(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "beach.jpg"
+    photo.touch()
+
+    library.enter(photo, "beach family")
+
+    assert library.effective_tags(photo).own == ["beach", "family"]
