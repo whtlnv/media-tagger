@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 00:26 · `src/mediatagger/test_main.py::test_the_grid_of_the_mediatagger_command_launched_on_a_folder_shows_a_generated_thumbnail_on_an_image_tile_after_esc`
+- Behavior: The shipped `mediatagger` command's grid (launch on a folder, `Esc` to the grid) shows a generated thumbnail on an image tile
+- Predicted: passes on first run (a pin: the command builds the same `Window` whose grid already generates thumbnails in the window tests)
+- Actual: passes
+- Type: passed unexpectedly (predicted pin)
+- Resolution: Kept as a pin. It isn't vacuous: when the grid's `generate` was temporarily changed to return `(None, None)`, the test failed with `'thumbnail=None' == 'thumbnail=400x200 #ff0000'`. Production was restored afterwards.
+
 ## 2026-10-10 23:39 · `src/mediatagger/test_grid.py::test_painting_a_tile_with_a_thumbnail_after_its_file_and_library_are_gone_from_disk_still_paints_its_picture_and_tag_badge`
 - Behavior: Painting a tile that has a thumbnail stats, decodes and queries nothing
 - Predicted: passes on first run (a pin: the delegate already paints only from `TILE_ROLE`, and tag counts are gathered when the folder is listed)

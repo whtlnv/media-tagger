@@ -398,3 +398,44 @@ def test_pressing_esc_in_the_slideshow_and_then_esc_in_the_grid_of_the_mediatagg
     result = run_python_offscreen(PRESS_ESC_TWICE_SCRIPT, str(tmp_path))
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == "exited"
+
+PRESS_ESC_THEN_REPORT_THE_FIRST_TILES_THUMBNAIL_ONCE_IT_ARRIVES_SCRIPT = (
+    "import sys\n"
+    "from PySide6.QtCore import Qt, QTimer\n"
+    "from PySide6.QtTest import QTest\n"
+    "from PySide6.QtWidgets import QApplication\n"
+    "from mediatagger.grid import TILE_ROLE, Grid\n"
+    "app = QApplication([])\n"
+    "def first_tiles_thumbnail():\n"
+    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    (grid,) = [grid for grid in window.findChildren(Grid) if grid.isVisible()]\n"
+    "    return grid.model().index(0, 0).data(TILE_ROLE).thumbnail\n"
+    "def report():\n"
+    "    polling.stop()\n"
+    "    thumbnail = first_tiles_thumbnail()\n"
+    "    if thumbnail is None:\n"
+    "        print('thumbnail=None', flush=True)\n"
+    "    else:\n"
+    "        print(f'thumbnail={thumbnail.width()}x{thumbnail.height()} {thumbnail.pixelColor(thumbnail.rect().center()).name()}', flush=True)\n"
+    "    QApplication.closeAllWindows()\n"
+    "    QApplication.quit()\n"
+    "def report_once_arrived():\n"
+    "    if first_tiles_thumbnail() is not None:\n"
+    "        report()\n"
+    "polling = QTimer()\n"
+    "polling.timeout.connect(report_once_arrived)\n"
+    "def press_esc_then_poll():\n"
+    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    QTest.keyClick(window, Qt.Key.Key_Escape)\n"
+    "    polling.start(100)\n"
+    "    QTimer.singleShot(10000, report)\n"
+    "QTimer.singleShot(1000, press_esc_then_poll)\n"
+    "sys.argv = ['mediatagger', sys.argv[1]]\n"
+) + RUN_MEDIATAGGER_COMMAND
+
+
+def test_the_grid_of_the_mediatagger_command_launched_on_a_folder_shows_a_generated_thumbnail_on_an_image_tile_after_esc(tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red", width=1600, height=800)
+    result = run_python_offscreen(PRESS_ESC_THEN_REPORT_THE_FIRST_TILES_THUMBNAIL_ONCE_IT_ARRIVES_SCRIPT, str(tmp_path))
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == f"thumbnail=400x200 {QColor('red').name()}"
