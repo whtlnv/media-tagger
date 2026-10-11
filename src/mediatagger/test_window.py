@@ -311,6 +311,21 @@ def test_moving_the_windows_grid_cursor_onto_a_tagged_item_shows_its_own_tags_sp
     assert "beach family" in shown_status_bar_texts(window)
 
 
+def test_moving_the_windows_grid_cursor_onto_an_item_tagged_beach_in_a_folder_tagged_holiday_shows_beach_followed_by_holiday_in_the_status_bar(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    library = Library.open(drive)
+    library.enter(folder, "holiday")
+    library.enter(folder / "IMG_2.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
+
+    shown = " ".join(shown_status_bar_texts(window)).split()
+    assert "holiday" in shown
+    assert shown.index("beach") < shown.index("holiday")
+
+
 def test_pressing_t_in_the_windows_grid_on_a_file_tile_tagged_beach_family_opens_the_tag_prompt_showing_beach_family_above_its_empty_input(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)

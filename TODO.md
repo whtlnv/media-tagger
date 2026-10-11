@@ -33,7 +33,7 @@ Phase 9 notes for every cycle. Architecture: `viewer.py` must not grow — it sh
 - [x] The grid's tag prompt sits at the bottom centre above the status bar, entirely inside the window
 - [x] After saving tags in the grid, the selected tile's `🏷N` badge shows the new own-tag count without re-listing the folder
 - [x] After saving tags in the grid, the status bar shows the selected item's new own tags
-- [ ] Moving the grid cursor onto an item inside a tagged folder shows its own tags in the status bar followed by the folder's inherited tags
+- [x] Moving the grid cursor onto an item inside a tagged folder shows its own tags in the status bar followed by the folder's inherited tags
 - [ ] In the grid's status bar, inherited tags are drawn dimmed and own tags in the normal style
 - [ ] The viewer's tag overlay shows the current file's own tags first, then its inherited tags, each group alphabetical
 - [ ] In the viewer's tag overlay, inherited tags are drawn dimmed (lighter than own tags) and own tags in the normal style
