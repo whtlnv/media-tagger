@@ -251,6 +251,35 @@ def test_after_a_first_grid_has_been_shown_opening_and_showing_the_grid_of_a_fol
     assert (elapsed < 0.150, grid.model().rowCount()) == (True, 5000)
 
 
+def test_opening_the_grid_of_a_folder_of_5000_images_with_an_empty_cache_and_starting_its_thumbnails_takes_under_150_ms(qtbot, tmp_path):
+    from PySide6.QtWidgets import QApplication
+
+    from mediatagger.test_viewer import make_image
+    from mediatagger.thumbnail_cache import ThumbnailCache
+
+    (tmp_path / "warm-up").mkdir()
+    make_image(tmp_path / "warm-up" / "a.jpg", "blue")
+    warm_up = Grid(tmp_path / "warm-up")  # loads Qt's fonts and image plugins, and starts the first workers: one-off costs
+    qtbot.addWidget(warm_up)
+    warm_up.show()
+    warm_up_tile = warm_up.model().index(0, 0).data(TILE_ROLE)
+    qtbot.waitUntil(lambda: warm_up_tile.thumbnail is not None)
+    (tmp_path / "big").mkdir()
+    image = make_image(tmp_path / "image.jpg", "red", 1600, 1200)
+    for number in range(5000):
+        shutil.copyfile(image, tmp_path / "big" / f"IMG_{number}.jpg")
+    empty_cache = ThumbnailCache(tmp_path / "thumbs.db")
+
+    started = time.perf_counter()
+    grid = Grid(tmp_path / "big", thumbnail_cache=empty_cache)
+    grid.show()
+    QApplication.processEvents()  # the first turn of the event loop, where the grid starts generating its thumbnails
+    elapsed = time.perf_counter() - started
+    qtbot.addWidget(grid)
+
+    assert (elapsed < 0.150, grid.model().rowCount()) == (True, 5000)
+
+
 def painted_tile(grid, row, selected):
     image = QImage(200, 200, QImage.Format.Format_ARGB32)
     image.fill(0)

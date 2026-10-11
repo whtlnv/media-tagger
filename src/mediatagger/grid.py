@@ -148,10 +148,11 @@ class Grid(QListView):
         tile comes first. Only the rows from the first to the last visible tile are looked at, however big the folder."""
         viewport = self.viewport().rect()
         first = self.indexAt(viewport.topLeft())
-        last = self.indexAt(viewport.bottomRight())
         if not first.isValid():
             return
-        last_row = last.row() if last.isValid() else len(tiles) - 1
+        last_row = first.row()
+        while last_row + 1 < len(tiles) and self.visualRect(self.model().index(last_row + 1, 0)).intersects(viewport):
+            last_row += 1
         for row in range(last_row, first.row() - 1, -1):
             self._thumbnails.request(tiles[row].path)
 
