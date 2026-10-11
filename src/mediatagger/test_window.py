@@ -351,6 +351,25 @@ def test_pressing_t_in_the_windows_grid_on_a_folder_tile_tagged_beach_family_ope
     assert "beach family" in shown_texts_outside_the_status_bar(window)
 
 
+def test_entering_beach_family_in_the_windows_grid_tag_prompt_on_a_folder_tile_saves_both_as_that_folders_own_tags_and_closes_the_prompt(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    [trip] = make_folders(folder, "trip")
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Left)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_T)
+    [prompt] = visible_tag_prompts(window)
+
+    qtbot.keyClicks(prompt, "beach family")
+    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+
+    assert Library.open(drive).tags(trip) == ["beach", "family"]
+    assert visible_tag_prompts(window) == []
+
+
 def test_moving_the_windows_grid_cursor_onto_an_untagged_item_shows_no_tags_in_the_status_bar(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)

@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 16:00 · `src/mediatagger/test_window.py::test_entering_beach_family_in_the_windows_grid_tag_prompt_on_a_folder_tile_saves_both_as_that_folders_own_tags_and_closes_the_prompt`
+- Behavior: Entering `beach family` in the grid's tag prompt on a folder tile saves both as that folder's own tags and closes the prompt
+- Predicted: AssertionError — folder's own tags read back `[]` (flagged as likely to pass, since the grid uses the shared `TagPrompt`)
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: The window's grid opens the shared `TagPrompt`, whose Enter already runs `library.enter` and closes the prompt, and folder tagging was already in `Library`, so the behavior arrived with the earlier cycles. The assertions aren't vacuous (tags start at `[]`, prompt starts open), so the test was kept as a pin rather than rewritten.
+
 ## 2026-10-11 15:46 · `src/mediatagger/test_window.py::test_pressing_t_in_the_windows_grid_on_a_folder_tile_tagged_beach_family_opens_the_tag_prompt_showing_beach_family_above_its_empty_input`
 - Behavior: Pressing `t` in the grid on a folder tile opens the tag prompt showing that folder's own tags
 - Predicted: passes on first run — `Window._tag` opens the prompt on the current tile's path whatever its kind, and `Library.tags` looks up by `rel_path` regardless of `kind`
