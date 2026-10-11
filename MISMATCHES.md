@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 17:04 · `src/mediatagger/test_window.py::test_while_the_windows_grid_tag_prompt_is_open_arrows_backspace_plus_and_minus_leave_the_grids_cursor_folder_and_tile_size_unchanged`
+- Behavior: While the grid's tag prompt is open, arrows, `Backspace`, `+` and `-` leave the grid's cursor, folder and tile size unchanged
+- Predicted: AssertionError — cursor row changes because `Down` (ignored by the QLineEdit) bubbles to the window, which forwards it to the grid
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: a probe showed `Down` and `Up` do reach the window and get forwarded, but pressing Down then Up cancelled out; reordered to Up (no-op on the top row) … Down, and it now fails as predicted (cursor at row 3, expected 0).
+
 ## 2026-10-11 16:41 · `src/mediatagger/test_window.py::test_esc_with_the_suggestion_popup_open_in_the_windows_grid_tag_prompt_closes_only_the_popup_leaving_the_prompt_open_with_its_text`
 - Behavior: With the grid's tag prompt open, the first `Esc` closes the suggestion popup and leaves the prompt open
 - Predicted: passes on first run — the grid opens the shared TagPrompt, whose completer popup already eats the first Esc (pinned for the viewer in test_tag_prompt.py)

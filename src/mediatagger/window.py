@@ -48,8 +48,9 @@ class Window(QWidget):
         self.status_bar.raise_()
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key.Key_Escape and self.tag_prompt.has_focus():
-            self.tag_prompt.close()
+        if self.tag_prompt.has_focus():
+            if event.key() == Qt.Key.Key_Escape:
+                self.tag_prompt.close()
             return
         self._forward_to_the_shown_page(event)
 

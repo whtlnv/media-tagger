@@ -446,6 +446,24 @@ def test_esc_with_no_suggestion_popup_in_the_windows_grid_tag_prompt_closes_the_
     assert (visible_tag_prompts(window), window.isVisible(), isinstance(shown, Grid)) == ([], True, True)
 
 
+def test_while_the_windows_grid_tag_prompt_is_open_arrows_backspace_plus_and_minus_leave_the_grids_cursor_folder_and_tile_size_unchanged(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_folders(folder, "trip")
+    for n in range(2, 40):
+        make_image(folder / f"IMG_{n:02}.png", "blue")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    grid = stack.currentWidget()
+    before = (grid.currentIndex().row(), grid.folder, grid.gridSize())
+    qtbot.keyClick(grid, Qt.Key.Key_T)
+    [prompt] = visible_tag_prompts(window)
+    qtbot.waitUntil(prompt.hasFocus)
+
+    for key in (Qt.Key.Key_Up, Qt.Key.Key_Right, Qt.Key.Key_Left, Qt.Key.Key_Down, Qt.Key.Key_Plus, Qt.Key.Key_Minus, Qt.Key.Key_Backspace):
+        qtbot.keyClick(prompt, key)
+
+    assert (stack.currentWidget(), (grid.currentIndex().row(), grid.folder, grid.gridSize())) == (grid, before)
+
+
 def test_moving_the_windows_grid_cursor_onto_an_untagged_item_shows_no_tags_in_the_status_bar(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
