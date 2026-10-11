@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 19:20 · `src/mediatagger/test_grid.py::test_in_a_folders_grid_a_corrupt_images_tile_keeps_no_thumbnail_and_its_glyph_stays`
+- Behavior: In a folder's grid, a corrupt image's tile keeps no thumbnail (its glyph stays)
+- Predicted: pass — read before writing: `image_thumbnail` returns None for a corrupt file, the grid stores whatever is emitted, and the delegate always paints the glyph
+- Actual: passed (1 passed)
+- Type: passed unexpectedly (by /red's rules; foreseen here)
+- Resolution: The previous cycle already delivers this, and no red is possible without production changes: today a tile cannot tell "failed" from "not tried yet", so the assertions only check None. The test uses a valid image queued after the corrupt one as its wait point, which is likely but not guaranteed. Kept it as a regression pin; it becomes a real check once the delegate paints thumbnails (Painting items).
+
 ## 2026-10-10 18:36 · `src/mediatagger/test_thumbnail_scheduler.py::test_requesting_thumbnails_that_are_all_cached_generates_nothing`
 - Behavior: Requesting thumbnails that are all cached generates nothing
 - Predicted: AssertionError — generate called for all three cached paths

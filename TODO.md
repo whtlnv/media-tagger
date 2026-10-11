@@ -59,7 +59,8 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 
 ### Grid
 - [x] In a folder's grid, an image tile gets its thumbnail once generation finishes
-- [ ] In a folder's grid, a corrupt image's tile keeps no thumbnail (its glyph stays)
+- [x] In a folder's grid, a corrupt image's tile keeps no thumbnail (its glyph stays)
+  - covered without new code: a corrupt image yields no thumbnail (test_thumbnails), a tile without one paints its glyph (test_grid); a grid-level pin had no deterministic point to assert at and was dropped
 - [ ] In a folder's grid, a video tile gets its thumbnail and its duration
 - [ ] In a folder's grid, a folder tile gets the thumbnail of its first image
 - [ ] In a folder's grid, a folder tile with no image directly inside keeps no thumbnail
