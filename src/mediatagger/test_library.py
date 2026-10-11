@@ -586,3 +586,16 @@ def test_a_tag_a_file_has_both_as_its_own_and_from_an_ancestor_folder_appears_on
 
     effective = library.effective_tags(photo)
     assert (effective.own, effective.inherited) == (["beach"], [])
+
+
+def test_a_folders_effective_tags_include_the_own_tags_of_its_ancestor_folders_reported_as_inherited(tmp_path):
+    library = Library.create(tmp_path)
+    trip = tmp_path / "trip"
+    day = trip / "day1"
+    morning = day / "morning"
+    morning.mkdir(parents=True)
+
+    library.enter(trip, "beach")
+    library.enter(day, "sunset")
+
+    assert sorted(library.effective_tags(morning).inherited) == ["beach", "sunset"]

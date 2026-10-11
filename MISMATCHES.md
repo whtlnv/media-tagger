@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 14:45 · `src/mediatagger/test_library.py::test_a_folders_effective_tags_include_the_own_tags_of_its_ancestor_folders_reported_as_inherited`
+- Behavior: A folder's effective tags include its ancestor folders' tags as inherited
+- Predicted: passes — `effective_tags` walks `path.relative_to(root).parents` with exact `rel_path` lookups, which is the same for a folder as for a file
+- Actual: passes (1 passed)
+- Type: passed unexpectedly (predicted, but no red state exists for this item)
+- Resolution: The ancestor walk built for files already covers folders. Any rewrite that fails would have to assert behavior outside this item. Kept the test as a guard in case a future single-query rewrite of `effective_tags` (next TODO item) handles only files, e.g. by filtering on `kind = 'file'`. Commit it as test-after, not through /green.
+
 ## 2026-10-11 14:32 · `src/mediatagger/test_library.py::test_a_files_effective_tags_exclude_the_tags_of_a_sibling_folder_whose_name_is_a_prefix_of_its_parents`
 - Behavior: A file's effective tags exclude the tags of folders that aren't its ancestors (sibling, and name-prefix such as `trip` for a file in `trip2/`)
 - Predicted: passes — `effective_tags` already looks up each ancestor by exact `rel_path` via `Path.parents`, so no prefix/sibling leak is possible
