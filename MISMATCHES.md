@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 13:14 · `src/mediatagger/test_library.py::test_entering_beach_for_a_folder_makes_beach_its_own_tag_also_after_the_library_is_reopened`
+- Behavior: Entering `beach` for a folder makes `beach` that folder's own tag when its tags are read back, also after reopening the library
+- Predicted: passes on first run (`Library.enter`/`tags` key on the relative path and never check whether it is a file, so a folder is tagged like a file already)
+- Actual: passes
+- Type: passed unexpectedly
+- Resolution: the behavior already exists; there's no honest way to make this test fail without asserting another TODO item (`kind` `'dir'` is next), so the test stays as a pin for folder tagging and /green has nothing to implement
+
 ## 2026-10-11 00:26 · `src/mediatagger/test_main.py::test_the_grid_of_the_mediatagger_command_launched_on_a_folder_shows_a_generated_thumbnail_on_an_image_tile_after_esc`
 - Behavior: The shipped `mediatagger` command's grid (launch on a folder, `Esc` to the grid) shows a generated thumbnail on an image tile
 - Predicted: passes on first run (a pin: the command builds the same `Window` whose grid already generates thumbnails in the window tests)

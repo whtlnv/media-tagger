@@ -445,3 +445,15 @@ def test_asking_the_library_for_the_tag_counts_of_a_folder_of_5000_items_runs_on
     library.tag_counts(folder)
 
     assert len(statements) == 1
+
+
+def test_entering_beach_for_a_folder_makes_beach_its_own_tag_also_after_the_library_is_reopened(tmp_path):
+    library = Library.create(tmp_path)
+    folder = tmp_path / "trip"
+    folder.mkdir()
+    (folder / "beach.jpg").touch()
+
+    library.enter(folder, "beach")
+
+    assert library.tags(folder) == ["beach"]
+    assert Library.open(tmp_path).tags(folder) == ["beach"]
