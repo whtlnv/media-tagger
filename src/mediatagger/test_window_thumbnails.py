@@ -115,3 +115,20 @@ def test_on_a_drive_with_a_library_the_grids_thumbnails_are_written_to_that_driv
     stored = [path for (path,) in connection.execute("SELECT path FROM thumbnails")]
     connection.close()
     assert stored == ["Photos/IMG_1.png"]
+
+
+def test_on_the_system_disk_the_grids_thumbnails_are_written_nowhere_on_disk(qtbot, tmp_path):
+    import os
+    from pathlib import Path
+
+    from mediatagger.grid import TILE_ROLE
+
+    make_image(tmp_path / "b.jpg", "blue")
+    window = Window(tmp_path / "b.jpg", player_options=SILENT, is_mount_point=lambda path: path == Path("/"))
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    tile = stack.currentWidget().model().index(0, 0).data(TILE_ROLE)
+    qtbot.waitUntil(lambda: tile.thumbnail is not None)
+
+    assert list(Path(os.environ["XDG_CACHE_HOME"]).rglob("*")) == []

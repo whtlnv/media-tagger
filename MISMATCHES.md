@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-10 21:52 · `src/mediatagger/test_window_thumbnails.py::test_on_the_system_disk_the_grids_thumbnails_are_written_nowhere_on_disk`
+- Behavior: On the system disk (no library), the grid's thumbnails are written nowhere on disk
+- Predicted: passes — `open_thumbnail_cache(None, ...)` already returns an in-memory cache, shipped with the previous cycle's drive-cache wiring
+- Actual: passes
+- Type: passed unexpectedly (predicted pin)
+- Resolution: Kept as a pin rather than rewriting it to fail. Breaking the no-library branch so it writes `thumbs.db` under XDG_CACHE_HOME makes it fail with `assert [.../thumbs.db] == []`, so it is not vacuous. A first break that set a fake drive id still passed, because the viewed drive `/` contains every path and the on-viewed-drive guard falls back to memory.
+
 ## 2026-10-10 19:48 · `src/mediatagger/test_grid.py::test_in_a_folders_grid_a_folder_tile_with_no_image_directly_inside_keeps_no_thumbnail`
 - Behavior: In a folder's grid, a folder tile with no image directly inside keeps no thumbnail
 - Predicted: AssertionError — the folder tile gets a QImage, because the grid decodes the folder's first media file (`loop.gif`, a video here) as an image
