@@ -315,8 +315,22 @@ def test_the_tile_under_the_grid_cursor_is_painted_highlighted_so_the_cursor_can
     grid = Grid(tmp_path)
     qtbot.addWidget(grid)
 
-    corner = (10, 10)
-    assert painted_tile(grid, 0, selected=True).pixelColor(*corner) != painted_tile(grid, 0, selected=False).pixelColor(*corner)
+    assert painted_tile(grid, 0, selected=True) != painted_tile(grid, 0, selected=False)
+
+
+def test_the_grid_cursor_outlines_the_tiles_picture_on_all_four_sides_over_the_picture(qtbot, tmp_path):
+    touch(tmp_path, "photo.jpg")
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+    give_red_thumbnail(grid, 0)
+    picture = painted_red_area(painted_tile(grid, 0, selected=False))
+    highlight = grid.palette().highlight().color()
+
+    selected = painted_tile(grid, 0, selected=True)
+    edges = [(picture.center().x(), picture.top()), (picture.center().x(), picture.bottom()),
+             (picture.left(), picture.center().y()), (picture.right(), picture.center().y())]
+
+    assert [selected.pixelColor(x, y).name() for x, y in edges] == [highlight.name()] * 4
 
 
 def painted_red_area(image):

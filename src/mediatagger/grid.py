@@ -4,7 +4,7 @@ from enum import Enum
 from pathlib import Path
 
 from PySide6.QtCore import QAbstractListModel, QModelIndex, QRect, QSize, Qt, QTimer, Signal
-from PySide6.QtGui import QColor, QPainter
+from PySide6.QtGui import QColor, QPainter, QPen
 from PySide6.QtWidgets import QListView, QStyle, QStyledItemDelegate
 
 from mediatagger.folder import is_video_name, subfolder_and_media_names
@@ -31,6 +31,8 @@ MAX_TILE_SIZE = QSize(400, 400)
 MIN_TILE_SIZE = QSize(100, 100)
 
 TILE_ROLE = Qt.ItemDataRole.UserRole
+
+CURSOR_WIDTH = 4
 
 TILE_MARGIN = 0.07  # of the cell's width, on every side
 
@@ -96,22 +98,40 @@ class _TileDelegate(QStyledItemDelegate):
 
     def paint(self, painter, option, index):
         tile = index.data(TILE_ROLE)
-        if option.state & QStyle.StateFlag.State_Selected:
-            painter.fillRect(option.rect.adjusted(2, 2, -2, -2), option.palette.highlight())  # the grid cursor
+        selected = bool(option.state & QStyle.StateFlag.State_Selected)
         picture_area, name_band = _tile_layout(option.rect, painter.fontMetrics().height())
+        shown = picture_area
         if tile.thumbnail is not None:
-            picture = QRect(picture_area.topLeft(), tile.thumbnail.size().scaled(picture_area.size(), Qt.AspectRatioMode.KeepAspectRatio))
-            picture.moveCenter(picture_area.center())
-            painter.drawImage(picture, tile.thumbnail)
+            shown = QRect(picture_area.topLeft(), tile.thumbnail.size().scaled(picture_area.size(), Qt.AspectRatioMode.KeepAspectRatio))
+            shown.moveCenter(picture_area.center())
+            painter.drawImage(shown, tile.thumbnail)
         else:
             _draw_glyph(painter, picture_area, tile.kind.value)
+        if selected:  # the grid cursor: drawn over the picture, so it shows on any picture
+            _draw_cursor(painter, shown, name_band, option.palette.highlight().color())
         name = painter.fontMetrics().elidedText(tile.name, Qt.TextElideMode.ElideRight, name_band.width())
+        painter.save()
+        if selected:
+            painter.setPen(option.palette.highlightedText().color())
         painter.drawText(name_band, Qt.AlignmentFlag.AlignCenter, name)
+        painter.restore()
         if tile.kind is _Kind.VIDEO:
             badge = VIDEO_BADGE if tile.duration is None else f"{VIDEO_BADGE} {format_duration(tile.duration)}"
             _draw_backed_badge(painter, picture_area, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignRight, badge)
         if tile.tag_count:
             _draw_backed_badge(painter, picture_area, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{TAG_BADGE}{tile.tag_count}")
+
+
+def _draw_cursor(painter, picture, name_band, color):
+    """A thick outline straddling the picture's edges, and the filename band filled."""
+    painter.save()
+    painter.fillRect(name_band, color)
+    pen = QPen(color, CURSOR_WIDTH)
+    pen.setJoinStyle(Qt.PenJoinStyle.MiterJoin)
+    painter.setPen(pen)
+    painter.setBrush(Qt.BrushStyle.NoBrush)
+    painter.drawRect(picture)
+    painter.restore()
 
 
 def _tile_layout(cell, line_height):
