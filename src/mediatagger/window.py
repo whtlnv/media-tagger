@@ -4,7 +4,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QStackedWidget, QVBoxLayout, QWidget
 
 from mediatagger.drive_session import DriveSession
-from mediatagger.folder_thumbnails import progress_text
+from mediatagger.folder_thumbnails import GENERATING_THUMBNAILS_TEXT, progress_text
 from mediatagger.grid import TILE_ROLE, Grid
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
 from mediatagger.state import remember, remembered_folder, state_file
@@ -89,12 +89,18 @@ class Window(QWidget):
         grid.selectionModel().currentChanged.connect(self._show_tags_of)
         grid.thumbnail_progress.connect(self._show_thumbnail_progress)
         for old in self.findChildren(Grid):
+            self._stop_thumbnails_of(old)
             old.deleteLater()
         grid.keep_clear_at_the_bottom(self.status_bar.sizeHint().height())
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
         self.status_bar.raise_()
         self._record_state(grid.folder)
+
+    def _stop_thumbnails_of(self, grid):
+        """A folder left behind stops generating, and its unfinished count leaves the status bar."""
+        grid.stop_generating_thumbnails()
+        self.status_bar.clear_background(GENERATING_THUMBNAILS_TEXT.split("{")[0])
 
     def _show_thumbnail_progress(self, done, total):
         self.status_bar.show_background(progress_text(done, total), finished=done == total)
@@ -132,10 +138,11 @@ class Window(QWidget):
             grid.setCurrentIndex(grid.model().index(0, 0))
             self._show(grid)
             return
-        self.stack.currentWidget().stop_generating_thumbnails()
         self._open(path)
 
     def _open(self, path):
+        if isinstance(self.stack.currentWidget(), Grid):  # a tile's Enter, or a drop onto the grid
+            self._stop_thumbnails_of(self.stack.currentWidget())
         self.viewer.open(path)
         self.stack.setCurrentWidget(self.viewer)
         self.status_bar.show_tags("")

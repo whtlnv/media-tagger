@@ -63,6 +63,12 @@ class StatusBar(QWidget):
         self.tags_status.setText(text)
         self.tags_status.setVisible(bool(text))
 
+    def clear_background(self, starting_with):
+        """Takes the background message off, if it is still one that starts so: a newer job's message stays."""
+        if self.background_status.text().startswith(starting_with):
+            self._background_status_clearing.stop()
+            self.background_status.hide()
+
     def show_background(self, text, finished=False):
         """The one slot for background work (backups now, later phases' jobs too). Work in progress and failures stay
         shown; a finished job's message clears after a few seconds, unless a newer message replaced it."""
