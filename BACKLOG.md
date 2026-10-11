@@ -13,3 +13,15 @@
 
 - **[src/mediatagger/test_main.py:53] Standalone executable test asserts only that the process is still alive** (added: 2026-10-08)
   `assert still_running` checks the process did not exit but not the "viewer open" its name promises; observing the viewer of an independently launched `mediatagger` process needs a production-side report hook, which this pass may not add.
+
+- **[src/mediatagger/thumbnail_cache.py:generate_through_cache] A video whose frame fails is stored as a plain failure, losing its duration** (added: 2026-10-11)
+  When `ffprobe` gives a duration but `ffmpeg` gives no frame, `store_failure` records no duration, so the tile shows ▶ without a duration until the file changes. Keeping it needs `store_failure` to take a duration (a schema-compatible column already exists).
+
+- **[src/mediatagger/folder_thumbnails.py:FolderThumbnails.start] Every folder open stats every file on a worker for the cache survey** (added: 2026-10-11)
+  `still_to_generate` stats each file of the folder to compare size and mtime; on a USB stick on a Pi a folder of thousands may take a while before `⟳ Generating thumbnails` shows its total. Measure on the Pi before optimising (e.g. trusting the folder's mtime).
+
+- **[src/mediatagger/grid.py:HELD_THUMBNAILS] Pictures are held at the largest tile size whatever the zoom** (added: 2026-10-11)
+  Each held picture is up to 400×400 RGB32 (~0.5 MB); with 500 held plus the tiles in view, memory can reach ~250–300 MB. Scaling held pictures to the current tile size (re-requesting on zoom-in) would cut that on the Pi.
+
+- **[src/mediatagger/test_grid.py] The 5,000-file timing tests depend on collecting garbage first** (added: 2026-10-11)
+  Inside the full suite a garbage collection during the timed opening pushed it past 150 ms; `fastest_of_three` now collects before each opening. In the app the GUI-thread GC timer can still fire mid-open; if opening feels slow on the Pi, look there first.
