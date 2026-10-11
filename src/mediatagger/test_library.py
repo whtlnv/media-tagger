@@ -508,3 +508,16 @@ def test_entering_tags_for_the_drives_mount_point_itself_stores_nothing_so_its_o
 
     assert library.tags(tmp_path) == []
     assert Library.open(tmp_path).tags(tmp_path) == []
+
+
+def test_entering_tags_for_a_folder_directly_under_the_drives_mount_point_stores_them_while_the_mount_point_stays_untagged(tmp_path):
+    library = Library.create(tmp_path)
+    folder = tmp_path / "trip"
+    folder.mkdir()
+
+    library.enter(tmp_path, "sunset")
+    library.enter(folder, "beach")
+
+    assert library.tags(folder) == ["beach"]
+    assert library.tags(tmp_path) == []
+    assert _query(tmp_path, "SELECT rel_path, kind FROM items") == [("trip", "dir")]
