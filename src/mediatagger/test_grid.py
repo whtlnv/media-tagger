@@ -348,6 +348,17 @@ def test_a_tile_with_a_thumbnail_paints_the_picture_above_the_filename_aspect_ra
     assert picture.bottom() < filename_top
 
 
+def test_a_wide_picture_leaves_a_gap_to_the_tiles_edges_so_neighbouring_pictures_never_touch(qtbot, tmp_path):
+    touch(tmp_path, "photo.jpg")
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+    give_red_thumbnail(grid, 0)  # twice as wide as tall: it would span the whole tile without a margin
+
+    picture = painted_red_area(painted_tile(grid, 0, selected=False))
+
+    assert (picture.left() >= 6, picture.top() >= 6, picture.right() <= 200 - 1 - 6) == (True, True, True)
+
+
 def test_a_tile_paints_its_type_glyph_only_while_it_has_no_thumbnail(qtbot, tmp_path):
     touch(tmp_path, "photo.jpg")
     grid = Grid(tmp_path)

@@ -32,6 +32,8 @@ MIN_TILE_SIZE = QSize(100, 100)
 
 TILE_ROLE = Qt.ItemDataRole.UserRole
 
+TILE_MARGIN = 0.07  # of the cell's width, on every side
+
 BADGE_PADDING = 4
 
 BADGE_BACKING = QColor(0, 0, 0, 180)
@@ -96,20 +98,30 @@ class _TileDelegate(QStyledItemDelegate):
         tile = index.data(TILE_ROLE)
         if option.state & QStyle.StateFlag.State_Selected:
             painter.fillRect(option.rect.adjusted(2, 2, -2, -2), option.palette.highlight())  # the grid cursor
-        picture_area = option.rect.adjusted(0, 0, 0, -painter.fontMetrics().height())  # leaves the filename's line free
+        picture_area, name_band = _tile_layout(option.rect, painter.fontMetrics().height())
         if tile.thumbnail is not None:
-            picture = QRect(option.rect.topLeft(), tile.thumbnail.size().scaled(picture_area.size(), Qt.AspectRatioMode.KeepAspectRatio))
+            picture = QRect(picture_area.topLeft(), tile.thumbnail.size().scaled(picture_area.size(), Qt.AspectRatioMode.KeepAspectRatio))
             picture.moveCenter(picture_area.center())
             painter.drawImage(picture, tile.thumbnail)
         else:
             _draw_glyph(painter, picture_area, tile.kind.value)
-        name = painter.fontMetrics().elidedText(tile.name, Qt.TextElideMode.ElideRight, option.rect.width())
-        painter.drawText(option.rect, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignHCenter, name)
+        name = painter.fontMetrics().elidedText(tile.name, Qt.TextElideMode.ElideRight, name_band.width())
+        painter.drawText(name_band, Qt.AlignmentFlag.AlignCenter, name)
         if tile.kind is _Kind.VIDEO:
             badge = VIDEO_BADGE if tile.duration is None else f"{VIDEO_BADGE} {format_duration(tile.duration)}"
             _draw_backed_badge(painter, picture_area, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignRight, badge)
         if tile.tag_count:
-            _draw_backed_badge(painter, option.rect, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{TAG_BADGE}{tile.tag_count}")
+            _draw_backed_badge(painter, picture_area, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{TAG_BADGE}{tile.tag_count}")
+
+
+def _tile_layout(cell, line_height):
+    """Where a tile's picture and filename go in its grid cell: inside a margin of about 7% of the cell, so neighbouring
+    pictures never touch, the picture area above and the filename band along the bottom, apart from each other."""
+    margin = max(4, round(cell.width() * TILE_MARGIN))
+    inside = cell.adjusted(margin, margin, -margin, -margin)
+    name_band = QRect(inside.left(), inside.bottom() + 1 - line_height, inside.width(), line_height)
+    picture_area = inside.adjusted(0, 0, 0, -(line_height + margin // 2))
+    return picture_area, name_band
 
 
 def _draw_glyph(painter, area, glyph):
