@@ -8,14 +8,17 @@ class _Generated(QObject):
     done = Signal(object, object)
 
 
+def _store(cache, path, thumbnail):
+    stat = path.stat()
+    cache.store(path, stat.st_size, stat.st_mtime, thumbnail)
+
+
 class ThumbnailScheduler:
     def __init__(self, generate, cache=None):
         self._generate = generate
         self._generated = _Generated()
         if cache is not None:
-            self._generated.done.connect(
-                lambda path, thumbnail: cache.store(path, path.stat().st_size, path.stat().st_mtime, thumbnail)
-            )
+            self._generated.done.connect(lambda path, thumbnail: _store(cache, path, thumbnail))
         self._executor = ThreadPoolExecutor(max_workers=3)
         self._pending = []
         self._unrequested = []
