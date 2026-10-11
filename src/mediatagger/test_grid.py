@@ -372,6 +372,7 @@ def test_in_a_folders_grid_a_folder_tile_with_no_image_directly_inside_keeps_no_
     image.save(str(tmp_path / "photo.jpg"))
     grid = Grid(tmp_path)
     qtbot.addWidget(grid)
+    grid.resize(800, 600)  # both tiles in view: only those get their pictures
     grid.show()
     folder_tile = grid.model().index(0, 0).data(TILE_ROLE)
     image_tile = grid.model().index(1, 0).data(TILE_ROLE)
@@ -455,6 +456,7 @@ def test_a_thumbnail_arriving_reports_a_change_for_its_own_tiles_row_only(qtbot,
     qtbot.addWidget(grid)
     changed_rows = []
     grid.model().dataChanged.connect(lambda top_left, bottom_right: changed_rows.append((top_left.row(), bottom_right.row())))
+    grid.resize(800, 600)  # every tile in view: only those get their pictures
     grid.show()
     tiles = [grid.model().index(row, 0).data(TILE_ROLE) for row in range(3)]
 

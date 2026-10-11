@@ -131,6 +131,9 @@ class ThumbnailScheduler:
 
     def survey(self, function):
         """Runs `function` on a thread of its own and sends its result back through `surveyed`."""
+        with self._work.lock:
+            if self._work.stopped:
+                return
         self._surveyor.submit(self._work.survey, function)
 
     def shut_down(self):

@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -6,8 +7,8 @@ from PySide6.QtCore import QAbstractListModel, QModelIndex, QRect, QSize, Qt, QT
 from PySide6.QtWidgets import QListView, QStyle, QStyledItemDelegate
 
 from mediatagger.folder import is_video_name, subfolder_and_media_names
-from mediatagger.thumbnail_cache import ThumbnailCache, generate_through_cache
-from mediatagger.thumbnail_scheduler import ThumbnailScheduler
+from mediatagger.folder_thumbnails import FolderThumbnails
+from mediatagger.thumbnail_cache import ThumbnailCache
 from mediatagger.thumbnails import format_duration, thumbnail_and_duration
 
 FOLDER_GLYPH = "📁"
@@ -29,6 +30,8 @@ MAX_TILE_SIZE = QSize(400, 400)
 MIN_TILE_SIZE = QSize(100, 100)
 
 TILE_ROLE = Qt.ItemDataRole.UserRole
+
+HELD_THUMBNAILS = 300  # pictures kept in memory at once: about 150 MB at the largest tile size, fine on a Pi
 
 
 class _Kind(Enum):
@@ -56,10 +59,6 @@ def _tiles(folder, tag_counts):
     subfolders, media = subfolder_and_media_names(folder)
     kinds = [_Kind.FOLDER] * len(subfolders) + [_Kind.VIDEO if is_video_name(name) else _Kind.IMAGE for name in media]
     return [_Tile(folder / name, name, kind, counts_by_name.get(name, 0)) for name, kind in zip(subfolders + media, kinds)]
-
-
-def _receive(tile, generated):
-    tile.thumbnail, tile.duration, _ = generated
 
 
 class _FolderModel(QAbstractListModel):
@@ -134,30 +133,41 @@ class Grid(QListView):
 
     def _generate_thumbnails(self, tiles, cache):
         rows = {tile.path: row for row, tile in enumerate(tiles)}
-        self._thumbnails = ThumbnailScheduler(lambda path: generate_through_cache(cache, thumbnail_and_duration, path), parent=self)
-        self._thumbnails.generated.connect(lambda path, generated: self._show_thumbnail(tiles, rows[path], generated))
-        paths = list(rows)
-        self.verticalScrollBar().valueChanged.connect(lambda: self._request_visible(tiles))
+        self._thumbnails = FolderThumbnails(list(rows), cache, self, generate=lambda path: thumbnail_and_duration(path))
+        self._thumbnails.arrived.connect(lambda path, thumbnail, duration: self._show_thumbnail(tiles, rows[path], thumbnail, duration))
+        self.thumbnail_progress = self._thumbnails.progress
+        self._answered = OrderedDict()  # rows whose thumbnail (or lack of one) has arrived, least recently first
+        self.verticalScrollBar().valueChanged.connect(self._request_visible)
+        self._tiles = None  # set once generating has started, after the grid is first laid out and scrolled to its cursor
         # Started once the grid is up: workers decoding from the first moment would slow opening a big folder.
-        QTimer.singleShot(0, self, lambda: self._start_generating(tiles, paths))
+        QTimer.singleShot(0, self, lambda: self._start_generating(tiles))
 
-    def _start_generating(self, tiles, paths):
-        self._thumbnails.enter_folder(paths)
-        self._request_visible(tiles)
-        if self.currentIndex().isValid():
-            self._thumbnails.request(tiles[self.currentIndex().row()].path)  # requested last, so generated first
+    def _start_generating(self, tiles):
+        self._tiles = tiles
+        self._thumbnails.start()
+        self._request_visible()
 
     def stop_generating_thumbnails(self):
-        self._thumbnails.shut_down()
+        self._thumbnails.stop()
 
-    def _show_thumbnail(self, tiles, row, generated):
-        _receive(tiles[row], generated)
+    def _show_thumbnail(self, tiles, row, thumbnail, duration):
+        if row in self._answered and tiles[row].thumbnail is not None:
+            return  # asked twice while on its way: the first answer is already shown
+        tiles[row].thumbnail, tiles[row].duration = thumbnail, duration
+        self._answered[row] = None
+        self._answered.move_to_end(row)
+        if len(self._answered) > HELD_THUMBNAILS:  # a tile scrolled far away lets its picture go; back in view, it asks again
+            tiles[self._answered.popitem(last=False)[0]].thumbnail = None
         index = self.model().index(row, 0)
         self.model().dataChanged.emit(index, index)
 
-    def _request_visible(self, tiles):
-        """The tiles in view, bottom-right first: the most recent request is generated first, so the top-left
-        tile comes first. Only the rows from the first to the last visible tile are looked at, however big the folder."""
+    def _request_visible(self):
+        """The tiles in view, bottom-right first, and the cursor's tile last: the most recent request is generated
+        first, so the cursor's tile comes first, then the top-left one. Only the rows from the first to the last
+        visible tile are looked at, however big the folder; tiles already answered are not asked again."""
+        tiles = getattr(self, "_tiles", None)  # not before generating has started
+        if tiles is None:
+            return
         viewport = self.viewport().rect()
         first = self.indexAt(viewport.topLeft())
         if not first.isValid():
@@ -165,8 +175,15 @@ class Grid(QListView):
         last_row = first.row()
         while last_row + 1 < len(tiles) and self.visualRect(self.model().index(last_row + 1, 0)).intersects(viewport):
             last_row += 1
-        for row in range(last_row, first.row() - 1, -1):
-            self._thumbnails.request(tiles[row].path)
+        current = self.currentIndex().row() if self.currentIndex().isValid() else None
+        for row in [*range(last_row, first.row() - 1, -1), current]:  # the cursor's tile last, so generated first
+            if row is not None and row not in self._answered:
+                self._thumbnails.request(tiles[row].path)
+
+    def updateGeometries(self):
+        """Called once the tiles are laid out, and again whenever they move (resizing, zooming): what is in view changed."""
+        super().updateGeometries()
+        self._request_visible()
 
     def keep_clear_at_the_bottom(self, height):
         """Room below the last row for what lies over the grid's bottom edge (the window's status bar)."""

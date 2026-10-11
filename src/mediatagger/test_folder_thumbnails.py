@@ -80,3 +80,18 @@ def test_a_folder_whose_thumbnails_are_all_cached_generates_nothing_and_reports_
 
     assert (generated, progress) == ([], [])
 
+
+
+def test_progress_counts_only_the_thumbnails_that_had_to_be_generated(qtbot, tmp_path):
+    cached, new, other = folder_of(tmp_path, "cached.jpg", "new.jpg", "other.jpg")
+    cache = ThumbnailCache(":memory:")
+    cache.store(cached, cached.stat().st_size, cached.stat().st_mtime, solid("red"))
+    owner = QObject()
+    thumbnails = FolderThumbnails([cached, new, other], cache, owner, generate=lambda path: (solid("blue"), None))
+    progress = []
+    thumbnails.progress.connect(lambda done, total: progress.append((done, total)))
+
+    thumbnails.start()
+    qtbot.waitUntil(lambda: progress[-1:] == [(2, 2)])
+
+    assert progress[0] == (0, 2)
