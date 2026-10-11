@@ -291,6 +291,21 @@ def test_generating_through_the_cache_does_not_retry_a_file_that_got_no_thumbnai
     assert (again, len(attempts)) == ((None, None, False), 2)
 
 
+def test_the_files_still_to_generate_are_those_with_nothing_stored_or_changed_since(tmp_path):
+    from mediatagger.thumbnail_cache import ThumbnailCache
+
+    stored, failed, changed, new = (tmp_path / name for name in ("stored.jpg", "failed.jpg", "changed.jpg", "new.jpg"))
+    for path in (stored, failed, changed, new):
+        path.write_bytes(b"a photo")
+    cache = ThumbnailCache(":memory:")
+    for path in (stored, changed):
+        cache.store(path, path.stat().st_size, path.stat().st_mtime, solid_thumbnail("red"))
+    cache.store_failure(failed, failed.stat().st_size, failed.stat().st_mtime)
+    changed.write_bytes(b"a photo, edited")
+
+    assert cache.still_to_generate([stored, failed, changed, new]) == [changed, new]
+
+
 def solid_thumbnail(color):
     from PySide6.QtGui import QColor, QImage
 

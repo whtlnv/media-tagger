@@ -62,6 +62,28 @@ class ThumbnailCache:
             return NO_THUMBNAIL
         return QImage.fromData(png)
 
+    def still_to_generate(self, paths):
+        """Runs on a worker thread: the paths with nothing stored for their current size and mtime. Reads only
+        those files' keys, never the pictures, so surveying a folder of thousands is quick."""
+        keys = [self._key(path) for path in paths]
+        stored = {}
+        with self._lock:
+            for start in range(0, len(keys), 500):  # SQLite caps how many values one query may take
+                chunk = keys[start:start + 500]
+                rows = self._db.execute(
+                    f"SELECT path, size, mtime FROM thumbnails WHERE path IN ({','.join('?' * len(chunk))})", chunk
+                )
+                stored.update((key, (size, mtime)) for key, size, mtime in rows)
+        missing = []
+        for path, key in zip(paths, keys):
+            try:
+                stat = path.stat()
+            except OSError:  # gone since its folder was listed: nothing to generate
+                continue
+            if stored.get(key) != (stat.st_size, stat.st_mtime):
+                missing.append(path)
+        return missing
+
     def lookup_duration(self, file_path, size, mtime):
         with self._lock:
             (duration,) = self._db.execute("SELECT duration FROM thumbnails WHERE path = ?", (self._key(file_path),)).fetchone()
