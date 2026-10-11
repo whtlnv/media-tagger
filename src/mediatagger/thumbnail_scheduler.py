@@ -41,7 +41,7 @@ class _Work:
         self.generate = generate
         self.emitter = emitter
         self.pending = []
-        self.unrequested = []
+        self.unrequested = {}  # the rest of the folder, in order; a dict so a request finds and withdraws one at once
         self.taken = set()  # started or done: never generated twice
         self.stopped = False
         self.workers = 0
@@ -63,9 +63,14 @@ class _Work:
             if self.stopped or not (self.pending or self.unrequested):
                 self.workers -= 1
                 return None
-            path = self.pending.pop() if self.pending else self.unrequested.pop(0)
+            path = self.pending.pop() if self.pending else self._take_first_unrequested()
             self.taken.add(path)
             return path
+
+    def _take_first_unrequested(self):
+        path = next(iter(self.unrequested))
+        del self.unrequested[path]
+        return path
 
     def needs_a_worker(self):
         """Called with the lock held, after queueing work: whether another worker should start."""
@@ -101,7 +106,7 @@ class ThumbnailScheduler:
     def enter_folder(self, paths):
         with self._work.lock:
             self._work.pending = []
-            self._work.unrequested = list(paths)
+            self._work.unrequested = dict.fromkeys(paths)
         self._start_workers()
 
     def request(self, path):
@@ -128,6 +133,6 @@ class ThumbnailScheduler:
         self._work.emitter.deleteLater()
 
     def _withdraw(self, path):
-        for queue in (self._work.pending, self._work.unrequested):
-            if path in queue:
-                queue.remove(path)
+        if path in self._work.pending:  # a handful of requests: a list is quick
+            self._work.pending.remove(path)
+        self._work.unrequested.pop(path, None)
