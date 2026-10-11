@@ -36,7 +36,7 @@ def test_a_stored_thumbnail_is_returned_for_a_file_whose_size_and_mtime_are_unch
     cache.store("Photos/beach.jpg", size=1234, mtime=1700000000.5, thumbnail=thumbnail)
     found = cache.lookup("Photos/beach.jpg", size=1234, mtime=1700000000.5)
 
-    assert (found.size(), found.pixelColor(200, 100)) == (QSize(400, 200), QColor("red"))
+    assert (found.size(), solid_colour(found.pixelColor(200, 100))) == (QSize(400, 200), QColor("red"))
 
 
 def test_a_stored_thumbnail_is_not_returned_once_the_files_mtime_changes(tmp_path):
@@ -73,7 +73,7 @@ def test_thumbnails_stored_for_two_different_files_are_each_returned_for_their_o
     beach = cache.lookup("Photos/beach.jpg", size=1234, mtime=1700000000.5)
     forest = cache.lookup("Photos/forest.jpg", size=1234, mtime=1700000000.5)
 
-    assert (beach.pixelColor(200, 100), forest.pixelColor(200, 100)) == (QColor("red"), QColor("blue"))
+    assert (solid_colour(beach.pixelColor(200, 100)), solid_colour(forest.pixelColor(200, 100))) == (QColor("red"), QColor("blue"))
 
 
 def test_a_stored_video_thumbnail_comes_back_with_its_duration(tmp_path):
@@ -119,7 +119,7 @@ def test_a_thumbnail_stored_in_one_session_is_returned_after_the_cache_is_reopen
     reopened = ThumbnailCache(tmp_path / "thumbs.db")
     found = reopened.lookup("Photos/beach.jpg", size=1234, mtime=1700000000.5)
 
-    assert (found.size(), found.pixelColor(200, 100)) == (QSize(400, 200), QColor("red"))
+    assert (found.size(), solid_colour(found.pixelColor(200, 100))) == (QSize(400, 200), QColor("red"))
 
 
 def test_a_thumbnail_stored_while_the_drive_was_mounted_at_one_path_is_returned_when_it_is_mounted_at_another(tmp_path):
@@ -136,7 +136,7 @@ def test_a_thumbnail_stored_while_the_drive_was_mounted_at_one_path_is_returned_
     remounted = ThumbnailCache(tmp_path / "thumbs.db", root=new_mount)
     found = remounted.lookup(new_mount / "Photos" / "beach.jpg", size=1234, mtime=1700000000.5)
 
-    assert found.pixelColor(200, 100) == QColor("red")
+    assert solid_colour(found.pixelColor(200, 100)) == QColor("red")
 
 
 def test_with_no_drive_id_a_stored_thumbnail_is_returned_again_within_the_session(tmp_path):
@@ -149,7 +149,7 @@ def test_with_no_drive_id_a_stored_thumbnail_is_returned_again_within_the_sessio
     cache.store("Photos/beach.jpg", size=1234, mtime=1700000000.5, thumbnail=solid_thumbnail("red"))
     found = cache.lookup("Photos/beach.jpg", size=1234, mtime=1700000000.5)
 
-    assert found.pixelColor(200, 100) == QColor("red")
+    assert solid_colour(found.pixelColor(200, 100)) == QColor("red")
 
 
 def test_a_file_that_was_never_stored_is_a_miss(tmp_path):
@@ -184,7 +184,7 @@ def test_a_drives_cache_opened_by_its_drive_id_returns_its_thumbnails_after_bein
     reopened = open_thumbnail_cache(drive_id="drive-1234", home=tmp_path / "home")
     found = reopened.lookup("Photos/beach.jpg", size=1234, mtime=1700000000.5)
 
-    assert found.pixelColor(200, 100) == QColor("red")
+    assert solid_colour(found.pixelColor(200, 100)) == QColor("red")
 
 
 def test_with_no_drive_id_storing_a_thumbnail_writes_nothing_to_disk(monkeypatch, tmp_path):
@@ -240,7 +240,7 @@ def test_a_thumbnail_stored_from_a_worker_thread_is_returned_on_the_gui_thread(t
     worker.start()
     worker.join()
 
-    assert cache.lookup(photo, size=1234, mtime=1700000000.5).pixelColor(200, 100) == QColor("red")
+    assert solid_colour(cache.lookup(photo, size=1234, mtime=1700000000.5).pixelColor(200, 100)) == QColor("red")
 
 
 def test_generating_through_the_cache_returns_a_stored_thumbnail_without_generating_it_again(tmp_path):
@@ -255,7 +255,7 @@ def test_generating_through_the_cache_returns_a_stored_thumbnail_without_generat
 
     thumbnail, duration, was_generated = generate_through_cache(cache, lambda path: generated.append(path), photo)
 
-    assert (thumbnail.pixelColor(0, 0).name(), duration, was_generated, generated) == ("#ff0000", None, False, [])
+    assert (solid_colour(thumbnail.pixelColor(0, 0)).name(), duration, was_generated, generated) == ("#ff0000", None, False, [])
 
 
 def test_generating_through_the_cache_generates_a_file_it_lacks_and_keeps_it_with_its_duration_for_next_time(tmp_path):
@@ -268,7 +268,7 @@ def test_generating_through_the_cache_generates_a_file_it_lacks_and_keeps_it_wit
     first = generate_through_cache(cache, lambda path: (solid_thumbnail("blue"), 42.0), clip)
     second = generate_through_cache(cache, lambda path: (solid_thumbnail("green"), 7.0), clip)
 
-    assert [(thumbnail.pixelColor(0, 0).name(), duration, generated) for thumbnail, duration, generated in (first, second)] == [
+    assert [(solid_colour(thumbnail.pixelColor(0, 0)).name(), duration, generated) for thumbnail, duration, generated in (first, second)] == [
         ("#0000ff", 42.0, True), ("#0000ff", 42.0, False),
     ]
 
@@ -306,6 +306,27 @@ def test_the_files_still_to_generate_are_those_with_nothing_stored_or_changed_si
     changed.write_bytes(b"a photo, edited")
 
     assert cache.still_to_generate([stored, failed, changed, new]) == [changed, new]
+
+
+def test_a_stored_thumbnail_is_kept_as_a_jpeg(tmp_path):
+    import sqlite3
+
+    from mediatagger.thumbnail_cache import ThumbnailCache
+
+    cache = ThumbnailCache(tmp_path / "thumbs.db")
+    cache.store("Photos/beach.jpg", size=1234, mtime=1700000000.5, thumbnail=solid_thumbnail("red"))
+    connection = sqlite3.connect(tmp_path / "thumbs.db")
+    [(blob,)] = connection.execute("SELECT png FROM thumbnails").fetchall()
+    connection.close()
+
+    assert blob[:3] == b"\xff\xd8\xff"
+
+
+def solid_colour(colour):
+    """The pure colour a stored pixel stands for: thumbnails are kept as JPEG, which shifts colours by a few levels."""
+    from PySide6.QtGui import QColor
+
+    return QColor(*(255 if channel >= 128 else 0 for channel in (colour.red(), colour.green(), colour.blue())))
 
 
 def solid_thumbnail(color):

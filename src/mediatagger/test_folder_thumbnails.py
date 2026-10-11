@@ -2,6 +2,7 @@ from PySide6.QtCore import QObject
 
 from mediatagger.folder_thumbnails import FolderThumbnails
 from mediatagger.test_thumbnail_cache import solid_thumbnail
+from mediatagger.test_thumbnail_cache import solid_colour
 from mediatagger.thumbnail_cache import ThumbnailCache
 
 
@@ -17,7 +18,7 @@ def test_a_requested_files_thumbnail_and_duration_arrive_on_the_gui_thread(qtbot
     owner = QObject()
     thumbnails = FolderThumbnails([clip], ThumbnailCache(":memory:"), owner, generate=lambda path: (solid_thumbnail("blue"), 42.0))
     arrived = []
-    thumbnails.arrived.connect(lambda path, thumbnail, duration: arrived.append((path, thumbnail.pixelColor(0, 0).name(), duration)))
+    thumbnails.arrived.connect(lambda path, thumbnail, duration: arrived.append((path, solid_colour(thumbnail.pixelColor(0, 0)).name(), duration)))
 
     thumbnails.start()
     thumbnails.request(clip)
@@ -50,7 +51,7 @@ def test_a_thumbnail_already_generating_when_its_folder_is_left_still_finishes_a
 
     stat = photo.stat()
     qtbot.waitUntil(lambda: cache.lookup(photo, stat.st_size, stat.st_mtime) is not None)
-    assert cache.lookup(photo, stat.st_size, stat.st_mtime).pixelColor(0, 0).name() == "#ff0000"
+    assert solid_colour(cache.lookup(photo, stat.st_size, stat.st_mtime).pixelColor(0, 0)).name() == "#ff0000"
 
 
 def test_a_folder_whose_thumbnails_are_all_cached_generates_nothing_and_reports_no_progress(qtbot, tmp_path):

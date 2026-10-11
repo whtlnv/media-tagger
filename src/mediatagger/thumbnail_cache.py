@@ -7,6 +7,7 @@ from PySide6.QtCore import QBuffer
 from PySide6.QtGui import QImage
 
 NO_THUMBNAIL = object()
+JPEG_QUALITY = 85
 
 _VALUES_PER_QUERY = 500  # SQLite caps how many values one query may take
 
@@ -16,10 +17,12 @@ def cache_file(drive_id, home):
     return Path(cache_home) / "mediatagger" / drive_id / "thumbs.db"
 
 
-def _png_bytes(image):
+def _jpeg_bytes(image):
+    """JPEG, not PNG: a 400 px photo takes ~15 KB instead of ~120-190 KB, and a thumbnail has no transparency to keep.
+    Rows stored as PNG by earlier versions still read: QImage.fromData recognises either."""
     buffer = QBuffer()
     buffer.open(QBuffer.OpenModeFlag.WriteOnly)
-    image.save(buffer, "PNG")
+    image.save(buffer, "JPG", JPEG_QUALITY)
     return bytes(buffer.data())
 
 
@@ -34,7 +37,7 @@ class ThumbnailCache:
         )
 
     def store(self, file_path, size, mtime, thumbnail, duration=None):
-        self._put(file_path, size, mtime, _png_bytes(thumbnail), duration)
+        self._put(file_path, size, mtime, _jpeg_bytes(thumbnail), duration)
 
     def store_failure(self, file_path, size, mtime):
         self._put(file_path, size, mtime, None)
