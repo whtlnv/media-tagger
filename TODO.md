@@ -74,7 +74,7 @@ Phase 8 notes for every cycle. Architecture: `viewer.py` must not grow, and `gri
 - [x] Opening the grid of a 5,000-file folder with an empty cache stays within the Phase 7 timing bound
 
 ### Painting
-- [ ] A tile with a thumbnail paints the picture above the filename, aspect ratio kept
+- [x] A tile with a thumbnail paints the picture above the filename, aspect ratio kept
 - [ ] A tile without a thumbnail paints its type glyph
 - [ ] A video tile paints its duration next to the ▶ badge
 - [ ] An image tile paints no duration

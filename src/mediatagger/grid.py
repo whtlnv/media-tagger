@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 
-from PySide6.QtCore import QAbstractListModel, QModelIndex, QSize, Qt, QTimer, Signal
+from PySide6.QtCore import QAbstractListModel, QModelIndex, QRect, QSize, Qt, QTimer, Signal
 from PySide6.QtWidgets import QListView, QStyle, QStyledItemDelegate
 
 from mediatagger.folder import is_video_name, subfolder_and_media_names
@@ -89,6 +89,11 @@ class _TileDelegate(QStyledItemDelegate):
         tile = index.data(TILE_ROLE)
         if option.state & QStyle.StateFlag.State_Selected:
             painter.fillRect(option.rect.adjusted(2, 2, -2, -2), option.palette.highlight())  # the grid cursor
+        if tile.thumbnail is not None:
+            picture_area = option.rect.adjusted(0, 0, 0, -painter.fontMetrics().height())  # leaves the filename's line free
+            picture = QRect(option.rect.topLeft(), tile.thumbnail.size().scaled(picture_area.size(), Qt.AspectRatioMode.KeepAspectRatio))
+            picture.moveCenter(picture_area.center())
+            painter.drawImage(picture, tile.thumbnail)
         painter.drawText(option.rect, Qt.AlignmentFlag.AlignCenter, tile.kind.value)
         name = painter.fontMetrics().elidedText(tile.name, Qt.TextElideMode.ElideRight, option.rect.width())
         painter.drawText(option.rect, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignHCenter, name)

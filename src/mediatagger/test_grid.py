@@ -4,7 +4,7 @@ import time
 
 import pytest
 from PySide6.QtCore import QRect, QSize, Qt
-from PySide6.QtGui import QImage, QPainter
+from PySide6.QtGui import QFontMetrics, QGuiApplication, QImage, QPainter
 from PySide6.QtWidgets import QStyle, QStyleOptionViewItem
 
 from mediatagger.folder import folder_entries
@@ -443,3 +443,30 @@ def test_a_thumbnail_arriving_reports_a_change_for_its_own_tiles_row_only(qtbot,
     qtbot.waitUntil(lambda: all(tile.thumbnail is not None for tile in tiles))
 
     assert sorted(changed_rows) == [(0, 0), (1, 1), (2, 2)]
+
+
+def painted_red_area(image):
+    """The bounding box of the red pixels painted on a tile, or None if there are none."""
+    red = [(x, y) for y in range(image.height()) for x in range(image.width())
+           if (lambda c: c.red() > 200 and c.green() < 60 and c.blue() < 60)(image.pixelColor(x, y))]
+    if not red:
+        return None
+    xs, ys = [x for x, _ in red], [y for _, y in red]
+    return QRect(min(xs), min(ys), max(xs) - min(xs) + 1, max(ys) - min(ys) + 1)
+
+
+def test_a_tile_with_a_thumbnail_paints_the_picture_above_the_filename_aspect_ratio_kept(qtbot, tmp_path):
+    touch(tmp_path, "photo.jpg")
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+    thumbnail = QImage(400, 200, QImage.Format.Format_RGB32)
+    thumbnail.fill(Qt.GlobalColor.red)
+    grid.model().index(0, 0).data(TILE_ROLE).thumbnail = thumbnail
+
+    image = painted_tile(grid, 0, selected=False)
+    filename_top = image.height() - QFontMetrics(QGuiApplication.font()).height()  # the filename is painted along the bottom
+    picture = painted_red_area(image)
+
+    assert picture is not None
+    assert picture.width() / picture.height() == pytest.approx(2, rel=0.05)
+    assert picture.bottom() < filename_top
