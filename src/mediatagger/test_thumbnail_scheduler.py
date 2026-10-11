@@ -236,3 +236,20 @@ def test_a_thumbnail_already_generating_when_its_folder_is_left_still_finishes_a
     qtbot.waitUntil(lambda: cache.lookup(busy, size=stat.st_size, mtime=stat.st_mtime) is not None)
 
     assert cache.lookup(busy, size=stat.st_size, mtime=stat.st_mtime).pixelColor(200, 100) == QColor("red")
+
+
+def test_generated_thumbnails_are_delivered_on_the_gui_thread(qtbot, tmp_path):
+    delivered = []
+
+    def generate(path):
+        return f"thumbnail of {path.name}"
+
+    scheduler = ThumbnailScheduler(generate=generate)
+    scheduler.generated.connect(
+        lambda path, thumbnail: delivered.append((path, thumbnail, threading.current_thread()))
+    )
+    path = tmp_path / "photo.jpg"
+    scheduler.request(path)
+    qtbot.waitUntil(lambda: len(delivered) == 1)
+
+    assert delivered == [(path, "thumbnail of photo.jpg", threading.main_thread())]

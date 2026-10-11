@@ -17,6 +17,7 @@ class ThumbnailScheduler:
     def __init__(self, generate, cache=None):
         self._generate = generate
         self._generated = _Generated()
+        self.generated = self._generated.done
         if cache is not None:
             self._generated.done.connect(lambda path, thumbnail: _store(cache, path, thumbnail))
         self._executor = ThreadPoolExecutor(max_workers=3)
