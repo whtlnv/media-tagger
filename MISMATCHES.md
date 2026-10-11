@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 14:32 · `src/mediatagger/test_library.py::test_a_files_effective_tags_exclude_the_tags_of_a_sibling_folder_whose_name_is_a_prefix_of_its_parents`
+- Behavior: A file's effective tags exclude the tags of folders that aren't its ancestors (sibling, and name-prefix such as `trip` for a file in `trip2/`)
+- Predicted: passes — `effective_tags` already looks up each ancestor by exact `rel_path` via `Path.parents`, so no prefix/sibling leak is possible
+- Actual: passes
+- Type: passed unexpectedly (predicted, but no red state exists for this item)
+- Resolution: The exclusion is a property of the prior ancestor-walk implementation, not missing behavior; kept the test as a regression guard against a future SQL prefix-match (`LIKE 'trip%'`) rewrite. No rewrite can make it fail without asserting wrong behavior.
+
 ## 2026-10-11 13:58 · `src/mediatagger/test_library.py::test_entering_tags_for_a_folder_directly_under_the_drives_mount_point_stores_them_while_the_mount_point_stays_untagged`
 - Behavior: Entering tags for a folder directly under the drive's mount point stores them
 - Predicted: no right-reason failure available — expected a pass, since `enter` skips only `path == self.root` and the existing folder test already tags `tmp_path / "trip"`

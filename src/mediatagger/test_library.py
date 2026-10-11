@@ -558,3 +558,17 @@ def test_a_files_effective_tags_include_the_own_tags_of_every_ancestor_folder_up
     library.enter(day, "sunset")
 
     assert sorted(library.effective_tags(photo).inherited) == ["beach", "sunset"]
+
+
+def test_a_files_effective_tags_exclude_the_tags_of_a_sibling_folder_whose_name_is_a_prefix_of_its_parents(tmp_path):
+    library = Library.create(tmp_path)
+    trip = tmp_path / "trip"
+    trip.mkdir()
+    trip2 = tmp_path / "trip2"
+    trip2.mkdir()
+    photo = trip2 / "dunes.jpg"
+    photo.touch()
+
+    library.enter(trip, "beach")
+
+    assert library.effective_tags(photo).inherited == []
