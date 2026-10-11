@@ -1,4 +1,5 @@
 import os
+import threading
 import sqlite3
 from pathlib import Path
 
@@ -23,7 +24,9 @@ def png_bytes(image):
 class ThumbnailCache:
     def __init__(self, path, root=None):
         self._root = root
-        self._db = sqlite3.connect(path)
+        # Workers store what they generate while the GUI thread may look up: one connection, one at a time.
+        self._db = sqlite3.connect(path, check_same_thread=False)
+        self._lock = threading.Lock()
         self._db.execute(
             "CREATE TABLE IF NOT EXISTS thumbnails (path TEXT PRIMARY KEY, size INTEGER, mtime REAL, png BLOB, duration REAL)"
         )
@@ -35,20 +38,21 @@ class ThumbnailCache:
         self._put(file_path, size, mtime, None)
 
     def _put(self, file_path, size, mtime, png, duration=None):
-        with self._db:
+        with self._lock, self._db:
             self._db.execute(
                 "INSERT OR REPLACE INTO thumbnails VALUES (?, ?, ?, ?, ?)", (self._key(file_path), size, mtime, png, duration)
             )
 
     def _key(self, path):
         if self._root is None:
-            return path
+            return str(path)
         return str(path.relative_to(self._root))
 
     def lookup(self, file_path, size, mtime):
-        row = self._db.execute(
-            "SELECT size, mtime, png FROM thumbnails WHERE path = ?", (self._key(file_path),)
-        ).fetchone()
+        with self._lock:
+            row = self._db.execute(
+                "SELECT size, mtime, png FROM thumbnails WHERE path = ?", (self._key(file_path),)
+            ).fetchone()
         if row is None:
             return None
         stored_size, stored_mtime, png = row
@@ -59,7 +63,8 @@ class ThumbnailCache:
         return QImage.fromData(png)
 
     def lookup_duration(self, file_path, size, mtime):
-        (duration,) = self._db.execute("SELECT duration FROM thumbnails WHERE path = ?", (self._key(file_path),)).fetchone()
+        with self._lock:
+            (duration,) = self._db.execute("SELECT duration FROM thumbnails WHERE path = ?", (self._key(file_path),)).fetchone()
         return duration
 
 

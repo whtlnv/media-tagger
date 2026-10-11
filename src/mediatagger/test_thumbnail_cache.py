@@ -227,6 +227,20 @@ def test_a_drives_cache_is_not_written_when_its_location_falls_on_the_drive_bein
     assert list(viewed_drive.rglob("*")) == []
 
 
+def test_a_thumbnail_stored_from_a_worker_thread_is_returned_on_the_gui_thread(tmp_path):
+    import threading
+
+    from mediatagger.thumbnail_cache import ThumbnailCache
+
+    cache = ThumbnailCache(tmp_path / "thumbs.db", root=tmp_path)
+    photo = tmp_path / "Photos" / "beach.jpg"
+    worker = threading.Thread(target=lambda: cache.store(photo, size=1234, mtime=1700000000.5, thumbnail=solid_thumbnail("red")))
+    worker.start()
+    worker.join()
+
+    assert cache.lookup(photo, size=1234, mtime=1700000000.5) is not None
+
+
 def solid_thumbnail(color):
     from PySide6.QtGui import QColor, QImage
 
