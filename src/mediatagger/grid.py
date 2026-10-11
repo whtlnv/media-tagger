@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QListView, QStyle, QStyledItemDelegate
 
 from mediatagger.folder import is_video_name, subfolder_and_media_names
 from mediatagger.thumbnail_scheduler import ThumbnailScheduler
-from mediatagger.thumbnails import image_thumbnail, video_duration, video_thumbnail
+from mediatagger.thumbnails import thumbnail_and_duration
 
 FOLDER_GLYPH = "📁"
 
@@ -55,21 +55,6 @@ def _tiles(folder, tag_counts):
     subfolders, media = subfolder_and_media_names(folder)
     kinds = [_Kind.FOLDER] * len(subfolders) + [_Kind.VIDEO if is_video_name(name) else _Kind.IMAGE for name in media]
     return [_Tile(folder / name, name, kind, counts_by_name.get(name, 0)) for name, kind in zip(subfolders + media, kinds)]
-
-
-def _thumbnail_and_duration(path):
-    """Runs on a worker thread: a video's duration comes with its thumbnail; an image has none."""
-    if is_video_name(path.name):
-        return video_thumbnail(path), video_duration(path)
-    if path.is_dir():
-        return _folder_thumbnail(path), None
-    return image_thumbnail(path), None
-
-
-def _folder_thumbnail(folder):
-    """A folder shows its first image directly inside; with none there, it has no thumbnail."""
-    first_image = next((name for name in subfolder_and_media_names(folder)[1] if not is_video_name(name)), None)
-    return image_thumbnail(folder / first_image) if first_image else None
 
 
 def _receive(tile, generated):
@@ -136,7 +121,7 @@ class Grid(QListView):
 
     def _generate_thumbnails(self, tiles):
         by_path = {tile.path: tile for tile in tiles}
-        self._thumbnails = ThumbnailScheduler(_thumbnail_and_duration, parent=self)
+        self._thumbnails = ThumbnailScheduler(thumbnail_and_duration, parent=self)
         self._thumbnails.generated.connect(lambda path, generated: _receive(by_path[path], generated))
         paths = list(by_path)
         # Started once the grid is up: workers decoding from the first moment would slow opening a big folder.

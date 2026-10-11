@@ -4,7 +4,7 @@ import subprocess
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QImage, QImageReader
 
-from mediatagger.folder import is_video, media_files
+from mediatagger.folder import is_video_name, subfolder_and_media_names
 
 
 def image_thumbnail(path):
@@ -52,10 +52,18 @@ def video_thumbnail(path, timeout=None):
 
 
 def folder_thumbnail(folder):
-    images = [path for path in media_files(folder) if not is_video(path)]
-    if not images:
-        return None
-    return image_thumbnail(images[0])
+    """A folder shows its first image directly inside; with none there, it has no thumbnail."""
+    first_image = next((name for name in subfolder_and_media_names(folder)[1] if not is_video_name(name)), None)
+    return image_thumbnail(folder / first_image) if first_image else None
+
+
+def thumbnail_and_duration(path):
+    """What a grid tile shows for a file or folder; runs on a worker thread. Only a video has a duration."""
+    if is_video_name(path.name):
+        return video_thumbnail(path), video_duration(path)
+    if path.is_dir():
+        return folder_thumbnail(path), None
+    return image_thumbnail(path), None
 
 
 def format_duration(seconds):
