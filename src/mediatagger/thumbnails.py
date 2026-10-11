@@ -35,7 +35,10 @@ def video_duration(path, timeout=None):
     )
     if result is None or result.returncode != 0:
         return None
-    return float(result.stdout)
+    try:
+        return float(result.stdout)
+    except ValueError:  # "N/A": a stream or a file whose container records no duration
+        return None
 
 
 def video_thumbnail(path, timeout=None):
