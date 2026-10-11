@@ -120,13 +120,18 @@ class Grid(QListView):
             self.setCurrentIndex(self.model().index(names.index(at.name), 0))
 
     def _generate_thumbnails(self, tiles):
-        by_path = {tile.path: tile for tile in tiles}
+        rows = {tile.path: row for row, tile in enumerate(tiles)}
         self._thumbnails = ThumbnailScheduler(thumbnail_and_duration, parent=self)
-        self._thumbnails.generated.connect(lambda path, generated: _receive(by_path[path], generated))
-        paths = list(by_path)
+        self._thumbnails.generated.connect(lambda path, generated: self._receive(tiles, rows[path], generated))
+        paths = list(rows)
         self.verticalScrollBar().valueChanged.connect(lambda: self._request_visible(tiles))
         # Started once the grid is up: workers decoding from the first moment would slow opening a big folder.
         QTimer.singleShot(0, self, lambda: self._thumbnails.enter_folder(self._current_first(paths)))
+
+    def _receive(self, tiles, row, generated):
+        _receive(tiles[row], generated)
+        index = self.model().index(row, 0)
+        self.model().dataChanged.emit(index, index)
 
     def _request_visible(self, tiles):
         for row, tile in enumerate(tiles):

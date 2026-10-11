@@ -397,3 +397,20 @@ def test_scrolling_a_large_folders_grid_makes_the_newly_visible_tiles_thumbnails
 
     with lock:
         assert still_hidden not in started[: started.index(newly_visible)]
+
+
+def test_a_thumbnail_arriving_reports_a_change_for_its_own_tiles_row_only(qtbot, tmp_path):
+    for name in ("a.jpg", "b.jpg", "c.jpg"):
+        image = QImage(800, 400, QImage.Format.Format_RGB32)
+        image.fill(Qt.GlobalColor.red)
+        image.save(str(tmp_path / name))
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+    changed_rows = []
+    grid.model().dataChanged.connect(lambda top_left, bottom_right: changed_rows.append((top_left.row(), bottom_right.row())))
+    grid.show()
+    tiles = [grid.model().index(row, 0).data(TILE_ROLE) for row in range(3)]
+
+    qtbot.waitUntil(lambda: all(tile.thumbnail is not None for tile in tiles))
+
+    assert sorted(changed_rows) == [(0, 0), (1, 1), (2, 2)]
