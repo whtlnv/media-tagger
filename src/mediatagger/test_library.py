@@ -543,3 +543,18 @@ def test_a_files_effective_tags_include_the_own_tags_of_its_parent_folder_report
     library.enter(folder, "beach")
 
     assert library.effective_tags(photo).inherited == ["beach"]
+
+
+def test_a_files_effective_tags_include_the_own_tags_of_every_ancestor_folder_up_to_the_drive_root_reported_as_inherited(tmp_path):
+    library = Library.create(tmp_path)
+    trip = tmp_path / "trip"
+    day = trip / "day1"
+    morning = day / "morning"
+    morning.mkdir(parents=True)
+    photo = morning / "dunes.jpg"
+    photo.touch()
+
+    library.enter(trip, "beach")
+    library.enter(day, "sunset")
+
+    assert sorted(library.effective_tags(photo).inherited) == ["beach", "sunset"]

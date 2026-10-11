@@ -154,4 +154,5 @@ class Library:
         return tags
 
     def effective_tags(self, path):
-        return EffectiveTags(own=self.tags(path), inherited=self.tags(path.parent))
+        ancestors = [self.root / folder for folder in path.relative_to(self.root).parents]
+        return EffectiveTags(own=self.tags(path), inherited=[tag for folder in ancestors for tag in self.tags(folder)])
