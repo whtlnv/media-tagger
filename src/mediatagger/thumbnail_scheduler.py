@@ -11,6 +11,7 @@ WORKERS = 3
 class _Generated(QObject):
     done = Signal(object, object)
     prefetched = Signal(object, object)
+    surveyed = Signal(object)
 
 
 def _store(cache, path, thumbnail):
@@ -85,6 +86,12 @@ class _Work:
         self.workers += 1
         return True
 
+    def survey(self, function):
+        result = function()
+        with self.lock:
+            if not self.stopped:
+                self.emitter.surveyed.emit(result)
+
     def stop(self):
         with self.lock:
             self.stopped = True
@@ -105,12 +112,14 @@ class ThumbnailScheduler:
         emitter = _Generated(parent or QCoreApplication.instance())
         self.generated = emitter.done
         self.prefetched = emitter.prefetched
+        self.surveyed = emitter.surveyed
         if cache is not None:
             emitter.done.connect(lambda path, thumbnail: _store(cache, path, thumbnail))
         self._work = _Work(generate, prefetch, emitter)
         work = self._work
         emitter.destroyed.connect(lambda: work.stop())  # its parent went first: nothing may be posted through it any more
         self._executor = ThreadPoolExecutor(max_workers=WORKERS)
+        self._surveyor = ThreadPoolExecutor(max_workers=1)  # beside the workers, which may all be busy for a while
 
     def enter_folder(self, paths):
         with self._work.lock:
@@ -135,10 +144,15 @@ class ThumbnailScheduler:
                     return
             self._executor.submit(self._work.run)
 
+    def survey(self, function):
+        """Runs `function` on a thread of its own and sends its result back through `surveyed`."""
+        self._surveyor.submit(self._work.survey, function)
+
     def shut_down(self):
         """Drops pending work, lets running work finish without delivering, and frees the Qt object on the GUI thread."""
         self._work.stop()
         self._executor.shutdown(wait=False, cancel_futures=True)
+        self._surveyor.shutdown(wait=False, cancel_futures=True)
         self._work.emitter.deleteLater()
 
     def _withdraw(self, path):

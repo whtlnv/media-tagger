@@ -382,3 +382,20 @@ def test_the_rest_of_a_folder_goes_through_the_prefetch_and_requested_thumbnails
         ["2.jpg"],
         ["0.jpg cached", "1.jpg cached", "3.jpg cached"],
     )
+
+
+def test_a_survey_runs_off_the_gui_thread_beside_busy_workers_and_its_result_arrives_on_the_gui_thread(qtbot, tmp_path):
+    release = threading.Event()
+    scheduler = ThumbnailScheduler(generate=lambda path: release.wait(timeout=10))
+    surveyed = []
+    scheduler.surveyed.connect(lambda result: surveyed.append((result, threading.current_thread())))
+    try:
+        for index in range(3):
+            scheduler.request(tmp_path / f"{index}.jpg")  # every worker busy
+        scheduler.survey(lambda: threading.current_thread())
+        qtbot.waitUntil(lambda: len(surveyed) == 1)
+    finally:
+        release.set()
+
+    [(surveying_thread, receiving_thread)] = surveyed
+    assert (surveying_thread is not threading.main_thread(), receiving_thread) == (True, threading.main_thread())
