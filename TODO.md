@@ -26,7 +26,7 @@ Phase 9a notes for every cycle. These are fixes from the first Pi run plus video
 - [x] With no input for the hide delay, the progress bar hides
 - [x] A key pressed while the progress bar is hidden shows it again
   - hint (orchestrator): the bar's 250 ms ticker stops itself once the bar is hidden (see `ProgressBar._tick`), so showing it again must restart the ticker, or the elapsed time freezes. Don't override `hideEvent`/`showEvent` on the bar — Qt calls them while destroying the widget, after Python's GC may have cleared its attributes (commit f189ad3).
-- [ ] A key pressed while the progress bar is showing restarts the hide delay, so the bar stays visible for the full delay after the latest key
+- [x] A key pressed while the progress bar is showing restarts the hide delay, so the bar stays visible for the full delay after the latest key
 - [ ] The progress bar sits above the status bar, not overlapping it
 - [ ] While the tag prompt is open over a video, the progress bar does not overlap the prompt
 - [ ] The progress bar's text and track have explicit light colours on a translucent dark background, so it reads over black and bright frames

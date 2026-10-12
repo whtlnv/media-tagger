@@ -162,3 +162,19 @@ def test_a_key_pressed_while_the_progress_bar_is_hidden_on_a_playing_video_shows
     qtbot.keyClick(viewer, Qt.Key.Key_A)
 
     assert bar.isVisible()
+
+
+def test_waking_the_progress_bar_while_it_shows_keeps_it_visible_for_the_full_hide_delay_after_the_latest_wake(qtbot):
+    parent = QWidget()
+    qtbot.addWidget(parent)
+    bar = ProgressBar(parent, hide_delay=1500)
+    parent.show()
+    qtbot.waitExposed(parent)
+    bar.start(SimpleNamespace(duration=65, time_pos=0))
+    qtbot.wait(1000)
+
+    bar.wake()  # what the viewer does on every key
+    qtbot.wait(1000)  # past the first delay, within the second
+
+    assert bar.isVisible()
+    qtbot.waitUntil(lambda: not bar.isVisible(), timeout=5000)

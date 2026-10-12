@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-12 02:30 · `src/mediatagger/test_video_controls.py::test_waking_the_progress_bar_while_it_shows_keeps_it_visible_for_the_full_hide_delay_after_the_latest_wake`
+- Behavior: A key pressed while the progress bar is showing restarts the hide delay, so the bar stays visible for the full delay after the latest key
+- Predicted: pass — `ProgressBar.wake()` already calls `_hide_timer.start()`, which restarts a running QTimer, and `Viewer.keyPressEvent` calls `wake()` on every key (commit c3b2816)
+- Actual: pass
+- Type: passed unexpectedly (relative to the TODO item; the pass itself was predicted)
+- Resolution: The previous cycle delivered this behavior as a side effect. The test is not vacuous (it fails if `wake()` stops restarting a running timer), so it stays as a pin; no production change is needed for this item.
+
 ## 2026-10-12 01:47 · `src/mediatagger/test_video_controls.py::test_a_video_shorter_than_an_hour_shows_its_times_as_minutes_and_seconds`
 - Behavior: A video shorter than an hour shows times as `m:ss` (`1:23 / 4:56`)
 - Predicted: pass. `_clock` in `video_controls.py` already formats `m:ss` (since the `0:00 / <total>` cycle), and existing tests pin `0:00 / 1:05` and `0:01 / 1:05`
