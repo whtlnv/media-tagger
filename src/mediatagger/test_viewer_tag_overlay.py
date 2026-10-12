@@ -18,6 +18,11 @@ def assert_in_top_right_corner(viewer, label):
     assert frame.right() == viewer.rect().right() - CORNER_MARGIN
 
 
+def assert_shown_on_top(viewer, text):
+    [label] = [label for label in shown_labels(viewer) if label.text() == text]
+    assert viewer.childAt(label.geometry().center()) is label
+
+
 def test_after_entering_beach_family_in_the_tag_prompt_a_tag_overlay_shows_beach_family_while_the_prompt_is_closed(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
@@ -145,8 +150,7 @@ def test_moving_with_space_from_an_image_to_a_video_tagged_beach_family_shows_th
     qtbot.keyClick(viewer, Qt.Key.Key_Space)
     qtbot.waitUntil(lambda: shows_video_surface(viewer))
 
-    [tag_overlay] = [label for label in shown_labels(viewer) if label.text() == "beach family"]
-    assert viewer.childAt(tag_overlay.geometry().center()) is tag_overlay
+    assert_shown_on_top(viewer, "beach family")
 
 
 def test_a_file_tagged_beach_family_in_a_viewer_shows_beach_family_in_the_tag_overlay_of_a_viewer_on_a_copy_of_the_drive_at_another_root(qtbot, tmp_path):
@@ -234,5 +238,4 @@ def test_moving_with_space_from_an_image_to_a_video_in_a_folder_tagged_aunt_show
     qtbot.keyClick(viewer, Qt.Key.Key_Space)
     qtbot.waitUntil(lambda: shows_video_surface(viewer))
 
-    [tag_overlay] = [label for label in shown_labels(viewer) if label.text() == "aunt"]
-    assert viewer.childAt(tag_overlay.geometry().center()) is tag_overlay
+    assert_shown_on_top(viewer, "aunt")
