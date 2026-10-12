@@ -13,6 +13,7 @@ from mediatagger.status_bar import CORNER_MARGIN, StatusBar, TagOverlay, overlay
 from mediatagger.slideshow import Slideshow
 from mediatagger.tag_prompt import TagPrompt
 from mediatagger.video import VideoPlayer, new_engine
+from mediatagger.video_controls import ProgressBar
 
 _PLAYER_OPTIONS = {"vo": "libmpv"}
 _VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up", Qt.Key.Key_Down: "Down", Qt.Key.Key_Return: "Enter"}
@@ -72,6 +73,8 @@ class Viewer(QWidget):
         self.placeholder = overlay_label(UNSUPPORTED_TEXT, self)
         self.read_only_banner = overlay_label(READ_ONLY_BANNER_TEXT, self)
         self.read_only_banner.hide()
+        self.progress_bar = ProgressBar(self)
+        self.progress_bar.hide()
         self.setWindowState(Qt.WindowState.WindowFullScreen)
         self.setAcceptDrops(True)
         if path is None:
@@ -230,6 +233,7 @@ class Viewer(QWidget):
         self._centre(self.placeholder)
         self.placeholder.show()
         self.info.hide()
+        self.progress_bar.hide()
         if self.surface:
             self.surface.hide()
 
@@ -254,6 +258,9 @@ class Viewer(QWidget):
         if not self.video_player.show(clip):
             self.surface.hide()
             self.placeholder.show()
+            return
+        self.progress_bar.show_length(self.video_player.engine.duration)
+        self.progress_bar.show()
 
     def _show_current(self):
         video = is_video(self.slideshow.current)

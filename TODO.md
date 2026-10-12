@@ -15,7 +15,7 @@ Phase 9a notes for every cycle. These are fixes from the first Pi run plus video
 - [x] Pressing `Enter` on an empty subfolder shows its empty grid, raises nothing, and leaves no tags in the status bar (today it raises in `Window._show_current_tags` on the invalid cursor — a regression from this phase's status-bar refresh)
 - [x] With a writable library open, the status bar shows no `Library: <drive>` label
 - [x] With no library open, the status bar still shows `No library open`
-- [ ] When a video starts playing, a progress bar along the bottom of the video shows `0:00 / <total>`, and the bar is shown only while a video is the shown item: dropping a folder with no media onto the window while the video plays leaves no progress bar visible
+- [x] When a video starts playing, a progress bar along the bottom of the video shows `0:00 / <total>`, and the bar is shown only while a video is the shown item: dropping a folder with no media onto the window while the video plays leaves no progress bar visible
   - hint (orchestrator): this is one behaviour, not two — the bar's visibility follows the video surface (shown with it, hidden wherever the surface is hidden), so the existing drop-a-folder tests in `test_viewer_open.py` keep passing. Bar and auto-hide go in `video_controls.py`; `viewer.py` must not grow.
 - [ ] When a video can't be played and the unsupported placeholder shows instead, no progress bar is shown
 - [ ] When an image is shown, no progress bar is shown
