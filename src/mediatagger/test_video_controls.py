@@ -311,3 +311,12 @@ def test_the_filled_track_is_a_thin_strip_along_the_bottom_of_the_progress_bar_s
 
     assert image.pixelColor(5, 2).lightness() < 128  # the filled half's top: still the dark backdrop
     assert image.pixelColor(5, 22).lightness() > 200  # the filled half's bottom edge: the light track
+
+
+def test_the_progress_bar_of_a_playing_video_is_stacked_above_the_video_surface(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
+    viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
+
+    on_top = viewer.childAt(bar.geometry().center())
+
+    assert on_top is bar or bar.isAncestorOf(on_top)
