@@ -233,6 +233,9 @@ class Viewer(QWidget):
         self._centre(self.placeholder)
         self.placeholder.show()
         self.info.hide()
+        self._hide_video()
+
+    def _hide_video(self):
         self.progress_bar.hide()
         if self.surface:
             self.surface.hide()
@@ -256,9 +259,8 @@ class Viewer(QWidget):
 
     def _play(self, clip):
         if not self.video_player.show(clip):
-            self.surface.hide()
+            self._hide_video()
             self.placeholder.show()
-            self.progress_bar.hide()
             return
         self.progress_bar.show_length(self.video_player.engine.duration)
         self.progress_bar.show()
@@ -275,5 +277,4 @@ class Viewer(QWidget):
             self.surface.when_ready(lambda clip=self.slideshow.current: self._play(clip))
         elif self.surface:
             self.surface.cancel_pending()
-            self.surface.hide()
-            self.progress_bar.hide()
+            self._hide_video()
