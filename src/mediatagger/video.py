@@ -46,8 +46,8 @@ class VideoPlayer:
         if key == "Down":
             self._seek(-10)
             return
-        if key == "5":
-            self._seek(50, reference="absolute-percent")
+        if key.isdigit():  # 0-9 jump to 0 %-90 % of the video
+            self._seek(int(key) * 10, reference="absolute-percent")
             return
         if key == "m":
             self.engine.mute = not self.engine.mute

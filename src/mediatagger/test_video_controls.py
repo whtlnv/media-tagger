@@ -210,6 +210,19 @@ def test_five_on_a_playing_video_whose_progress_bar_is_hidden_seeks_to_half_its_
     assert bar.text() == "0:32 / 1:04"
 
 
+def test_zero_on_a_playing_video_seeks_back_to_the_start(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4", duration=64)
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    wait_until_loaded(viewer.video_player.engine, clip)
+    bar = viewer.findChild(ProgressBar)
+    qtbot.keyClick(viewer, Qt.Key.Key_5)
+    assert bar.text() == "0:32 / 1:04"
+
+    qtbot.keyClick(viewer, Qt.Key.Key_0)
+
+    assert bar.text() == "0:00 / 1:04"
+
+
 def test_waking_the_progress_bar_while_it_shows_keeps_it_visible_for_the_full_hide_delay_after_the_latest_wake(qtbot):
     parent = QWidget()
     qtbot.addWidget(parent)

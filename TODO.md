@@ -33,7 +33,7 @@ Phase 9a notes for every cycle. These are fixes from the first Pi run plus video
 - [x] The progress bar's text and track have explicit light colours on a translucent dark background, so it reads over black and bright frames
 - [x] `↑` / `↓` on a playing video show the progress bar
 - [x] `5` on a playing video seeks to 50 % of its duration and shows the progress bar
-- [ ] `0` on a playing video seeks to the start
+- [x] `0` on a playing video seeks to the start
 - [ ] When mpv refuses a jump, a digit key on a playing video raises nothing and the video keeps playing
 - [ ] A digit key in the viewer while an image is shown does nothing (the image stays, no seek)
 - [ ] Typing a digit into the tag prompt over a playing video enters the digit and does not seek
