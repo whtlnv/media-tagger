@@ -1,5 +1,6 @@
 from types import SimpleNamespace
 
+import shiboken6
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget
 
@@ -73,6 +74,8 @@ def test_while_mpv_reports_no_position_or_length_between_clips_the_progress_bar_
     parent = QWidget()
     qtbot.addWidget(parent)
     bar = ProgressBar(parent)
+    parent.show()
+    qtbot.waitExposed(parent)
     engine = SimpleNamespace(duration=65, time_pos=0)
     bar.start(engine)
 
@@ -104,7 +107,20 @@ def test_a_video_shorter_than_an_hour_shows_its_times_as_minutes_and_seconds(qtb
     parent = QWidget()
     qtbot.addWidget(parent)
     bar = ProgressBar(parent)
+    parent.show()
+    qtbot.waitExposed(parent)
 
     bar.start(SimpleNamespace(duration=4 * 60 + 56, time_pos=60 + 23))
 
     qtbot.waitUntil(lambda: bar.text() == "1:23 / 4:56")
+
+
+def test_destroying_a_shown_progress_bar_whose_attributes_the_garbage_collector_already_cleared_raises_nothing(qtbot):
+    parent = QWidget()
+    bar = ProgressBar(parent)
+    parent.show()
+    qtbot.waitExposed(parent)
+    bar.show()
+
+    bar.__dict__.clear()  # what Python's GC does to the wrapper when it breaks a reference cycle
+    shiboken6.delete(parent)  # Qt hides the still-shown bar while destroying it
