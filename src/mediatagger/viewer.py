@@ -175,10 +175,11 @@ class Viewer(QWidget):
         self.tag_overlay.pin(self._pin_top_right)
 
     def _toggle_fullscreen(self):
-        if self.isFullScreen():
-            self.showNormal()
+        window = self.window()  # the app's window when inside it, else this viewer
+        if window.isFullScreen():
+            window.showNormal()
         else:
-            self.showFullScreen()
+            window.showFullScreen()
 
     def _pick_folder(self):
         picker = QFileDialog(self)

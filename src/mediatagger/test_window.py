@@ -247,6 +247,20 @@ def test_in_the_windows_grid_f_twice_leaves_fullscreen_again(qtbot, tmp_path):
     assert window.isFullScreen() is was_fullscreen
 
 
+
+def test_in_the_windows_viewer_f_makes_the_window_fullscreen_and_f_again_leaves_fullscreen(qtbot, tmp_path):
+    make_image(tmp_path / "a.jpg", "red")
+    window = Window(tmp_path, player_options=SILENT)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    viewer = window.findChild(QStackedWidget).currentWidget()
+
+    qtbot.keyClick(viewer, Qt.Key.Key_F)
+    entered = window.isFullScreen()
+    qtbot.keyClick(viewer, Qt.Key.Key_F)
+
+    assert (entered, window.isFullScreen()) == (True, False)
+
 def test_dropping_a_folder_onto_the_windows_grid_starts_that_folders_slideshow(qtbot, tmp_path):
     viewed, dropped = make_folders(tmp_path, "viewed", "dropped")
     make_image(viewed / "a.jpg", "red")
