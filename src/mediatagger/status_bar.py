@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QHBoxLayout, QLabel, QWidget
 
 # Explicit colours: the desktop theme's default text colour may be black, which vanishes on a black background.
 _LABEL_STYLE = "color: white; background-color: rgba(0, 0, 0, 160); padding: 8px 12px; border-radius: 6px; font-size: 18px;"
+_DIMMED_LABEL_STYLE = _LABEL_STYLE.replace("color: white", "color: grey")
 CORNER_MARGIN = 16
 NO_LIBRARY_TEXT = "No library open"
 READ_ONLY_STATUS_TEXT = "Read-only — tags can't be saved"
@@ -37,7 +38,7 @@ class StatusBar(QWidget):
         self.tags_status = overlay_label("", self)
         self.tags_status.hide()
         self.inherited_tags_status = overlay_label("", self)
-        self.inherited_tags_status.setStyleSheet(_LABEL_STYLE.replace("color: white", "color: grey"))
+        self.inherited_tags_status.setStyleSheet(_DIMMED_LABEL_STYLE)
         self.inherited_tags_status.hide()
         self._background_status_clearing = QTimer(self)
         self._background_status_clearing.setSingleShot(True)
