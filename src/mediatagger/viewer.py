@@ -182,7 +182,8 @@ class Viewer(QWidget):
             self._show_tag_overlay(self.session.library, self.slideshow.current)
 
     def _show_tag_overlay(self, library, path):
-        tags = " ".join(library.tags(path))
+        effective = library.effective_tags(path)
+        tags = " ".join([*effective.own, *sorted(effective.inherited)])
         self.tag_overlay.setText(tags)
         self.tag_overlay.adjustSize()
         self._pin_top_right(self.tag_overlay)

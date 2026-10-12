@@ -158,3 +158,18 @@ def test_a_file_tagged_beach_family_in_a_viewer_shows_beach_family_in_the_tag_ov
     viewer = shown_viewer_on_drive(qtbot, other_drive / "Photos", other_drive, lambda question: False)
 
     assert shown_texts(viewer) == ["beach family"]
+
+
+def test_the_tag_overlay_shows_the_files_own_tags_alphabetically_then_its_inherited_tags_alphabetically(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    trip = folder / "Trip"
+    trip.mkdir()
+    make_image(trip / "IMG_1.png", "red")
+    library = Library.open(drive)
+    library.enter(folder, "aunt")
+    library.enter(trip, "zoo")
+    library.enter(trip / "IMG_1.png", "sunset beach")
+
+    viewer = shown_viewer_on_drive(qtbot, trip, drive, lambda question: False)
+
+    assert " ".join(shown_texts(viewer)) == "beach sunset aunt zoo"
