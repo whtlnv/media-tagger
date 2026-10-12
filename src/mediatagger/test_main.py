@@ -439,3 +439,51 @@ def test_the_grid_of_the_mediatagger_command_launched_on_a_folder_shows_a_genera
     result = run_python_offscreen(PRESS_ESC_THEN_REPORT_THE_FIRST_TILES_THUMBNAIL_ONCE_IT_ARRIVES_SCRIPT, str(tmp_path))
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == f"thumbnail=400x200 {QColor('red').name()}"
+
+TAG_A_FOLDER_IN_THE_GRID_THEN_OPEN_A_FILE_INSIDE_IT_AND_REPORT_THE_TAG_OVERLAY_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT + (
+    "from PySide6.QtCore import Qt, QTimer\n"
+    "from PySide6.QtTest import QTest\n"
+    "from PySide6.QtWidgets import QApplication, QStackedWidget\n"
+    "from mediatagger.test_viewer import shown_labels\n"
+    "from mediatagger.test_viewer_library import frame_in, visible_tag_prompts\n"
+    "app = QApplication([])\n"
+    "tags = sys.argv[3]\n"
+    "def shown():\n"
+    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    return window, window.findChild(QStackedWidget).currentWidget()\n"
+    "def tag_the_folder_tile_then_open_a_file_inside_it():\n"
+    "    window, grid = shown()\n"
+    "    QTest.keyClick(grid, Qt.Key.Key_Escape)\n"
+    "    window, grid = shown()\n"
+    "    QTest.keyClick(grid, Qt.Key.Key_Left)\n"
+    "    QTest.keyClick(grid, Qt.Key.Key_T)\n"
+    "    (prompt,) = visible_tag_prompts(window)\n"
+    "    QTest.keyClicks(prompt, tags)\n"
+    "    QTest.keyClick(prompt, Qt.Key.Key_Return)\n"
+    "    QTest.keyClick(grid, Qt.Key.Key_Return)\n"
+    "    window, grid = shown()\n"
+    "    QTest.keyClick(grid, Qt.Key.Key_Return)\n"
+    "    QTimer.singleShot(1000, report)\n"
+    "def report():\n"
+    "    window, viewer = shown()\n"
+    "    image = viewer.grab().toImage()\n"
+    "    for label in shown_labels(viewer):\n"
+    "        frame = frame_in(viewer, label)\n"
+    "        brightest = max(image.pixelColor(x, y).lightness() for x in range(frame.left(), frame.right() + 1) for y in range(frame.top(), frame.bottom() + 1))\n"
+    "        print(f'{label.text()} brightest={brightest}', flush=True)\n"
+    "    QApplication.closeAllWindows()\n"
+    "    QApplication.quit()\n"
+    "QTimer.singleShot(1000, tag_the_folder_tile_then_open_a_file_inside_it)\n"
+) + RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT
+
+
+def test_in_the_mediatagger_command_entering_beach_for_a_folder_tile_in_the_grid_then_enter_on_a_file_inside_it_shows_beach_dimmed_in_the_viewers_tag_overlay(tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    (folder / "trip").mkdir()
+    make_image(folder / "trip" / "IMG_1.png", "red")
+    result = run_python_offscreen(TAG_A_FOLDER_IN_THE_GRID_THEN_OPEN_A_FILE_INSIDE_IT_AND_REPORT_THE_TAG_OVERLAY_SCRIPT, str(drive), str(folder), "beach")
+    assert result.returncode == 0, result.stderr
+    [shown] = result.stdout.splitlines()
+    text, brightest = shown.split(" brightest=")
+    assert text == "beach"
+    assert int(brightest) < 255 - 60  # an own tag is drawn white; an inherited one well below it

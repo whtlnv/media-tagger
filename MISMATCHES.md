@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 20:05 · `src/mediatagger/test_main.py::test_in_the_mediatagger_command_entering_beach_for_a_folder_tile_in_the_grid_then_enter_on_a_file_inside_it_shows_beach_dimmed_in_the_viewers_tag_overlay`
+- Behavior: In the shipped `mediatagger` window, pressing `t` on a folder tile, entering `beach`, then `Enter` on a file inside that folder shows `beach` dimmed in the viewer's tag overlay
+- Predicted: passes (stated up front) — `main()` builds the same `Window` whose viewer re-reads effective tags on open (previous cycle), and the inherited label is already styled grey
+- Actual: passed on first run (`beach brightest≈128`)
+- Type: passed unexpectedly
+- Resolution: Not vacuous — making `_DIMMED_LABEL_STYLE` white fails it (`assert 255 < 195`) and entering an empty tag fails it (no overlay line); the behavior was already delivered in-process, so the test is kept as an end-to-end pin over the shipped entry point and needs no green step.
+
 ## 2026-10-11 19:50 · `src/mediatagger/test_window.py::test_after_entering_beach_in_the_windows_grid_tag_prompt_on_a_folder_tile_enter_on_a_file_inside_it_shows_beach_in_the_viewers_tag_overlay`
 - Behavior: Tagging a folder in the grid and then opening a file inside it shows the new inherited tags in the viewer's overlay at once
 - Predicted: AssertionError — overlay shows `[]` instead of `["beach"]` (flagged up front as likely to pass, since `Viewer._show_tag_overlay` reads `library.effective_tags` live)

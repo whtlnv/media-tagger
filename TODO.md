@@ -43,4 +43,4 @@ Phase 9 notes for every cycle. Architecture: `viewer.py` must not grow — it sh
 - [x] A file in a folder tagged `zoo` inside a folder tagged `apple` lists its inherited tags alphabetically (`apple zoo`) in the grid's status bar, and a tag both folders carry appears once
 - [x] A file with no own and no inherited tags shows no tag overlay
 - [x] Tagging a folder in the grid and then opening a file inside it shows the new inherited tags in the viewer's overlay at once
-- [ ] In the shipped `mediatagger` window, pressing `t` on a folder tile, entering `beach`, then `Enter` on a file inside that folder shows `beach` dimmed in the viewer's tag overlay
+- [x] In the shipped `mediatagger` window, pressing `t` on a folder tile, entering `beach`, then `Enter` on a file inside that folder shows `beach` dimmed in the viewer's tag overlay
