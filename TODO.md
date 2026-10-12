@@ -8,7 +8,7 @@ Phase 10 notes for every cycle (Phases 1–9b are delivered — see DONE.md; Pha
 - [x] An exact term does not find a longer tag that starts with it (`people:ana` leaves out a file tagged only `people:anabel`)
 - [x] `beach family` finds a file tagged `beach` inside a folder tagged `family` (matched against effective tags)
 - [x] `beach family` leaves out a file tagged `beach` whose folders carry no `family`
-- [ ] `beach -sunset` finds a file tagged `beach` that has no `sunset`
+- [x] `beach -sunset` finds a file tagged `beach` that has no `sunset`
 - [ ] `beach -sunset` leaves out a file tagged both `beach` and `sunset`
 - [ ] `beach|pool` finds a file tagged only `pool`
 - [ ] `beach|pool` leaves out a file tagged neither `beach` nor `pool`

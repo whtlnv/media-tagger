@@ -1,5 +1,5 @@
 def search(library, query):
-    terms = query.lower().split()
+    terms = [term for term in query.lower().split() if not term.startswith("-")]
     return [
         path
         for path in library.items_tagged(terms[0])
