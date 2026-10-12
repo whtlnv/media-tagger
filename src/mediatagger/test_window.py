@@ -326,6 +326,22 @@ def test_moving_the_windows_grid_cursor_onto_an_item_tagged_beach_in_a_folder_ta
     assert shown.index("beach") < shown.index("holiday")
 
 
+def test_in_the_windows_grid_status_bar_a_file_in_a_folder_tagged_zoo_inside_a_folder_tagged_apple_lists_its_inherited_tags_alphabetically_and_a_tag_both_folders_carry_once(qtbot, tmp_path):
+    drive, outer = drive_with_a_tag_library_holding_one_image(tmp_path)
+    inner = outer / "Zoo"
+    inner.mkdir()
+    make_image(inner / "IMG_1.png", "red")
+    make_image(inner / "IMG_2.png", "blue")
+    library = Library.open(drive)
+    library.enter(outer, "apple both")
+    library.enter(inner, "zoo both")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, inner)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
+
+    assert "apple both zoo" in shown_status_bar_texts(window)
+
+
 def test_in_the_windows_grid_status_bar_an_inherited_tag_is_drawn_dimmer_than_an_own_tag(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     make_image(folder / "IMG_2.png", "blue")
