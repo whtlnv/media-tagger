@@ -294,6 +294,8 @@ class Grid(QListView):
             else:
                 self.window().showFullScreen()
             return
+        if Qt.Key.Key_0 <= event.key() <= Qt.Key.Key_9:
+            return
         super().keyPressEvent(event)
 
     def dragEnterEvent(self, event):

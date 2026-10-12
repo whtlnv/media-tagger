@@ -184,6 +184,18 @@ def test_in_the_grid_right_arrow_moves_the_cursor_to_the_next_tile_and_left_arro
     assert grid.currentIndex().data(Qt.ItemDataRole.DisplayRole) == "a.jpg"
 
 
+def test_in_the_grid_a_digit_key_leaves_the_cursor_where_it_is_and_opens_nothing(qtbot, tmp_path):
+    touch(tmp_path, "5.jpg", "a.jpg")
+    grid = Grid(tmp_path, at=tmp_path / "a.jpg")
+    qtbot.addWidget(grid)
+    opened = []
+    grid.activated.connect(opened.append)
+
+    qtbot.keyClick(grid, Qt.Key.Key_5)
+
+    assert (grid.currentIndex().data(Qt.ItemDataRole.DisplayRole), opened) == ("a.jpg", [])
+
+
 def test_in_the_grid_down_arrow_moves_the_cursor_one_row_down(qtbot, tmp_path):
     touch(tmp_path, *(f"{name}.jpg" for name in "abcdefghij"))
     grid = Grid(tmp_path, at=tmp_path / "a.jpg")
