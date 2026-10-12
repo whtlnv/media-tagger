@@ -2,7 +2,7 @@ from types import SimpleNamespace
 
 import shiboken6
 from PySide6.QtCore import QPoint, QRect, Qt
-from PySide6.QtWidgets import QStackedWidget, QWidget
+from PySide6.QtWidgets import QLineEdit, QStackedWidget, QWidget
 
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import (
@@ -16,6 +16,7 @@ from mediatagger.test_viewer import (
     shows_video_surface,
     wait_until_loaded,
 )
+from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_clip
 from mediatagger.test_viewer_open import drag_and_drop_onto
 from mediatagger.video_controls import ProgressBar
 from mediatagger.viewer import UNSUPPORTED_TEXT
@@ -155,6 +156,18 @@ def test_with_no_input_for_the_hide_delay_the_progress_bar_hides(qtbot):
     qtbot.waitUntil(lambda: not bar.isVisible(), timeout=2000)
 
 
+
+def test_destroying_a_shown_progress_bar_that_avoids_a_shown_sibling_after_the_garbage_collector_cleared_its_attributes_raises_nothing(qtbot):
+    parent = QWidget()
+    bar = ProgressBar(parent)
+    sibling = QWidget(parent)
+    bar.avoid(sibling)
+    parent.show()
+    qtbot.waitExposed(parent)
+
+    bar.__dict__.clear()  # what Python's GC does to the wrapper when it breaks a reference cycle
+    shiboken6.delete(parent)  # Qt hides the shown sibling while destroying it, which the bar watches
+
 def test_a_key_pressed_while_the_progress_bar_is_hidden_on_a_playing_video_shows_it_again(qtbot, tmp_path):
     clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
     viewer = shown_viewer_on(qtbot, tmp_path)
@@ -214,3 +227,23 @@ def test_in_the_window_the_progress_bar_spans_the_playing_videos_width_just_abov
 
     assert frame.width() == window.width()
     assert frame.bottom() == status_top - 1
+
+
+def test_in_the_window_the_progress_bar_of_a_playing_video_does_not_overlap_the_open_tag_prompt(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=65)
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    viewer = window.findChild(QStackedWidget).currentWidget()
+    make_surface_ready(viewer)
+    wait_until_loaded(viewer.video_player.engine, folder / "IMG_1.mp4")
+    bar = viewer.findChild(ProgressBar)
+    qtbot.waitUntil(bar.isVisible, timeout=5000)
+
+    qtbot.keyClick(window, Qt.Key.Key_T)
+
+    [prompt] = [line for line in window.findChildren(QLineEdit) if line.isVisible()]
+    bar_frame = QRect(bar.mapTo(window, QPoint()), bar.size())
+    prompt_frame = QRect(prompt.mapTo(window, QPoint()), prompt.size())
+    assert bar.isVisible()
+    assert not bar_frame.intersects(prompt_frame)

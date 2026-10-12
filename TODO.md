@@ -28,7 +28,7 @@ Phase 9a notes for every cycle. These are fixes from the first Pi run plus video
   - hint (orchestrator): the bar's 250 ms ticker stops itself once the bar is hidden (see `ProgressBar._tick`), so showing it again must restart the ticker, or the elapsed time freezes. Don't override `hideEvent`/`showEvent` on the bar — Qt calls them while destroying the widget, after Python's GC may have cleared its attributes (commit f189ad3).
 - [x] A key pressed while the progress bar is showing restarts the hide delay, so the bar stays visible for the full delay after the latest key
 - [x] The progress bar sits above the status bar, not overlapping it
-- [ ] While the tag prompt is open over a video, the progress bar does not overlap the prompt
+- [x] While the tag prompt is open over a video, the progress bar does not overlap the prompt
   - hint (orchestrator): placement lives in `ProgressBar.place(rect, clear_at_the_bottom)` (video_controls.py); keep the decision there — viewer.py is at 264 lines, budget 270. Inside the app the open prompt is the *Window's* `TagPrompt` (window.py), not the viewer's — the test should go through `Window` (see `test_in_the_window_the_progress_bar_spans…` in test_video_controls.py) as well as or instead of the standalone viewer.
 - [ ] The progress bar's text and track have explicit light colours on a translucent dark background, so it reads over black and bright frames
 - [ ] `↑` / `↓` on a playing video show the progress bar

@@ -4,22 +4,38 @@ from PySide6.QtWidgets import QLabel
 
 
 HIDE_DELAY_MS = 3000  # the bar fades after this long without input
+_GEOMETRY_EVENTS = (QEvent.Type.Show, QEvent.Type.Hide, QEvent.Type.Move, QEvent.Type.Resize)
 
 
 class ProgressBar(QLabel):
     """A video's progress, shown only while the video surface it follows is shown."""
 
+    # Class-level defaults: Qt still sends events to the bar while destroying its viewer, after Python's GC may have
+    # emptied the instance's attributes while breaking a reference cycle.
+    _playing = False
+    _area = None  # (rect, clear_at_the_bottom) from the latest place
+    _obstacles = ()
+
     def __init__(self, parent, hide_delay=HIDE_DELAY_MS):
         super().__init__(parent)
         self._ticker = QTimer(self, interval=250, timeout=self._tick)
         self._hide_timer = QTimer(self, interval=hide_delay, singleShot=True, timeout=self.hide)
-        self._playing = False
         self.hide()
 
     def follow(self, surface):
         surface.installEventFilter(self)
 
+    def avoid(self, *widgets):
+        """Sit above these widgets (siblings, such as the tag prompt) whenever they are shown."""
+        self._obstacles = widgets
+        for widget in widgets:
+            widget.installEventFilter(self)
+
     def eventFilter(self, watched, event):
+        if watched in self._obstacles:
+            if event.type() in _GEOMETRY_EVENTS and self._area:
+                self.place(*self._area)
+            return False
         if event.type() == QEvent.Type.Hide and watched.isHidden():  # the surface itself, not a hidden ancestor
             self._playing = False
             self.hide()
@@ -27,8 +43,13 @@ class ProgressBar(QLabel):
 
     def place(self, rect, clear_at_the_bottom):
         """Along the bottom of rect, its full width, above the strip kept clear for the status bar."""
+        self._area = (rect, clear_at_the_bottom)
+        bottom = rect.bottom() + 1 - clear_at_the_bottom
+        for widget in self._obstacles:
+            if not widget.isHidden():
+                bottom = min(bottom, widget.geometry().top())
         height = self.sizeHint().height()
-        self.setGeometry(rect.left(), rect.bottom() + 1 - clear_at_the_bottom - height, rect.width(), height)
+        self.setGeometry(rect.left(), bottom - height, rect.width(), height)
 
     def start(self, engine):
         self._engine = engine
