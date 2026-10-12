@@ -15,7 +15,7 @@ from mediatagger.test_grid import painted_texts
 from mediatagger.test_tag_prompt import listed
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer_backup import tags_in_newest_backup
-from mediatagger.test_viewer import SILENT, make_image, make_surface_ready, show_exposed, wait_until_loaded
+from mediatagger.test_viewer import SILENT, make_image, make_surface_ready, show_exposed, shown_texts, wait_until_loaded
 from mediatagger.test_viewer_library import (
     decline_noting_the_question_in, drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image, enter_in_tag_prompt,
     frame_in, made_read_only, overwrite_tags_db_with_garbage, resize_and_wait, visible_tag_prompt_texts, visible_tag_prompts,
@@ -461,6 +461,22 @@ def test_after_entering_beach_family_in_the_windows_grid_tag_prompt_the_status_b
     enter_in_the_grids_tag_prompt(qtbot, window, stack, "beach family")
 
     assert "beach family" in shown_status_bar_texts(window)
+
+
+def test_after_entering_beach_in_the_windows_grid_tag_prompt_on_a_folder_tile_enter_on_a_file_inside_it_shows_beach_in_the_viewers_tag_overlay(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    [trip] = make_folders(folder, "trip")
+    make_image(trip / "IMG_1.png", "red")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    enter_in_the_grids_tag_prompt(qtbot, window, stack, "beach")
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+
+    viewer = stack.currentWidget()
+    assert isinstance(viewer, Viewer)
+    assert viewer.slideshow.current == trip / "IMG_1.png"
+    assert shown_texts(viewer) == ["beach"]
 
 
 def window_with_the_grids_tag_prompt_focused_on_a_drive_whose_library_has_beach(qtbot, tmp_path):

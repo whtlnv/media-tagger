@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 19:50 · `src/mediatagger/test_window.py::test_after_entering_beach_in_the_windows_grid_tag_prompt_on_a_folder_tile_enter_on_a_file_inside_it_shows_beach_in_the_viewers_tag_overlay`
+- Behavior: Tagging a folder in the grid and then opening a file inside it shows the new inherited tags in the viewer's overlay at once
+- Predicted: AssertionError — overlay shows `[]` instead of `["beach"]` (flagged up front as likely to pass, since `Viewer._show_tag_overlay` reads `library.effective_tags` live)
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: Behavior already shipped — the window reuses its one `Viewer`, and `Viewer.open` ends in `_show_current_tags()`, which re-reads effective tags from the shared session library, so there is no stale cache to drive out; replacing that call with `pass` made the test fail (`[] == ['beach']`), so it was kept as a regression pin.
+
 ## 2026-10-11 19:33 · `src/mediatagger/test_viewer_tag_overlay.py::test_a_file_with_no_own_tags_in_an_untagged_folder_next_to_a_folder_tagged_zoo_shows_no_tag_overlay`
 - Behavior: A file with no own and no inherited tags shows no tag overlay
 - Predicted: passes (stated up front) — `TagOverlay.show` hides each label whose tag list is empty, and `effective_tags` already excludes sibling folders' tags
