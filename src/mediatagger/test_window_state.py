@@ -198,6 +198,18 @@ def test_with_a_geometry_remembered_in_the_state_file_the_window_opens_at_that_s
     assert (window.isFullScreen(), window.geometry()) == (False, remembered)
 
 
+def test_recording_a_folder_keeps_the_geometry_already_remembered_in_the_state_file(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    geometry = {"x": 30, "y": 40, "width": 600, "height": 400}
+    state_file = write_state_file(json.dumps({"geometry": geometry}))
+
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+
+    state = json.loads(state_file.read_text())
+    assert (state["folder"], state.get("geometry")) == (str(folder), geometry)
+
+
 def write_state_file(text):
     state_file = Path(os.environ["XDG_CONFIG_HOME"]) / "mediatagger" / "state.json"
     state_file.parent.mkdir(parents=True, exist_ok=True)
