@@ -13,8 +13,9 @@ State of the project and how it has been run, for the next session. Read `DESIGN
 | 5 Autocomplete | done, validated |
 | 6 Database backups | done, validated |
 | 7 Folder grid | done, validated (415 tests) |
-| 8 Thumbnails | done, validated on the Mac (pending the Pi check) — includes video duration and folder-tile first-image previews |
-| 9 Tag folders & inherited tags | **next** (`t` in the grid lives here) |
+| 8 Thumbnails | done, validated; first Pi run 2026-10-11 found a per-frame fd leak in video playback (Pi only) and an Esc-to-grid error — see Phase 9a |
+| 9 Tag folders & inherited tags | done, validated (557 tests) |
+| 9a Pi fixes & video controls | **next** — the fd-leak fix waits for `diag-video.sh` results from the Pi |
 | 10 Search | not started |
 | 11 Run from the drive on the Pi | not started (spike tooling exists in `spikes/drive/`) |
 

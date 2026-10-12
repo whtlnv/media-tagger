@@ -89,6 +89,21 @@ Thumbnails are generated on demand for visible tiles, newest request first, then
 - **Autocomplete counts** a folder as one item when ordering by use.
 - **Scale:** opening a folder of 5,000 files and moving the cursor stay as responsive as in Phase 8 (the timing tests keep passing); showing a file's effective tags is one query.
 
+## Phase 9a — Fixes from the first Pi run, and video controls
+
+From the user's Pi test of build ff64cc3 (logs in the stick's `results/`, findings 2026-10-11).
+
+- **Esc back to the grid always works.** Opening a file from the grid stops its thumbnails; Esc then stopped them a second time and raised `Internal C++ object (_Generated) already deleted` once Qt had deleted the object in between, so the grid never came back. Stopping a folder's thumbnails is safe any number of times, at any point after Qt has processed deferred deletions; a regression test flushes deferred deletes between opening a file and pressing Esc.
+- **A relative path at launch** (`mediatagger media/clip.mp4`) opens like the absolute path, instead of crashing with `StopIteration` looking for its drive.
+- **Seeking never raises.** If mpv refuses a seek (it did on the Pi: `Error running mpv command -12`), the key does nothing visible and the app carries on; no exception escapes a key handler.
+- **Video playback never leaks file descriptors** (delivered separately once the Pi diagnostic is back — not part of this phase's TODO). On the Pi (Mesa v3d, Wayland) the app gained one open file per frame until `Too many open files` killed the Wayland connection after ~30 s; the Linux VM (llvmpipe) holds steady at 42. The fix depends on `diag-video.sh` results from the Pi (which mpv/Qt setting leaks). Whatever it is, a test plays a clip for a while and asserts the process's open-file count stays flat (Linux/macOS: count /proc/self/fd or `os.listdir('/dev/fd')`).
+- **Entering a folder refreshes the status bar.** Opening a folder's grid (Enter on a folder, Backspace, Esc from the viewer, launch) shows the tags of the item under its cursor at once; today the status bar keeps the previous selection's tags until the cursor moves (found validating Phase 9: entering a tagged folder showed the folder's own tags in white as if they were the first file's).
+- **`t` in an empty folder** does nothing (today it raises `AttributeError: 'NoneType' object has no attribute 'path'` in `Window._tag`).
+- **Status bar shows only problems.** No `Library: <drive>` label when a library is open and writable; still `No library open` / viewing only, `Library on <drive> can't be opened — viewing only`, `Read-only — tags can't be saved`, background work (thumbnails, backups), and the selected item's tags.
+- **Video progress.** While a video plays, a thin progress bar with `elapsed / total` (`1:23 / 4:56`, hours from an hour) runs along the bottom of the video, above the status bar. It appears when a video starts, on any seek and on any key, and fades after ~3 s of no input. It is readable over black and bright frames and never covers the tag prompt.
+- **Seeking.** ↑/↓ keep seeking ±10 s; `0`–`9` jump to 0 %–90 % of the video. Each seek shows the progress bar. The keys are only active while a video is shown; they never reach the grid or the tag prompt.
+- **Windowed by default.** The app opens as a normal, resizable window (about 80 % of the screen, centred; remembered size and position in `state.json` when known), not fullscreen. `f` toggles fullscreen in both grid and viewer, as before.
+
 ## Phase 10 — Search
 
 `/` focuses a search bar above the grid. Queries support AND (`beach family`), NOT (`-sunset`), OR (`beach|pool`), exact tags and namespace prefixes (`people:`), matched against effective tags. Results show only tagged items, collapsed so that a matching folder hides any matching items inside it. `Enter` on a result file starts a slideshow over the results from that file; `Enter` on a result folder opens that folder normally. A breadcrumb shows the active query; `Esc` clears it and returns to the folder you were in. Tagged paths that no longer exist appear as "missing" tiles whose tags can be removed. `↑` in the search bar recalls previous searches.
