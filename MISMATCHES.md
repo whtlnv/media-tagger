@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-12 03:55 · `src/mediatagger/test_tag_prompt.py::test_typing_a_digit_into_the_tag_prompt_over_a_video_enters_the_digit_and_does_not_seek_the_video`
+- Behavior: typing a digit into the tag prompt over a playing video enters the digit and does not seek
+- Predicted: passes — the prompt's line edit has focus and consumes the digit, and `Viewer.keyPressEvent` returns early while the prompt has focus (`viewer.py:155`)
+- Actual: passes
+- Type: passed unexpectedly (relative to the TODO item; the pass itself was predicted)
+- Resolution: no rewrite can make this red without sabotaging production code — the focus guard predates the digit keys; the test is not vacuous (if a digit reached the viewer, `5` would seek the 60 s clip from 20 s to 30 s), so it stays as a regression pin and the item needs no /green
+
 ## 2026-10-12 03:47 · `src/mediatagger/test_video.py::test_when_mpv_refuses_a_jump_pressing_a_digit_raises_nothing_and_the_video_keeps_playing`
 - Behavior: when mpv refuses a jump, a digit key on a playing video raises nothing and the video keeps playing
 - Predicted: passes — digit keys route through `VideoPlayer._seek`, which already swallows mpv's `SystemError` (added for `Up`)

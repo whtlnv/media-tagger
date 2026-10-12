@@ -36,7 +36,7 @@ Phase 9a notes for every cycle. These are fixes from the first Pi run plus video
 - [x] `0` on a playing video seeks to the start
 - [x] When mpv refuses a jump, a digit key on a playing video raises nothing and the video keeps playing
 - [x] A digit key in the viewer while an image is shown does nothing (the image stays, no seek)
-- [ ] Typing a digit into the tag prompt over a playing video enters the digit and does not seek
+- [x] Typing a digit into the tag prompt over a playing video enters the digit and does not seek
 - [ ] A digit key in the grid does not move the cursor or open anything
 - [ ] With no remembered geometry, the window opens not fullscreen, about 80 % of the available screen, centred
   - predicted-contradiction: `src/mediatagger/test_main.py::test_running_the_mediatagger_command_on_a_folder_opens_the_fullscreen_viewer_on_its_first_item` — asserts: the command's shown window reports `fullscreen=True` — retired-by: "With no remembered geometry, the window opens not fullscreen, about 80 % of the available screen, centred"

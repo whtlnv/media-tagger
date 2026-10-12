@@ -308,6 +308,21 @@ def test_on_a_paused_video_with_the_suggestion_popup_open_down_twice_and_up_high
     assert (suggestions.currentIndex().data(), engine.time_pos) == (first, pytest.approx(20, abs=1))
 
 
+def test_typing_a_digit_into_the_tag_prompt_over_a_video_enters_the_digit_and_does_not_seek_the_video(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=60)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    make_surface_ready(viewer)
+    engine = viewer.video_player.engine
+    wait_until_playing(engine)
+    qtbot.keyClick(viewer, Qt.Key.Key_P)
+    engine.time_pos = 20
+    engine.wait_for_property("time-pos", lambda time_pos: time_pos == pytest.approx(20, abs=1), timeout=5)
+
+    type_in_tag_prompt(qtbot, viewer, "5")
+    qtbot.wait(300)  # mpv seeks asynchronously, so give a stray seek time to land
+
+    assert (visible_tag_prompt_texts(viewer), engine.time_pos) == (["5"], pytest.approx(20, abs=1))
+
 def test_the_suggestion_popup_over_a_white_image_shows_light_text_on_a_dark_background_as_the_overlays_do(qtbot, tmp_path):
     drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
     [folder] = make_folders(drive, "Photos")
