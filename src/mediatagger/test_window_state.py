@@ -222,3 +222,17 @@ def test_dropping_a_folder_onto_the_windows_launch_screen_records_that_folder_in
 
     state = json.loads((Path(os.environ["XDG_CONFIG_HOME"]) / "mediatagger" / "state.json").read_text())
     assert state["folder"] == str(folder)
+
+
+def test_launching_the_window_with_no_path_into_a_remembered_folder_whose_first_item_is_tagged_beach_family_shows_beach_family_in_the_status_bar_before_any_cursor_move(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach family")
+    earlier = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(earlier)
+    earlier.close()
+
+    window = Window(player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+
+    assert "beach family" in shown_status_bar_texts(window)

@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 22:19 · `src/mediatagger/test_window_state.py::test_launching_the_window_with_no_path_into_a_remembered_folder_whose_first_item_is_tagged_beach_family_shows_beach_family_in_the_status_bar_before_any_cursor_move`
+- Behavior: Launching into a remembered folder shows the first item's tags in the status bar at once
+- Predicted: AssertionError — "beach family" absent from the status bar, assuming the grid already had its cursor on row 0 so `setCurrentIndex(0)` emitted no `currentChanged`
+- Actual: test passed on first run
+- Type: passed unexpectedly
+- Resolution: `Grid.__init__` only sets a current index when `at` is given; the remembered-folder launch path in `Window.__init__` (since 5fea2af) calls `setCurrentIndex(row 0)` after `_show` has connected `currentChanged` to `_show_tags_of`, so the tags already show — the behavior exists and no honest rewrite can fail; the test is left on disk as a regression pin.
+
 ## 2026-10-11 21:48 · `src/mediatagger/test_window.py::test_pressing_enter_in_the_windows_grid_on_a_folder_tagged_beach_family_whose_first_item_is_untagged_shows_beach_family_only_dimmed_as_inherited_not_as_the_items_own_tags`
 - Behavior: Pressing `Enter` on a tagged folder whose first item is untagged leaves the status bar showing no tags (not the folder's)
 - Predicted: passes on HEAD (prediction stated only after the run — a process slip), since 8e74480 already calls `_show_tags_of` on entering a folder
