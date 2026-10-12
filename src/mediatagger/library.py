@@ -165,6 +165,8 @@ class Library:
         return EffectiveTags(own=own, inherited=inherited)
 
     def _tags_by_key(self, keys):
+        if self.schema_version < 2:  # a read-only drive left at schema 1 has no tag tables
+            return {k: [] for k in keys}
         connection = sqlite3.connect(self._tags_db)
         rows = connection.execute(
             "SELECT items.rel_path, tags.name FROM item_tags"

@@ -289,6 +289,18 @@ def test_opening_a_schema_version_1_library_on_a_read_only_drive_writes_nothing_
     assert sorted(path.name for path in library_folder.iterdir()) == ["tags.db"]
 
 
+def test_a_file_in_a_folder_of_a_schema_version_1_library_on_a_read_only_drive_has_no_own_and_no_inherited_effective_tags(tmp_path):
+    _create_schema_version_1_library(tmp_path, "read-only-drive")
+    (tmp_path / "Trip").mkdir()
+    photo = tmp_path / "Trip" / "beach.jpg"
+    photo.touch()
+    with _read_only_drive(tmp_path):
+        library = Library.open(tmp_path)
+        tags = library.effective_tags(photo)
+
+    assert (tags.own, tags.inherited) == ([], [])
+
+
 def test_opening_a_schema_version_1_library_whose_upgrade_is_blocked_by_a_lock_on_tags_db_raises_the_error(tmp_path):
     _create_schema_version_1_library(tmp_path, "locked-drive")
     locker = sqlite3.connect(_tags_db(tmp_path))
