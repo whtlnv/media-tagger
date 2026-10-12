@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 20:58 · `src/mediatagger/test_window.py::test_opening_a_file_from_the_windows_grid_letting_qt_process_deferred_deletions_then_esc_shows_the_grid_with_the_cursor_on_that_file`
+- Behavior: Opening a file from the grid, letting Qt process deferred deletions, then pressing `Esc` brings the grid back with the cursor on that file
+- Predicted: passes on first run — d846530 already made `FolderThumbnails.stop` idempotent, the root cause of this Esc crash
+- Actual: passed; with `folder_thumbnails.py` temporarily reverted to d846530^ it fails with `RuntimeError: Internal C++ object (_Generated) already deleted` at `thumbnail_scheduler.py:144` (production file restored)
+- Type: passed unexpectedly
+- Resolution: The behavior was delivered by the previous cycle's fix; kept the test as the window-level regression guard (proven non-vacuous against the pre-fix code) rather than rewriting it, since no missing behavior remains to drive.
+
 ## 2026-10-11 20:05 · `src/mediatagger/test_main.py::test_in_the_mediatagger_command_entering_beach_for_a_folder_tile_in_the_grid_then_enter_on_a_file_inside_it_shows_beach_dimmed_in_the_viewers_tag_overlay`
 - Behavior: In the shipped `mediatagger` window, pressing `t` on a folder tile, entering `beach`, then `Enter` on a file inside that folder shows `beach` dimmed in the viewer's tag overlay
 - Predicted: passes (stated up front) — `main()` builds the same `Window` whose viewer re-reads effective tags on open (previous cycle), and the inherited label is already styled grey

@@ -283,6 +283,24 @@ def test_after_going_back_and_forth_between_grids_and_the_viewer_many_times_the_
     assert window.findChildren(Grid) == [stack.currentWidget()]
 
 
+def test_opening_a_file_from_the_windows_grid_letting_qt_process_deferred_deletions_then_esc_shows_the_grid_with_the_cursor_on_that_file(qtbot, tmp_path):
+    make_image(tmp_path / "a.jpg", "red")
+    make_image(tmp_path / "b.jpg", "blue")
+    window = Window(tmp_path, player_options=SILENT)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+    QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    shown = stack.currentWidget()
+    assert isinstance(shown, Grid)
+    assert shown.currentIndex().data(Qt.ItemDataRole.DisplayRole) == "b.jpg"
+
+
 def shown_status_bar_texts(window):
     return [label.text() for bar in window.findChildren(StatusBar) for label in bar.findChildren(QLabel) if label.isVisible()]
 
