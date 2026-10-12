@@ -32,3 +32,15 @@ def test_an_exact_term_does_not_find_a_longer_tag_that_starts_with_it(tmp_path):
     library, _ = _library_with_one_file(tmp_path, "party.jpg", "people:anabel")
 
     assert search(library, "people:ana") == []
+
+
+def test_beach_family_finds_a_file_tagged_beach_inside_a_folder_tagged_family(tmp_path):
+    library = Library.create(tmp_path)
+    folder = tmp_path / "summer"
+    folder.mkdir()
+    library.enter(folder, "family")
+    photo = folder / "dunes.jpg"
+    photo.touch()
+    library.enter(photo, "beach")
+
+    assert search(library, "beach family") == [photo]
