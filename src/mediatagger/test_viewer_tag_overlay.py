@@ -18,8 +18,13 @@ def assert_in_top_right_corner(viewer, label):
     assert frame.right() == viewer.rect().right() - CORNER_MARGIN
 
 
-def assert_shown_on_top(viewer, text):
+def shown_label_reading(viewer, text):
     [label] = [label for label in shown_labels(viewer) if label.text() == text]
+    return label
+
+
+def assert_shown_on_top(viewer, text):
+    label = shown_label_reading(viewer, text)
     assert viewer.childAt(label.geometry().center()) is label
 
 
@@ -135,7 +140,7 @@ def test_with_the_info_overlay_and_the_read_only_banner_showing_the_tag_overlay_
         viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     qtbot.keyClick(viewer, Qt.Key.Key_I)
 
-    [tag_overlay] = [label for label in shown_labels(viewer) if label.text() == "beach family"]
+    tag_overlay = shown_label_reading(viewer, "beach family")
     assert viewer.info.isVisible() and viewer.read_only_banner.isVisible()
     assert not frame_in(viewer, tag_overlay).intersects(frame_in(viewer, viewer.info))
     assert not frame_in(viewer, tag_overlay).intersects(frame_in(viewer, viewer.read_only_banner))
@@ -168,8 +173,7 @@ def test_a_file_tagged_beach_family_in_a_viewer_shows_beach_family_in_the_tag_ov
 
 def test_the_tag_overlay_shows_the_files_own_tags_alphabetically_then_its_inherited_tags_alphabetically(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    trip = folder / "Trip"
-    trip.mkdir()
+    [trip] = make_folders(folder, "Trip")
     make_image(trip / "IMG_1.png", "red")
     library = Library.open(drive)
     library.enter(folder, "aunt")
@@ -243,9 +247,7 @@ def test_moving_with_space_from_an_image_to_a_video_in_a_folder_tagged_aunt_show
 
 def test_a_file_with_no_own_tags_in_an_untagged_folder_next_to_a_folder_tagged_zoo_shows_no_tag_overlay(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    trip, trip2 = folder / "Trip", folder / "Trip2"
-    trip.mkdir()
-    trip2.mkdir()
+    trip, trip2 = make_folders(folder, "Trip", "Trip2")
     make_image(trip2 / "IMG_1.png", "red")
     Library.open(drive).enter(trip, "zoo")
 
