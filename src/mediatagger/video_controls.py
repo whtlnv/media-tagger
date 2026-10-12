@@ -39,7 +39,8 @@ class ProgressBar(QLabel):
 
     def paintEvent(self, event):
         with QPainter(self) as painter:
-            painter.fillRect(0, 0, int(self.width() * self._fraction), self.height(), self.palette().highlight())
+            filled_width = int(self.width() * self._fraction)
+            painter.fillRect(0, 0, filled_width, self.height(), self.palette().highlight())
         super().paintEvent(event)
 
 
