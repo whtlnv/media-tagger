@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-12 06:18 · `src/mediatagger/test_mpv_surface.py::test_the_glfencesync_stand_in_is_still_callable_after_a_garbage_collection`
+- Behavior: the `glFenceSync` stand-in handed to mpv stays callable after a garbage collection while its lookup is alive
+- Predicted: test passes — `_no_fence` is a module-level global in `mpv_surface.py`, so the TODO item's premise (behavior missing) is false
+- Actual: passes (1 passed)
+- Type: passed unexpectedly
+- Resolution: the first Phase 9b cycle already satisfied this item by making the stub a module global (stronger than "alive while the lookup is"); no rewrite could make it fail without testing a different behavior, so the test is kept as a regression pin against moving the stub into a short-lived local — the item needs no /green.
+
 ## 2026-10-12 05:07 · `src/mediatagger/test_main.py::test_running_the_mediatagger_command_on_a_relative_path_to_a_video_opens_a_normal_window_playing_it_with_the_progress_bar_shown`
 - Behavior: Running the `mediatagger` entry point with a relative path to a video opens a normal (not fullscreen) window that plays it and shows the progress bar
 - Predicted: AssertionError — the relative clip path reaches mpv unresolved when launched through the entry point
