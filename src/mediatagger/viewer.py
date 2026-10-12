@@ -124,6 +124,7 @@ class Viewer(QWidget):
         self.video_player.press("Right")  # leaving the current item is what stops its video
 
     def keyPressEvent(self, event):
+        self.progress_bar.wake()
         if event.key() == Qt.Key.Key_Escape and self.tag_prompt.has_focus():
             self.tag_prompt.close()
             return

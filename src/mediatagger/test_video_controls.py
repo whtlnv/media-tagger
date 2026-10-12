@@ -149,3 +149,16 @@ def test_with_no_input_for_the_hide_delay_the_progress_bar_hides(qtbot):
 
     assert bar.isVisible()
     qtbot.waitUntil(lambda: not bar.isVisible(), timeout=2000)
+
+
+def test_a_key_pressed_while_the_progress_bar_is_hidden_on_a_playing_video_shows_it_again(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    wait_until_loaded(viewer.video_player.engine, clip)
+    bar = viewer.findChild(ProgressBar)
+    qtbot.waitUntil(bar.isVisible, timeout=5000)
+    bar.hide()  # as when the hide delay runs out
+
+    qtbot.keyClick(viewer, Qt.Key.Key_A)
+
+    assert bar.isVisible()

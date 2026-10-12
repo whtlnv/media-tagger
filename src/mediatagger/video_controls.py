@@ -13,6 +13,7 @@ class ProgressBar(QLabel):
         super().__init__(parent)
         self._ticker = QTimer(self, interval=250, timeout=self._tick)
         self._hide_timer = QTimer(self, interval=hide_delay, singleShot=True, timeout=self.hide)
+        self._playing = False
         self.hide()
 
     def follow(self, surface):
@@ -20,12 +21,20 @@ class ProgressBar(QLabel):
 
     def eventFilter(self, watched, event):
         if event.type() == QEvent.Type.Hide and watched.isHidden():  # the surface itself, not a hidden ancestor
+            self._playing = False
             self.hide()
         return False
 
     def start(self, engine):
         self._engine = engine
         self._show_elapsed(0)
+        self._playing = True
+        self.wake()
+
+    def wake(self):
+        """Show the bar for another hide delay, if a video is playing."""
+        if not self._playing:
+            return
         self._ticker.start()
         self._hide_timer.start()
         self.show()
