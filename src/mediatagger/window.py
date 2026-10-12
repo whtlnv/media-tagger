@@ -139,6 +139,8 @@ class Window(QWidget):
         self._show_tags_of(self.stack.currentWidget().currentIndex())
 
     def _tag(self, index):
+        if not index.isValid():
+            return
         if not self.session.tags_can_be_saved():
             self.status_bar.flash_cant_save()
             return
