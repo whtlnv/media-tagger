@@ -2,6 +2,11 @@
 
 Append-only record of tests removed because a delivered change retired the behavior they asserted. Each entry records the test, the behavior, the clause that retired it, and the observed failure that confirmed the contradiction.
 
+## 2026-10-12 · `src/mediatagger/test_viewer.py::test_a_viewer_shown_on_its_own_opens_not_fullscreen_and_f_enters_then_a_second_f_leaves_fullscreen`
+
+- reason: exact duplicate of `test_a_shown_viewer_opens_not_fullscreen_and_each_f_press_toggles_it` (the same shown viewer, the same 0, 1 and 2 `f` presses, the same not-fullscreen / fullscreen / not-fullscreen expectations)
+- coverage kept by: `test_a_shown_viewer_opens_not_fullscreen_and_each_f_press_toggles_it`
+
 ## 2026-10-12 · migrated `src/mediatagger/test_viewer.py::test_a_shown_viewer_opens_fullscreen_and_each_f_press_toggles_it` -> `test_a_shown_viewer_opens_not_fullscreen_and_each_f_press_toggles_it`
 - Asserted: a shown viewer is fullscreen after 0 and 2 `f` presses and not after 1
 - Changed: renamed; parameters flipped — not fullscreen after 0 and 2 presses, fullscreen after 1 (case ids reworded to match)

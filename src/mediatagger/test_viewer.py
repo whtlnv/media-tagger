@@ -217,20 +217,6 @@ def test_a_shown_viewer_opens_not_fullscreen_and_each_f_press_toggles_it(qtbot, 
     assert viewer.isFullScreen() is fullscreen
 
 
-def test_a_viewer_shown_on_its_own_opens_not_fullscreen_and_f_enters_then_a_second_f_leaves_fullscreen(qtbot, tmp_path):
-    make_image(tmp_path / "IMG_1.png", "red")
-    viewer = viewer_on(qtbot, tmp_path)
-    viewer.show()
-    qtbot.waitExposed(viewer)
-    fullscreen = [viewer.isFullScreen()]
-
-    for _ in range(2):
-        qtbot.keyClick(viewer, Qt.Key.Key_F)
-        fullscreen.append(viewer.isFullScreen())
-
-    assert fullscreen == [False, True, False]
-
-
 def test_a_viewer_opened_on_a_folder_whose_first_item_cannot_be_decoded_shows_an_unsupported_placeholder(qtbot, tmp_path):
     (tmp_path / "IMG_1.png").write_bytes(b"not really a png")
     make_image(tmp_path / "IMG_2.png", "red")
