@@ -19,7 +19,7 @@ from mediatagger.test_viewer import (
 )
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_clip
 from mediatagger.test_viewer_open import drag_and_drop_onto
-from mediatagger.video_controls import ProgressBar
+from mediatagger.video_controls import HIDE_DELAY_MS, ProgressBar
 from mediatagger.viewer import UNSUPPORTED_TEXT
 from mediatagger.window import Window
 
@@ -30,6 +30,16 @@ def viewer_playing_with_its_progress_bar(qtbot, folder, clip):
     bar = viewer.findChild(ProgressBar)
     qtbot.waitUntil(bar.isVisible, timeout=5000)
     return viewer, bar
+
+
+def shown_progress_bar(qtbot, hide_delay=HIDE_DELAY_MS):
+    """A bar in a shown parent of its own. The parent comes back too: once nothing holds it, Qt deletes it with the bar."""
+    parent = QWidget()
+    qtbot.addWidget(parent)
+    bar = ProgressBar(parent, hide_delay=hide_delay)
+    parent.show()
+    qtbot.waitExposed(parent)
+    return parent, bar
 
 
 def test_a_starting_video_shows_a_progress_bar_at_zero_of_its_length_that_hides_once_a_folder_with_no_media_is_dropped(qtbot, tmp_path):
@@ -77,11 +87,7 @@ def test_while_a_video_plays_the_progress_bar_elapsed_time_advances(qtbot, tmp_p
 
 
 def test_while_mpv_reports_no_position_or_length_between_clips_the_progress_bar_keeps_its_text_and_raises_nothing(qtbot):
-    parent = QWidget()
-    qtbot.addWidget(parent)
-    bar = ProgressBar(parent)
-    parent.show()
-    qtbot.waitExposed(parent)
+    parent, bar = shown_progress_bar(qtbot)
     engine = SimpleNamespace(duration=65, time_pos=0)
     bar.start(engine)
 
@@ -110,11 +116,7 @@ def test_half_way_through_a_video_the_progress_bar_is_filled_up_to_its_middle(qt
 
 
 def test_a_video_shorter_than_an_hour_shows_its_times_as_minutes_and_seconds(qtbot):
-    parent = QWidget()
-    qtbot.addWidget(parent)
-    bar = ProgressBar(parent)
-    parent.show()
-    qtbot.waitExposed(parent)
+    parent, bar = shown_progress_bar(qtbot)
 
     bar.start(SimpleNamespace(duration=4 * 60 + 56, time_pos=60 + 23))
 
@@ -122,11 +124,7 @@ def test_a_video_shorter_than_an_hour_shows_its_times_as_minutes_and_seconds(qtb
 
 
 def test_a_video_of_an_hour_or_more_shows_its_times_as_hours_minutes_and_seconds(qtbot):
-    parent = QWidget()
-    qtbot.addWidget(parent)
-    bar = ProgressBar(parent)
-    parent.show()
-    qtbot.waitExposed(parent)
+    parent, bar = shown_progress_bar(qtbot)
 
     bar.start(SimpleNamespace(duration=60 * 60 + 2 * 60 + 3, time_pos=5))
 
@@ -145,11 +143,7 @@ def test_destroying_a_shown_progress_bar_whose_attributes_the_garbage_collector_
 
 
 def test_with_no_input_for_the_hide_delay_the_progress_bar_hides(qtbot):
-    parent = QWidget()
-    qtbot.addWidget(parent)
-    bar = ProgressBar(parent, hide_delay=100)
-    parent.show()
-    qtbot.waitExposed(parent)
+    parent, bar = shown_progress_bar(qtbot, hide_delay=100)
 
     bar.start(SimpleNamespace(duration=65, time_pos=0))
 
@@ -213,11 +207,7 @@ def test_zero_on_a_playing_video_seeks_back_to_the_start(qtbot, tmp_path):
 
 
 def test_waking_the_progress_bar_while_it_shows_keeps_it_visible_for_the_full_hide_delay_after_the_latest_wake(qtbot):
-    parent = QWidget()
-    qtbot.addWidget(parent)
-    bar = ProgressBar(parent, hide_delay=1500)
-    parent.show()
-    qtbot.waitExposed(parent)
+    parent, bar = shown_progress_bar(qtbot, hide_delay=1500)
     bar.start(SimpleNamespace(duration=65, time_pos=0))
     qtbot.wait(1000)
 
