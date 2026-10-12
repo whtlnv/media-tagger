@@ -197,3 +197,17 @@ def test_in_the_tag_overlay_an_inherited_tag_is_drawn_dimmer_than_an_own_tag(qtb
     inherited_brightness = brightest_in(range(right - width // 3, right))  # "aunt", shown last
     assert own_brightness > 240
     assert inherited_brightness < own_brightness - 60
+
+
+def test_a_file_with_no_own_tags_in_a_folder_tagged_aunt_shows_aunt_in_the_tag_overlay_in_the_top_right_corner(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder, "aunt")
+
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    resize_and_wait(qtbot, viewer, 1600, 900)
+
+    [tag_overlay] = shown_labels(viewer)
+    assert tag_overlay.text() == "aunt"
+    frame = frame_in(viewer, tag_overlay)
+    assert frame.top() == CORNER_MARGIN
+    assert frame.right() == viewer.rect().right() - CORNER_MARGIN

@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 18:48 · `src/mediatagger/test_viewer_tag_overlay.py::test_a_file_with_no_own_tags_in_a_folder_tagged_aunt_shows_aunt_in_the_tag_overlay_in_the_top_right_corner`
+- Behavior: A file with only inherited tags shows the viewer's tag overlay
+- Predicted: passes (stated up front) — TagOverlay already shows the inherited label independently of the own label
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: The two-label TagOverlay from the dimming cycle (85570f0, eb2a252) already delivered this TODO item; no variant (Space/Left, Esc from prompt) exposes a gap, so the test is kept as a pin of the PLAN.md requirement rather than rewritten into a contrived failure.
+
 ## 2026-10-11 17:04 · `src/mediatagger/test_window.py::test_while_the_windows_grid_tag_prompt_is_open_arrows_backspace_plus_and_minus_leave_the_grids_cursor_folder_and_tile_size_unchanged`
 - Behavior: While the grid's tag prompt is open, arrows, `Backspace`, `+` and `-` leave the grid's cursor, folder and tile size unchanged
 - Predicted: AssertionError — cursor row changes because `Down` (ignored by the QLineEdit) bubbles to the window, which forwards it to the grid

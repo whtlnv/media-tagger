@@ -37,7 +37,7 @@ Phase 9 notes for every cycle. Architecture: `viewer.py` must not grow — it sh
 - [x] In the grid's status bar, inherited tags are drawn dimmed and own tags in the normal style
 - [x] The viewer's tag overlay shows the current file's own tags first, then its inherited tags, each group alphabetical
 - [x] In the viewer's tag overlay, inherited tags are drawn dimmed (lighter than own tags) and own tags in the normal style
-- [ ] A file with only inherited tags shows the viewer's tag overlay
+- [x] A file with only inherited tags shows the viewer's tag overlay
 - [ ] Pressing `t` in the viewer on a file inside a tagged folder hides the dimmed inherited tags while the prompt is open, and `Esc` shows them again
 - [ ] Moving with `Space` from an image to a video inside a tagged folder shows the dimmed inherited tags on top of the video
 - [ ] A file in a folder tagged `zoo` inside a folder tagged `apple` lists its inherited tags alphabetically (`apple zoo`) in the grid's status bar, and a tag both folders carry appears once
