@@ -8,7 +8,7 @@ from mediatagger.test_viewer_library import (
     resize_and_wait, shown_viewer_on_drive, shown_viewer_on_drives, status_bar_labels, status_bar_texts, viewer_on_drives, visible_tag_prompts,
 )
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
-from mediatagger.status_bar import CORNER_MARGIN, READ_ONLY_STATUS_TEXT, TAGS_CANT_BE_SAVED_HERE_TEXT
+from mediatagger.status_bar import CORNER_MARGIN, NO_LIBRARY_TEXT, READ_ONLY_STATUS_TEXT, TAGS_CANT_BE_SAVED_HERE_TEXT
 from mediatagger.viewer import READ_ONLY_BANNER_TEXT
 
 
@@ -118,6 +118,20 @@ def test_after_viewing_a_read_only_drive_dropping_a_folder_from_a_writable_drive
 
     assert READ_ONLY_BANNER_TEXT not in shown
     assert READ_ONLY_STATUS_TEXT not in status
+
+
+def test_after_a_writable_library_hid_the_library_label_opening_a_folder_on_a_read_only_drive_without_one_shows_no_library_open_again(qtbot, tmp_path):
+    viewed_drive = make_tag_library_drive(tmp_path / "BACKUP")
+    [viewed] = make_folders(viewed_drive, "Videos")
+    make_image(viewed / "IMG_1.png", "green")
+    read_only_drive, dropped = drive_without_a_tag_library_holding_one_image(tmp_path)
+    with made_read_only(read_only_drive):
+        viewer = viewer_on_drives(qtbot, viewed, (viewed_drive, read_only_drive), lambda question: False)
+
+        drag_and_drop_onto(viewer, dropped)
+        status = status_bar_texts(viewer)
+
+    assert NO_LIBRARY_TEXT in status
 
 
 def test_after_viewing_a_drive_with_a_tag_library_opening_a_folder_on_a_read_only_drive_without_one_says_tags_cant_be_saved_and_closes_the_previous_library(qtbot, tmp_path):

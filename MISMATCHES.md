@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 23:06 · `src/mediatagger/test_viewer_read_only.py::test_after_a_writable_library_hid_the_library_label_opening_a_folder_on_a_read_only_drive_without_one_shows_no_library_open_again`
+- Behavior: With no library open, the status bar still shows `No library open` (here, after a writable library has hidden the label)
+- Predicted: pass. `StatusBar.show_library` already calls `setVisible(bool(text))` (from 09135cd), and the launch screen case is already pinned by `test_the_launch_screen_status_bar_says_no_library_is_open`
+- Actual: passed
+- Type: passed unexpectedly (predicted pass; Red step produced no failing test)
+- Resolution: The TODO item is a regression guard for behavior 09135cd already delivered. The test was kept, not rewritten, because nothing is missing to drive. A temporary mutation (label never shown again once hidden) made it fail with `'No library open' not in ["Read-only — tags can't be saved", '✓ Backed up']`, so it is not vacuous. The source was restored.
+
 ## 2026-10-11 22:19 · `src/mediatagger/test_window_state.py::test_launching_the_window_with_no_path_into_a_remembered_folder_whose_first_item_is_tagged_beach_family_shows_beach_family_in_the_status_bar_before_any_cursor_move`
 - Behavior: Launching into a remembered folder shows the first item's tags in the status bar at once
 - Predicted: AssertionError — "beach family" absent from the status bar, assuming the grid already had its cursor on row 0 so `setCurrentIndex(0)` emitted no `currentChanged`

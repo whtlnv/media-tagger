@@ -14,7 +14,7 @@ Phase 9a notes for every cycle. These are fixes from the first Pi run plus video
 - [x] `t` in an empty folder opens no tag prompt and raises nothing
 - [x] Pressing `Enter` on an empty subfolder shows its empty grid, raises nothing, and leaves no tags in the status bar (today it raises in `Window._show_current_tags` on the invalid cursor — a regression from this phase's status-bar refresh)
 - [x] With a writable library open, the status bar shows no `Library: <drive>` label
-- [ ] With no library open, the status bar still shows `No library open`
+- [x] With no library open, the status bar still shows `No library open`
 - [ ] When a video starts playing, a progress bar along the bottom of the video shows `0:00 / <total>`
 - [ ] When an image is shown, no progress bar is shown
 - [ ] While a video plays, the progress bar's elapsed time advances
