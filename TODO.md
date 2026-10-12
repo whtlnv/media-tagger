@@ -20,7 +20,7 @@ Phase 9a notes for every cycle. These are fixes from the first Pi run plus video
 - [x] When a video can't be played and the unsupported placeholder shows instead, no progress bar is shown
 - [x] When an image is shown, no progress bar is shown
 - [x] While a video plays, the progress bar's elapsed time advances
-- [ ] The progress bar's fill is proportional to elapsed / total (half filled at half-way)
+- [x] The progress bar's fill is proportional to elapsed / total (half filled at half-way)
 - [ ] A video shorter than an hour shows times as `m:ss` (`1:23 / 4:56`)
 - [ ] A video of an hour or more shows times as `h:mm:ss` (`0:00:05 / 1:02:03`)
 - [ ] With no input for the hide delay, the progress bar hides

@@ -1,4 +1,5 @@
 from PySide6.QtCore import QEvent, QTimer
+from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import QLabel
 
 
@@ -33,7 +34,13 @@ class ProgressBar(QLabel):
         self._show_elapsed(int(self._engine.time_pos))
 
     def _show_elapsed(self, seconds):
+        self._fraction = seconds / self._engine.duration
         self.setText(f"{_clock(seconds)} / {_clock(self._engine.duration)}")
+
+    def paintEvent(self, event):
+        with QPainter(self) as painter:
+            painter.fillRect(0, 0, int(self.width() * self._fraction), self.height(), self.palette().highlight())
+        super().paintEvent(event)
 
 
 def _clock(seconds):

@@ -80,3 +80,21 @@ def test_while_mpv_reports_no_position_or_length_between_clips_the_progress_bar_
     qtbot.wait(600)
 
     assert bar.text() == "0:00 / 1:05"
+
+
+def test_half_way_through_a_video_the_progress_bar_is_filled_up_to_its_middle(qtbot):
+    parent = QWidget()
+    qtbot.addWidget(parent)
+    bar = ProgressBar(parent)
+    bar.resize(200, 20)
+    bar.start(SimpleNamespace(duration=60, time_pos=30))
+    parent.show()
+    qtbot.waitUntil(lambda: bar.text().startswith("0:30"))
+
+    image = bar.grab().toImage()
+    row = 1  # above the text
+    filled, empty = image.pixelColor(10, row), image.pixelColor(190, row)
+
+    assert filled != empty
+    assert image.pixelColor(90, row) == filled
+    assert image.pixelColor(110, row) == empty
