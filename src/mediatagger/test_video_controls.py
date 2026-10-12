@@ -1,4 +1,7 @@
+from types import SimpleNamespace
+
 from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QWidget
 
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import (
@@ -64,3 +67,16 @@ def test_while_a_video_plays_the_progress_bar_elapsed_time_advances(qtbot, tmp_p
     bar = viewer.findChild(ProgressBar)
 
     qtbot.waitUntil(lambda: bar.text() == "0:01 / 1:05", timeout=5000)
+
+
+def test_while_mpv_reports_no_position_or_length_between_clips_the_progress_bar_keeps_its_text_and_raises_nothing(qtbot):
+    parent = QWidget()
+    qtbot.addWidget(parent)
+    bar = ProgressBar(parent)
+    engine = SimpleNamespace(duration=65, time_pos=0)
+    bar.start(engine)
+
+    engine.duration = engine.time_pos = None  # what a stopped mpv reports
+    qtbot.wait(600)
+
+    assert bar.text() == "0:00 / 1:05"

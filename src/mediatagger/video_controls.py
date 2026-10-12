@@ -28,6 +28,8 @@ class ProgressBar(QLabel):
         self.show()
 
     def _tick(self):
+        if self._engine.time_pos is None:  # mpv has no position while a clip loads or stops
+            return
         self._show_elapsed(int(self._engine.time_pos))
 
     def _show_elapsed(self, seconds):
