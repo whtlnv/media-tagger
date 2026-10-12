@@ -1,7 +1,18 @@
+import ctypes
+
 import mpv
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QOpenGLContext
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
+
+_no_fence = ctypes.CFUNCTYPE(ctypes.c_void_p, ctypes.c_uint, ctypes.c_uint)(lambda condition, flags: None)
+
+
+def fence_free_lookup(lookup):
+    def resolve(_, name):
+        return ctypes.cast(_no_fence, ctypes.c_void_p).value
+
+    return resolve
 
 
 class MpvSurface(QOpenGLWidget):
