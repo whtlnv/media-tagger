@@ -16,7 +16,7 @@ from mediatagger.tag_prompt import TagPrompt
 from mediatagger.video import VideoPlayer, new_engine
 from mediatagger.video_controls import ProgressBar
 
-_PLAYER_OPTIONS = {"vo": "libmpv"}
+_PLAYER_OPTIONS = {"vo": "libmpv", "vd_lavc_dr": "no"}  # mpv_surface hands mpv no GL fences, which direct rendering needs
 _VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up", Qt.Key.Key_Down: "Down", Qt.Key.Key_Return: "Enter"}
 _VIDEO_KEYS |= {Qt.Key.Key_0 + digit: str(digit) for digit in range(10)}
 _SLIDESHOW_KEYS = {Qt.Key.Key_Left: "Left", Qt.Key.Key_Right: "Right", Qt.Key.Key_Space: "Space"}

@@ -258,3 +258,10 @@ def test_a_digit_key_in_the_viewer_on_an_image_keeps_showing_the_image_and_loads
     assert centre_colour(viewer) == QColor("red")
     assert not shows_video_surface(viewer)
     assert viewer.video_player.engine.path is None
+
+
+def test_a_viewer_made_without_extra_player_options_turns_off_mpvs_direct_rendering_decoder_buffers(qtbot):
+    viewer = Viewer()
+    qtbot.addWidget(viewer)
+
+    assert viewer.video_player.engine["vd-lavc-dr"] is False
