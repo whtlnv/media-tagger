@@ -1,2 +1,2 @@
 def search(library, query):
-    return [library.root / "dunes.jpg"]
+    return library.items_tagged(query)

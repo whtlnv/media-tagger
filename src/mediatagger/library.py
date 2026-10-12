@@ -140,6 +140,19 @@ class Library:
         connection.close()
         return counts
 
+    def items_tagged(self, tag):
+        connection = sqlite3.connect(self._tags_db)
+        rows = connection.execute(
+            "SELECT items.rel_path FROM item_tags"
+            " JOIN items ON items.id = item_tags.item_id"
+            " JOIN tags ON tags.id = item_tags.tag_id"
+            " WHERE tags.name = ?",
+            (tag,),
+        )
+        paths = [self.root / rel_path for (rel_path,) in rows]
+        connection.close()
+        return paths
+
     def tags(self, path):
         key = self._key(path)
         return self._tags_by_key([key])[key]
