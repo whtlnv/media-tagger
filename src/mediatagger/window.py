@@ -130,12 +130,14 @@ class Window(QWidget):
         return self.session.drive in path.parents
 
     def _show_tags_of(self, index):
-        library = self.session.library
         if not index.isValid():
             self.status_bar.show_tags("")
-        elif library:
-            tags =library.effective_tags(index.data(TILE_ROLE).path)
-            self.status_bar.show_tags(" ".join(tags.own), " ".join(tags.inherited))
+            return
+        library = self.session.library
+        if not library:
+            return
+        tags = library.effective_tags(index.data(TILE_ROLE).path)
+        self.status_bar.show_tags(" ".join(tags.own), " ".join(tags.inherited))
 
     def _show_current_tags(self):
         self._show_tags_of(self.stack.currentWidget().currentIndex())
