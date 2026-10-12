@@ -1,3 +1,45 @@
+- [x] 2026-10-11 · Entering `beach` for a folder makes `beach` that folder's own tag when its tags are read back, also after reopening the library
+- [x] 2026-10-11 · A tagged folder is recorded in the library as a folder (`kind` `'dir'`)
+- [x] 2026-10-11 · A tagged file is still recorded in the library as a file (`kind` `'file'`), next to a tagged folder
+- [x] 2026-10-11 · Tagging a folder leaves every file inside it with no own tags
+- [x] 2026-10-11 · Entering tags for the drive's mount point itself stores nothing: its own tags read back empty
+- [x] 2026-10-11 · Entering tags for a folder directly under the drive's mount point stores them
+- [x] 2026-10-11 · A file's effective tags include its own tags
+- [x] 2026-10-11 · A file's effective tags include the own tags of its parent folder, reported as inherited
+- [x] 2026-10-11 · A file's effective tags include the own tags of every ancestor folder up to the drive root (grandparent and above), reported as inherited
+- [x] 2026-10-11 · A file's effective tags exclude the tags of folders that aren't its ancestors (a sibling folder, and a folder whose name is a prefix of its parent's, such as `trip` for a file in `trip2/`)
+- [x] 2026-10-11 · A tag a file has both as its own and from an ancestor folder appears once in its effective tags, as own
+- [x] 2026-10-11 · A folder's effective tags include its ancestor folders' tags as inherited
+- [x] 2026-10-11 · Reading the effective tags of a file five folders deep runs one SQL query
+- [x] 2026-10-11 · A tag carried by one folder holding three files ranks below a tag carried by two files in the tag prompt's suggestions (the folder counts as one item)
+- [x] 2026-10-11 · A tag carried by two folders ranks above a tag carried by one file in the tag prompt's suggestions
+- [x] 2026-10-11 · A folder tile whose folder has own tags shows a `🏷N` badge with its own-tag count
+- [x] 2026-10-11 · A folder tile whose folder has no own tags but whose parent has tags shows no badge
+- [x] 2026-10-11 · Pressing `t` in the grid on a file tile opens the tag prompt showing that file's own tags
+- [x] 2026-10-11 · Pressing `t` in the grid where tags can't be saved (viewing only, read-only drive) opens no prompt and briefly shows `Tags can't be saved here`
+- [x] 2026-10-11 · Pressing `t` in the grid on a folder tile opens the tag prompt showing that folder's own tags
+- [x] 2026-10-11 · Entering `beach family` in the grid's tag prompt on a folder tile saves both as that folder's own tags and closes the prompt
+- [x] 2026-10-11 · Entering `-sunset` in the grid's tag prompt removes `sunset` from the selected item's own tags
+- [x] 2026-10-11 · Typing in the grid's tag prompt shows autocomplete suggestions from the drive's library
+- [x] 2026-10-11 · When saving from the grid's tag prompt fails because the drive has gone away, the prompt stays open with its text and the status bar says `Couldn't save tags — is the drive still connected?`
+- [x] 2026-10-11 · With the grid's tag prompt open, the first `Esc` closes the suggestion popup and leaves the prompt open
+- [x] 2026-10-11 · With the grid's tag prompt open and no popup, `Esc` closes the prompt and the app keeps running with the grid shown
+- [x] 2026-10-11 · While the grid's tag prompt is open, arrows, `Backspace`, `+` and `-` leave the grid's cursor, folder and tile size unchanged
+- [x] 2026-10-11 · After the grid's tag prompt closes, arrows move the grid cursor again
+- [x] 2026-10-11 · The grid's tag prompt sits at the bottom centre above the status bar, entirely inside the window
+- [x] 2026-10-11 · After saving tags in the grid, the selected tile's `🏷N` badge shows the new own-tag count without re-listing the folder
+- [x] 2026-10-11 · After saving tags in the grid, the status bar shows the selected item's new own tags
+- [x] 2026-10-11 · Moving the grid cursor onto an item inside a tagged folder shows its own tags in the status bar followed by the folder's inherited tags
+- [x] 2026-10-11 · In the grid's status bar, inherited tags are drawn dimmed and own tags in the normal style
+- [x] 2026-10-11 · The viewer's tag overlay shows the current file's own tags first, then its inherited tags, each group alphabetical
+- [x] 2026-10-11 · In the viewer's tag overlay, inherited tags are drawn dimmed (lighter than own tags) and own tags in the normal style
+- [x] 2026-10-11 · A file with only inherited tags shows the viewer's tag overlay
+- [x] 2026-10-11 · Pressing `t` in the viewer on a file inside a tagged folder hides the dimmed inherited tags while the prompt is open, and `Esc` shows them again
+- [x] 2026-10-11 · Moving with `Space` from an image to a video inside a tagged folder shows the dimmed inherited tags on top of the video
+- [x] 2026-10-11 · A file in a folder tagged `zoo` inside a folder tagged `apple` lists its inherited tags alphabetically (`apple zoo`) in the grid's status bar, and a tag both folders carry appears once
+- [x] 2026-10-11 · A file with no own and no inherited tags shows no tag overlay
+- [x] 2026-10-11 · Tagging a folder in the grid and then opening a file inside it shows the new inherited tags in the viewer's overlay at once
+- [x] 2026-10-11 · In the shipped `mediatagger` window, pressing `t` on a folder tile, entering `beach`, then `Enter` on a file inside that folder shows `beach` dimmed in the viewer's tag overlay
 - [x] 2026-10-11 · A 1600×800 image yields a thumbnail of 400×200 (fits ~400 px, aspect ratio kept)
 - [x] 2026-10-11 · A 300×600 image yields a thumbnail of 200×400 (the long side, not always the width, is fitted)
 - [x] 2026-10-11 · An image whose EXIF orientation says "rotated 90°" yields a thumbnail in its displayed (rotated) orientation
