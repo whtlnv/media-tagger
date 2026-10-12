@@ -2,6 +2,9 @@
 
 ## Out of Scope
 
+- **[src/mediatagger/state.py:17] `remember` keeps the remembered geometry by name, while `remember_geometry` keeps everything** (added: 2026-10-12)
+  Each new remembered key must also be carried over by hand in `remember`, or remembering a folder drops it. Unifying both through `_read` would also keep keys the app never wrote, and `remember` would start swallowing write errors as `remember_geometry` does; both are behavior changes a refactor may not make.
+
 - **[src/mediatagger/test_video_controls.py] The progress bar tests repeat the same five-line parent-widget staging** (added: 2026-10-12)
   Transformation broke the suite: test_while_mpv_reports_no_position_or_length_between_clips_the_progress_bar_keeps_its_text_and_raises_nothing. A helper that returns only the bar drops the last Python reference to its parent, which Qt then deletes along with the bar; the helper must also return (or otherwise keep alive) the parent.
 
