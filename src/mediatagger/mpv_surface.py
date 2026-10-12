@@ -9,6 +9,10 @@ _no_fence = ctypes.CFUNCTYPE(ctypes.c_void_p, ctypes.c_uint, ctypes.c_uint)(lamb
 
 
 def fence_free_lookup(lookup):
+    """mpv's get_proc_address over lookup, but glFenceSync makes no fence: libmpv 0.40/0.41 leaks one per frame
+    (mpv#17217, fixed upstream in f74adc4, unreleased); on the Pi each holds a file descriptor until the app dies.
+    glFenceSync must still resolve — it is core in GLES 3 and mpv refuses to start without it."""
+
     def resolve(_, name):
         if name == b"glFenceSync":
             return ctypes.cast(_no_fence, ctypes.c_void_p).value
