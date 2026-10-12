@@ -31,11 +31,11 @@ class MpvSurface(QOpenGLWidget):
         self.frame_ready.connect(self.update, Qt.ConnectionType.QueuedConnection)
 
     def initializeGL(self):
-        def get_proc_address(name):
+        def real_address(name):
             address = QOpenGLContext.currentContext().getProcAddress(name)
             return int(address) if address else 0
 
-        self._get_proc_address = mpv.MpvGlGetProcAddressFn(fence_free_lookup(get_proc_address))
+        self._get_proc_address = mpv.MpvGlGetProcAddressFn(fence_free_lookup(real_address))
         self.render_context = mpv.MpvRenderContext(
             self.engine, "opengl", opengl_init_params={"get_proc_address": self._get_proc_address}
         )
