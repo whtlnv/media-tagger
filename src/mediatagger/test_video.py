@@ -2,6 +2,7 @@ import subprocess
 import threading
 from contextlib import contextmanager
 
+import mpv
 import pytest
 
 from mediatagger.video import VideoPlayer, new_engine
@@ -167,3 +168,17 @@ def test_a_seek_or_stop_that_mpv_never_finishes_gives_up_instead_of_blocking(pla
     pressing.join(timeout=3)
 
     assert returned == [None]  # press came back on its own, neither stuck nor raising
+
+
+def test_when_mpv_refuses_a_seek_pressing_up_raises_nothing_and_the_video_keeps_playing(playing_video, monkeypatch):
+    player, engine = playing_video
+
+    def refuse(*args, **kwargs):
+        mpv.ErrorCode.raise_for_ec(-12, engine.seek, *args)  # what the Pi's mpv answered
+
+    monkeypatch.setattr(engine, "seek", refuse)
+
+    player.press("Up")
+
+    assert engine.pause is False
+    assert engine.path is not None

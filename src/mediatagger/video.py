@@ -58,6 +58,8 @@ class VideoPlayer:
                 self.engine.seek(seconds, precision="exact")
         except TimeoutError:
             pass  # the seek may still land; the viewer stays responsive either way
+        except SystemError:
+            pass  # mpv refused the seek; playback carries on where it was
 
 
 def _outcome_of_this_load():
