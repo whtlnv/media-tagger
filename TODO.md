@@ -12,6 +12,7 @@ Phase 9a notes for every cycle. These are fixes from the first Pi run plus video
 - [x] `Esc` from the viewer back to the grid shows the viewed file's tags in the status bar at once
 - [x] Launching into a remembered folder shows the first item's tags in the status bar at once
 - [x] `t` in an empty folder opens no tag prompt and raises nothing
+- [ ] Pressing `Enter` on an empty subfolder shows its empty grid, raises nothing, and leaves no tags in the status bar (today it raises in `Window._show_current_tags` on the invalid cursor — a regression from this phase's status-bar refresh)
 - [ ] With a writable library open, the status bar shows no `Library: <drive>` label
   - predicted-contradiction: `src/mediatagger/test_viewer_library.py::test_opening_a_folder_two_levels_below_a_drive_with_a_tag_library_names_that_drive_in_the_status_bar` — asserts: `Library: MEDIATAGGER` is in the status bar texts — retired-by: "With a writable library open, the status bar shows no `Library: <drive>` label"
   - predicted-contradiction: `src/mediatagger/test_viewer_library.py::test_opening_a_folder_that_is_itself_a_drives_mount_point_with_a_tag_library_names_that_folder_in_the_status_bar` — asserts: `Library: MEDIATAGGER` is in the status bar texts — retired-by: "With a writable library open, the status bar shows no `Library: <drive>` label"
