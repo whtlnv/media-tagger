@@ -77,9 +77,7 @@ class Viewer(QWidget):
             self.surface.setGeometry(self.rect())
         if self.status_bar.parent() is self:
             self.status_bar.place_along_the_bottom_of(self.rect())
-        frame = self.progress_bar.geometry()
-        frame.moveBottom(self.status_bar.geometry().top() - 1)
-        self.progress_bar.setGeometry(frame)
+        self._sit_above_status_bar(self.progress_bar)
         self._centre(self.placeholder)
         self._pin_top_centre(self.read_only_banner)
         self.tag_overlay.pin(self._pin_top_right)
@@ -90,6 +88,11 @@ class Viewer(QWidget):
         frame = label.geometry()
         frame.moveCenter(self.rect().center())
         label.setGeometry(frame)
+
+    def _sit_above_status_bar(self, widget):
+        frame = widget.geometry()
+        frame.moveBottom(self.status_bar.geometry().top() - 1)
+        widget.setGeometry(frame)
 
     def _pin_top_centre(self, label):
         frame = label.geometry()
