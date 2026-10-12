@@ -87,6 +87,7 @@ class Window(QWidget):
     def _show_grid(self):
         self.viewer.stop_video()
         self._show_parent_of(self.viewer.slideshow.current)
+        self._show_current_tags()
 
     def _grid_of(self, folder, at=None):
         return Grid(folder, at=at, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache())

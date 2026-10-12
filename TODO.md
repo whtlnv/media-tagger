@@ -9,7 +9,7 @@ Phase 9a notes for every cycle. These are fixes from the first Pi run plus video
 - [x] Pressing `Enter` on a folder whose first item has tags shows those tags in the status bar at once, before any cursor move
 - [x] Pressing `Enter` on a tagged folder whose first item is untagged leaves the status bar showing no tags (not the folder's)
 - [x] `Backspace` back to the parent folder shows the tags of the item under the cursor in the status bar at once
-- [ ] `Esc` from the viewer back to the grid shows the viewed file's tags in the status bar at once
+- [x] `Esc` from the viewer back to the grid shows the viewed file's tags in the status bar at once
 - [ ] Launching into a remembered folder shows the first item's tags in the status bar at once
 - [ ] `t` in an empty folder opens no tag prompt and raises nothing
 - [ ] With a writable library open, the status bar shows no `Library: <drive>` label

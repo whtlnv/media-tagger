@@ -828,3 +828,17 @@ def test_pressing_backspace_in_the_windows_grid_back_to_a_folder_whose_cursor_la
 
     assert stack.currentWidget().currentIndex().data(TILE_ROLE).path == folder / "day1"
     assert "beach family" in shown_status_bar_texts(window)
+
+
+def test_pressing_esc_in_the_windows_viewer_on_a_file_tagged_beach_family_shows_beach_family_in_the_grids_status_bar_before_any_cursor_move(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach family")
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    stack = window.findChild(QStackedWidget)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    assert stack.currentWidget().currentIndex().data(TILE_ROLE).path == folder / "IMG_1.png"
+    assert "beach family" in shown_status_bar_texts(window)
