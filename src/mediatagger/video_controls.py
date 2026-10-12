@@ -3,12 +3,16 @@ from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import QLabel
 
 
+HIDE_DELAY_MS = 3000  # the bar fades after this long without input
+
+
 class ProgressBar(QLabel):
     """A video's progress, shown only while the video surface it follows is shown."""
 
-    def __init__(self, parent):
+    def __init__(self, parent, hide_delay=HIDE_DELAY_MS):
         super().__init__(parent)
         self._ticker = QTimer(self, interval=250, timeout=self._tick)
+        self._hide_timer = QTimer(self, interval=hide_delay, singleShot=True, timeout=self.hide)
         self.hide()
 
     def follow(self, surface):
@@ -23,6 +27,7 @@ class ProgressBar(QLabel):
         self._engine = engine
         self._show_elapsed(0)
         self._ticker.start()
+        self._hide_timer.start()
         self.show()
 
     def _tick(self):

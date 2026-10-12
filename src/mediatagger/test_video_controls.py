@@ -136,3 +136,16 @@ def test_destroying_a_shown_progress_bar_whose_attributes_the_garbage_collector_
 
     bar.__dict__.clear()  # what Python's GC does to the wrapper when it breaks a reference cycle
     shiboken6.delete(parent)  # Qt hides the still-shown bar while destroying it
+
+
+def test_with_no_input_for_the_hide_delay_the_progress_bar_hides(qtbot):
+    parent = QWidget()
+    qtbot.addWidget(parent)
+    bar = ProgressBar(parent, hide_delay=100)
+    parent.show()
+    qtbot.waitExposed(parent)
+
+    bar.start(SimpleNamespace(duration=65, time_pos=0))
+
+    assert bar.isVisible()
+    qtbot.waitUntil(lambda: not bar.isVisible(), timeout=2000)
