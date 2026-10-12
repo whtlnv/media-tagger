@@ -24,10 +24,9 @@ class TagOverlay:
 
     def __init__(self, parent):
         self.own = overlay_label("", parent)
-        self.own.hide()
         self.inherited = overlay_label("", parent)
         self.inherited.setStyleSheet(_DIMMED_LABEL_STYLE)
-        self.inherited.hide()
+        self.hide()
 
     def show(self, tags):
         for label, shown in ((self.own, tags.own), (self.inherited, sorted(tags.inherited))):
@@ -35,6 +34,10 @@ class TagOverlay:
             label.adjustSize()
             label.setVisible(bool(shown))
             label.raise_()
+
+    def hide(self):
+        self.own.hide()
+        self.inherited.hide()
 
     def pin(self, pin_top_right):
         """Inherited tags sit in the top-right corner with the file's own tags just to their left."""

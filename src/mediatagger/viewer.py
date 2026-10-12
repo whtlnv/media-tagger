@@ -158,8 +158,7 @@ class Viewer(QWidget):
             return
         if event.key() == Qt.Key.Key_T:
             if self.session.tags_can_be_saved():
-                self.tag_overlay.own.hide()
-                self.tag_overlay.inherited.hide()
+                self.tag_overlay.hide()
                 self.tag_prompt.open(self.session.library, self.slideshow.current)
             else:
                 self.status_bar.flash_cant_save()
