@@ -2,6 +2,7 @@ import errno
 import os
 import sqlite3
 from datetime import datetime, timezone
+from pathlib import Path
 
 from PySide6.QtCore import QCoreApplication, QEvent, Qt
 from PySide6.QtWidgets import QLabel, QStackedWidget
@@ -34,6 +35,18 @@ def test_the_window_opened_on_a_folder_path_shows_the_slideshow_of_that_folder_a
     shown = window.findChild(QStackedWidget).currentWidget()
     assert isinstance(shown, Viewer)
     assert shown.slideshow.current == tmp_path / "a.jpg"
+
+
+def test_the_window_opened_on_a_relative_path_to_a_file_shows_that_file_in_the_viewer_as_the_absolute_path_does(qtbot, tmp_path, monkeypatch):
+    make_image(tmp_path / "a.jpg", "red")
+    make_image(tmp_path / "b.jpg", "blue")
+    monkeypatch.chdir(tmp_path)
+    window = Window(Path("b.jpg"), player_options=SILENT)
+    qtbot.addWidget(window)
+
+    shown = window.findChild(QStackedWidget).currentWidget()
+    assert isinstance(shown, Viewer)
+    assert shown.slideshow.current == tmp_path / "b.jpg"
 
 
 def test_in_the_windows_viewer_esc_shows_the_grid_of_the_current_items_folder_with_the_cursor_on_that_item(qtbot, tmp_path):

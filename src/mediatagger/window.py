@@ -36,7 +36,7 @@ class Window(QWidget):
         self.setAcceptDrops(True)
         self.setWindowState(Qt.WindowState.WindowFullScreen)
         if path is not None:  # opened once the viewer is in place, so a question about the library is asked over it
-            self._open(path)
+            self._open(path.absolute())
         if remembered and remembered.exists():
             self.session.open_library(remembered)
             grid = self._grid_of(remembered)
