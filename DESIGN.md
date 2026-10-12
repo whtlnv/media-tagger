@@ -139,7 +139,7 @@ Search history is remembered (`↑` in the search box).
 - Tiles ~200 px: thumbnail (a large type glyph until it arrives, or when there is none), truncated filename, tag-count badge when the item has own tags.
 - Video tiles: frame at ~10%, ▶ badge, duration.
 - Folder tiles: first image directly inside (natural order); none there, no thumbnail.
-- Selected item's own tags shown in the status bar.
+- Selected item's own tags shown in the status bar, followed by its inherited tags dimmed.
 
 ### Status bar (always visible)
 
