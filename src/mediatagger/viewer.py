@@ -258,6 +258,7 @@ class Viewer(QWidget):
         if not self.video_player.show(clip):
             self.surface.hide()
             self.placeholder.show()
+            self.progress_bar.hide()
             return
         self.progress_bar.show_length(self.video_player.engine.duration)
         self.progress_bar.show()

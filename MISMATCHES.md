@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 23:39 · `src/mediatagger/test_video_controls.py::test_moving_from_a_playing_video_to_one_that_cannot_be_played_shows_the_unsupported_placeholder_and_no_progress_bar`
+- Behavior: When a video can't be played and the unsupported placeholder shows instead, no progress bar is shown
+- Predicted: AssertionError on `not bar.isVisible()` — the bar stays visible from the previous video because `_play`'s failure branch never hides it
+- Actual: pytestqt TimeoutError waiting for `shown_texts(viewer) == [UNSUPPORTED_TEXT]`
+- Type: right-reason mismatch
+- Resolution: `shown_texts` collects every visible QLabel and ProgressBar is a QLabel, so the leftover bar's "0:00 / 1:05" broke the exact-list wait; changed the wait to `UNSUPPORTED_TEXT in shown_texts(viewer)`, and the test now fails on the predicted bar assertion.
+
 ## 2026-10-11 23:06 · `src/mediatagger/test_viewer_read_only.py::test_after_a_writable_library_hid_the_library_label_opening_a_folder_on_a_read_only_drive_without_one_shows_no_library_open_again`
 - Behavior: With no library open, the status bar still shows `No library open` (here, after a writable library has hidden the label)
 - Predicted: pass. `StatusBar.show_library` already calls `setVisible(bool(text))` (from 09135cd), and the launch screen case is already pinned by `test_the_launch_screen_status_bar_says_no_library_is_open`
