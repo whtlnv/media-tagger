@@ -24,9 +24,13 @@ def remember(state, folder, mount_point):
 
 
 def remember_geometry(state, geometry):
-    remembering = json.loads(state.read_text())
+    remembering = _read(state)
     remembering["geometry"] = geometry
-    state.write_text(json.dumps(remembering))
+    try:
+        state.parent.mkdir(parents=True, exist_ok=True)
+        state.write_text(json.dumps(remembering))
+    except OSError:
+        pass  # the window still closes; next time it opens centred
 
 
 def remembered_geometry(state):
@@ -34,9 +38,13 @@ def remembered_geometry(state):
 
 
 def _remembered(state, key):
-    if not state.exists():
-        return None
+    return _read(state).get(key)
+
+
+def _read(state):
+    """What the state file remembers; nothing if it is missing, unreadable or not a JSON object."""
     try:
-        return json.loads(state.read_text())[key]
-    except (json.JSONDecodeError, KeyError, PermissionError):
-        return None
+        remembering = json.loads(state.read_text())
+    except (OSError, ValueError):
+        return {}
+    return remembering if isinstance(remembering, dict) else {}

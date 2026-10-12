@@ -233,15 +233,34 @@ def test_launching_the_window_with_no_path_and_a_state_file_it_cannot_use_shows_
     assert shown.slideshow is None
 
 
-def test_launching_the_window_with_no_path_and_no_state_file_then_closing_it_leaves_no_state_file(qtbot):
+def test_launching_the_window_with_no_path_and_no_state_file_then_closing_it_leaves_a_state_file_holding_only_its_size_and_position(qtbot):
     state_file = Path(os.environ["XDG_CONFIG_HOME"]) / "mediatagger" / "state.json"
+    available = QGuiApplication.primaryScreen().availableGeometry()
+    frame = QRect(available.left() + 20, available.top() + 30, available.width() // 2, available.height() // 2)
 
     window = Window(player_options=SILENT, is_mount_point=lambda path: False)
     qtbot.addWidget(window)
+    window.show()
+    qtbot.waitExposed(window)
+    window.setGeometry(frame)
     window.close()
 
-    assert not state_file.exists()
+    assert json.loads(state_file.read_text()) == {"geometry": {"x": frame.x(), "y": frame.y(), "width": frame.width(), "height": frame.height()}}
 
+
+
+
+def test_closing_the_window_when_its_state_file_cannot_be_written_raises_nothing_and_leaves_the_file_as_it_was(qtbot):
+    state_file = write_state_file(json.dumps({"mount_point": "/elsewhere"}))
+    state_file.chmod(0o444)
+
+    window = Window(player_options=SILENT, is_mount_point=lambda path: False)
+    qtbot.addWidget(window)
+    window.show()
+    qtbot.waitExposed(window)
+    window.close()
+
+    assert json.loads(state_file.read_text()) == {"mount_point": "/elsewhere"}
 
 def test_launching_the_window_on_a_file_path_records_that_files_folder_in_the_state_file_not_the_file(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)

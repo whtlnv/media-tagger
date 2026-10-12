@@ -34,3 +34,8 @@ Append-only record of tests removed because a delivered change retired the behav
 - Asserted: the launch screen shows exactly "Drop a folder or file here, or press `o` to open" (with backticks)
 - Retired by: The launch screen text reads "Drop a folder or file here, or press o to open", with no backticks around the o
 - Confirmed: failed with AssertionError `'Drop a folder or file here, or press o to open' != 'Drop a folder or file here, or press \`o\` to open'` after the new behavior landed
+
+## 2026-10-12 · migrated · `src/mediatagger/test_window_state.py::test_launching_the_window_with_no_path_and_no_state_file_then_closing_it_leaves_no_state_file`
+- Asserted: closing a window launched with no path and no state file leaves no `state.json`
+- Retired by: Phase 9a — "Closing the window writes its size and position to `state.json` under the config home"
+- Migrated to: `test_launching_the_window_with_no_path_and_no_state_file_then_closing_it_leaves_a_state_file_holding_only_its_size_and_position` — same setup, now asserts the file holds only `{"geometry": …}` (no folder)

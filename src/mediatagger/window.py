@@ -7,7 +7,7 @@ from mediatagger.drive_session import DriveSession
 from mediatagger.folder_thumbnails import GENERATING_THUMBNAILS_TEXT, progress_text
 from mediatagger.grid import TILE_ROLE, Grid
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
-from mediatagger.state import remember, remembered_folder, remembered_geometry, state_file
+from mediatagger.state import remember, remember_geometry, remembered_folder, remembered_geometry, state_file
 from mediatagger.status_bar import StatusBar
 from mediatagger.tag_prompt import TagPrompt
 from mediatagger.viewer import Viewer
@@ -83,6 +83,7 @@ class Window(QWidget):
             self._forwarding = False
 
     def closeEvent(self, event):
+        self._record_geometry()
         self.viewer.close()  # shuts down its video player and backs up the session's library
         super().closeEvent(event)
 
@@ -125,9 +126,18 @@ class Window(QWidget):
         self.status_bar.show_background(progress_text(done, total), finished=done == total)
 
     def _record_state(self, folder):
-        if self._is_on_the_apps_own_drive(self._state_file) or self._is_on_the_drive_being_viewed(self._state_file):
+        if self._may_write_state():
+            remember(self._state_file, folder, self.session.drive)
+
+    def _record_geometry(self):
+        """The normal size and position, also when fullscreen, so the next launch opens as a normal window there."""
+        if not self.isVisible() or not self._may_write_state():
             return
-        remember(self._state_file, folder, self.session.drive)
+        frame = self.normalGeometry() if self.isFullScreen() else self.geometry()
+        remember_geometry(self._state_file, {"x": frame.x(), "y": frame.y(), "width": frame.width(), "height": frame.height()})
+
+    def _may_write_state(self):
+        return not (self._is_on_the_apps_own_drive(self._state_file) or self._is_on_the_drive_being_viewed(self._state_file))
 
     def _is_on_the_apps_own_drive(self, path):
         """The system disk is the home folder's own disk, so only an app drive other than `/` is kept clear."""

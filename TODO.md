@@ -46,6 +46,6 @@ Phase 9a notes for every cycle. These are fixes from the first Pi run plus video
   - hint (orchestrator): migrate the parametrized test to the flipped expectations rather than deleting it.
 - [x] With a geometry remembered in `state.json`, the window opens at that size and position
 - [x] Remembering a folder keeps the remembered window geometry in `state.json`, and remembering the geometry keeps the folder
-- [ ] Closing the window writes its size and position to `state.json` under the config home; when `state.json` can't be written (e.g. no permission), closing raises nothing
+- [x] Closing the window writes its size and position to `state.json` under the config home; when `state.json` can't be written (e.g. no permission), closing raises nothing
   - predicted-contradiction: `src/mediatagger/test_window_state.py::test_launching_the_window_with_no_path_and_no_state_file_then_closing_it_leaves_no_state_file` — asserts: closing a window launched with no path leaves no `state.json` — retired-by: "Closing the window writes its size and position to `state.json` under the config home"
 - [ ] Running the `mediatagger` entry point with a relative path to a video opens a normal (not fullscreen) window that plays it and shows the progress bar
