@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 def state_file(home):
-    """Where the last folder is remembered: under $XDG_CONFIG_HOME, else <home>/.config (the Pi's home, never a drive)."""
+    """Where the last folder and the window geometry are remembered: under $XDG_CONFIG_HOME, else <home>/.config (the Pi's home, never a drive)."""
     config_home = os.environ.get("XDG_CONFIG_HOME", home / ".config")
     return Path(config_home) / "mediatagger" / "state.json"
 

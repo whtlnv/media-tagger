@@ -96,6 +96,7 @@ Search history is remembered (`↑` in the search box).
 ### Launch
 
 - If the drive from last session is mounted: reopen the last folder in the grid. The last folder shown is remembered in `$XDG_CONFIG_HOME/mediatagger/state.json` (default `~/.config/mediatagger/`), never written to the app's own drive or the drive being viewed.
+- The window opens at the size and position remembered in `state.json` when it last closed; with none remembered, not fullscreen, at about 80 % of the available screen, centred.
 - Otherwise: empty screen "Drop a folder or file here, or press o to open".
 
 ### Drag & drop
@@ -104,7 +105,7 @@ Search history is remembered (`↑` in the search box).
 - Drop a file: slideshow of its folder, starting at that file.
 - A path that is missing or unreadable (or a file whose folder can't be listed) shows "Can't open <name>"; dropping or opening (`o`) another path still works.
 
-### Viewer (fullscreen)
+### Viewer
 
 | Key | Action |
 |---|---|
@@ -116,10 +117,12 @@ Search history is remembered (`↑` in the search box).
 | `f` | toggle fullscreen |
 | `p` / `Enter` | play/pause (video) |
 | `↑` / `↓` | seek ±10 s (video) |
+| `0`–`9` | jump to 0 %–90 % of the video |
 | `m` | mute |
 
 - Images fit to screen.
 - Video autoplays **with sound**, loops. Space never pauses.
+- While a video plays, a progress bar (`1:23 / 4:56`, `0:00:05 / 1:02:03` from an hour) sits along its bottom above the status bar; any key shows it, and it hides after 3 s without input.
 - Tag overlay in a corner: own tags normal, inherited tags dimmed.
 - Manual advance only.
 
@@ -143,7 +146,7 @@ Search history is remembered (`↑` in the search box).
 
 ### Status bar (always visible)
 
-It names the open library (`Library: MEDIATAGGER`) or says there is none (viewing only), says `Library on <drive> can't be opened — viewing only` when the drive's `tags.db` can't be opened, and on a read-only drive adds `Read-only — tags can't be saved`.
+It says when there is no library (viewing only), says `Library on <drive> can't be opened — viewing only` when the drive's `tags.db` can't be opened, and on a read-only drive adds `Read-only — tags can't be saved`.
 
 Pressing `t` where tags can't be saved (no library, declined, can't be opened, read-only, system disk, the app's own drive) briefly shows `Tags can't be saved here`.
 
