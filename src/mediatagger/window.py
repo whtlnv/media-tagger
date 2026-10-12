@@ -135,6 +135,9 @@ class Window(QWidget):
             tags = library.effective_tags(index.data(TILE_ROLE).path)
             self.status_bar.show_tags(" ".join(tags.own), " ".join(tags.inherited))
 
+    def _show_current_tags(self):
+        self._show_tags_of(self.stack.currentWidget().currentIndex())
+
     def _tag(self, index):
         if not self.session.tags_can_be_saved():
             self.status_bar.flash_cant_save()
@@ -144,13 +147,13 @@ class Window(QWidget):
     def _show_saved_tags(self, library, path):
         grid = self.stack.currentWidget()
         grid.show_tag_count(len(library.tags(path)))
-        self._show_tags_of(grid.currentIndex())
+        self._show_current_tags()
 
     def _leave(self, folder):
         if self.session.is_mount_point(folder):
             return
         self._show_parent_of(folder)
-        self._show_tags_of(self.stack.currentWidget().currentIndex())
+        self._show_current_tags()
 
     def _show_parent_of(self, path):
         self._show(self._grid_of(path.parent, at=path))
@@ -161,7 +164,7 @@ class Window(QWidget):
             grid = self._grid_of(path)
             grid.setCurrentIndex(grid.model().index(0, 0))
             self._show(grid)
-            self._show_tags_of(grid.currentIndex())
+            self._show_current_tags()
             return
         self._open(path)
 
