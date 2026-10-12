@@ -10,7 +10,7 @@ from mediatagger.backup import back_up
 from mediatagger.drive_session import BACKUP_FAILED_TEXT, CREATE_LIBRARY_QUESTION, RESTORE_LIBRARY_QUESTION
 from mediatagger.grid import TAG_BADGE, TILE_ROLE, Grid
 from mediatagger.library import Library
-from mediatagger.status_bar import _COULDNT_SAVE_TAGS_TEXT, READ_ONLY_STATUS_TEXT, TAGS_CANT_BE_SAVED_HERE_TEXT, StatusBar
+from mediatagger.status_bar import READ_ONLY_STATUS_TEXT, TAGS_CANT_BE_SAVED_HERE_TEXT, StatusBar
 from mediatagger.test_grid import painted_texts
 from mediatagger.test_tag_prompt import listed
 from mediatagger.test_video import make_clip
@@ -517,7 +517,7 @@ def test_when_saving_from_the_windows_grid_tag_prompt_fails_because_the_drive_ha
     enter_in_the_grids_tag_prompt(qtbot, window, stack, "beach")
 
     assert visible_tag_prompt_texts(window) == ["beach"]
-    assert _COULDNT_SAVE_TAGS_TEXT in shown_status_bar_texts(window)
+    assert "Couldn't save tags — is the drive still connected?" in shown_status_bar_texts(window)
 
 
 def test_esc_with_the_suggestion_popup_open_in_the_windows_grid_tag_prompt_closes_only_the_popup_leaving_the_prompt_open_with_its_text(qtbot, tmp_path):
