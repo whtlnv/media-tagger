@@ -12,6 +12,12 @@ from mediatagger.test_viewer_open import make_folders
 from mediatagger.status_bar import CORNER_MARGIN
 
 
+def assert_in_top_right_corner(viewer, label):
+    frame = frame_in(viewer, label)
+    assert frame.top() == CORNER_MARGIN
+    assert frame.right() == viewer.rect().right() - CORNER_MARGIN
+
+
 def test_after_entering_beach_family_in_the_tag_prompt_a_tag_overlay_shows_beach_family_while_the_prompt_is_closed(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
@@ -76,9 +82,7 @@ def test_the_tag_overlay_sits_in_the_top_right_corner_a_corner_margin_from_the_t
     resize_and_wait(qtbot, viewer, 1600, 900)
 
     [tag_overlay] = shown_labels(viewer)
-    frame = frame_in(viewer, tag_overlay)
-    assert frame.top() == CORNER_MARGIN
-    assert frame.right() == viewer.rect().right() - CORNER_MARGIN
+    assert_in_top_right_corner(viewer, tag_overlay)
 
 
 def test_after_space_to_a_file_with_longer_tags_the_tag_overlay_still_ends_a_corner_margin_from_the_right_edge(qtbot, tmp_path):
@@ -116,9 +120,7 @@ def test_after_the_window_is_resized_the_tag_overlay_is_still_a_corner_margin_fr
     resize_and_wait(qtbot, viewer, 1000, 700)
 
     [tag_overlay] = shown_labels(viewer)
-    frame = frame_in(viewer, tag_overlay)
-    assert frame.top() == CORNER_MARGIN
-    assert frame.right() == viewer.rect().right() - CORNER_MARGIN
+    assert_in_top_right_corner(viewer, tag_overlay)
 
 
 def test_with_the_info_overlay_and_the_read_only_banner_showing_the_tag_overlay_overlaps_neither(qtbot, tmp_path):
@@ -208,6 +210,4 @@ def test_a_file_with_no_own_tags_in_a_folder_tagged_aunt_shows_aunt_in_the_tag_o
 
     [tag_overlay] = shown_labels(viewer)
     assert tag_overlay.text() == "aunt"
-    frame = frame_in(viewer, tag_overlay)
-    assert frame.top() == CORNER_MARGIN
-    assert frame.right() == viewer.rect().right() - CORNER_MARGIN
+    assert_in_top_right_corner(viewer, tag_overlay)
