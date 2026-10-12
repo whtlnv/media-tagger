@@ -34,8 +34,7 @@ class Window(QWidget):
         self.stack.addWidget(self.viewer)
         self._forwarding = False
         self.setAcceptDrops(True)
-        available = self.screen().availableGeometry()
-        self.setGeometry(QStyle.alignedRect(Qt.LayoutDirection.LeftToRight, Qt.AlignmentFlag.AlignCenter, available.size() * 0.8, available))
+        self._centre_on_the_screen()
         if path is not None:  # opened once the viewer is in place, so a question about the library is asked over it
             self._open(path.absolute())
         if remembered and remembered.exists():
@@ -43,6 +42,10 @@ class Window(QWidget):
             grid = self._grid_of(remembered)
             self._show(grid)
             grid.setCurrentIndex(grid.model().index(0, 0))
+
+    def _centre_on_the_screen(self):
+        available = self.screen().availableGeometry()
+        self.setGeometry(QStyle.alignedRect(Qt.LayoutDirection.LeftToRight, Qt.AlignmentFlag.AlignCenter, available.size() * 0.8, available))
 
     def resizeEvent(self, event):
         self.status_bar.place_along_the_bottom_of(self.rect())
