@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-12 03:31 · `src/mediatagger/test_video_controls.py::test_five_on_a_playing_video_whose_progress_bar_is_hidden_seeks_to_half_its_length_and_shows_the_bar`
+- Behavior: `5` on a playing video seeks to 50 % of its duration and shows the progress bar
+- Predicted: AssertionError on `bar.isVisible()` — `Key_5` isn't in `_VIDEO_KEYS`, so the bar stays hidden
+- Actual: AssertionError on the text — `'0:00 / 1:04' != '0:32 / 1:04'`; the bar is already visible
+- Type: right-reason mismatch
+- Resolution: `Viewer.keyPressEvent` wakes the progress bar on every key before dispatching (from "A key pressed while the progress bar is hidden shows it again"), so the "shows the bar" half already holds; only the seek is missing. Accepted the failure as-is.
+
 ## 2026-10-12 02:30 · `src/mediatagger/test_video_controls.py::test_waking_the_progress_bar_while_it_shows_keeps_it_visible_for_the_full_hide_delay_after_the_latest_wake`
 - Behavior: A key pressed while the progress bar is showing restarts the hide delay, so the bar stays visible for the full delay after the latest key
 - Predicted: pass — `ProgressBar.wake()` already calls `_hide_timer.start()`, which restarts a running QTimer, and `Viewer.keyPressEvent` calls `wake()` on every key (commit c3b2816)

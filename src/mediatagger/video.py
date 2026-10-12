@@ -46,16 +46,19 @@ class VideoPlayer:
         if key == "Down":
             self._seek(-10)
             return
+        if key == "5":
+            self._seek(50, reference="absolute-percent")
+            return
         if key == "m":
             self.engine.mute = not self.engine.mute
             return
         if key in ("p", "Enter"):
             self.engine.pause = not self.engine.pause
 
-    def _seek(self, seconds):
+    def _seek(self, amount, reference="relative"):
         try:
             with self.engine.prepare_and_wait_for_event("playback_restart", timeout=self.timeout):
-                self.engine.seek(seconds, precision="exact")
+                self.engine.seek(amount, reference=reference, precision="exact")
         except TimeoutError:
             pass  # the seek may still land; the viewer stays responsive either way
         except SystemError:
