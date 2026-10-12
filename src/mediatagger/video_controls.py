@@ -68,9 +68,10 @@ class ProgressBar(QLabel):
         """Show the bar for another hide delay, if a video is playing."""
         if not self._playing:
             return
+        self.show()
+        self._tick()
         self._ticker.start()
         self._hide_timer.start()
-        self.show()
 
     def _tick(self):
         if not self.isVisible():  # hidden, or its viewer closed: mpv may be gone, so don't ask it

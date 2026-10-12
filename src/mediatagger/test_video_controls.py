@@ -182,6 +182,20 @@ def test_a_key_pressed_while_the_progress_bar_is_hidden_on_a_playing_video_shows
     assert bar.isVisible()
 
 
+def test_up_on_a_playing_video_whose_progress_bar_is_hidden_shows_the_bar_at_once_at_the_new_position(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    wait_until_loaded(viewer.video_player.engine, clip)
+    bar = viewer.findChild(ProgressBar)
+    qtbot.waitUntil(bar.isVisible, timeout=5000)
+    bar.hide()  # as when the hide delay runs out
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Up)
+
+    assert bar.isVisible()
+    assert bar.text() == "0:10 / 1:05"
+
+
 def test_waking_the_progress_bar_while_it_shows_keeps_it_visible_for_the_full_hide_delay_after_the_latest_wake(qtbot):
     parent = QWidget()
     qtbot.addWidget(parent)

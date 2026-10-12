@@ -155,6 +155,7 @@ class Viewer(QWidget):
             return  # keys the open tag prompt ignores must not reach the slideshow or video
         if event.key() in _VIDEO_KEYS:
             self.video_player.press(_VIDEO_KEYS[event.key()])
+            self.progress_bar.wake()
             return
         if event.key() not in _SLIDESHOW_KEYS:
             return
