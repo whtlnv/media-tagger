@@ -27,3 +27,12 @@ def test_searching_for_beach_in_any_letter_case_finds_a_file_tagged_beach(tmp_pa
     library.enter(photo, "beach")
 
     assert search(library, "BeAcH") == [photo]
+
+
+def test_an_exact_term_does_not_find_a_longer_tag_that_starts_with_it(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "party.jpg"
+    photo.touch()
+    library.enter(photo, "people:anabel")
+
+    assert search(library, "people:ana") == []

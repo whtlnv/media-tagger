@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-12 17:08 · `src/mediatagger/test_search.py::test_an_exact_term_does_not_find_a_longer_tag_that_starts_with_it`
+- Behavior: An exact term does not find a longer tag that starts with it (`people:ana` leaves out a file tagged only `people:anabel`)
+- Predicted: passes on first run — `Library.items_tagged` already matches with `tags.name = ?`, so no prefix match is possible
+- Actual: passed (1 passed)
+- Type: passed unexpectedly
+- Resolution: The item is a guard against a future prefix/wildcard search, not missing behavior; no honest failing form exists without breaking production, so the test is kept as a regression pin rather than rewritten.
+
 ## 2026-10-12 06:18 · `src/mediatagger/test_mpv_surface.py::test_the_glfencesync_stand_in_is_still_callable_after_a_garbage_collection`
 - Behavior: the `glFenceSync` stand-in handed to mpv stays callable after a garbage collection while its lookup is alive
 - Predicted: test passes — `_no_fence` is a module-level global in `mpv_surface.py`, so the TODO item's premise (behavior missing) is false
