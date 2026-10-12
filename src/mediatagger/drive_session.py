@@ -13,7 +13,6 @@ from mediatagger.thumbnail_cache import open_thumbnail_cache
 
 APP_PACKAGE = Path(__file__).parent  # its drive is never written while the app runs
 _FULLSCREEN_SETTLE_MS = 1000
-LIBRARY_TEXT = "Library: {}"
 NO_LIBRARY_VIEWING_ONLY_TEXT = "No library — viewing only"
 DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT = "{} has no tag library — viewing only"
 LIBRARY_CANT_BE_OPENED_TEXT = "Library on {} can't be opened — viewing only"
@@ -60,7 +59,7 @@ class DriveSession:
         self.library = None
         self.drive = drive
         if self._never_holds_a_library(drive):
-            self.status_bar.library_label.setText(NO_LIBRARY_VIEWING_ONLY_TEXT)
+            self.status_bar.show_library(NO_LIBRARY_VIEWING_ONLY_TEXT, read_only=False)
             return
         read_only = not os.access(drive, os.W_OK)
         if not tags_db_path(drive).exists():
@@ -68,7 +67,7 @@ class DriveSession:
                 return
         elif not self._open_existing_library(drive, read_only):
             return
-        self._show_library_status(LIBRARY_TEXT.format(drive.name), read_only)
+        self._show_library_status("", read_only)
 
     def thumbnail_cache(self):
         """The current drive's thumbnails: on disk under its drive id when it has a library, else in memory for the

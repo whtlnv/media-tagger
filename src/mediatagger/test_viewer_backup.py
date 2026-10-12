@@ -14,7 +14,7 @@ from mediatagger.test_viewer import make_image, show_exposed, shown_texts, SILEN
 from mediatagger.test_viewer_library import decline_noting_the_question_in, drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, made_read_only, make_tag_library_drive, overwrite_tags_db_with_garbage, status_bar_texts
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger import status_bar as status_bar_module
-from mediatagger.drive_session import BACKED_UP_TEXT, BACKING_UP_TEXT, BACKUP_FAILED_TEXT, CANT_RESTORE_TO_READ_ONLY_DRIVE_TEXT, CREATE_LIBRARY_QUESTION, DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT, LIBRARY_CANT_BE_OPENED_TEXT, LIBRARY_TEXT, RESTORE_FAILED_TEXT, RESTORE_LIBRARY_QUESTION, RESTORED_BACKUP_TEXT
+from mediatagger.drive_session import BACKED_UP_TEXT, BACKING_UP_TEXT, BACKUP_FAILED_TEXT, CANT_RESTORE_TO_READ_ONLY_DRIVE_TEXT, CREATE_LIBRARY_QUESTION, DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT, LIBRARY_CANT_BE_OPENED_TEXT, RESTORE_FAILED_TEXT, RESTORE_LIBRARY_QUESTION, RESTORED_BACKUP_TEXT
 from mediatagger.viewer import Viewer
 
 
@@ -151,7 +151,7 @@ def test_a_few_seconds_after_a_backup_finishes_backed_up_is_cleared_from_the_sta
 
     qtbot.waitUntil(lambda: BACKED_UP_TEXT not in status_bar_texts(viewer), timeout=10000)
 
-    assert status_bar_texts(viewer) == [LIBRARY_TEXT.format("MEDIATAGGER")]
+    assert status_bar_texts(viewer) == []
 
 
 def test_when_a_backup_fails_because_the_backup_root_is_not_writable_the_status_bar_shows_backup_failed_with_its_reason_and_the_viewer_keeps_showing_the_item(qtbot, tmp_path):
@@ -409,7 +409,7 @@ def test_a_backup_failing_soon_after_an_earlier_backed_up_keeps_its_failure_show
     assert f"✗ Backup failed: {os.strerror(errno.EACCES)}" in status_bar_texts(viewer)
 
 
-def test_after_restoring_a_missing_tags_db_the_viewer_asks_no_create_question_and_names_the_drive_as_the_open_library(qtbot, tmp_path):
+def test_after_restoring_a_missing_tags_db_the_viewer_asks_no_create_question_and_opens_the_restored_library(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     backup_root = tmp_path / "backups"
     back_up(Library.open(drive), backup_root, clock=lambda: datetime(2026, 10, 9, 15, 30, tzinfo=timezone.utc))
@@ -422,7 +422,7 @@ def test_after_restoring_a_missing_tags_db_the_viewer_asks_no_create_question_an
     )
 
     assert asked_to_create == []
-    assert "Library: MEDIATAGGER" in status_bar_texts(viewer)
+    assert viewer.session.library.root == drive
 
 
 def test_opening_a_folder_on_a_read_only_drive_whose_tags_db_is_garbage_with_no_backups_says_its_library_cant_be_opened(qtbot, tmp_path):

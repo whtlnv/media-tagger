@@ -10,7 +10,7 @@ from mediatagger.library import Library, tags_db_path
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import centre_colour, make_image, show_exposed, shown_labels, shown_launch_viewer, shown_texts, shown_viewer_on, SILENT, shows_video_surface
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
-from mediatagger.drive_session import APP_PACKAGE, CREATE_LIBRARY_QUESTION, DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT, LIBRARY_TEXT, NO_LIBRARY_VIEWING_ONLY_TEXT
+from mediatagger.drive_session import APP_PACKAGE, CREATE_LIBRARY_QUESTION, DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT, NO_LIBRARY_VIEWING_ONLY_TEXT
 from mediatagger.status_bar import NO_LIBRARY_TEXT, TAGS_CANT_BE_SAVED_HERE_TEXT
 from mediatagger.viewer import Viewer
 
@@ -128,7 +128,7 @@ def test_the_launch_screen_status_bar_says_no_library_is_open(qtbot):
     assert status_bar_texts(viewer) == [NO_LIBRARY_TEXT]
 
 
-def test_opening_a_folder_two_levels_below_a_drive_with_a_tag_library_names_that_drive_in_the_status_bar(qtbot, tmp_path):
+def test_opening_a_folder_two_levels_below_a_drive_with_a_tag_library_opens_that_drives_library(qtbot, tmp_path):
     drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
     folder = drive / "Photos" / "2024"
     folder.mkdir(parents=True)
@@ -136,16 +136,25 @@ def test_opening_a_folder_two_levels_below_a_drive_with_a_tag_library_names_that
 
     viewer = viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
-    assert LIBRARY_TEXT.format("MEDIATAGGER") in status_bar_texts(viewer)
+    assert viewer.session.library.root == drive
 
 
-def test_opening_a_folder_that_is_itself_a_drives_mount_point_with_a_tag_library_names_that_folder_in_the_status_bar(qtbot, tmp_path):
+def test_opening_a_folder_that_is_itself_a_drives_mount_point_with_a_tag_library_opens_that_folders_library(qtbot, tmp_path):
     drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
     make_image(drive / "IMG_1.png", "red")
 
     viewer = viewer_on_drive(qtbot, drive, drive, lambda question: False)
 
-    assert LIBRARY_TEXT.format("MEDIATAGGER") in status_bar_texts(viewer)
+    assert viewer.session.library.root == drive
+
+
+def test_with_a_writable_library_open_the_status_bar_shows_no_library_label(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+
+    viewer = viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    assert viewer.session.tags_can_be_saved()
+    assert viewer.status_bar.library_label.isHidden()
 
 
 def test_opening_a_file_on_a_drive_names_the_same_library_in_the_status_bar_as_opening_its_folder(qtbot, tmp_path):
@@ -161,7 +170,7 @@ def test_opening_a_file_on_a_drive_names_the_same_library_in_the_status_bar_as_o
     assert status_bar_texts(file_viewer) == status_bar_texts(folder_viewer)
 
 
-def test_dropping_a_folder_from_a_different_drive_while_viewing_switches_the_status_bar_to_that_drives_library(qtbot, tmp_path):
+def test_dropping_a_folder_from_a_different_drive_while_viewing_switches_to_that_drives_library(qtbot, tmp_path):
     first_drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
     second_drive = make_tag_library_drive(tmp_path / "BACKUP")
     [viewed] = make_folders(first_drive, "Photos")
@@ -172,8 +181,7 @@ def test_dropping_a_folder_from_a_different_drive_while_viewing_switches_the_sta
 
     drag_and_drop_onto(viewer, dropped)
 
-    assert LIBRARY_TEXT.format("BACKUP") in status_bar_texts(viewer)
-    assert LIBRARY_TEXT.format("MEDIATAGGER") not in status_bar_texts(viewer)
+    assert viewer.session.library.root == second_drive
 
 
 def test_opening_a_folder_on_the_system_disk_never_asks_to_create_a_library_and_the_status_bar_says_no_library_viewing_only(qtbot, tmp_path):
@@ -239,23 +247,25 @@ def test_opening_a_folder_on_a_drive_that_already_has_a_tag_library_does_not_ask
     assert asked == []
 
 
-def test_accepting_to_create_a_tag_library_on_a_drive_creates_it_and_names_the_drive_as_the_open_library(qtbot, tmp_path):
+def test_accepting_to_create_a_tag_library_on_a_drive_creates_it_and_opens_it(qtbot, tmp_path):
     drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
 
     viewer = viewer_on_drive(qtbot, folder, drive, lambda question: True)
 
     assert (drive / ".mediatagger" / "tags.db").is_file()
-    assert LIBRARY_TEXT.format("MEDIATAGGER") in status_bar_texts(viewer)
+    assert viewer.session.library.root == drive
+    assert viewer.session.tags_can_be_saved()
 
 
-def test_accepting_to_create_a_tag_library_on_a_drive_whose_mediatagger_folder_holds_no_tags_db_creates_it_there_and_names_the_drive(qtbot, tmp_path):
+def test_accepting_to_create_a_tag_library_on_a_drive_whose_mediatagger_folder_holds_no_tags_db_creates_it_there_and_opens_it(qtbot, tmp_path):
     drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
     (drive / ".mediatagger").mkdir()
 
     viewer = viewer_on_drive(qtbot, folder, drive, lambda question: True)
 
     assert (drive / ".mediatagger" / "tags.db").is_file()
-    assert LIBRARY_TEXT.format("MEDIATAGGER") in status_bar_texts(viewer)
+    assert viewer.session.library.root == drive
+    assert viewer.session.tags_can_be_saved()
 
 
 def test_accepting_to_create_a_tag_library_on_a_drive_creates_a_real_library_whose_tags_db_reports_a_drive_id(qtbot, tmp_path):
@@ -320,9 +330,11 @@ def test_opening_a_folder_that_does_not_exist_on_a_drive_without_a_tag_library_d
 
 
 def test_the_status_bar_text_is_shown_whole_with_room_for_its_full_height(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    folder = tmp_path / "Photos"
+    folder.mkdir()
+    make_image(folder / "IMG_1.png", "red")
 
-    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    viewer = shown_viewer_on_drive(qtbot, folder, Path("/"), lambda question: False)  # the system disk: no library, viewing only
 
     assert viewer.status_bar.library_label.height() >= viewer.status_bar.library_label.sizeHint().height()
     assert viewer.status_bar.library_label.width() == viewer.status_bar.library_label.sizeHint().width()
@@ -345,7 +357,10 @@ def test_the_question_to_create_a_tag_library_is_asked_over_the_dropped_folders_
 
 
 def test_the_status_bar_text_stays_on_top_of_a_playing_video(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path)
+    drive = tmp_path / "MEDIATAGGER"
+    drive.mkdir()
+    [folder] = make_folders(drive, "Clips")
+    make_clip(folder / "IMG_1.mp4")  # no tag library, so the status bar has something to say: that it is viewing only
 
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     qtbot.waitUntil(lambda: shows_video_surface(viewer))

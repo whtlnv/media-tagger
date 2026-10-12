@@ -86,8 +86,10 @@ class StatusBar(QWidget):
         self.setGeometry(rect.left(), rect.bottom() + 1 - height, rect.width(), height)
 
     def show_library(self, text, read_only):
+        """An open, writable library needs no mention: the label shows only what is wrong, or missing."""
         self.read_only_status.setVisible(read_only)
         self.library_label.setText(text)
+        self.library_label.setVisible(bool(text))
 
     def flash_cant_save(self):
         self.cant_save_status.show()

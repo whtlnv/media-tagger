@@ -8,7 +8,6 @@ from mediatagger.test_viewer_library import (
     resize_and_wait, shown_viewer_on_drive, shown_viewer_on_drives, status_bar_labels, status_bar_texts, viewer_on_drives, visible_tag_prompts,
 )
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
-from mediatagger.drive_session import LIBRARY_TEXT
 from mediatagger.status_bar import CORNER_MARGIN, READ_ONLY_STATUS_TEXT, TAGS_CANT_BE_SAVED_HERE_TEXT
 from mediatagger.viewer import READ_ONLY_BANNER_TEXT
 
@@ -121,7 +120,7 @@ def test_after_viewing_a_read_only_drive_dropping_a_folder_from_a_writable_drive
     assert READ_ONLY_STATUS_TEXT not in status
 
 
-def test_after_viewing_a_drive_with_a_tag_library_opening_a_folder_on_a_read_only_drive_without_one_says_tags_cant_be_saved_and_no_longer_names_the_previous_library(qtbot, tmp_path):
+def test_after_viewing_a_drive_with_a_tag_library_opening_a_folder_on_a_read_only_drive_without_one_says_tags_cant_be_saved_and_closes_the_previous_library(qtbot, tmp_path):
     viewed_drive = make_tag_library_drive(tmp_path / "BACKUP")
     [viewed] = make_folders(viewed_drive, "Videos")
     make_image(viewed / "IMG_1.png", "green")
@@ -133,7 +132,7 @@ def test_after_viewing_a_drive_with_a_tag_library_opening_a_folder_on_a_read_onl
         status = status_bar_texts(viewer)
 
     assert READ_ONLY_STATUS_TEXT in status
-    assert LIBRARY_TEXT.format("BACKUP") not in status
+    assert viewer.session.library is None
 
 
 def test_pressing_t_on_a_read_only_drive_with_a_tag_library_opens_no_tag_prompt(qtbot, tmp_path):
