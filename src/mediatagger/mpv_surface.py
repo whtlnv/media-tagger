@@ -10,7 +10,9 @@ _no_fence = ctypes.CFUNCTYPE(ctypes.c_void_p, ctypes.c_uint, ctypes.c_uint)(lamb
 
 def fence_free_lookup(lookup):
     def resolve(_, name):
-        return ctypes.cast(_no_fence, ctypes.c_void_p).value
+        if name == b"glFenceSync":
+            return ctypes.cast(_no_fence, ctypes.c_void_p).value
+        return lookup(name.decode())
 
     return resolve
 

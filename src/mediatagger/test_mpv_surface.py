@@ -13,3 +13,9 @@ def test_glfencesync_resolves_to_a_stand_in_that_returns_no_fence():
 
     assert address
     assert FENCE_SYNC(address)(GL_SYNC_GPU_COMMANDS_COMPLETE, 0) is None
+
+
+def test_any_other_gl_function_resolves_to_the_address_the_real_context_reports():
+    lookup = fence_free_lookup({"glClear": 0x5678}.get)
+
+    assert lookup(None, b"glClear") == 0x5678

@@ -6,7 +6,7 @@ Phase 9b notes for every cycle (Phases 1–9a are delivered — see DONE.md; Pha
 ## Phase 9b — Video playback never leaks
 
 - [x] When mpv asks the video surface's GL function lookup for `glFenceSync`, it gets a non-null address of a stand-in function, and calling that stand-in returns no fence (null)
-- [ ] When mpv asks the video surface's GL function lookup for any other GL function (e.g. `glClear`), it gets exactly the address the real OpenGL context reports for that name
+- [x] When mpv asks the video surface's GL function lookup for any other GL function (e.g. `glClear`), it gets exactly the address the real OpenGL context reports for that name
 - [ ] The `glFenceSync` stand-in handed to mpv is still callable after a garbage collection, for as long as the lookup that handed it out is alive
 - [ ] When the video surface creates its mpv render context, mpv is given the fence-free GL function lookup (asking it for `glFenceSync` returns the stand-in, not the context's real function)
 - [ ] A viewer created without extra player options runs its player with `vd-lavc-dr=no`
