@@ -101,7 +101,7 @@ def test_half_way_through_a_video_the_progress_bar_is_filled_up_to_its_middle(qt
     qtbot.waitUntil(lambda: bar.text().startswith("0:30"))
 
     image = bar.grab().toImage()
-    row = 1  # above the text
+    row = image.height() - 2  # the track along the bottom edge
     filled, empty = image.pixelColor(10, row), image.pixelColor(190, row)
 
     assert filled != empty
@@ -276,4 +276,21 @@ def test_the_progress_bar_shows_light_text_and_a_light_track_on_a_dark_backgroun
 
     engine.time_pos = 30
     qtbot.waitUntil(lambda: bar.text().startswith("0:30"))
-    assert bar_over(QColor("black")).pixelColor(5, 1).lightness() > 200  # the filled track reads over a black frame
+    assert bar_over(QColor("black")).pixelColor(5, 18).lightness() > 200  # the filled track reads over a black frame
+
+
+def test_the_filled_track_is_a_thin_strip_along_the_bottom_of_the_progress_bar_so_the_light_text_never_sits_on_it(qtbot):
+    parent = QWidget()
+    parent.setStyleSheet("background: black")
+    qtbot.addWidget(parent)
+    bar = ProgressBar(parent)
+    bar.resize(300, 24)
+    bar.start(SimpleNamespace(duration=60, time_pos=30))
+    parent.show()
+    qtbot.waitExposed(parent)
+    qtbot.waitUntil(lambda: bar.text().startswith("0:30"))
+
+    image = parent.grab(bar.geometry()).toImage()
+
+    assert image.pixelColor(5, 2).lightness() < 128  # the filled half's top: still the dark backdrop
+    assert image.pixelColor(5, 22).lightness() > 200  # the filled half's bottom edge: the light track

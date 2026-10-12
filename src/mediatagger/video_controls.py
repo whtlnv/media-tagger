@@ -5,6 +5,8 @@ from PySide6.QtWidgets import QLabel
 
 HIDE_DELAY_MS = 3000  # the bar fades after this long without input
 _BACKDROP = QColor(0, 0, 0, 160)  # translucent dark, so the light text and track read over any frame
+_TRACK = QColor(255, 255, 255, 80)  # the whole length, dimmer than the elapsed part
+_TRACK_HEIGHT = 3  # a thin strip along the bottom edge, clear of the text
 _GEOMETRY_EVENTS = (QEvent.Type.Show, QEvent.Type.Hide, QEvent.Type.Move, QEvent.Type.Resize)
 
 
@@ -22,6 +24,7 @@ class ProgressBar(QLabel):
         palette = self.palette()
         palette.setColor(QPalette.ColorRole.WindowText, Qt.GlobalColor.white)
         self.setPalette(palette)
+        self.setContentsMargins(8, 2, 8, 2 + _TRACK_HEIGHT)  # the text ends above the track
         self._ticker = QTimer(self, interval=250, timeout=self._tick)
         self._hide_timer = QTimer(self, interval=hide_delay, singleShot=True, timeout=self.hide)
         self.hide()
@@ -86,8 +89,9 @@ class ProgressBar(QLabel):
     def paintEvent(self, event):
         with QPainter(self) as painter:
             painter.fillRect(self.rect(), _BACKDROP)
-            filled_width = int(self.width() * self._fraction)
-            painter.fillRect(0, 0, filled_width, self.height(), Qt.GlobalColor.white)
+            top = self.height() - _TRACK_HEIGHT
+            painter.fillRect(0, top, self.width(), _TRACK_HEIGHT, _TRACK)
+            painter.fillRect(0, top, int(self.width() * self._fraction), _TRACK_HEIGHT, Qt.GlobalColor.white)
         super().paintEvent(event)
 
 
