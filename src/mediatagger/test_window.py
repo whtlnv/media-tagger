@@ -326,6 +326,30 @@ def test_moving_the_windows_grid_cursor_onto_an_item_tagged_beach_in_a_folder_ta
     assert shown.index("beach") < shown.index("holiday")
 
 
+def test_in_the_windows_grid_status_bar_an_inherited_tag_is_drawn_dimmer_than_an_own_tag(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    library = Library.open(drive)
+    library.enter(folder, "holiday")
+    library.enter(folder / "IMG_2.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
+
+    tag_labels = [label for label in window.status_bar.findChildren(QLabel) if label.isVisible() and ("beach" in label.text() or "holiday" in label.text())]
+    left = min(label.geometry().left() for label in tag_labels)
+    right = max(label.geometry().right() for label in tag_labels)
+    image = window.status_bar.grab().toImage()
+
+    def brightest_in(columns):
+        return max(image.pixelColor(x, y).lightness() for x in columns for y in range(image.height()))
+    width = right - left
+    own_brightness = brightest_in(range(left, left + width // 4))  # "beach", shown first
+    inherited_brightness = brightest_in(range(right - width // 3, right))  # "holiday", shown last
+    assert own_brightness > 240
+    assert inherited_brightness < own_brightness - 60
+
+
 def test_pressing_t_in_the_windows_grid_on_a_file_tile_tagged_beach_family_opens_the_tag_prompt_showing_beach_family_above_its_empty_input(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)

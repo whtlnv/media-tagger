@@ -1,4 +1,4 @@
-from PySide6.QtCore import QTimer
+from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QWidget
 
 # Explicit colours: the desktop theme's default text colour may be black, which vanishes on a black background.
@@ -24,6 +24,7 @@ class StatusBar(QWidget):
 
     def __init__(self, parent):
         super().__init__(parent)
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.library_label = overlay_label(NO_LIBRARY_TEXT, self)
         self.read_only_status = overlay_label(READ_ONLY_STATUS_TEXT, self)
         self.read_only_status.hide()
@@ -35,12 +36,15 @@ class StatusBar(QWidget):
         self.background_status.hide()
         self.tags_status = overlay_label("", self)
         self.tags_status.hide()
+        self.inherited_tags_status = overlay_label("", self)
+        self.inherited_tags_status.setStyleSheet(_LABEL_STYLE.replace("color: white", "color: grey"))
+        self.inherited_tags_status.hide()
         self._background_status_clearing = QTimer(self)
         self._background_status_clearing.setSingleShot(True)
         self._background_status_clearing.timeout.connect(self.background_status.hide)
         layout = QHBoxLayout(self)
         layout.setContentsMargins(CORNER_MARGIN, 0, CORNER_MARGIN, CORNER_MARGIN)
-        for label in (self.library_label, self.read_only_status, self.cant_save_status, self.couldnt_save_status, self.background_status, self.tags_status):
+        for label in (self.library_label, self.read_only_status, self.cant_save_status, self.couldnt_save_status, self.background_status, self.tags_status, self.inherited_tags_status):
             layout.addWidget(label)
         layout.addStretch()
 
@@ -59,9 +63,11 @@ class StatusBar(QWidget):
     def show_couldnt_save(self, shown):
         self.couldnt_save_status.setVisible(shown)
 
-    def show_tags(self, text):
+    def show_tags(self, text, inherited=""):
         self.tags_status.setText(text)
         self.tags_status.setVisible(bool(text))
+        self.inherited_tags_status.setText(inherited)
+        self.inherited_tags_status.setVisible(bool(inherited))
 
     def clear_background(self, starting_with):
         """Takes the background message off, if it is still one that starts so: a newer job's message stays."""

@@ -133,7 +133,7 @@ class Window(QWidget):
         library = self.session.library
         if library:
             tags = library.effective_tags(index.data(TILE_ROLE).path)
-            self.status_bar.show_tags(" ".join(tags.own + tags.inherited))
+            self.status_bar.show_tags(" ".join(tags.own), " ".join(tags.inherited))
 
     def _tag(self, index):
         if not self.session.tags_can_be_saved():
