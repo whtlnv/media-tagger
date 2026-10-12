@@ -223,3 +223,16 @@ def test_pressing_t_on_a_file_in_a_folder_tagged_aunt_hides_the_dimmed_aunt_whil
 
     qtbot.keyClick(viewer.focusWidget(), Qt.Key.Key_Escape)
     assert shown_texts(viewer) == ["aunt"]
+
+
+def test_moving_with_space_from_an_image_to_a_video_in_a_folder_tagged_aunt_shows_the_dimmed_aunt_on_top_of_the_video(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_clip(folder / "IMG_2.mp4")
+    Library.open(drive).enter(folder, "aunt")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Space)
+    qtbot.waitUntil(lambda: shows_video_surface(viewer))
+
+    [tag_overlay] = [label for label in shown_labels(viewer) if label.text() == "aunt"]
+    assert viewer.childAt(tag_overlay.geometry().center()) is tag_overlay
