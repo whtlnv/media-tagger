@@ -98,3 +98,13 @@ def test_half_way_through_a_video_the_progress_bar_is_filled_up_to_its_middle(qt
     assert filled != empty
     assert image.pixelColor(90, row) == filled
     assert image.pixelColor(110, row) == empty
+
+
+def test_a_video_shorter_than_an_hour_shows_its_times_as_minutes_and_seconds(qtbot):
+    parent = QWidget()
+    qtbot.addWidget(parent)
+    bar = ProgressBar(parent)
+
+    bar.start(SimpleNamespace(duration=4 * 60 + 56, time_pos=60 + 23))
+
+    qtbot.waitUntil(lambda: bar.text() == "1:23 / 4:56")

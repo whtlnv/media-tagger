@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-12 01:47 · `src/mediatagger/test_video_controls.py::test_a_video_shorter_than_an_hour_shows_its_times_as_minutes_and_seconds`
+- Behavior: A video shorter than an hour shows times as `m:ss` (`1:23 / 4:56`)
+- Predicted: pass. `_clock` in `video_controls.py` already formats `m:ss` (since the `0:00 / <total>` cycle), and existing tests pin `0:00 / 1:05` and `0:01 / 1:05`
+- Actual: passed
+- Type: passed unexpectedly (predicted pass; Red step produced no failing test)
+- Resolution: The TODO item is a regression guard for a format earlier cycles already delivered, so no honest rewrite can fail and the test stays as a pin. A temporary mutation (`_clock` returning `0:mm:ss`) made it fail with a TimeoutError on the `1:23 / 4:56` wait, so it is not vacuous. The source was restored.
+
 ## 2026-10-11 23:39 · `src/mediatagger/test_video_controls.py::test_moving_from_a_playing_video_to_one_that_cannot_be_played_shows_the_unsupported_placeholder_and_no_progress_bar`
 - Behavior: When a video can't be played and the unsupported placeholder shows instead, no progress bar is shown
 - Predicted: AssertionError on `not bar.isVisible()` — the bar stays visible from the previous video because `_play`'s failure branch never hides it
