@@ -157,7 +157,7 @@ def test_with_a_writable_library_open_the_status_bar_shows_no_library_label(qtbo
     assert viewer.status_bar.library_label.isHidden()
 
 
-def test_opening_a_file_on_a_drive_names_the_same_library_in_the_status_bar_as_opening_its_folder(qtbot, tmp_path):
+def test_opening_a_file_on_a_drive_shows_the_same_status_bar_as_opening_its_folder(qtbot, tmp_path):
     drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
     folder = drive / "Photos" / "2024"
     folder.mkdir(parents=True)
