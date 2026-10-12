@@ -10,7 +10,7 @@ mkdir -p "$OUT/app/mediatagger"
 for f in "$REPO"/src/mediatagger/*.py; do
   case "$(basename "$f")" in test_*|conftest.py) ;; *) cp -X "$f" "$OUT/app/mediatagger/" ;; esac
 done
-cp -X "$REPO/spikes/drive/run-app.sh" "$OUT/"
+cp -X "$REPO/spikes/drive/run-app.sh" "$REPO/spikes/drive/check-video-leak.sh" "$OUT/"
 # Precompile app and packages so the Pi never writes bytecode. unchecked-hash pycs are never revalidated (exFAT timestamps are coarse), which is safe because every push deletes app/ and recompiles it.
 # Drop bytecode written by older launchers, then rebuild it all in unchecked-hash form.
 find "$OUT/lib-linux-aarch64-cp313" -name __pycache__ -type d -prune -exec rm -rf {} +
