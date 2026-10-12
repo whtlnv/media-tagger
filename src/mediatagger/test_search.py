@@ -44,3 +44,14 @@ def test_beach_family_finds_a_file_tagged_beach_inside_a_folder_tagged_family(tm
     library.enter(photo, "beach")
 
     assert search(library, "beach family") == [photo]
+
+
+def test_beach_family_leaves_out_a_file_tagged_beach_whose_folders_carry_no_family(tmp_path):
+    library = Library.create(tmp_path)
+    folder = tmp_path / "summer"
+    folder.mkdir()
+    photo = folder / "dunes.jpg"
+    photo.touch()
+    library.enter(photo, "beach")
+
+    assert search(library, "beach family") == []
