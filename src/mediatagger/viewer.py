@@ -276,3 +276,4 @@ class Viewer(QWidget):
         elif self.surface:
             self.surface.cancel_pending()
             self.surface.hide()
+            self.progress_bar.hide()

@@ -1,7 +1,14 @@
 from PySide6.QtCore import Qt
 
 from mediatagger.test_video import make_clip
-from mediatagger.test_viewer import make_folder_with_no_media, shown_texts, shown_viewer_on, wait_until_loaded
+from mediatagger.test_viewer import (
+    make_folder_with_no_media,
+    make_image,
+    shown_texts,
+    shown_viewer_on,
+    shows_video_surface,
+    wait_until_loaded,
+)
 from mediatagger.test_viewer_open import drag_and_drop_onto
 from mediatagger.video_controls import ProgressBar
 from mediatagger.viewer import UNSUPPORTED_TEXT
@@ -33,4 +40,18 @@ def test_moving_from_a_playing_video_to_one_that_cannot_be_played_shows_the_unsu
     qtbot.keyClick(viewer, Qt.Key.Key_Space)
 
     qtbot.waitUntil(lambda: UNSUPPORTED_TEXT in shown_texts(viewer), timeout=5000)
+    assert not bar.isVisible()
+
+
+def test_moving_from_a_playing_video_to_an_image_shows_the_image_and_no_progress_bar(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
+    make_image(tmp_path / "IMG_2.png", "red")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    wait_until_loaded(viewer.video_player.engine, clip)
+    bar = viewer.findChild(ProgressBar)
+    qtbot.waitUntil(bar.isVisible, timeout=5000)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Space)
+
+    qtbot.waitUntil(lambda: not shows_video_surface(viewer), timeout=5000)
     assert not bar.isVisible()
