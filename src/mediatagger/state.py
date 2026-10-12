@@ -10,12 +10,8 @@ def state_file(home):
 
 
 def remembered_folder(state):
-    if not state.exists():
-        return None
-    try:
-        return Path(json.loads(state.read_text())["folder"])
-    except (json.JSONDecodeError, KeyError, PermissionError):
-        return None
+    folder = _remembered(state, "folder")
+    return Path(folder) if folder is not None else None
 
 
 def remember(state, folder, mount_point):
@@ -24,9 +20,13 @@ def remember(state, folder, mount_point):
 
 
 def remembered_geometry(state):
+    return _remembered(state, "geometry")
+
+
+def _remembered(state, key):
     if not state.exists():
         return None
     try:
-        return json.loads(state.read_text())["geometry"]
+        return json.loads(state.read_text())[key]
     except (json.JSONDecodeError, KeyError, PermissionError):
         return None
