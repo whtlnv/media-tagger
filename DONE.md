@@ -1,3 +1,9 @@
+- [x] 2026-10-12 · When mpv asks the video surface's GL function lookup for `glFenceSync`, it gets a non-null address of a stand-in function, and calling that stand-in returns no fence (null)
+- [x] 2026-10-12 · When mpv asks the video surface's GL function lookup for any other GL function (e.g. `glClear`), it gets exactly the address the real OpenGL context reports for that name
+- [x] 2026-10-12 · The `glFenceSync` stand-in handed to mpv is still callable after a garbage collection, for as long as the lookup that handed it out is alive
+- [x] 2026-10-12 · When the video surface creates its mpv render context, mpv is given the fence-free GL function lookup (asking it for `glFenceSync` returns the stand-in, not the context's real function)
+- [x] 2026-10-12 · A viewer created without extra player options runs its player with `vd-lavc-dr=no`
+- [x] 2026-10-12 · A viewer created with extra player options (`ao=null`) runs its player with both `vd-lavc-dr=no` and the caller's `ao=null`
 - [x] 2026-10-12 · Stopping a folder's thumbnails a second time, after Qt has processed deferred deletions, raises nothing
 - [x] 2026-10-12 · Opening a file from the grid, letting Qt process deferred deletions, then pressing `Esc` brings the grid back with the cursor on that file
 - [x] 2026-10-12 · Opening the window with a relative path to a file (resolved against the current directory) shows that file in the viewer, as the absolute path does
