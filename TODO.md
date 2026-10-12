@@ -10,4 +10,4 @@ Phase 9b notes for every cycle (Phases 1–9a are delivered — see DONE.md; Pha
 - [x] The `glFenceSync` stand-in handed to mpv is still callable after a garbage collection, for as long as the lookup that handed it out is alive
 - [x] When the video surface creates its mpv render context, mpv is given the fence-free GL function lookup (asking it for `glFenceSync` returns the stand-in, not the context's real function)
 - [x] A viewer created without extra player options runs its player with `vd-lavc-dr=no`
-- [ ] A viewer created with extra player options (`ao=null`) runs its player with both `vd-lavc-dr=no` and the caller's `ao=null`
+- [x] A viewer created with extra player options (`ao=null`) runs its player with both `vd-lavc-dr=no` and the caller's `ao=null`

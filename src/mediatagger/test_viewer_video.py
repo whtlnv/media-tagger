@@ -265,3 +265,11 @@ def test_a_viewer_made_without_extra_player_options_turns_off_mpvs_direct_render
     qtbot.addWidget(viewer)
 
     assert viewer.video_player.engine["vd-lavc-dr"] is False
+
+
+def test_a_viewer_made_with_extra_player_options_keeps_them_and_still_turns_off_direct_rendering(qtbot):
+    viewer = Viewer(player_options={"ao": "null"})
+    qtbot.addWidget(viewer)
+
+    assert [output["name"] for output in viewer.video_player.engine["ao"]] == ["null"]
+    assert viewer.video_player.engine["vd-lavc-dr"] is False
