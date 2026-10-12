@@ -211,3 +211,15 @@ def test_a_file_with_no_own_tags_in_a_folder_tagged_aunt_shows_aunt_in_the_tag_o
     [tag_overlay] = shown_labels(viewer)
     assert tag_overlay.text() == "aunt"
     assert_in_top_right_corner(viewer, tag_overlay)
+
+
+def test_pressing_t_on_a_file_in_a_folder_tagged_aunt_hides_the_dimmed_aunt_while_the_prompt_is_open_and_esc_shows_it_again(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder, "aunt")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+    assert shown_texts(viewer) == []
+
+    qtbot.keyClick(viewer.focusWidget(), Qt.Key.Key_Escape)
+    assert shown_texts(viewer) == ["aunt"]
