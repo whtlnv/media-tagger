@@ -5,6 +5,7 @@ from pathlib import Path
 
 from PySide6.QtGui import QColor
 
+from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import make_image, offscreen_environment, run_python_offscreen, shown_launch_viewer, shown_texts, shown_viewer_on
 from mediatagger.backup import back_up, newest_backup
 from mediatagger.library import Library
@@ -489,3 +490,42 @@ def test_in_the_mediatagger_command_entering_beach_for_a_folder_tile_in_the_grid
     text, brightest = shown.split(" brightest=")
     assert text == "beach"
     assert int(brightest) < 255 - 60  # an own tag is drawn white; an inherited one well below it
+
+REPORT_THE_PLAYING_VIDEO_SCRIPT = (
+    "import sys\n"
+    "from PySide6.QtCore import QTimer\n"
+    "from PySide6.QtWidgets import QApplication, QStackedWidget\n"
+    "import mediatagger.viewer\n"
+    "from mediatagger.test_viewer import SILENT, make_surface_ready\n"
+    "from mediatagger.video_controls import ProgressBar\n"
+    "unsilenced_engine = mediatagger.viewer.new_engine\n"
+    "mediatagger.viewer.new_engine = lambda **options: unsilenced_engine(**{**options, **SILENT})\n"
+    "app = QApplication([])\n"
+    "def shown():\n"
+    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    return window, window.findChild(QStackedWidget).currentWidget()\n"
+    "def stand_in_for_the_video_surface_becoming_ready():\n"
+    "    window, viewer = shown()\n"
+    "    make_surface_ready(viewer)\n"
+    "    QTimer.singleShot(1500, report)\n"
+    "def report():\n"
+    "    window, viewer = shown()\n"
+    "    bars = [bar for bar in viewer.findChildren(ProgressBar) if bar.isVisible()]\n"
+    "    totals = [bar.text().split(' / ')[-1] for bar in bars]\n"
+    "    print(f'fullscreen={window.isFullScreen()} playing={viewer.video_player.engine.path} bars={totals}', flush=True)\n"
+    "    QApplication.closeAllWindows()\n"
+    "    QApplication.quit()\n"
+    "QTimer.singleShot(1000, stand_in_for_the_video_surface_becoming_ready)\n"
+    "sys.argv = ['mediatagger', sys.argv[1]]\n"
+) + RUN_MEDIATAGGER_COMMAND
+
+
+def test_running_the_mediatagger_command_on_a_relative_path_to_a_video_opens_a_normal_window_playing_it_with_the_progress_bar_shown(tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
+    result = subprocess.run(
+        [sys.executable, "-c", REPORT_THE_PLAYING_VIDEO_SCRIPT, clip.name],
+        capture_output=True, text=True, timeout=30,
+        env=offscreen_environment(), cwd=tmp_path,
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == f"fullscreen=False playing={clip} bars=['1:05']"

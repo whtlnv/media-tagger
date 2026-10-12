@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-12 05:07 · `src/mediatagger/test_main.py::test_running_the_mediatagger_command_on_a_relative_path_to_a_video_opens_a_normal_window_playing_it_with_the_progress_bar_shown`
+- Behavior: Running the `mediatagger` entry point with a relative path to a video opens a normal (not fullscreen) window that plays it and shows the progress bar
+- Predicted: AssertionError — the relative clip path reaches mpv unresolved when launched through the entry point
+- Actual: passed — `fullscreen=False playing=<absolute clip> bars=['1:05']`
+- Type: passed unexpectedly
+- Resolution: this item only combines behaviours earlier cycles already shipped (relative-path resolution in Window, windowed start, bar follows the video surface), so no behaviour is missing. The test is a real end-to-end check (exact absolute path, visible bar with the clip's length), not a vacuous one, so it was kept rather than rewritten into an invented failure. Offscreen has no OpenGL, so the script stands in for the surface becoming ready and forces `ao=null`.
+
 ## 2026-10-12 04:08 · `src/mediatagger/test_window_state.py::test_with_no_remembered_geometry_the_window_opens_not_fullscreen_at_about_80_percent_of_the_available_screen_centred`
 - Behavior: With no remembered geometry, the window opens not fullscreen, about 80 % of the available screen, centred
 - Predicted: AssertionError — `isFullScreen()` True and the frame filling the available screen (ratios 1.0, 1.0)
