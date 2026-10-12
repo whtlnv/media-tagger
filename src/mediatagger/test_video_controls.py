@@ -115,6 +115,18 @@ def test_a_video_shorter_than_an_hour_shows_its_times_as_minutes_and_seconds(qtb
     qtbot.waitUntil(lambda: bar.text() == "1:23 / 4:56")
 
 
+def test_a_video_of_an_hour_or_more_shows_its_times_as_hours_minutes_and_seconds(qtbot):
+    parent = QWidget()
+    qtbot.addWidget(parent)
+    bar = ProgressBar(parent)
+    parent.show()
+    qtbot.waitExposed(parent)
+
+    bar.start(SimpleNamespace(duration=60 * 60 + 2 * 60 + 3, time_pos=5))
+
+    qtbot.waitUntil(lambda: bar.text() == "0:00:05 / 1:02:03")
+
+
 def test_destroying_a_shown_progress_bar_whose_attributes_the_garbage_collector_already_cleared_raises_nothing(qtbot):
     parent = QWidget()
     bar = ProgressBar(parent)

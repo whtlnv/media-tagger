@@ -35,7 +35,8 @@ class ProgressBar(QLabel):
 
     def _show_elapsed(self, seconds):
         self._fraction = seconds / self._engine.duration
-        self.setText(f"{_clock(seconds)} / {_clock(self._engine.duration)}")
+        with_hours = self._engine.duration >= 60 * 60
+        self.setText(f"{_clock(seconds, with_hours)} / {_clock(self._engine.duration, with_hours)}")
 
     def paintEvent(self, event):
         with QPainter(self) as painter:
@@ -44,6 +45,9 @@ class ProgressBar(QLabel):
         super().paintEvent(event)
 
 
-def _clock(seconds):
+def _clock(seconds, with_hours):
     minutes, seconds = divmod(round(seconds), 60)
+    if with_hours:
+        hours, minutes = divmod(minutes, 60)
+        return f"{hours}:{minutes:02d}:{seconds:02d}"
     return f"{minutes}:{seconds:02d}"

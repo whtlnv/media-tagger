@@ -22,7 +22,7 @@ Phase 9a notes for every cycle. These are fixes from the first Pi run plus video
 - [x] While a video plays, the progress bar's elapsed time advances
 - [x] The progress bar's fill is proportional to elapsed / total (half filled at half-way)
 - [x] A video shorter than an hour shows times as `m:ss` (`1:23 / 4:56`)
-- [ ] A video of an hour or more shows times as `h:mm:ss` (`0:00:05 / 1:02:03`)
+- [x] A video of an hour or more shows times as `h:mm:ss` (`0:00:05 / 1:02:03`)
 - [ ] With no input for the hide delay, the progress bar hides
 - [ ] A key pressed while the progress bar is hidden shows it again
   - hint (orchestrator): the bar's 250 ms ticker stops itself once the bar is hidden (see `ProgressBar._tick`), so showing it again must restart the ticker, or the elapsed time freezes. Don't override `hideEvent`/`showEvent` on the bar — Qt calls them while destroying the widget, after Python's GC may have cleared its attributes (commit f189ad3).
