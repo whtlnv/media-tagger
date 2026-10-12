@@ -14,7 +14,8 @@ from PySide6.QtWidgets import QLabel
 from mediatagger.test_video import make_clip
 
 from mediatagger.mpv_surface import MpvSurface
-from mediatagger.viewer import UNSUPPORTED_TEXT, Viewer, decode_fitted
+from mediatagger.image_fit import decode_fitted
+from mediatagger.viewer import UNSUPPORTED_TEXT, Viewer
 
 
 def make_image(path, color, width=64, height=48):

@@ -1,13 +1,14 @@
 import os
 from pathlib import Path
 
-from PySide6.QtCore import QPoint, QRect, Qt
-from PySide6.QtGui import QImageIOHandler, QImageReader, QPainter
+from PySide6.QtCore import QPoint, Qt
+from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import QFileDialog, QWidget
 
 from mediatagger.drive_session import DriveSession
 from mediatagger.folder import is_video
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
+from mediatagger.image_fit import decode_fitted, fitted_rect
 from mediatagger.mpv_surface import MpvSurface
 from mediatagger.status_bar import CORNER_MARGIN, StatusBar, TagOverlay, overlay_label
 from mediatagger.slideshow import Slideshow
@@ -22,29 +23,11 @@ UNSUPPORTED_TEXT = "Unsupported"
 READ_ONLY_BANNER_TEXT = "This drive is read-only — tags can't be saved"
 
 
-def _fitted_rect(size, bounds):
-    target = QRect(QPoint(), size.scaled(bounds.size(), Qt.AspectRatioMode.KeepAspectRatio))
-    target.moveCenter(bounds.center())
-    return target
-
-
 def _is_openable(path):
     """A file is opened with its folder, so the folder must be listable too."""
     if not os.access(path, os.R_OK):
         return False
     return not path.is_file() or os.access(path.parent, os.R_OK)
-
-
-def decode_fitted(path, bounds):
-    """Decode an image no larger than bounds, so a 12 MP photo is never fully decoded just to be shrunk."""
-    reader = QImageReader(str(path))
-    reader.setAutoTransform(True)
-    size = reader.size()
-    if reader.transformation() & QImageIOHandler.Transformation.TransformationRotate90:
-        bounds = bounds.transposed()
-    if size.isValid() and (size.width() > bounds.width() or size.height() > bounds.height()):
-        reader.setScaledSize(size.scaled(bounds, Qt.AspectRatioMode.KeepAspectRatio))
-    return reader.read()
 
 
 class Viewer(QWidget):
@@ -126,7 +109,7 @@ class Viewer(QWidget):
         if self.slideshow is None:
             return
         image = self._current_image()
-        painter.drawImage(_fitted_rect(image.size(), self.rect()), image)
+        painter.drawImage(fitted_rect(image.size(), self.rect()), image)
 
     def dragEnterEvent(self, event):
         if any(url.isLocalFile() for url in event.mimeData().urls()):
