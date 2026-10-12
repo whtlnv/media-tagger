@@ -246,3 +246,15 @@ def test_leaving_a_video_before_its_surface_can_render_never_loads_it(qtbot, tmp
 
     qtbot.wait(300)
     assert viewer.video_player.engine.path is None
+
+
+def test_a_digit_key_in_the_viewer_on_an_image_keeps_showing_the_image_and_loads_no_video(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    make_clip(tmp_path / "IMG_2.mp4")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_5)
+
+    assert centre_colour(viewer) == QColor("red")
+    assert not shows_video_surface(viewer)
+    assert viewer.video_player.engine.path is None
