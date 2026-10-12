@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-12 03:47 · `src/mediatagger/test_video.py::test_when_mpv_refuses_a_jump_pressing_a_digit_raises_nothing_and_the_video_keeps_playing`
+- Behavior: when mpv refuses a jump, a digit key on a playing video raises nothing and the video keeps playing
+- Predicted: passes — digit keys route through `VideoPlayer._seek`, which already swallows mpv's `SystemError` (added for `Up`)
+- Actual: passes
+- Type: passed unexpectedly (relative to the TODO item, which assumed the behavior was missing; the pass itself was predicted)
+- Resolution: no rewrite can make this red without production sabotage — the behavior shipped when the `0`/digit cycle reused `_seek`; kept the test as a regression pin for the digit path, and the TODO item needs no /green
+
 ## 2026-10-12 03:31 · `src/mediatagger/test_video_controls.py::test_five_on_a_playing_video_whose_progress_bar_is_hidden_seeks_to_half_its_length_and_shows_the_bar`
 - Behavior: `5` on a playing video seeks to 50 % of its duration and shows the progress bar
 - Predicted: AssertionError on `bar.isVisible()` — `Key_5` isn't in `_VIDEO_KEYS`, so the bar stays hidden

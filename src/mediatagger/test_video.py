@@ -182,3 +182,17 @@ def test_when_mpv_refuses_a_seek_pressing_up_raises_nothing_and_the_video_keeps_
 
     assert engine.pause is False
     assert engine.path is not None
+
+
+def test_when_mpv_refuses_a_jump_pressing_a_digit_raises_nothing_and_the_video_keeps_playing(playing_video, monkeypatch):
+    player, engine = playing_video
+
+    def refuse(*args, **kwargs):
+        mpv.ErrorCode.raise_for_ec(-12, engine.seek, *args)  # what the Pi's mpv answered
+
+    monkeypatch.setattr(engine, "seek", refuse)
+
+    player.press("5")
+
+    assert engine.pause is False
+    assert engine.path is not None
