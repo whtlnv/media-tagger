@@ -150,6 +150,7 @@ class Window(QWidget):
         if self.session.is_mount_point(folder):
             return
         self._show_parent_of(folder)
+        self._show_tags_of(self.stack.currentWidget().currentIndex())
 
     def _show_parent_of(self, path):
         self._show(self._grid_of(path.parent, at=path))

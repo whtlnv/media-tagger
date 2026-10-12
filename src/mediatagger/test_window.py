@@ -814,3 +814,17 @@ def test_pressing_enter_in_the_windows_grid_on_a_folder_tagged_beach_family_whos
     tag_labels = [label for label in window.status_bar.findChildren(QLabel) if label.isVisible() and "beach" in label.text()]
     brightest = max(image.pixelColor(x, y).lightness() for label in tag_labels for x in range(label.geometry().left(), label.geometry().right()) for y in range(image.height()))
     assert brightest < 200  # an own tag is drawn white; an inherited one well below it
+
+
+def test_pressing_backspace_in_the_windows_grid_back_to_a_folder_whose_cursor_lands_on_a_subfolder_tagged_beach_family_shows_beach_family_in_the_status_bar_before_any_cursor_move(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    (folder / "day1").mkdir()
+    make_image(folder / "day1" / "x.png", "blue")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+    Library.open(drive).enter(folder / "day1", "beach family")
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Backspace)
+
+    assert stack.currentWidget().currentIndex().data(TILE_ROLE).path == folder / "day1"
+    assert "beach family" in shown_status_bar_texts(window)
