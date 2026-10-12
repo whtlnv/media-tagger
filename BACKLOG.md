@@ -2,6 +2,9 @@
 
 ## Out of Scope
 
+- **[src/mediatagger/test_video_controls.py] The progress bar tests repeat the same five-line parent-widget staging** (added: 2026-10-12)
+  Transformation broke the suite: test_while_mpv_reports_no_position_or_length_between_clips_the_progress_bar_keeps_its_text_and_raises_nothing. A helper that returns only the bar drops the last Python reference to its parent, which Qt then deletes along with the bar; the helper must also return (or otherwise keep alive) the parent.
+
 - **[src/mediatagger/folder.py:39] The video and media extension rules are defined twice, once on Paths and once on names** (added: 2026-10-10)
   `is_video`/`_has_media_extension` use `Path.suffix` while `is_video_name` and `subfolder_and_media_names` use `os.path.splitext`; unifying them changes how a name such as `..mp4` is classified (`Path.suffix` gives `.mp4`, `splitext` gives none), a behavior change a refactor may not make.
 
