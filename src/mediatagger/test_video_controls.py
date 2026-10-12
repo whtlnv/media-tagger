@@ -24,6 +24,14 @@ from mediatagger.viewer import UNSUPPORTED_TEXT
 from mediatagger.window import Window
 
 
+def viewer_playing_with_its_progress_bar(qtbot, folder, clip):
+    viewer = shown_viewer_on(qtbot, folder)
+    wait_until_loaded(viewer.video_player.engine, clip)
+    bar = viewer.findChild(ProgressBar)
+    qtbot.waitUntil(bar.isVisible, timeout=5000)
+    return viewer, bar
+
+
 def test_a_starting_video_shows_a_progress_bar_at_zero_of_its_length_that_hides_once_a_folder_with_no_media_is_dropped(qtbot, tmp_path):
     clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
     empty = make_folder_with_no_media(tmp_path / "Holidays")
@@ -42,10 +50,7 @@ def test_a_starting_video_shows_a_progress_bar_at_zero_of_its_length_that_hides_
 def test_moving_from_a_playing_video_to_one_that_cannot_be_played_shows_the_unsupported_placeholder_and_no_progress_bar(qtbot, tmp_path):
     clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
     (tmp_path / "IMG_2.mp4").write_bytes(b"not really an mp4")
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    wait_until_loaded(viewer.video_player.engine, clip)
-    bar = viewer.findChild(ProgressBar)
-    qtbot.waitUntil(bar.isVisible, timeout=5000)
+    viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
 
     qtbot.keyClick(viewer, Qt.Key.Key_Space)
 
@@ -56,10 +61,7 @@ def test_moving_from_a_playing_video_to_one_that_cannot_be_played_shows_the_unsu
 def test_moving_from_a_playing_video_to_an_image_shows_the_image_and_no_progress_bar(qtbot, tmp_path):
     clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
     make_image(tmp_path / "IMG_2.png", "red")
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    wait_until_loaded(viewer.video_player.engine, clip)
-    bar = viewer.findChild(ProgressBar)
-    qtbot.waitUntil(bar.isVisible, timeout=5000)
+    viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
 
     qtbot.keyClick(viewer, Qt.Key.Key_Space)
 
@@ -171,10 +173,7 @@ def test_destroying_a_shown_progress_bar_that_avoids_a_shown_sibling_after_the_g
 
 def test_a_key_pressed_while_the_progress_bar_is_hidden_on_a_playing_video_shows_it_again(qtbot, tmp_path):
     clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    wait_until_loaded(viewer.video_player.engine, clip)
-    bar = viewer.findChild(ProgressBar)
-    qtbot.waitUntil(bar.isVisible, timeout=5000)
+    viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
     bar.hide()  # as when the hide delay runs out
 
     qtbot.keyClick(viewer, Qt.Key.Key_A)
@@ -184,10 +183,7 @@ def test_a_key_pressed_while_the_progress_bar_is_hidden_on_a_playing_video_shows
 
 def test_up_on_a_playing_video_whose_progress_bar_is_hidden_shows_the_bar_at_once_at_the_new_position(qtbot, tmp_path):
     clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    wait_until_loaded(viewer.video_player.engine, clip)
-    bar = viewer.findChild(ProgressBar)
-    qtbot.waitUntil(bar.isVisible, timeout=5000)
+    viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
     bar.hide()  # as when the hide delay runs out
 
     qtbot.keyClick(viewer, Qt.Key.Key_Up)
@@ -198,10 +194,7 @@ def test_up_on_a_playing_video_whose_progress_bar_is_hidden_shows_the_bar_at_onc
 
 def test_five_on_a_playing_video_whose_progress_bar_is_hidden_seeks_to_half_its_length_and_shows_the_bar(qtbot, tmp_path):
     clip = make_clip(tmp_path / "IMG_1.mp4", duration=64)
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    wait_until_loaded(viewer.video_player.engine, clip)
-    bar = viewer.findChild(ProgressBar)
-    qtbot.waitUntil(bar.isVisible, timeout=5000)
+    viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
     bar.hide()  # as when the hide delay runs out
 
     qtbot.keyClick(viewer, Qt.Key.Key_5)
@@ -241,10 +234,7 @@ def test_waking_the_progress_bar_while_it_shows_keeps_it_visible_for_the_full_hi
 
 def test_the_progress_bar_lies_along_the_bottom_of_a_playing_video_just_above_the_status_bar_not_overlapping_it(qtbot, tmp_path):
     clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    wait_until_loaded(viewer.video_player.engine, clip)
-    bar = viewer.findChild(ProgressBar)
-    qtbot.waitUntil(bar.isVisible, timeout=5000)
+    viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
 
     frame, status_bar = bar.geometry(), viewer.status_bar.geometry()
 
