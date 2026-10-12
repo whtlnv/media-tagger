@@ -39,6 +39,10 @@ class TagOverlay:
         self.own.hide()
         self.inherited.hide()
 
+    def raise_(self):
+        self.own.raise_()
+        self.inherited.raise_()
+
     def pin(self, pin_top_right):
         """Inherited tags sit in the top-right corner with the file's own tags just to their left."""
         pin_top_right(self.inherited)

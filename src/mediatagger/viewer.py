@@ -262,7 +262,7 @@ class Viewer(QWidget):
             self.surface = self.surface or MpvSurface(self.video_player.engine, self)
             self.surface.setGeometry(self.rect())
             self.surface.show()
-            for overlay in (self.info, self.status_bar, self.read_only_banner, self.tag_overlay.own, self.tag_prompt):
+            for overlay in (self.info, self.status_bar, self.read_only_banner, self.tag_overlay, self.tag_prompt):
                 overlay.raise_()
             self.surface.when_ready(lambda clip=self.slideshow.current: self._play(clip))
         elif self.surface:
