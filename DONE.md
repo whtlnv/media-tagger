@@ -1,3 +1,50 @@
+- [x] 2026-10-12 · Stopping a folder's thumbnails a second time, after Qt has processed deferred deletions, raises nothing
+- [x] 2026-10-12 · Opening a file from the grid, letting Qt process deferred deletions, then pressing `Esc` brings the grid back with the cursor on that file
+- [x] 2026-10-12 · Opening the window with a relative path to a file (resolved against the current directory) shows that file in the viewer, as the absolute path does
+- [x] 2026-10-12 · When mpv refuses a seek, `↑` on a playing video raises nothing and the video keeps playing
+- [x] 2026-10-12 · Pressing `Enter` on a folder whose first item has tags shows those tags in the status bar at once, before any cursor move
+- [x] 2026-10-12 · Pressing `Enter` on a tagged folder whose first item is untagged leaves the status bar showing no tags (not the folder's)
+- [x] 2026-10-12 · `Backspace` back to the parent folder shows the tags of the item under the cursor in the status bar at once
+- [x] 2026-10-12 · `Esc` from the viewer back to the grid shows the viewed file's tags in the status bar at once
+- [x] 2026-10-12 · Launching into a remembered folder shows the first item's tags in the status bar at once
+- [x] 2026-10-12 · `t` in an empty folder opens no tag prompt and raises nothing
+- [x] 2026-10-12 · Pressing `Enter` on an empty subfolder shows its empty grid, raises nothing, and leaves no tags in the status bar (today it raises in `Window._show_current_tags` on the invalid cursor — a regression from this phase's status-bar refresh)
+- [x] 2026-10-12 · With a writable library open, the status bar shows no `Library: <drive>` label
+- [x] 2026-10-12 · With no library open, the status bar still shows `No library open`
+- [x] 2026-10-12 · When a video starts playing, a progress bar along the bottom of the video shows `0:00 / <total>`, and the bar is shown only while a video is the shown item: dropping a folder with no media onto the window while the video plays leaves no progress bar visible
+  - hint (orchestrator): this is one behaviour, not two — the bar's visibility follows the video surface (shown with it, hidden wherever the surface is hidden), so the existing drop-a-folder tests in `test_viewer_open.py` keep passing. Bar and auto-hide go in `video_controls.py`; `viewer.py` must not grow.
+- [x] 2026-10-12 · When a video can't be played and the unsupported placeholder shows instead, no progress bar is shown
+- [x] 2026-10-12 · When an image is shown, no progress bar is shown
+- [x] 2026-10-12 · While a video plays, the progress bar's elapsed time advances
+- [x] 2026-10-12 · The progress bar's fill is proportional to elapsed / total (half filled at half-way)
+- [x] 2026-10-12 · A video shorter than an hour shows times as `m:ss` (`1:23 / 4:56`)
+- [x] 2026-10-12 · A video of an hour or more shows times as `h:mm:ss` (`0:00:05 / 1:02:03`)
+- [x] 2026-10-12 · With no input for the hide delay, the progress bar hides
+- [x] 2026-10-12 · A key pressed while the progress bar is hidden shows it again
+  - hint (orchestrator): the bar's 250 ms ticker stops itself once the bar is hidden (see `ProgressBar._tick`), so showing it again must restart the ticker, or the elapsed time freezes. Don't override `hideEvent`/`showEvent` on the bar — Qt calls them while destroying the widget, after Python's GC may have cleared its attributes (commit f189ad3).
+- [x] 2026-10-12 · A key pressed while the progress bar is showing restarts the hide delay, so the bar stays visible for the full delay after the latest key
+- [x] 2026-10-12 · The progress bar sits above the status bar, not overlapping it
+- [x] 2026-10-12 · While the tag prompt is open over a video, the progress bar does not overlap the prompt
+  - hint (orchestrator): placement lives in `ProgressBar.place(rect, clear_at_the_bottom)` (video_controls.py); keep the decision there — viewer.py is at 264 lines, budget 270. Inside the app the open prompt is the *Window's* `TagPrompt` (window.py), not the viewer's — the test should go through `Window` (see `test_in_the_window_the_progress_bar_spans…` in test_video_controls.py) as well as or instead of the standalone viewer.
+- [x] 2026-10-12 · The progress bar's text and track have explicit light colours on a translucent dark background, so it reads over black and bright frames
+- [x] 2026-10-12 · `↑` / `↓` on a playing video show the progress bar
+- [x] 2026-10-12 · `5` on a playing video seeks to 50 % of its duration and shows the progress bar
+- [x] 2026-10-12 · `0` on a playing video seeks to the start
+- [x] 2026-10-12 · When mpv refuses a jump, a digit key on a playing video raises nothing and the video keeps playing
+- [x] 2026-10-12 · A digit key in the viewer while an image is shown does nothing (the image stays, no seek)
+- [x] 2026-10-12 · Typing a digit into the tag prompt over a playing video enters the digit and does not seek
+- [x] 2026-10-12 · A digit key in the grid does not move the cursor or open anything
+- [x] 2026-10-12 · With no remembered geometry, the window opens not fullscreen, about 80 % of the available screen, centred
+  - predicted-contradiction: `src/mediatagger/test_main.py::test_running_the_mediatagger_command_on_a_folder_opens_the_fullscreen_viewer_on_its_first_item` — asserts: the command's shown window reports `fullscreen=True` — retired-by: "With no remembered geometry, the window opens not fullscreen, about 80 % of the available screen, centred"
+  - predicted-contradiction: `src/mediatagger/test_main.py::test_running_the_mediatagger_command_on_a_file_opens_the_fullscreen_viewer_on_that_file` — asserts: the command's shown window reports `fullscreen=True` — retired-by: "With no remembered geometry, the window opens not fullscreen, about 80 % of the available screen, centred"
+- [x] 2026-10-12 · A viewer shown on its own (not inside the window) opens not fullscreen; `f` enters fullscreen and a second `f` leaves it
+  - predicted-contradiction: `src/mediatagger/test_viewer.py::test_a_shown_viewer_opens_fullscreen_and_each_f_press_toggles_it` — asserts: a shown viewer is fullscreen after 0 and 2 `f` presses and not after 1 — retired-by: "A viewer shown on its own (not inside the window) opens not fullscreen; `f` enters fullscreen and a second `f` leaves it"
+  - hint (orchestrator): migrate the parametrized test to the flipped expectations rather than deleting it.
+- [x] 2026-10-12 · With a geometry remembered in `state.json`, the window opens at that size and position
+- [x] 2026-10-12 · Remembering a folder keeps the remembered window geometry in `state.json`, and remembering the geometry keeps the folder
+- [x] 2026-10-12 · Closing the window writes its size and position to `state.json` under the config home; when `state.json` can't be written (e.g. no permission), closing raises nothing
+  - predicted-contradiction: `src/mediatagger/test_window_state.py::test_launching_the_window_with_no_path_and_no_state_file_then_closing_it_leaves_no_state_file` — asserts: closing a window launched with no path leaves no `state.json` — retired-by: "Closing the window writes its size and position to `state.json` under the config home"
+- [x] 2026-10-12 · Running the `mediatagger` entry point with a relative path to a video opens a normal (not fullscreen) window that plays it and shows the progress bar
 - [x] 2026-10-11 · Entering `beach` for a folder makes `beach` that folder's own tag when its tags are read back, also after reopening the library
 - [x] 2026-10-11 · A tagged folder is recorded in the library as a folder (`kind` `'dir'`)
 - [x] 2026-10-11 · A tagged file is still recorded in the library as a file (`kind` `'file'`), next to a tagged folder
