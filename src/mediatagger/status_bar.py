@@ -29,7 +29,7 @@ class TagOverlay:
         self.hide()
 
     def show(self, tags):
-        for label, shown in ((self.own, tags.own), (self.inherited, sorted(tags.inherited))):
+        for label, shown in ((self.own, tags.own), (self.inherited, tags.inherited)):
             label.setText(" ".join(shown))
             label.adjustSize()
             label.setVisible(bool(shown))

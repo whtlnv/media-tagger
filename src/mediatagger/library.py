@@ -54,11 +54,10 @@ def _parse_entry(text):
 
 
 class EffectiveTags(NamedTuple):
+    """An item's own tags, and the tags it inherits from its ancestor folders but doesn't have itself; each alphabetical."""
+
     own: list
     inherited: list
-
-    def own_then_inherited(self):
-        return [*self.own, *sorted(self.inherited)]
 
 
 class Library:
@@ -161,7 +160,7 @@ class Library:
         key = self._key(path)
         tags_by_key = self._tags_by_key([key, *ancestor_keys])
         own = tags_by_key[key]
-        inherited = [tag for k in ancestor_keys for tag in tags_by_key[k] if tag not in own]
+        inherited = sorted({tag for k in ancestor_keys for tag in tags_by_key[k]} - set(own))
         return EffectiveTags(own=own, inherited=inherited)
 
     def _tags_by_key(self, keys):
