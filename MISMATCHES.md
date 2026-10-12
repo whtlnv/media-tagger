@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 21:48 · `src/mediatagger/test_window.py::test_pressing_enter_in_the_windows_grid_on_a_folder_tagged_beach_family_whose_first_item_is_untagged_shows_beach_family_only_dimmed_as_inherited_not_as_the_items_own_tags`
+- Behavior: Pressing `Enter` on a tagged folder whose first item is untagged leaves the status bar showing no tags (not the folder's)
+- Predicted: passes on HEAD (prediction stated only after the run — a process slip), since 8e74480 already calls `_show_tags_of` on entering a folder
+- Actual: passes on HEAD; fails on 8e74480^ with `assert 255 < 200` (the folder's tags stay shown bright, as the item's own)
+- Type: passed unexpectedly
+- Resolution: The previous cycle's fix already delivers this item. "No tags" can only mean "no own tags", because the shipped inheritance feature shows the folder's tags dimmed as inherited. The test is kept as a regression pin (shown non-vacuous against pre-fix code) rather than rewritten into a failure that would contradict shipped behavior.
+
 ## 2026-10-11 20:58 · `src/mediatagger/test_window.py::test_opening_a_file_from_the_windows_grid_letting_qt_process_deferred_deletions_then_esc_shows_the_grid_with_the_cursor_on_that_file`
 - Behavior: Opening a file from the grid, letting Qt process deferred deletions, then pressing `Esc` brings the grid back with the cursor on that file
 - Predicted: passes on first run — d846530 already made `FolderThumbnails.stop` idempotent, the root cause of this Esc crash
