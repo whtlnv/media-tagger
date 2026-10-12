@@ -23,12 +23,15 @@ class ProgressBar(QLabel):
 
     def start(self, engine):
         self._engine = engine
-        self.setText(f"0:00 / {_clock(engine.duration)}")
+        self._show_elapsed(0)
         self._ticker.start()
         self.show()
 
     def _tick(self):
-        self.setText(f"{_clock(int(self._engine.time_pos))} / {_clock(self._engine.duration)}")
+        self._show_elapsed(int(self._engine.time_pos))
+
+    def _show_elapsed(self, seconds):
+        self.setText(f"{_clock(seconds)} / {_clock(self._engine.duration)}")
 
 
 def _clock(seconds):
