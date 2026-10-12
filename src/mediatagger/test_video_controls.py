@@ -178,3 +178,17 @@ def test_waking_the_progress_bar_while_it_shows_keeps_it_visible_for_the_full_hi
 
     assert bar.isVisible()
     qtbot.waitUntil(lambda: not bar.isVisible(), timeout=5000)
+
+
+def test_the_progress_bar_lies_along_the_bottom_of_a_playing_video_just_above_the_status_bar_not_overlapping_it(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    wait_until_loaded(viewer.video_player.engine, clip)
+    bar = viewer.findChild(ProgressBar)
+    qtbot.waitUntil(bar.isVisible, timeout=5000)
+
+    frame, status_bar = bar.geometry(), viewer.status_bar.geometry()
+
+    assert frame.bottom() > viewer.height() // 2
+    assert not frame.intersects(status_bar)
+    assert frame.bottom() < status_bar.top()
