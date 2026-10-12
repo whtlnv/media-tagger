@@ -2,3 +2,50 @@
 
 Phase 9a notes for every cycle. These are fixes from the first Pi run plus video controls; the file-descriptor leak is NOT in this phase (it waits for Pi diagnostics). Architecture: `viewer.py` must not grow — the video progress bar and its auto-hide live in a new `src/mediatagger/video_controls.py` (tests in `src/mediatagger/test_video_controls.py`), seeking stays in `video.py` (`VideoPlayer`), window geometry/fullscreen-at-start in `window.py` and `state.py`. The Esc bug: `ThumbnailScheduler.shut_down` / `FolderThumbnails.stop` must be idempotent; the regression test must flush Qt's deferred deletions (e.g. `QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)` or `qtbot.wait` with the event loop running) between opening a file from the grid and pressing `Esc` — the offscreen suite missed this because deleteLater never ran between steps. Video progress tests must not depend on real wall-clock fades: make the hide delay injectable (or drive a QTimer) and use `qtbot.waitUntil`. Seek tests use real short clips made with `ffmpeg` in temp dirs (as Phase 8 tests do) and an mpv engine from `video.new_engine()` with `player_options={"ao": "null"}`; never assume mpv accepts a seek — a refused seek (`SystemError` from python-mpv) is caught. Windowed start: the window opens normal-sized (≈80 % of the available screen, centred) unless `state.json` remembers a geometry; remembered geometry is only written to the config home (conftest already points `XDG_CONFIG_HOME` at a temp folder); tests never rely on a real screen size — inject or read `QGuiApplication.primaryScreen().availableGeometry()` from the offscreen platform. Tests run offscreen and silent, close every window they open, never touch real drives or `~`, use the existing seams. Keep `gui_thread_gc` and the thumbnail scheduler's threading contract intact. The 5,000-file timing tests must keep passing. No cycle opens on-screen windows or takes screenshots of the real display; the orchestrator does native checks. Never write to `/Volumes/MEDIATAGGER`, never touch `spikes/`.
 
+- [ ] Stopping a folder's thumbnails a second time, after Qt has processed deferred deletions, raises nothing
+- [ ] Opening a file from the grid, letting Qt process deferred deletions, then pressing `Esc` brings the grid back with the cursor on that file
+- [ ] Opening the window with a relative path to a file (resolved against the current directory) shows that file in the viewer, as the absolute path does
+- [ ] When mpv refuses a seek, `↑` on a playing video raises nothing and the video keeps playing
+- [ ] Pressing `Enter` on a folder whose first item has tags shows those tags in the status bar at once, before any cursor move
+- [ ] Pressing `Enter` on a tagged folder whose first item is untagged leaves the status bar showing no tags (not the folder's)
+- [ ] `Backspace` back to the parent folder shows the tags of the item under the cursor in the status bar at once
+- [ ] `Esc` from the viewer back to the grid shows the viewed file's tags in the status bar at once
+- [ ] Launching into a remembered folder shows the first item's tags in the status bar at once
+- [ ] `t` in an empty folder opens no tag prompt and raises nothing
+- [ ] With a writable library open, the status bar shows no `Library: <drive>` label
+  - predicted-contradiction: `src/mediatagger/test_viewer_library.py::test_opening_a_folder_two_levels_below_a_drive_with_a_tag_library_names_that_drive_in_the_status_bar` — asserts: `Library: MEDIATAGGER` is in the status bar texts — retired-by: "With a writable library open, the status bar shows no `Library: <drive>` label"
+  - predicted-contradiction: `src/mediatagger/test_viewer_library.py::test_opening_a_folder_that_is_itself_a_drives_mount_point_with_a_tag_library_names_that_folder_in_the_status_bar` — asserts: `Library: MEDIATAGGER` is in the status bar texts — retired-by: "With a writable library open, the status bar shows no `Library: <drive>` label"
+  - predicted-contradiction: `src/mediatagger/test_viewer_library.py::test_dropping_a_folder_from_a_different_drive_while_viewing_switches_the_status_bar_to_that_drives_library` — asserts: `Library: BACKUP` is in the status bar texts after the drop — retired-by: "With a writable library open, the status bar shows no `Library: <drive>` label"
+  - predicted-contradiction: `src/mediatagger/test_viewer_library.py::test_accepting_to_create_a_tag_library_on_a_drive_creates_it_and_names_the_drive_as_the_open_library` — asserts: `Library: MEDIATAGGER` is in the status bar texts — retired-by: "With a writable library open, the status bar shows no `Library: <drive>` label"
+  - predicted-contradiction: `src/mediatagger/test_viewer_library.py::test_accepting_to_create_a_tag_library_on_a_drive_whose_mediatagger_folder_holds_no_tags_db_creates_it_there_and_names_the_drive` — asserts: `Library: MEDIATAGGER` is in the status bar texts — retired-by: "With a writable library open, the status bar shows no `Library: <drive>` label"
+  - predicted-contradiction: `src/mediatagger/test_viewer_library.py::test_the_status_bar_text_stays_on_top_of_a_playing_video` — asserts: the library label (showing `Library: <drive>` for a writable library) is the widget at its own centre over the video — retired-by: "With a writable library open, the status bar shows no `Library: <drive>` label"
+  - predicted-contradiction: `src/mediatagger/test_viewer_backup.py::test_a_few_seconds_after_a_backup_finishes_backed_up_is_cleared_from_the_status_bar` — asserts: the status bar texts are exactly `["Library: MEDIATAGGER"]` — retired-by: "With a writable library open, the status bar shows no `Library: <drive>` label"
+  - predicted-contradiction: `src/mediatagger/test_viewer_backup.py::test_after_restoring_a_missing_tags_db_the_viewer_asks_no_create_question_and_names_the_drive_as_the_open_library` — asserts: `Library: MEDIATAGGER` is in the status bar texts — retired-by: "With a writable library open, the status bar shows no `Library: <drive>` label"
+- [ ] With no library open, the status bar still shows `No library open`
+- [ ] When a video starts playing, a progress bar along the bottom of the video shows `0:00 / <total>`
+- [ ] When an image is shown, no progress bar is shown
+- [ ] While a video plays, the progress bar's elapsed time advances
+- [ ] The progress bar's fill is proportional to elapsed / total (half filled at half-way)
+- [ ] A video shorter than an hour shows times as `m:ss` (`1:23 / 4:56`)
+- [ ] A video of an hour or more shows times as `h:mm:ss` (`0:00:05 / 1:02:03`)
+- [ ] With no input for the hide delay, the progress bar hides
+- [ ] A key pressed while the progress bar is hidden shows it again
+- [ ] A key pressed while the progress bar is showing restarts the hide delay, so the bar stays visible for the full delay after the latest key
+- [ ] The progress bar sits above the status bar, not overlapping it
+- [ ] While the tag prompt is open over a video, the progress bar does not overlap the prompt
+- [ ] The progress bar's text and track have explicit light colours on a translucent dark background, so it reads over black and bright frames
+- [ ] `↑` / `↓` on a playing video show the progress bar
+- [ ] `5` on a playing video seeks to 50 % of its duration and shows the progress bar
+- [ ] `0` on a playing video seeks to the start
+- [ ] When mpv refuses a jump, a digit key on a playing video raises nothing and the video keeps playing
+- [ ] A digit key in the viewer while an image is shown does nothing (the image stays, no seek)
+- [ ] Typing a digit into the tag prompt over a playing video enters the digit and does not seek
+- [ ] A digit key in the grid does not move the cursor or open anything
+- [ ] With no remembered geometry, the window opens not fullscreen, about 80 % of the available screen, centred
+  - predicted-contradiction: `src/mediatagger/test_main.py::test_running_the_mediatagger_command_on_a_folder_opens_the_fullscreen_viewer_on_its_first_item` — asserts: the command's shown window reports `fullscreen=True` — retired-by: "With no remembered geometry, the window opens not fullscreen, about 80 % of the available screen, centred"
+  - predicted-contradiction: `src/mediatagger/test_main.py::test_running_the_mediatagger_command_on_a_file_opens_the_fullscreen_viewer_on_that_file` — asserts: the command's shown window reports `fullscreen=True` — retired-by: "With no remembered geometry, the window opens not fullscreen, about 80 % of the available screen, centred"
+- [ ] With a geometry remembered in `state.json`, the window opens at that size and position
+- [ ] Closing the window writes its size and position to `state.json` under the config home
+  - predicted-contradiction: `src/mediatagger/test_window_state.py::test_launching_the_window_with_no_path_and_no_state_file_then_closing_it_leaves_no_state_file` — asserts: closing a window launched with no path leaves no `state.json` — retired-by: "Closing the window writes its size and position to `state.json` under the config home"
+- [ ] Remembering a folder keeps the remembered window geometry in `state.json`, and remembering the geometry keeps the folder
+- [ ] Running the `mediatagger` entry point with a relative path to a video opens a normal (not fullscreen) window that plays it and shows the progress bar
