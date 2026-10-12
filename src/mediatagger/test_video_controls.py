@@ -55,3 +55,12 @@ def test_moving_from_a_playing_video_to_an_image_shows_the_image_and_no_progress
 
     qtbot.waitUntil(lambda: not shows_video_surface(viewer), timeout=5000)
     assert not bar.isVisible()
+
+
+def test_while_a_video_plays_the_progress_bar_elapsed_time_advances(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    wait_until_loaded(viewer.video_player.engine, clip)
+    bar = viewer.findChild(ProgressBar)
+
+    qtbot.waitUntil(lambda: bar.text() == "0:01 / 1:05", timeout=5000)

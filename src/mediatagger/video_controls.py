@@ -1,4 +1,4 @@
-from PySide6.QtCore import QEvent
+from PySide6.QtCore import QEvent, QTimer
 from PySide6.QtWidgets import QLabel
 
 
@@ -7,6 +7,7 @@ class ProgressBar(QLabel):
 
     def __init__(self, parent):
         super().__init__(parent)
+        self._ticker = QTimer(self, interval=250, timeout=self._tick)
         self.hide()
 
     def follow(self, surface):
@@ -17,7 +18,19 @@ class ProgressBar(QLabel):
             self.hide()
         return False
 
-    def start(self, seconds):
-        minutes, seconds = divmod(round(seconds), 60)
-        self.setText(f"0:00 / {minutes}:{seconds:02d}")
+    def hideEvent(self, event):
+        self._ticker.stop()  # also when the viewer closes, before its mpv engine is gone
+
+    def start(self, engine):
+        self._engine = engine
+        self.setText(f"0:00 / {_clock(engine.duration)}")
+        self._ticker.start()
         self.show()
+
+    def _tick(self):
+        self.setText(f"{_clock(int(self._engine.time_pos))} / {_clock(self._engine.duration)}")
+
+
+def _clock(seconds):
+    minutes, seconds = divmod(round(seconds), 60)
+    return f"{minutes}:{seconds:02d}"

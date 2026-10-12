@@ -243,7 +243,7 @@ class Viewer(QWidget):
             self._hide_video()
             self.placeholder.show()
             return
-        self.progress_bar.start(self.video_player.engine.duration)
+        self.progress_bar.start(self.video_player.engine)
 
     def _show_current(self):
         video = is_video(self.slideshow.current)
