@@ -71,9 +71,7 @@ def test_moving_from_a_playing_video_to_an_image_shows_the_image_and_no_progress
 
 def test_while_a_video_plays_the_progress_bar_elapsed_time_advances(qtbot, tmp_path):
     clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    wait_until_loaded(viewer.video_player.engine, clip)
-    bar = viewer.findChild(ProgressBar)
+    viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
 
     qtbot.waitUntil(lambda: bar.text() == "0:01 / 1:05", timeout=5000)
 
@@ -205,9 +203,7 @@ def test_five_on_a_playing_video_whose_progress_bar_is_hidden_seeks_to_half_its_
 
 def test_zero_on_a_playing_video_seeks_back_to_the_start(qtbot, tmp_path):
     clip = make_clip(tmp_path / "IMG_1.mp4", duration=64)
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    wait_until_loaded(viewer.video_player.engine, clip)
-    bar = viewer.findChild(ProgressBar)
+    viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
     qtbot.keyClick(viewer, Qt.Key.Key_5)
     assert bar.text() == "0:32 / 1:04"
 
