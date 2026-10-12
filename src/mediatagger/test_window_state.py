@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import QStackedWidget
 
 from mediatagger.grid import TAG_BADGE, Grid
@@ -168,6 +169,20 @@ def test_launching_the_window_with_no_path_and_no_state_file_shows_the_launch_sc
     shown = window.findChild(QStackedWidget).currentWidget()
     assert isinstance(shown, Viewer)
     assert shown.slideshow is None
+
+
+def test_with_no_remembered_geometry_the_window_opens_not_fullscreen_at_about_80_percent_of_the_available_screen_centred(qtbot):
+    available = QGuiApplication.primaryScreen().availableGeometry()
+
+    window = Window(player_options=SILENT, is_mount_point=lambda path: False)
+    qtbot.addWidget(window)
+    window.show()
+    qtbot.waitExposed(window)
+
+    frame = window.geometry()
+    off_centre = (frame.center() - available.center()).manhattanLength()
+    assert (window.isFullScreen(), round(frame.width() / available.width(), 2), round(frame.height() / available.height(), 2),
+        off_centre <= 2) == (False, 0.8, 0.8, True)
 
 
 def write_state_file(text):

@@ -2,6 +2,18 @@
 
 Append-only record of tests removed because a delivered change retired the behavior they asserted. Each entry records the test, the behavior, the clause that retired it, and the observed failure that confirmed the contradiction.
 
+## 2026-10-12 · migrated `src/mediatagger/test_main.py::test_running_the_mediatagger_command_on_a_folder_opens_the_fullscreen_viewer_on_its_first_item` -> `test_running_the_mediatagger_command_on_a_folder_opens_a_normal_not_fullscreen_viewer_on_its_first_item`
+- Asserted: the window shown by `mediatagger <folder>` reports `fullscreen=True` and shows the folder's first item
+- Changed: renamed; now asserts `fullscreen=False` (first-item assertion unchanged)
+- Retired by: "With no remembered geometry, the window opens not fullscreen, about 80 % of the available screen, centred"
+- Confirmed: failed with AssertionError `'fullscreen=F...entre=#ff0000' == 'fullscreen=T...entre=#ff0000'` after the new behavior landed
+
+## 2026-10-12 · migrated `src/mediatagger/test_main.py::test_running_the_mediatagger_command_on_a_file_opens_the_fullscreen_viewer_on_that_file` -> `test_running_the_mediatagger_command_on_a_file_opens_a_normal_not_fullscreen_viewer_on_that_file`
+- Asserted: the window shown by `mediatagger <file>` reports `fullscreen=True` and shows that file
+- Changed: renamed; now asserts `fullscreen=False` (shown-file assertion unchanged)
+- Retired by: "With no remembered geometry, the window opens not fullscreen, about 80 % of the available screen, centred"
+- Confirmed: failed with AssertionError `'fullscreen=F...entre=#0000ff' == 'fullscreen=T...entre=#0000ff'` after the new behavior landed
+
 ## 2026-10-10 · `src/mediatagger/test_main.py::test_pressing_esc_in_the_mediatagger_command_makes_it_exit_cleanly`
 - Asserted: pressing `Esc` in the slideshow of `mediatagger <folder>` makes the command exit cleanly
 - Retired by: shipped `mediatagger <folder>` single-window item — "`Esc` switches from the slideshow to that folder's grid"

@@ -35,12 +35,12 @@ REPORT_SHOWN_WINDOW_SCRIPT = (
 ) + RUN_MEDIATAGGER_COMMAND
 
 
-def test_running_the_mediatagger_command_on_a_folder_opens_the_fullscreen_viewer_on_its_first_item(tmp_path):
+def test_running_the_mediatagger_command_on_a_folder_opens_a_normal_not_fullscreen_viewer_on_its_first_item(tmp_path):
     make_image(tmp_path / "IMG_1.png", "red")
     make_image(tmp_path / "IMG_2.png", "blue")
     result = run_python_offscreen(REPORT_SHOWN_WINDOW_SCRIPT, str(tmp_path))
     assert result.returncode == 0, result.stderr
-    assert result.stdout.strip() == f"fullscreen=True centre={QColor('red').name()}"
+    assert result.stdout.strip() == f"fullscreen=False centre={QColor('red').name()}"
 
 
 def test_the_installed_mediatagger_executable_started_on_its_own_keeps_running_with_its_viewer_open(tmp_path):
@@ -61,13 +61,13 @@ def test_the_installed_mediatagger_executable_started_on_its_own_keeps_running_w
     assert still_running, stderr
 
 
-def test_running_the_mediatagger_command_on_a_file_opens_the_fullscreen_viewer_on_that_file(tmp_path):
+def test_running_the_mediatagger_command_on_a_file_opens_a_normal_not_fullscreen_viewer_on_that_file(tmp_path):
     make_image(tmp_path / "IMG_1.png", "red")
     make_image(tmp_path / "IMG_2.png", "blue")
     make_image(tmp_path / "IMG_3.png", "green")
     result = run_python_offscreen(REPORT_SHOWN_WINDOW_SCRIPT, str(tmp_path / "IMG_2.png"))
     assert result.returncode == 0, result.stderr
-    assert result.stdout.strip() == f"fullscreen=True centre={QColor('blue').name()}"
+    assert result.stdout.strip() == f"fullscreen=False centre={QColor('blue').name()}"
 
 PRESS_ESC_THEN_REPORT_SCRIPT = (
     "import sys\n"
@@ -175,7 +175,7 @@ TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT = (
 
 RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT = "sys.argv = ['mediatagger', sys.argv[2]]\n" + RUN_MEDIATAGGER_COMMAND
 
-# The question comes up only once the viewer has settled fullscreen, so poll for it rather than guess when.
+# The question comes up only once the viewer has settled, so poll for it rather than guess when.
 ANSWER_THE_QUESTION_ONCE_ASKED = (
     "polling = QTimer()\n"
     "polling.timeout.connect(answer)\n"

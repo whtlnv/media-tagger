@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QApplication, QStackedWidget, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QApplication, QStackedWidget, QStyle, QVBoxLayout, QWidget
 
 from mediatagger.drive_session import DriveSession
 from mediatagger.folder_thumbnails import GENERATING_THUMBNAILS_TEXT, progress_text
@@ -34,7 +34,8 @@ class Window(QWidget):
         self.stack.addWidget(self.viewer)
         self._forwarding = False
         self.setAcceptDrops(True)
-        self.setWindowState(Qt.WindowState.WindowFullScreen)
+        available = self.screen().availableGeometry()
+        self.setGeometry(QStyle.alignedRect(Qt.LayoutDirection.LeftToRight, Qt.AlignmentFlag.AlignCenter, available.size() * 0.8, available))
         if path is not None:  # opened once the viewer is in place, so a question about the library is asked over it
             self._open(path.absolute())
         if remembered and remembered.exists():

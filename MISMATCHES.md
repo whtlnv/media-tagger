@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-12 04:08 · `src/mediatagger/test_window_state.py::test_with_no_remembered_geometry_the_window_opens_not_fullscreen_at_about_80_percent_of_the_available_screen_centred`
+- Behavior: With no remembered geometry, the window opens not fullscreen, about 80 % of the available screen, centred
+- Predicted: AssertionError — `isFullScreen()` True and the frame filling the available screen (ratios 1.0, 1.0)
+- Actual: AssertionError — `(True, 0.25, 0.12, False)`: fullscreen True, but the frame is a small default-sized window, off centre
+- Type: right-reason mismatch
+- Resolution: the offscreen platform sets the fullscreen state flag without growing the window to the screen, so the frame stays at Qt's default size; the failure is still the missing behaviour (fullscreen flag set, no 80 % centred sizing), and the test is kept as written.
+
 ## 2026-10-12 03:55 · `src/mediatagger/test_tag_prompt.py::test_typing_a_digit_into_the_tag_prompt_over_a_video_enters_the_digit_and_does_not_seek_the_video`
 - Behavior: typing a digit into the tag prompt over a playing video enters the digit and does not seek
 - Predicted: passes — the prompt's line edit has focus and consumes the digit, and `Viewer.keyPressEvent` returns early while the prompt has focus (`viewer.py:155`)
