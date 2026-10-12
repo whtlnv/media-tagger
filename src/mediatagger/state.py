@@ -21,3 +21,12 @@ def remembered_folder(state):
 def remember(state, folder, mount_point):
     state.parent.mkdir(parents=True, exist_ok=True)
     state.write_text(json.dumps({"folder": str(folder), "mount_point": str(mount_point)}))
+
+
+def remembered_geometry(state):
+    if not state.exists():
+        return None
+    try:
+        return json.loads(state.read_text())["geometry"]
+    except (json.JSONDecodeError, KeyError, PermissionError):
+        return None

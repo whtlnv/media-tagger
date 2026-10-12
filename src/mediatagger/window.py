@@ -1,13 +1,13 @@
 from pathlib import Path
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QRect, Qt
 from PySide6.QtWidgets import QApplication, QStackedWidget, QStyle, QVBoxLayout, QWidget
 
 from mediatagger.drive_session import DriveSession
 from mediatagger.folder_thumbnails import GENERATING_THUMBNAILS_TEXT, progress_text
 from mediatagger.grid import TILE_ROLE, Grid
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
-from mediatagger.state import remember, remembered_folder, state_file
+from mediatagger.state import remember, remembered_folder, remembered_geometry, state_file
 from mediatagger.status_bar import StatusBar
 from mediatagger.tag_prompt import TagPrompt
 from mediatagger.viewer import Viewer
@@ -34,7 +34,11 @@ class Window(QWidget):
         self.stack.addWidget(self.viewer)
         self._forwarding = False
         self.setAcceptDrops(True)
-        self._centre_on_the_screen()
+        geometry = remembered_geometry(self._state_file)
+        if geometry:
+            self.setGeometry(QRect(geometry["x"], geometry["y"], geometry["width"], geometry["height"]))
+        else:
+            self._centre_on_the_screen()
         if path is not None:  # opened once the viewer is in place, so a question about the library is asked over it
             self._open(path.absolute())
         if remembered and remembered.exists():

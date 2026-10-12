@@ -4,7 +4,7 @@ import shutil
 from pathlib import Path
 
 import pytest
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QRect, Qt
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import QStackedWidget
 
@@ -183,6 +183,19 @@ def test_with_no_remembered_geometry_the_window_opens_not_fullscreen_at_about_80
     off_centre = (frame.center() - available.center()).manhattanLength()
     assert (window.isFullScreen(), round(frame.width() / available.width(), 2), round(frame.height() / available.height(), 2),
         off_centre <= 2) == (False, 0.8, 0.8, True)
+
+
+def test_with_a_geometry_remembered_in_the_state_file_the_window_opens_at_that_size_and_position(qtbot):
+    available = QGuiApplication.primaryScreen().availableGeometry()
+    remembered = QRect(available.left() + 30, available.top() + 40, available.width() // 2, available.height() // 3)
+    write_state_file(json.dumps({"geometry": {"x": remembered.x(), "y": remembered.y(), "width": remembered.width(), "height": remembered.height()}}))
+
+    window = Window(player_options=SILENT, is_mount_point=lambda path: False)
+    qtbot.addWidget(window)
+    window.show()
+    qtbot.waitExposed(window)
+
+    assert (window.isFullScreen(), window.geometry()) == (False, remembered)
 
 
 def write_state_file(text):
