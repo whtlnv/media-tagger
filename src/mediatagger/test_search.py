@@ -18,3 +18,12 @@ def test_searching_a_library_for_beach_leaves_out_a_tagged_file_whose_tags_dont_
     library.enter(photo, "mountain snow")
 
     assert search(library, "beach") == []
+
+
+def test_searching_for_beach_in_any_letter_case_finds_a_file_tagged_beach(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "dunes.jpg"
+    photo.touch()
+    library.enter(photo, "beach")
+
+    assert search(library, "BeAcH") == [photo]
