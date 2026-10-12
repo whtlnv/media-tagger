@@ -104,6 +104,15 @@ From the user's Pi test of build ff64cc3 (logs in the stick's `results/`, findin
 - **Seeking.** ↑/↓ keep seeking ±10 s; `0`–`9` jump to 0 %–90 % of the video. Each seek shows the progress bar. The keys are only active while a video is shown; they never reach the grid or the tag prompt.
 - **Windowed by default.** The app opens as a normal, resizable window (about 80 % of the screen, centred; remembered size and position in `state.json` when known), not fullscreen. `f` toggles fullscreen in both grid and viewer, as before.
 
+## Phase 9b — Video playback never leaks
+
+The Pi crash from the first Pi run: libmpv 0.40/0.41's render API creates a GL fence after every rendered frame and never deletes it (mpv#17217, fixed upstream in f74adc4 but in no release or Debian package yet; the Pi has `libmpv2 0.40.0-3+deb13u1`). On the Pi's Mesa v3d each fence holds a `sync_file` fd, so after ~30 s the app runs out of file descriptors and the Wayland connection dies. Write-up: `spikes/mpv-fence-leak/REPORT.md`.
+
+- **The video surface hands mpv a `glFenceSync` that creates no fence.** When mpv asks the surface's OpenGL context for `glFenceSync`, it gets a stand-in that returns no fence (null); mpv then keeps nothing to leak. Every other GL function resolves to the context's real one, as today. The stand-in stays alive as long as the surface's render context. `glFenceSync` must still resolve to something: it is core in GLES 3 (the Pi) and mpv refuses to start if a core function is missing.
+- **The viewer's player runs without direct rendering** (`vd-lavc-dr=no`): mpv's only other fence use is for directly-rendered buffers, which would otherwise be treated as reusable at once.
+- **Playback is otherwise unchanged:** clips still play, seek and show their progress; a player created with extra options (tests' `ao=null`) still gets `vd-lavc-dr=no`.
+- **Native checks (orchestrator):** on the Mac, live GL fences in the real app stay flat while a clip plays (wrapping as in `spikes/fence_check_mac.py`); on the Pi, the app's `sync_file` fd count stays flat and a video plays for several minutes.
+
 ## Phase 10 — Search
 
 `/` focuses a search bar above the grid. Queries support AND (`beach family`), NOT (`-sunset`), OR (`beach|pool`), exact tags and namespace prefixes (`people:`), matched against effective tags. Results show only tagged items, collapsed so that a matching folder hides any matching items inside it. `Enter` on a result file starts a slideshow over the results from that file; `Enter` on a result folder opens that folder normally. A breadcrumb shows the active query; `Esc` clears it and returns to the folder you were in. Tagged paths that no longer exist appear as "missing" tiles whose tags can be removed. `↑` in the search bar recalls previous searches.
