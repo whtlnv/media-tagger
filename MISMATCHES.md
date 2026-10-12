@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-11 19:33 · `src/mediatagger/test_viewer_tag_overlay.py::test_a_file_with_no_own_tags_in_an_untagged_folder_next_to_a_folder_tagged_zoo_shows_no_tag_overlay`
+- Behavior: A file with no own and no inherited tags shows no tag overlay
+- Predicted: passes (stated up front) — `TagOverlay.show` hides each label whose tag list is empty, and `effective_tags` already excludes sibling folders' tags
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: Behavior already shipped with the two-label TagOverlay; forcing `TagOverlay.show` to make labels always visible made the test fail, so it is a real regression pin (sibling `Trip` tagged, file in `Trip2`) and was kept as is.
+
 ## 2026-10-11 19:13 · `src/mediatagger/test_viewer_tag_overlay.py::test_moving_with_space_from_an_image_to_a_video_in_a_folder_tagged_aunt_shows_the_dimmed_aunt_on_top_of_the_video`
 - Behavior: Moving with `Space` from an image to a video inside a tagged folder shows the dimmed inherited tags on top of the video
 - Predicted: AssertionError — childAt returns the video surface, since `Viewer._show_current` raises only `tag_overlay.own` over the surface

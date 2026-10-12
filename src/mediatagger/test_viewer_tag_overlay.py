@@ -239,3 +239,16 @@ def test_moving_with_space_from_an_image_to_a_video_in_a_folder_tagged_aunt_show
     qtbot.waitUntil(lambda: shows_video_surface(viewer))
 
     assert_shown_on_top(viewer, "aunt")
+
+
+def test_a_file_with_no_own_tags_in_an_untagged_folder_next_to_a_folder_tagged_zoo_shows_no_tag_overlay(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    trip, trip2 = folder / "Trip", folder / "Trip2"
+    trip.mkdir()
+    trip2.mkdir()
+    make_image(trip2 / "IMG_1.png", "red")
+    Library.open(drive).enter(trip, "zoo")
+
+    viewer = shown_viewer_on_drive(qtbot, trip2, drive, lambda question: False)
+
+    assert shown_texts(viewer) == []

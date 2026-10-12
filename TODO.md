@@ -41,6 +41,6 @@ Phase 9 notes for every cycle. Architecture: `viewer.py` must not grow — it sh
 - [x] Pressing `t` in the viewer on a file inside a tagged folder hides the dimmed inherited tags while the prompt is open, and `Esc` shows them again
 - [x] Moving with `Space` from an image to a video inside a tagged folder shows the dimmed inherited tags on top of the video
 - [x] A file in a folder tagged `zoo` inside a folder tagged `apple` lists its inherited tags alphabetically (`apple zoo`) in the grid's status bar, and a tag both folders carry appears once
-- [ ] A file with no own and no inherited tags shows no tag overlay
+- [x] A file with no own and no inherited tags shows no tag overlay
 - [ ] Tagging a folder in the grid and then opening a file inside it shows the new inherited tags in the viewer's overlay at once
 - [ ] In the shipped `mediatagger` window, pressing `t` on a folder tile, entering `beach`, then `Enter` on a file inside that folder shows `beach` dimmed in the viewer's tag overlay
