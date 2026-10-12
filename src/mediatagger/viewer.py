@@ -57,7 +57,6 @@ class Viewer(QWidget):
         self.read_only_banner = overlay_label(READ_ONLY_BANNER_TEXT, self)
         self.read_only_banner.hide()
         self.progress_bar = ProgressBar(self)
-        self.progress_bar.hide()
         self.setWindowState(Qt.WindowState.WindowFullScreen)
         self.setAcceptDrops(True)
         if path is None:
@@ -219,7 +218,6 @@ class Viewer(QWidget):
         self._hide_video()
 
     def _hide_video(self):
-        self.progress_bar.hide()
         if self.surface:
             self.surface.hide()
 
@@ -245,14 +243,15 @@ class Viewer(QWidget):
             self._hide_video()
             self.placeholder.show()
             return
-        self.progress_bar.show_length(self.video_player.engine.duration)
-        self.progress_bar.show()
+        self.progress_bar.start(self.video_player.engine.duration)
 
     def _show_current(self):
         video = is_video(self.slideshow.current)
         self.placeholder.setVisible(not video and self._current_image().isNull())
         if video:
-            self.surface = self.surface or MpvSurface(self.video_player.engine, self)
+            if self.surface is None:
+                self.surface = MpvSurface(self.video_player.engine, self)
+                self.progress_bar.follow(self.surface)
             self.surface.setGeometry(self.rect())
             self.surface.show()
             for overlay in (self.info, self.status_bar, self.read_only_banner, self.tag_overlay, self.tag_prompt):
