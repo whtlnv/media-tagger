@@ -259,6 +259,12 @@ class Grid(QListView):
         super().updateGeometries()
         self._request_visible()
 
+    def show_tag_count(self, count):
+        """The cursor's tile shows a new own-tag count, without listing the folder again."""
+        index = self.currentIndex()
+        index.data(TILE_ROLE).tag_count = count
+        self.update(index)
+
     def keep_clear_at_the_bottom(self, height):
         """Room below the last row for what lies over the grid's bottom edge (the window's status bar)."""
         self.setViewportMargins(0, 0, 0, height)

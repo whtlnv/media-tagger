@@ -143,10 +143,8 @@ class Window(QWidget):
 
     def _show_saved_tags(self, library, path):
         grid = self.stack.currentWidget()
-        index = grid.currentIndex()
-        index.data(TILE_ROLE).tag_count = len(library.tags(path))
-        grid.update(index)
-        self._show_tags_of(index)
+        grid.show_tag_count(len(library.tags(path)))
+        self._show_tags_of(grid.currentIndex())
 
     def _leave(self, folder):
         if self.session.is_mount_point(folder):
