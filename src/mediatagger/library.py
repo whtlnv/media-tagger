@@ -141,19 +141,8 @@ class Library:
         return counts
 
     def tags(self, path):
-        if self.schema_version < 2:
-            return []
-        connection = sqlite3.connect(self._tags_db)
-        rows = connection.execute(
-            "SELECT tags.name FROM item_tags"
-            " JOIN items ON items.id = item_tags.item_id"
-            " JOIN tags ON tags.id = item_tags.tag_id"
-            " WHERE items.rel_path = ? ORDER BY tags.name",
-            (self._key(path),),
-        )
-        tags = [tag for (tag,) in rows]
-        connection.close()
-        return tags
+        key = self._key(path)
+        return self._tags_by_key([key])[key]
 
     def effective_tags(self, path):
         ancestor_keys = [str(folder) for folder in path.relative_to(self.root).parents]
