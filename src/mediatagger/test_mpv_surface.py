@@ -1,7 +1,8 @@
 import ctypes
 import gc
 
-from mediatagger.mpv_surface import fence_free_lookup
+from mediatagger import mpv_surface
+from mediatagger.mpv_surface import MpvSurface, fence_free_lookup
 
 GL_SYNC_GPU_COMMANDS_COMPLETE = 0x9117
 FENCE_SYNC = ctypes.CFUNCTYPE(ctypes.c_void_p, ctypes.c_uint, ctypes.c_uint)
@@ -29,3 +30,34 @@ def test_the_glfencesync_stand_in_is_still_callable_after_a_garbage_collection()
     gc.collect()
 
     assert FENCE_SYNC(address)(GL_SYNC_GPU_COMMANDS_COMPLETE, 0) is None
+
+
+def test_the_surface_hands_mpv_the_fence_free_gl_lookup_when_it_creates_its_render_context(qtbot, monkeypatch):
+    real_addresses = {"glFenceSync": 0x1111, "glClear": 0x5678}
+
+    class GlContext:
+        @staticmethod
+        def currentContext():
+            return GlContext()
+
+        def getProcAddress(self, name):
+            return real_addresses.get(name, 0)
+
+    received = {}
+
+    class RenderContext:
+        def __init__(self, engine, api_type, opengl_init_params):
+            received.update(opengl_init_params)
+
+    monkeypatch.setattr(mpv_surface, "QOpenGLContext", GlContext)
+    monkeypatch.setattr(mpv_surface.mpv, "MpvRenderContext", RenderContext)
+    surface = MpvSurface(engine=None)
+    qtbot.addWidget(surface)
+
+    surface.initializeGL()
+
+    get_proc_address = received["get_proc_address"]
+    fence_sync = get_proc_address(None, b"glFenceSync")
+    assert fence_sync != 0x1111
+    assert FENCE_SYNC(fence_sync)(GL_SYNC_GPU_COMMANDS_COMPLETE, 0) is None
+    assert get_proc_address(None, b"glClear") == 0x5678
