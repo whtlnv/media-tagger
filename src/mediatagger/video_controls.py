@@ -1,5 +1,5 @@
-from PySide6.QtCore import QEvent, QTimer
-from PySide6.QtGui import QPainter
+from PySide6.QtCore import QEvent, Qt, QTimer
+from PySide6.QtGui import QColor, QPainter, QPalette
 from PySide6.QtWidgets import QLabel
 
 
@@ -18,6 +18,9 @@ class ProgressBar(QLabel):
 
     def __init__(self, parent, hide_delay=HIDE_DELAY_MS):
         super().__init__(parent)
+        palette = self.palette()
+        palette.setColor(QPalette.ColorRole.WindowText, Qt.GlobalColor.white)
+        self.setPalette(palette)
         self._ticker = QTimer(self, interval=250, timeout=self._tick)
         self._hide_timer = QTimer(self, interval=hide_delay, singleShot=True, timeout=self.hide)
         self.hide()
@@ -81,8 +84,9 @@ class ProgressBar(QLabel):
 
     def paintEvent(self, event):
         with QPainter(self) as painter:
+            painter.fillRect(self.rect(), QColor(0, 0, 0, 160))
             filled_width = int(self.width() * self._fraction)
-            painter.fillRect(0, 0, filled_width, self.height(), self.palette().highlight())
+            painter.fillRect(0, 0, filled_width, self.height(), Qt.GlobalColor.white)
         super().paintEvent(event)
 
 

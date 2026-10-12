@@ -2,6 +2,7 @@ from types import SimpleNamespace
 
 import shiboken6
 from PySide6.QtCore import QPoint, QRect, Qt
+from PySide6.QtGui import QColor, QPalette
 from PySide6.QtWidgets import QLineEdit, QStackedWidget, QWidget
 
 from mediatagger.test_video import make_clip
@@ -247,3 +248,32 @@ def test_in_the_window_the_progress_bar_of_a_playing_video_does_not_overlap_the_
     prompt_frame = QRect(prompt.mapTo(window, QPoint()), prompt.size())
     assert bar.isVisible()
     assert not bar_frame.intersects(prompt_frame)
+
+
+def test_the_progress_bar_shows_light_text_and_a_light_track_on_a_dark_background_over_both_black_and_white_frames(qtbot):
+    frame = QWidget()
+    frame.setAutoFillBackground(True)
+    qtbot.addWidget(frame)
+    bar = ProgressBar(frame)
+    bar.resize(300, 20)
+    engine = SimpleNamespace(duration=60, time_pos=0)
+    bar.start(engine)
+    frame.show()
+    qtbot.waitExposed(frame)
+
+    def bar_over(colour):
+        palette = frame.palette()
+        palette.setColor(QPalette.ColorRole.Window, colour)
+        frame.setPalette(palette)
+        return frame.grab(bar.geometry()).toImage()
+
+    def lightest(image):
+        return max(image.pixelColor(x, y).lightness() for x in range(image.width()) for y in range(image.height()))
+
+    over_black, over_white = bar_over(QColor("black")), bar_over(QColor("white"))
+    assert lightest(over_black) > 200  # the text reads over a black frame
+    assert over_white.pixelColor(295, 10).lightness() < 128  # the background darkens a white frame
+
+    engine.time_pos = 30
+    qtbot.waitUntil(lambda: bar.text().startswith("0:30"))
+    assert bar_over(QColor("black")).pixelColor(5, 1).lightness() > 200  # the filled track reads over a black frame
