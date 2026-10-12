@@ -1,5 +1,7 @@
 import threading
 
+from PySide6.QtCore import QCoreApplication, QEvent
+
 from mediatagger.thumbnail_scheduler import ThumbnailScheduler
 
 
@@ -340,3 +342,11 @@ def test_shutting_a_scheduler_down_drops_its_pending_thumbnails_so_they_are_neve
 
     with lock:
         assert sorted(started) == busy
+
+
+def test_shutting_a_scheduler_down_a_second_time_after_qt_processed_deferred_deletions_raises_nothing(qtbot):
+    scheduler = ThumbnailScheduler(generate=lambda path: None)
+    scheduler.shut_down()
+    QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+
+    scheduler.shut_down()

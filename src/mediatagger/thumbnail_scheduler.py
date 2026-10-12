@@ -91,6 +91,7 @@ class _Work:
 
 class ThumbnailScheduler:
     _qt_types_created = False
+    _shut_down = False
 
     def __init__(self, generate, parent=None, prefetch=None):
         """Requested files go through `generate` and come back through `generated`. The rest of the folder goes
@@ -137,7 +138,11 @@ class ThumbnailScheduler:
         self._surveyor.submit(self._work.survey, function)
 
     def shut_down(self):
-        """Drops pending work, lets running work finish without delivering, and frees the Qt object on the GUI thread."""
+        """Drops pending work, lets running work finish without delivering, and frees the Qt object on the GUI thread.
+        Safe to call again: by then Qt may have deleted that object."""
+        if self._shut_down:
+            return
+        self._shut_down = True
         self._work.stop()
         self._executor.shutdown(wait=False, cancel_futures=True)
         self._surveyor.shutdown(wait=False, cancel_futures=True)
