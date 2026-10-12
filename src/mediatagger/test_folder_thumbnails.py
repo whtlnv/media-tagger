@@ -96,3 +96,15 @@ def test_a_total_of_1204_thumbnails_reads_with_thousands_separated():
     from mediatagger.folder_thumbnails import progress_text
 
     assert progress_text(132, 1204) == "⟳ Generating thumbnails 132 / 1,204"
+
+
+def test_stopping_a_folders_thumbnails_a_second_time_after_qt_has_processed_deferred_deletions_raises_nothing(qtbot, tmp_path):
+    from PySide6.QtCore import QCoreApplication, QEvent
+
+    [photo] = folder_of(tmp_path, "photo.jpg")
+    owner = QObject()
+    thumbnails = FolderThumbnails([photo], ThumbnailCache(":memory:"), owner, generate=lambda path: (solid_thumbnail("red"), None))
+    thumbnails.stop()
+    QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+
+    thumbnails.stop()
