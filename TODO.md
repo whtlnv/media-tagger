@@ -1,5 +1,67 @@
 # TODO
 
-Phase 9b notes for every cycle (Phases 1–9a are delivered — see DONE.md; Phases 10 and 11 are later deliveries — decompose only "Phase 9b — Video playback never leaks"). Cause: libmpv 0.40/0.41's render API creates a GL fence after every rendered frame (`ra_gl_ctx_submit_frame`) and never deletes it (mpv#17217). Fix: in `mpv_surface.MpvSurface.initializeGL`, the `get_proc_address` callback answers `b"glFenceSync"` with the address of a ctypes stub (`ctypes.CFUNCTYPE(ctypes.c_void_p, ctypes.c_uint, ctypes.c_uint)`) that returns null; every other name resolves to the context's real address as today. Never answer 0 for `glFenceSync` — it is core in GLES 3 and mpv refuses to start. Keep a reference to the stub on the surface (like `self._get_proc_address`) so it is never garbage-collected while mpv can call it. Offscreen has no OpenGL, so test the name→address decision as a small unit testable without a GL context (given a real-resolver callable: `glFenceSync` maps to a stub whose call returns null/0; other names map to the real resolver's answer; the stub stays alive). The viewer's player options (`viewer._PLAYER_OPTIONS`) always include `vd-lavc-dr=no`, and caller-supplied options (tests' `{"ao": "null"}`) must not drop it — test by reading the option back from the viewer's engine. `spikes/fence_check_mac.py` shows the wrapping technique (read only). Tests are co-located with source (`src/mediatagger/test_*.py`), offscreen and silent (`player_options={"ao": "null"}`), never touch real drives or `~`; create mpv players only via `video.new_engine()`; keep `gui_thread_gc` in force. `viewer.py` is at 268 of its 270-line budget — it must not grow past 270. Never write to `/Volumes/MEDIATAGGER`, never touch `spikes/`. No cycle opens on-screen windows or takes screenshots of the real display; the orchestrator does native checks (the PLAN's "Native checks" bullet is not a TODO item).
+Phase 10 notes for every cycle (Phases 1–9b are delivered — see DONE.md; Phase 11 is a later delivery — decompose only "Phase 10 — Search"). Spec: PLAN.md "Phase 10 — Search" and DESIGN.md "Search" / "Screens and keys". Decisions for this phase (follow them; don't re-decide): **Query** — lowercased, split on whitespace; a word starting with `-` is NOT (a lone `-` is ignored); a word containing `|` is an OR of its parts (`-beach|pool` = neither); a term ending in `:` is a namespace prefix (any tag starting with it), any other term is an exact tag; every word must hold (AND); an empty or blank query searches nothing. **Matching** — against effective tags (own ∪ own tags of every ancestor folder below the drive root, as `Library.effective_tags`), candidates are only items in the library's `items` table (tagged items), read in **one SQLite query of all item/tag rows**, effective tags then computed in memory from that one read (no per-item queries, no filesystem walks); the parsing/matching lives in a new module `search.py`, the one read in `library.py`. Collapse: a match with a matching ancestor folder is dropped, so only the top-most matching folder shows. Scope is the whole library of the drive the grid's folder is on. Results order: folders first, then files, each in natural order (as the grid) of their path relative to the drive root. **Search bar** — `/` in a grid with an open library shows a one-line search bar above the grid and focuses it (with no library `/` does nothing); `Enter` with a non-blank query runs it, hides the bar and shows the results in a grid of result tiles with focus on it, cursor on the first; `Enter` on a blank query and `Esc` while typing close the bar and return focus to the grid unchanged. A breadcrumb line above the results grid reads `Search: <query>` (a result set with nothing shows the breadcrumb over an empty grid); `Esc` in the results grid clears the search and shows the folder you were in with the cursor where it was (Esc in a plain folder grid still quits). `Backspace` in the results grid does nothing. `/` in the results grid opens the bar again to search anew. **Result tiles** — same look as folder tiles (thumbnail, name = the item's own name, tag-count badge of own tags); the status bar shows the selected result's tags as in a folder grid; `t` tags a result as in a folder grid (badge updates in place). A tagged path that no longer exists is a "missing" tile (no thumbnail requested for it, a distinct glyph and its name, e.g. drawn as missing) whose tags can be removed with `t` (`-tag`); removing its last tag leaves the tile until the next search. **Opening results** — `Enter` on a result file starts a slideshow over the result list's existing files (in results order) from that file; `Esc` from that slideshow returns to the results grid, cursor on the current file. `Enter` on a result folder opens that folder's normal grid (unfiltered, cursor on its first item, the search is over). `Enter` on a missing tile does nothing. **History** — every search run is remembered in `state.json` under a `searches` list (most recent last, a repeated query moves to the end, at most 50), only when the state file may be written (`Window._may_write_state`). `↑` in the search bar replaces its text with the previous search (older on each press, stopping at the oldest); `↓` goes back toward newer, past the newest to an empty bar. `state.remember` (last folder) must carry the remembered `searches` over as it does `geometry` (BACKLOG note on `remember`), and `remember_geometry` already keeps everything; a state file with no searches stays exactly as today (existing exact-dict tests). Showing results does not change the remembered last folder. **Constraints** — tests are co-located with source (`src/mediatagger/test_*.py`), offscreen and silent (`player_options={"ao": "null"}`), never touch real drives or `~`; create mpv players only via `video.new_engine()`; keep `gui_thread_gc` in force; tests of teardown/re-entry flush `QEvent.Type.DeferredDelete`. `viewer.py` is at 268 of its 270-line budget and must not grow past 270 (a slideshow over a given list belongs in `slideshow.py`; the viewer at most passes it through); `grid.py` is 305 lines — put result tiles, the search bar and the breadcrumb in new modules (e.g. `search.py`, `search_bar.py`) rather than growing `grid.py`/`window.py` much. Searching never blocks the GUI on the filesystem beyond checking existence of result paths, and must stay fast with thousands of tagged items. Never write to `/Volumes/MEDIATAGGER`, never touch `spikes/`. No cycle opens on-screen windows or takes screenshots of the real display; the orchestrator does native checks.
 
-
+- [ ] Searching a library for `beach` finds a tagged file whose own tags include `beach`
+- [ ] Searching a library for `beach` leaves out a tagged file whose tags don't include `beach`
+- [ ] Searching for `Beach` (any letter case) finds a file tagged `beach`
+- [ ] An exact term does not find a longer tag that starts with it (`people:ana` leaves out a file tagged only `people:anabel`)
+- [ ] `beach family` finds a file tagged `beach` inside a folder tagged `family` (matched against effective tags)
+- [ ] `beach family` leaves out a file tagged `beach` whose folders carry no `family`
+- [ ] `beach -sunset` finds a file tagged `beach` that has no `sunset`
+- [ ] `beach -sunset` leaves out a file tagged both `beach` and `sunset`
+- [ ] `beach|pool` finds a file tagged only `pool`
+- [ ] `beach|pool` leaves out a file tagged neither `beach` nor `pool`
+- [ ] `-beach|pool` leaves out a file tagged `pool`
+- [ ] `-beach|pool` finds a tagged file that has neither `beach` nor `pool`
+- [ ] `people:` finds a file tagged `people:ana`
+- [ ] `people:` leaves out a file tagged only `pets:rex`
+- [ ] A lone `-` in a query is ignored (`beach -` finds a file tagged `beach`)
+- [ ] An empty or blank query finds nothing, even in a library with tagged items
+- [ ] A query of only exclusions never finds an untagged file inside a tagged folder
+- [ ] An item whose tags were all removed is not found by the next search
+- [ ] A matching file inside a matching folder is left out; only the folder is found
+- [ ] A matching folder inside a matching folder is left out; only the top-most folder is found
+- [ ] Search results list folders before files
+- [ ] Search results within folders and within files are in natural order of their path relative to the drive root (`IMG_2` before `IMG_10`)
+- [ ] Searching a library of 5,000 tagged items returns its results in under 200 ms
+- [ ] Running a search when the state file may be written adds the query at the end of `searches` in `state.json`
+- [ ] Running a search when the state file may not be written leaves `state.json` without the query
+- [ ] Running a query already in `searches` moves it to the end instead of adding it twice
+- [ ] `searches` keeps at most the 50 most recent queries, dropping the oldest
+- [ ] Remembering the last folder keeps the remembered `searches` (backlog: src/mediatagger/state.py:17 `remember` keeps the remembered geometry by name, while `remember_geometry` keeps everything)
+- [ ] `/` in a grid on a drive with a library shows a search bar above the grid with keyboard focus
+- [ ] `/` in a grid on a drive without a library shows no search bar
+- [ ] Typing a non-blank query and pressing `Enter` replaces the grid with tiles of the matching items, named by each item's own name, in results order
+- [ ] After `Enter` runs a search, the search bar is hidden and the results grid has focus with the cursor on the first result
+- [ ] A breadcrumb line above the results grid reads `Search: <query>`
+- [ ] A search with no matches shows the `Search: <query>` breadcrumb over an empty grid
+- [ ] A search run from a subfolder finds tagged items elsewhere on the same drive
+- [ ] `Enter` on a blank query closes the search bar and returns focus to the unchanged grid
+- [ ] `Esc` while typing in the search bar closes it and returns focus to the unchanged grid
+- [ ] `Esc` in the results grid shows the folder you searched from with the cursor where it was
+- [ ] `Backspace` in the results grid leaves the results shown
+- [ ] `/` in the results grid opens the search bar, and a new query replaces the results
+- [ ] Showing search results does not change the remembered last folder
+- [ ] A result tile's badge counts the item's own tags, not those inherited from its folders
+- [ ] A result file's tile shows its thumbnail
+- [ ] Moving the cursor onto a result shows that result's tags in the status bar
+- [ ] `t` on a result adds the entered tag to that item and its badge updates in place
+- [ ] A result whose path no longer exists is drawn as a missing tile with a distinct glyph and its name
+- [ ] A result whose path exists is not drawn as missing
+- [ ] No thumbnail is requested for a missing tile
+- [ ] `t` with `-tag` on a missing tile removes that tag from the item
+- [ ] Removing a missing tile's last tag leaves the tile shown in the current results
+- [ ] `Enter` on a result file opens a slideshow at that file
+- [ ] Next in a slideshow opened from results goes to the next result file, not the next file in its folder
+- [ ] A slideshow opened from results skips result folders and missing paths
+- [ ] `Esc` in a slideshow opened from results returns to the results grid with the cursor on the current file
+- [ ] `Enter` on a result folder opens that folder's normal, unfiltered grid with the cursor on its first item
+- [ ] `Esc` in a folder opened from results does not return to the results
+- [ ] `Enter` on a missing tile does nothing
+- [ ] `↑` in the search bar replaces its text with the most recent search
+- [ ] Each further `↑` in the search bar recalls the next older search
+- [ ] `↑` at the oldest remembered search keeps it in the search bar
+- [ ] `↓` in the search bar after `↑` recalls the next newer search
+- [ ] `↓` past the newest search leaves the search bar empty
+- [ ] Running the `mediatagger` command on a folder of a drive with a tagged library, pressing `/`, typing a query and `Enter` shows the `Search: <query>` breadcrumb over the matching items
