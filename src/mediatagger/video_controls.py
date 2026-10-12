@@ -25,6 +25,11 @@ class ProgressBar(QLabel):
             self.hide()
         return False
 
+    def place(self, rect, clear_at_the_bottom):
+        """Along the bottom of rect, its full width, above the strip kept clear for the status bar."""
+        height = self.sizeHint().height()
+        self.setGeometry(rect.left(), rect.bottom() + 1 - clear_at_the_bottom - height, rect.width(), height)
+
     def start(self, engine):
         self._engine = engine
         self._show_elapsed(0)

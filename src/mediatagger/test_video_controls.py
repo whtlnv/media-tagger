@@ -1,13 +1,16 @@
 from types import SimpleNamespace
 
 import shiboken6
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget
+from PySide6.QtCore import QPoint, QRect, Qt
+from PySide6.QtWidgets import QStackedWidget, QWidget
 
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import (
     make_folder_with_no_media,
+    SILENT,
     make_image,
+    make_surface_ready,
+    show_exposed,
     shown_texts,
     shown_viewer_on,
     shows_video_surface,
@@ -16,6 +19,7 @@ from mediatagger.test_viewer import (
 from mediatagger.test_viewer_open import drag_and_drop_onto
 from mediatagger.video_controls import ProgressBar
 from mediatagger.viewer import UNSUPPORTED_TEXT
+from mediatagger.window import Window
 
 
 def test_a_starting_video_shows_a_progress_bar_at_zero_of_its_length_that_hides_once_a_folder_with_no_media_is_dropped(qtbot, tmp_path):
@@ -192,3 +196,21 @@ def test_the_progress_bar_lies_along_the_bottom_of_a_playing_video_just_above_th
     assert frame.bottom() > viewer.height() // 2
     assert not frame.intersects(status_bar)
     assert frame.bottom() < status_bar.top()
+
+
+def test_in_the_window_the_progress_bar_spans_the_playing_videos_width_just_above_the_windows_status_bar(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "a.mp4", duration=65)
+    window = Window(tmp_path, player_options=SILENT)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    viewer = window.findChild(QStackedWidget).currentWidget()
+    make_surface_ready(viewer)
+    wait_until_loaded(viewer.video_player.engine, clip)
+    bar = viewer.findChild(ProgressBar)
+    qtbot.waitUntil(bar.isVisible, timeout=5000)
+
+    frame = QRect(bar.mapTo(window, QPoint()), bar.size())
+    status_top = window.status_bar.geometry().top()
+
+    assert frame.width() == window.width()
+    assert frame.bottom() == status_top - 1
