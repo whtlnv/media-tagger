@@ -173,3 +173,27 @@ def test_the_tag_overlay_shows_the_files_own_tags_alphabetically_then_its_inheri
     viewer = shown_viewer_on_drive(qtbot, trip, drive, lambda question: False)
 
     assert " ".join(shown_texts(viewer)) == "beach sunset aunt zoo"
+
+
+def test_in_the_tag_overlay_an_inherited_tag_is_drawn_dimmer_than_an_own_tag(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    library = Library.open(drive)
+    library.enter(folder, "aunt")
+    library.enter(folder / "IMG_1.png", "beach")
+
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    frames = [frame_in(viewer, label) for label in shown_labels(viewer) if "beach" in label.text() or "aunt" in label.text()]
+    left = min(frame.left() for frame in frames)
+    right = max(frame.right() for frame in frames)
+    top = min(frame.top() for frame in frames)
+    bottom = max(frame.bottom() for frame in frames)
+    image = viewer.grab().toImage()
+
+    def brightest_in(columns):
+        return max(image.pixelColor(x, y).lightness() for x in columns for y in range(top, bottom + 1))
+    width = right - left
+    own_brightness = brightest_in(range(left, left + width // 4))  # "beach", shown first
+    inherited_brightness = brightest_in(range(right - width // 3, right))  # "aunt", shown last
+    assert own_brightness > 240
+    assert inherited_brightness < own_brightness - 60

@@ -9,7 +9,7 @@ from mediatagger.drive_session import DriveSession
 from mediatagger.folder import is_video
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
 from mediatagger.mpv_surface import MpvSurface
-from mediatagger.status_bar import CORNER_MARGIN, StatusBar, overlay_label
+from mediatagger.status_bar import _DIMMED_LABEL_STYLE, CORNER_MARGIN, StatusBar, overlay_label
 from mediatagger.slideshow import Slideshow
 from mediatagger.tag_prompt import TagPrompt
 from mediatagger.video import VideoPlayer, new_engine
@@ -67,6 +67,9 @@ class Viewer(QWidget):
         self.tag_prompt = TagPrompt(self, self.status_bar, on_close=self._show_tag_overlay)
         self.tag_overlay = overlay_label("", self)
         self.tag_overlay.hide()
+        self.inherited_tag_overlay = overlay_label("", self)
+        self.inherited_tag_overlay.setStyleSheet(_DIMMED_LABEL_STYLE)
+        self.inherited_tag_overlay.hide()
         self.info = overlay_label("", self)
         self.info.move(CORNER_MARGIN, CORNER_MARGIN)
         self.info.hide()
@@ -95,7 +98,7 @@ class Viewer(QWidget):
             self.status_bar.place_along_the_bottom_of(self.rect())
         self._centre(self.placeholder)
         self._pin_top_centre(self.read_only_banner)
-        self._pin_top_right(self.tag_overlay)
+        self._pin_tag_overlays()
         self.tag_prompt.place()
 
     def _centre(self, label):
@@ -182,12 +185,20 @@ class Viewer(QWidget):
             self._show_tag_overlay(self.session.library, self.slideshow.current)
 
     def _show_tag_overlay(self, library, path):
-        tags = " ".join(library.effective_tags(path).own_then_inherited())
-        self.tag_overlay.setText(tags)
-        self.tag_overlay.adjustSize()
+        tags = library.effective_tags(path)
+        for label, shown in ((self.tag_overlay, tags.own), (self.inherited_tag_overlay, sorted(tags.inherited))):
+            label.setText(" ".join(shown))
+            label.adjustSize()
+            label.setVisible(bool(shown))
+            label.raise_()
+        self._pin_tag_overlays()
+
+    def _pin_tag_overlays(self):
+        """Inherited tags sit in the top-right corner with the file's own tags just to their left."""
+        self._pin_top_right(self.inherited_tag_overlay)
         self._pin_top_right(self.tag_overlay)
-        self.tag_overlay.setVisible(bool(tags))
-        self.tag_overlay.raise_()
+        if not self.inherited_tag_overlay.isHidden():
+            self.tag_overlay.move(self.inherited_tag_overlay.x() - self.tag_overlay.width(), self.tag_overlay.y())
 
     def _toggle_fullscreen(self):
         if self.isFullScreen():
