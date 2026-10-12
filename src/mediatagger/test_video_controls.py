@@ -1,5 +1,7 @@
+import time
 from types import SimpleNamespace
 
+import mpv
 import shiboken6
 from PySide6.QtCore import QPoint, QRect, Qt
 from PySide6.QtGui import QColor, QPalette
@@ -320,3 +322,25 @@ def test_the_progress_bar_of_a_playing_video_is_stacked_above_the_video_surface(
     on_top = viewer.childAt(bar.geometry().center())
 
     assert on_top is bar or bar.isAncestorOf(on_top)
+
+
+def test_closing_the_window_while_a_video_plays_with_its_progress_bar_shown_raises_nothing_on_the_bars_next_tick(qtbot, tmp_path, monkeypatch):
+    drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=65)
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    viewer = window.findChild(QStackedWidget).currentWidget()
+    make_surface_ready(viewer)
+    wait_until_loaded(viewer.video_player.engine, folder / "IMG_1.mp4")
+    bar = viewer.findChild(ProgressBar)
+    qtbot.waitUntil(bar.isVisible, timeout=5000)
+    terminate = mpv.MPV.terminate
+
+    def slow_terminate(engine):  # a slow mpv shutdown: the bar's next tick is due when closing backs up the library
+        time.sleep(0.3)
+        terminate(engine)
+
+    monkeypatch.setattr(mpv.MPV, "terminate", slow_terminate)
+
+    window.close()  # the backup lets Qt process due timers before the window hides
+    qtbot.wait(600)

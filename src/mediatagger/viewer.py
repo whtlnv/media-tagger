@@ -66,6 +66,7 @@ class Viewer(QWidget):
         self.open(path)
 
     def closeEvent(self, event):
+        self.progress_bar.stop()  # its next tick must not read a terminated mpv
         if self.surface:
             self.surface.release()
         if self.video_player.engine.handle is not None:  # a second close must not call into a destroyed mpv handle

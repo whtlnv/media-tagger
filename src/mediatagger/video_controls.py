@@ -64,6 +64,12 @@ class ProgressBar(QLabel):
         self._playing = True
         self.wake()
 
+    def stop(self):
+        """Stop asking the player anything, before it shuts down."""
+        self._playing = False
+        self._ticker.stop()
+        self.hide()
+
     def wake(self):
         """Show the bar for another hide delay, if a video is playing."""
         if not self._playing:
