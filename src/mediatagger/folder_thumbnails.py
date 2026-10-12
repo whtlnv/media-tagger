@@ -35,7 +35,6 @@ class FolderThumbnails(QObject):
         self._scheduler.surveyed.connect(self._prefetch)
         self._generated = set()
         self._to_generate = None  # unknown until the survey of the cache comes back
-        self._stopped = False
 
     def start(self):
         cache, paths = self._cache, self._paths
@@ -45,9 +44,6 @@ class FolderThumbnails(QObject):
         self._scheduler.request(path)
 
     def stop(self):
-        if self._stopped:
-            return
-        self._stopped = True
         self._scheduler.shut_down()
 
     def _receive(self, path, generated):
