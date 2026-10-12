@@ -57,6 +57,9 @@ class EffectiveTags(NamedTuple):
     own: list
     inherited: list
 
+    def own_then_inherited(self):
+        return [*self.own, *sorted(self.inherited)]
+
 
 class Library:
     schema_version = 2  # the version this code writes; an opened library reports the version its tags.db records
