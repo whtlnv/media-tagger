@@ -160,6 +160,7 @@ class Window(QWidget):
             grid = self._grid_of(path)
             grid.setCurrentIndex(grid.model().index(0, 0))
             self._show(grid)
+            self._show_tags_of(grid.currentIndex())
             return
         self._open(path)
 
