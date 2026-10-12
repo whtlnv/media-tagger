@@ -13,6 +13,14 @@ from mediatagger.tag_prompt import TagPrompt
 from mediatagger.viewer import Viewer
 
 
+def _geometry_of(rect):
+    return {"x": rect.x(), "y": rect.y(), "width": rect.width(), "height": rect.height()}
+
+
+def _rect_of(geometry):
+    return QRect(geometry["x"], geometry["y"], geometry["width"], geometry["height"])
+
+
 class Window(QWidget):
     """The app's one window: the folder grid and the viewer in a stack, over which lies the one status bar they share,
     reporting the one drive session they share."""
@@ -36,7 +44,7 @@ class Window(QWidget):
         self.setAcceptDrops(True)
         geometry = remembered_geometry(self._state_file)
         if geometry:
-            self.setGeometry(QRect(geometry["x"], geometry["y"], geometry["width"], geometry["height"]))
+            self.setGeometry(_rect_of(geometry))
         else:
             self._centre_on_the_screen()
         if path is not None:  # opened once the viewer is in place, so a question about the library is asked over it
@@ -134,7 +142,7 @@ class Window(QWidget):
         if not self.isVisible() or not self._may_write_state():
             return
         frame = self.normalGeometry() if self.isFullScreen() else self.geometry()
-        remember_geometry(self._state_file, {"x": frame.x(), "y": frame.y(), "width": frame.width(), "height": frame.height()})
+        remember_geometry(self._state_file, _geometry_of(frame))
 
     def _may_write_state(self):
         return not (self._is_on_the_apps_own_drive(self._state_file) or self._is_on_the_drive_being_viewed(self._state_file))
