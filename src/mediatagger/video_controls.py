@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QLabel
 
 
 HIDE_DELAY_MS = 3000  # the bar fades after this long without input
+_BACKDROP = QColor(0, 0, 0, 160)  # translucent dark, so the light text and track read over any frame
 _GEOMETRY_EVENTS = (QEvent.Type.Show, QEvent.Type.Hide, QEvent.Type.Move, QEvent.Type.Resize)
 
 
@@ -84,7 +85,7 @@ class ProgressBar(QLabel):
 
     def paintEvent(self, event):
         with QPainter(self) as painter:
-            painter.fillRect(self.rect(), QColor(0, 0, 0, 160))
+            painter.fillRect(self.rect(), _BACKDROP)
             filled_width = int(self.width() * self._fraction)
             painter.fillRect(0, 0, filled_width, self.height(), Qt.GlobalColor.white)
         super().paintEvent(event)
