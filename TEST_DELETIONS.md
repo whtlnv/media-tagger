@@ -2,6 +2,12 @@
 
 Append-only record of tests removed because a delivered change retired the behavior they asserted. Each entry records the test, the behavior, the clause that retired it, and the observed failure that confirmed the contradiction.
 
+## 2026-10-12 · migrated `src/mediatagger/test_viewer.py::test_a_shown_viewer_opens_fullscreen_and_each_f_press_toggles_it` -> `test_a_shown_viewer_opens_not_fullscreen_and_each_f_press_toggles_it`
+- Asserted: a shown viewer is fullscreen after 0 and 2 `f` presses and not after 1
+- Changed: renamed; parameters flipped — not fullscreen after 0 and 2 presses, fullscreen after 1 (case ids reworded to match)
+- Retired by: "A viewer shown on its own (not inside the window) opens not fullscreen; `f` enters fullscreen and a second `f` leaves it"
+- Confirmed: all three cases failed with AssertionError `False is True` / `True is False` after the new behavior landed
+
 ## 2026-10-12 · migrated `src/mediatagger/test_main.py::test_running_the_mediatagger_command_on_a_folder_opens_the_fullscreen_viewer_on_its_first_item` -> `test_running_the_mediatagger_command_on_a_folder_opens_a_normal_not_fullscreen_viewer_on_its_first_item`
 - Asserted: the window shown by `mediatagger <folder>` reports `fullscreen=True` and shows the folder's first item
 - Changed: renamed; now asserts `fullscreen=False` (first-item assertion unchanged)

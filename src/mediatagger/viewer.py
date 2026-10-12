@@ -59,7 +59,6 @@ class Viewer(QWidget):
         self.read_only_banner.hide()
         self.progress_bar = ProgressBar(self)
         self.progress_bar.avoid(self.tag_prompt.input, self.tag_prompt.shown_tags)
-        self.setWindowState(Qt.WindowState.WindowFullScreen)
         self.setAcceptDrops(True)
         if path is None:
             self.placeholder.setText("Drop a folder or file here, or press o to open")

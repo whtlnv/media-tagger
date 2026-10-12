@@ -41,7 +41,7 @@ Phase 9a notes for every cycle. These are fixes from the first Pi run plus video
 - [x] With no remembered geometry, the window opens not fullscreen, about 80 % of the available screen, centred
   - predicted-contradiction: `src/mediatagger/test_main.py::test_running_the_mediatagger_command_on_a_folder_opens_the_fullscreen_viewer_on_its_first_item` — asserts: the command's shown window reports `fullscreen=True` — retired-by: "With no remembered geometry, the window opens not fullscreen, about 80 % of the available screen, centred"
   - predicted-contradiction: `src/mediatagger/test_main.py::test_running_the_mediatagger_command_on_a_file_opens_the_fullscreen_viewer_on_that_file` — asserts: the command's shown window reports `fullscreen=True` — retired-by: "With no remembered geometry, the window opens not fullscreen, about 80 % of the available screen, centred"
-- [ ] A viewer shown on its own (not inside the window) opens not fullscreen; `f` enters fullscreen and a second `f` leaves it
+- [x] A viewer shown on its own (not inside the window) opens not fullscreen; `f` enters fullscreen and a second `f` leaves it
   - predicted-contradiction: `src/mediatagger/test_viewer.py::test_a_shown_viewer_opens_fullscreen_and_each_f_press_toggles_it` — asserts: a shown viewer is fullscreen after 0 and 2 `f` presses and not after 1 — retired-by: "A viewer shown on its own (not inside the window) opens not fullscreen; `f` enters fullscreen and a second `f` leaves it"
   - hint (orchestrator): migrate the parametrized test to the flipped expectations rather than deleting it.
 - [ ] With a geometry remembered in `state.json`, the window opens at that size and position
