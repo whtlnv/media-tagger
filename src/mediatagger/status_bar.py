@@ -19,6 +19,31 @@ def overlay_label(text, parent):
     return label
 
 
+class TagOverlay:
+    """A file's own tags and, dimmed to their right, its inherited tags: two labels over the parent's top-right corner."""
+
+    def __init__(self, parent):
+        self.own = overlay_label("", parent)
+        self.own.hide()
+        self.inherited = overlay_label("", parent)
+        self.inherited.setStyleSheet(_DIMMED_LABEL_STYLE)
+        self.inherited.hide()
+
+    def show(self, tags):
+        for label, shown in ((self.own, tags.own), (self.inherited, sorted(tags.inherited))):
+            label.setText(" ".join(shown))
+            label.adjustSize()
+            label.setVisible(bool(shown))
+            label.raise_()
+
+    def pin(self, pin_top_right):
+        """Inherited tags sit in the top-right corner with the file's own tags just to their left."""
+        pin_top_right(self.inherited)
+        pin_top_right(self.own)
+        if not self.inherited.isHidden():
+            self.own.move(self.inherited.x() - self.own.width(), self.own.y())
+
+
 class StatusBar(QWidget):
     """The always-visible strip along the bottom: the open library, the read-only notice, tagging messages and the
     one slot for background work."""
