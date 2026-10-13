@@ -7,10 +7,11 @@ def search(library, query):
         return []
     required = [_alternatives(library, term) for term in terms if not term.startswith("-")]
     excluded = {tag for term in terms if term.startswith("-") for tag in term[1:].split("|")}
-    candidates = set().union(*required) if required else library.all_tags()
-    effective = library.effective_tags_of(library.items_tagged_any(list(candidates)))
-    found = {path for path, tags in effective.items() if _matches({*tags.own, *tags.inherited}, required, excluded)}
-    return sorted(_top_most(found), key=_folders_first_natural_order)
+    items = library.tagged_items()
+    ancestors = {key: _ancestor_keys(key) for key in items}
+    found = {key for key, (_, tags) in items.items() if _matches(_effective(items, tags, ancestors[key]), required, excluded)}
+    top_most = [key for key in found if found.isdisjoint(ancestors[key])]
+    return [library.root / key for key in sorted(top_most, key=lambda key: (items[key][0] != "dir", _natural_name_key(key)))]
 
 
 def _alternatives(library, term):
@@ -19,13 +20,16 @@ def _alternatives(library, term):
     return set(term.split("|"))
 
 
-def _top_most(found):
-    inside_found_folder = {folder: not found.isdisjoint((folder, *folder.parents)) for folder in {path.parent for path in found}}
-    return [path for path in found if not inside_found_folder[path.parent]]
+def _ancestor_keys(key):
+    ancestors = []
+    while "/" in key:
+        key = key.rpartition("/")[0]
+        ancestors.append(key)
+    return ancestors
 
 
-def _folders_first_natural_order(path):
-    return (not path.is_dir(), _natural_name_key(str(path)))
+def _effective(items, tags, ancestor_keys):
+    return tags.union(*(items[key][1] for key in ancestor_keys if key in items))
 
 
 def _matches(tags, required, excluded):

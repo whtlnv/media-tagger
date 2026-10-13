@@ -210,3 +210,23 @@ def test_people_prefix_over_a_library_of_5000_tagged_items_holding_1000_people_t
         timings.append(time.perf_counter() - started)
 
     assert (min(timings) < 0.200, len(results)) == (True, 5000)
+
+
+def test_searching_a_library_of_5000_tagged_items_for_beach_or_for_people_returns_its_results_in_under_50_ms(tmp_path):
+    library = Library.create(tmp_path)
+    for album in range(50):
+        folder = tmp_path / f"album-{album}"
+        folder.mkdir()
+        for number in range(100):
+            person = (album * 100 + number) % 1000
+            _tagged_file(library, folder / f"IMG_{number}.jpg", f"beach people:person-{person} year:{2000 + album}")
+
+    def quickest_of_three(query):  # a single search can be held up by whatever else the machine is doing
+        timings = []
+        for _ in range(3):
+            started = time.perf_counter()
+            results = search(library, query)
+            timings.append(time.perf_counter() - started)
+        return min(timings) < 0.050, len(results)
+
+    assert (quickest_of_three("beach"), quickest_of_three("people:")) == ((True, 5000), (True, 5000))

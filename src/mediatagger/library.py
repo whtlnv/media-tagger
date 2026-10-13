@@ -154,6 +154,20 @@ class Library:
         connection.close()
         return paths
 
+    def tagged_items(self):
+        """Every tagged item's kind and own tags, keyed by its path relative to the root, read in one query."""
+        connection = sqlite3.connect(self._tags_db)
+        rows = connection.execute(
+            "SELECT items.rel_path, items.kind, tags.name FROM item_tags"
+            " JOIN items ON items.id = item_tags.item_id"
+            " JOIN tags ON tags.id = item_tags.tag_id"
+        )
+        items = {}
+        for rel_path, kind, tag in rows:
+            items.setdefault(rel_path, (kind, set()))[1].add(tag)
+        connection.close()
+        return items
+
     def tags(self, path):
         key = self._key(path)
         return self._tags_by_key([key])[key]
