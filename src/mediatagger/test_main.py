@@ -529,3 +529,37 @@ def test_running_the_mediatagger_command_on_a_relative_path_to_a_video_opens_a_n
     )
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == f"fullscreen=False playing={clip} bars=['1:05']"
+
+SEARCH_FROM_THE_GRID_THEN_REPORT_THE_BREADCRUMB_AND_TILES_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT + (
+    "from PySide6.QtCore import Qt, QTimer\n"
+    "from PySide6.QtTest import QTest\n"
+    "from PySide6.QtWidgets import QApplication, QLabel, QStackedWidget\n"
+    "from mediatagger.test_grid import tile_names\n"
+    "app = QApplication([])\n"
+    "query = sys.argv[3]\n"
+    "def shown():\n"
+    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    return window, window.findChild(QStackedWidget).currentWidget()\n"
+    "def search_then_report():\n"
+    "    window, viewer = shown()\n"
+    "    QTest.keyClick(viewer, Qt.Key.Key_Escape)\n"
+    "    window, grid = shown()\n"
+    "    QTest.keyClick(grid, Qt.Key.Key_Slash)\n"
+    "    QTest.keyClicks(window.focusWidget(), query)\n"
+    "    QTest.keyClick(window.focusWidget(), Qt.Key.Key_Return)\n"
+    "    window, results = shown()\n"
+    "    crumbs = [label.text() for label in window.findChildren(QLabel) if label.isVisible() and label.text().startswith('Search')]\n"
+    "    print(f'crumbs={crumbs} tiles={tile_names(results)}', flush=True)\n"
+    "    QApplication.closeAllWindows()\n"
+    "    QApplication.quit()\n"
+    "QTimer.singleShot(1000, search_then_report)\n"
+) + RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT
+
+
+def test_running_the_mediatagger_command_on_a_folder_of_a_drive_with_a_tagged_library_then_searching_from_its_grid_shows_the_search_breadcrumb_over_the_matching_items(tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    Library.open(drive).enter(folder / "IMG_2.png", "beach")
+    result = run_python_offscreen(SEARCH_FROM_THE_GRID_THEN_REPORT_THE_BREADCRUMB_AND_TILES_SCRIPT, str(drive), str(folder), "beach")
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "crumbs=['Search: beach'] tiles=['IMG_2.png']"

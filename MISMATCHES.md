@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-13 08:05 · `src/mediatagger/test_main.py::test_running_the_mediatagger_command_on_a_folder_of_a_drive_with_a_tagged_library_then_searching_from_its_grid_shows_the_search_breadcrumb_over_the_matching_items`
+- Behavior: Running the `mediatagger` command on a folder of a drive with a tagged library, pressing `/`, typing a query and `Enter` shows the `Search: <query>` breadcrumb over the matching items
+- Predicted: passes on first run — every piece (search bar, search, breadcrumb) was already delivered and wired in `Window`; this item is an end-to-end acceptance check of the command path
+- Actual: passed (`crumbs=['Search: beach'] tiles=['IMG_2.png']`)
+- Type: passed unexpectedly
+- Resolution: Kept as written, not rewritten — the behavior is genuinely already present; a temporary mutation of the breadcrumb text in `window.py` (reverted) made it fail with `crumbs=[]`, so the test does bite.
+
 ## 2026-10-13 04:11 · `src/mediatagger/test_window_search.py::test_a_slideshow_opened_from_results_skips_result_folders_and_missing_paths`
 - Behavior: A slideshow opened from results skips result folders and missing paths
 - Predicted: AssertionError — the `i` overlay reads `IMG_1.png 2 / 4` (slideshow is built over every result path)
