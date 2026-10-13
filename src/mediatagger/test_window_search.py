@@ -630,3 +630,14 @@ def test_the_results_grid_of_a_search_matching_5000_tagged_files_opens_in_under_
     fastest, grid = fastest_of_three(qtbot, lambda: Grid(tmp_path, library=library, paths=paths))
 
     assert (fastest < 0.150, grid.model().rowCount()) == (True, 5000)
+
+
+def test_a_result_video_is_drawn_as_a_video_until_its_thumbnail_arrives(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    (folder / "clip.mp4").write_bytes(b"not really a video")
+    Library.open(drive).enter(folder / "clip.mp4", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+
+    search_for(qtbot, window, stack, "beach")
+
+    assert VIDEO_GLYPH in painted_texts(stack.currentWidget(), 0)

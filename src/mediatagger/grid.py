@@ -76,7 +76,9 @@ def _tiles(folder, tag_counts):
 def _result_kind(path):
     if not path.exists():
         return _Kind.MISSING
-    return _Kind.FOLDER if path.is_dir() else _Kind.IMAGE
+    if path.is_dir():
+        return _Kind.FOLDER
+    return _Kind.VIDEO if is_video_name(path.name) else _Kind.IMAGE
 
 
 def _result_tiles(paths, library):
