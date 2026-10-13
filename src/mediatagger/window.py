@@ -87,11 +87,15 @@ class Window(QWidget):
             self.run_search("")
             return True
         if event.key() == Qt.Key.Key_Up:
-            searches = remembered_searches(self._state_file)
-            self._recalled = min(self._recalled + 1, len(searches))
-            self.search_bar.setText(searches[-self._recalled])
+            self.recall_older_search()
             return True
         return super().eventFilter(watched, event)
+
+    def recall_older_search(self):
+        """Each call puts the next older remembered search in the search bar, stopping at the oldest."""
+        searches = remembered_searches(self._state_file)
+        self._recalled = min(self._recalled + 1, len(searches))
+        self.search_bar.setText(searches[-self._recalled])
 
     def keyPressEvent(self, event):
         if self.tag_prompt.has_focus():
