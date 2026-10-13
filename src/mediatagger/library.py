@@ -96,6 +96,10 @@ class Library:
     def root(self):
         return self._tags_db.parent.parent
 
+    @property
+    def _has_tag_tables(self):
+        return self.schema_version >= 2  # a read-only drive left at schema 1 has none
+
     def _key(self, path):
         return str(path.relative_to(self.root))
 
@@ -142,7 +146,7 @@ class Library:
 
     def tagged_items(self):
         """Every tagged item's kind and own tags, keyed by its path relative to the root, read in one query."""
-        if self.schema_version < 2:  # a read-only drive left at schema 1 has no tag tables
+        if not self._has_tag_tables:
             return {}
         connection = sqlite3.connect(self._tags_db)
         rows = connection.execute(
@@ -158,7 +162,7 @@ class Library:
 
     def own_tag_counts(self):
         """Every tagged item's own-tag count, keyed by its full path as a string, read in one query."""
-        if self.schema_version < 2:  # a read-only drive left at schema 1 has no tag tables
+        if not self._has_tag_tables:
             return {}
         root = f"{self.root}/"
         connection = sqlite3.connect(self._tags_db)
@@ -182,7 +186,7 @@ class Library:
         return EffectiveTags(own=own, inherited=inherited)
 
     def _tags_by_key(self, keys):
-        if self.schema_version < 2:  # a read-only drive left at schema 1 has no tag tables
+        if not self._has_tag_tables:
             return {k: [] for k in keys}
         connection = sqlite3.connect(self._tags_db)
         rows = connection.execute(
