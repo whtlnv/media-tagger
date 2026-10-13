@@ -167,14 +167,13 @@ class Window(QWidget):
         self.search_bar.setFocus()
 
     def run_search(self, query):
+        self.search_bar.hide()
         if not query.strip():
-            self.search_bar.hide()
             self.stack.currentWidget().setFocus()
             return
-        grid =Grid(self.session.drive, paths=search(self.session.library, query))
+        grid = Grid(self.session.drive, paths=search(self.session.library, query))
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
-        self.search_bar.hide()
         self.breadcrumb.setText(f"Search: {query}")
         self.breadcrumb.show()
         grid.setCurrentIndex(grid.model().index(0, 0))
