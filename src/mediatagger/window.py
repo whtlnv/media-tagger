@@ -131,11 +131,8 @@ class Window(QWidget):
         grid.activated.connect(self._open_tile)
         grid.up.connect(lambda: self._leave(grid.folder))
         grid.escaped.connect(self.close)
-        grid.tag.connect(lambda: self._tag(grid.currentIndex()))
-        grid.search.connect(self._open_search_bar)
         grid.dropped.connect(self._open)
-        grid.selectionModel().currentChanged.connect(self._show_tags_of)
-        grid.thumbnail_progress.connect(self._show_thumbnail_progress)
+        self._connect_tags_search_and_progress_of(grid)
         for old in self.findChildren(Grid):
             self._stop_thumbnails_of(old)
             old.deleteLater()
@@ -144,6 +141,14 @@ class Window(QWidget):
         self.stack.setCurrentWidget(grid)
         self.status_bar.raise_()
         self._record_state(grid.folder)
+
+    def _connect_tags_search_and_progress_of(self, grid):
+        """What a folder's grid and a results grid both do: tag the cursor's item, search again, show its tags, and
+        count its thumbnails."""
+        grid.tag.connect(lambda: self._tag(grid.currentIndex()))
+        grid.search.connect(self._open_search_bar)
+        grid.selectionModel().currentChanged.connect(self._show_tags_of)
+        grid.thumbnail_progress.connect(self._show_thumbnail_progress)
 
     def _stop_thumbnails_of(self, grid):
         """A folder left behind stops generating, and its unfinished count leaves the status bar."""
@@ -185,10 +190,7 @@ class Window(QWidget):
         grid.searched_from = searched_from
         grid.activated.connect(lambda index: self._open_result(index, paths, grid))
         grid.escaped.connect(lambda: self._end_search(searched_from))
-        grid.search.connect(self._open_search_bar)
-        grid.tag.connect(lambda: self._tag(grid.currentIndex()))
-        grid.selectionModel().currentChanged.connect(self._show_tags_of)
-        grid.thumbnail_progress.connect(self._show_thumbnail_progress)
+        self._connect_tags_search_and_progress_of(grid)
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
         self.breadcrumb.setText(f"Search: {query}")
