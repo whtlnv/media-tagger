@@ -123,12 +123,15 @@ class Window(QWidget):
             self.close()
             return
         if self._results is not None:
-            grid, paths = self._results
-            self.viewer.stop_video()
-            grid.setCurrentIndex(grid.model().index(paths.index(self.viewer.slideshow.current), 0))
-            self._return_to(grid)
+            self._show_results()
             return
         self._show_grid()
+
+    def _show_results(self):
+        grid, paths = self._results
+        self.viewer.stop_video()
+        grid.setCurrentIndex(grid.model().index(paths.index(self.viewer.slideshow.current), 0))
+        self._return_to(grid)
 
     def _show_grid(self):
         self.viewer.stop_video()
