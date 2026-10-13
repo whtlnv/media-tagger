@@ -4,12 +4,18 @@ from PySide6.QtWidgets import QLabel, QLineEdit
 from mediatagger.library import Library
 from mediatagger.state import remembered_folder, state_file
 from mediatagger import grid as grid_module
-from mediatagger.grid import FOLDER_GLYPH, IMAGE_GLYPH, TAG_BADGE, TILE_ROLE, VIDEO_GLYPH
+from mediatagger.grid import FOLDER_GLYPH, IMAGE_GLYPH, MISSING_GLYPH, TAG_BADGE, TILE_ROLE, VIDEO_GLYPH
 from mediatagger.test_grid import painted_texts, tile_names
 from mediatagger.test_viewer import make_image
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image
 from mediatagger.test_window import enter_in_the_grids_tag_prompt, shown_status_bar_texts, window_showing_the_grid_with_its_cursor_on_its_first_tile
 from mediatagger.thumbnails import thumbnail_and_duration
+
+
+def search_for(qtbot, window, stack, query):
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+    qtbot.keyClicks(window.search_bar, query)
+    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
 
 
 def test_pressing_slash_in_the_windows_grid_on_a_drive_with_a_library_shows_a_search_bar_above_the_grid_with_keyboard_focus(qtbot, tmp_path):
@@ -43,10 +49,8 @@ def test_typing_a_query_and_pressing_enter_replaces_the_grid_with_tiles_of_the_m
     summer.mkdir(parents=True)
     library.enter(summer, "beach")
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
 
-    qtbot.keyClicks(window.search_bar, "beach")
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+    search_for(qtbot, window, stack, "beach")
 
     assert tile_names(stack.currentWidget()) == ["Summer", "IMG_2.png", "IMG_10.png"]
 
@@ -58,10 +62,8 @@ def test_after_enter_runs_a_search_the_search_bar_is_hidden_and_the_results_grid
         make_image(folder / name, "blue")
         library.enter(folder / name, "beach")
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
 
-    qtbot.keyClicks(window.search_bar, "beach")
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+    search_for(qtbot, window, stack, "beach")
 
     results = stack.currentWidget()
     visible_lines = [line for line in window.findChildren(QLineEdit) if line.isVisible()]
@@ -72,10 +74,8 @@ def test_after_enter_runs_a_search_a_breadcrumb_line_above_the_results_grid_read
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     Library.open(drive).enter(folder / "IMG_1.png", "beach")
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
 
-    qtbot.keyClicks(window.search_bar, "beach")
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+    search_for(qtbot, window, stack, "beach")
 
     results = stack.currentWidget()
     [crumb] = [label for label in window.findChildren(QLabel) if label.isVisible() and label.text() == "Search: beach"]
@@ -86,10 +86,8 @@ def test_a_search_with_no_matches_shows_the_search_breadcrumb_over_an_empty_grid
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     Library.open(drive).enter(folder / "IMG_1.png", "beach")
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
 
-    qtbot.keyClicks(window.search_bar, "mountain")
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+    search_for(qtbot, window, stack, "mountain")
 
     results = stack.currentWidget()
     [crumb] = [label for label in window.findChildren(QLabel) if label.isVisible() and label.text() == "Search: mountain"]
@@ -107,10 +105,8 @@ def test_a_search_run_from_a_subfolder_finds_tagged_items_elsewhere_on_the_same_
     make_image(elsewhere / "IMG_5.png", "blue")
     Library.open(drive).enter(elsewhere / "IMG_5.png", "beach")
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, subfolder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
 
-    qtbot.keyClicks(window.search_bar, "beach")
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+    search_for(qtbot, window, stack, "beach")
 
     assert tile_names(stack.currentWidget()) == ["IMG_5.png"]
 
@@ -121,10 +117,8 @@ def test_enter_on_a_blank_query_closes_the_search_bar_and_returns_focus_to_the_u
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
     grid = stack.currentWidget()
     names = tile_names(grid)
-    qtbot.keyClick(grid, Qt.Key.Key_Slash)
 
-    qtbot.keyClicks(window.search_bar, "   ")
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+    search_for(qtbot, window, stack, "   ")
 
     visible_lines = [line for line in window.findChildren(QLineEdit) if line.isVisible()]
     assert (visible_lines, stack.currentWidget() is grid, window.focusWidget() is grid, tile_names(grid)) == ([], True, True, names)
@@ -154,9 +148,7 @@ def test_esc_in_the_results_grid_shows_the_folder_searched_from_with_the_cursor_
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
     names = tile_names(stack.currentWidget())
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
-    qtbot.keyClicks(window.search_bar, "beach")
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+    search_for(qtbot, window, stack, "beach")
 
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
 
@@ -168,9 +160,7 @@ def test_backspace_in_the_results_grid_leaves_the_results_shown(qtbot, tmp_path)
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     Library.open(drive).enter(folder / "IMG_1.png", "beach")
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
-    qtbot.keyClicks(window.search_bar, "beach")
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+    search_for(qtbot, window, stack, "beach")
     results = stack.currentWidget()
 
     qtbot.keyClick(results, Qt.Key.Key_Backspace)
@@ -185,9 +175,7 @@ def test_slash_in_the_results_grid_opens_the_search_bar_and_a_new_query_replaces
     library.enter(folder / "IMG_1.png", "beach")
     library.enter(folder / "IMG_2.png", "pool")
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
-    qtbot.keyClicks(window.search_bar, "beach")
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+    search_for(qtbot, window, stack, "beach")
 
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
     bar_opened_with_focus = window.search_bar.isVisible() and window.focusWidget() is window.search_bar
@@ -202,10 +190,8 @@ def test_showing_search_results_does_not_change_the_remembered_last_folder(qtbot
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     Library.open(drive).enter(folder / "IMG_1.png", "beach")
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
 
-    qtbot.keyClicks(window.search_bar, "beach")
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+    search_for(qtbot, window, stack, "beach")
 
     assert remembered_folder(state_file(tmp_path)) == folder
 
@@ -216,10 +202,8 @@ def test_a_result_tiles_badge_counts_the_items_own_tags_not_those_inherited_from
     library.enter(folder, "beach summer")
     library.enter(folder / "IMG_1.png", "family")
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
 
-    qtbot.keyClicks(window.search_bar, "family")
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+    search_for(qtbot, window, stack, "family")
 
     assert [text for text in painted_texts(stack.currentWidget(), 0) if TAG_BADGE in text] == [f"{TAG_BADGE}1"]
 
@@ -237,10 +221,8 @@ def test_a_result_files_tile_shows_the_thumbnail_already_cached_on_its_drive_wit
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
     folder_tile = stack.currentWidget().model().index(0, 0).data(TILE_ROLE)
     qtbot.waitUntil(lambda: folder_tile.thumbnail is not None)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
 
-    qtbot.keyClicks(window.search_bar, "beach")
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+    search_for(qtbot, window, stack, "beach")
     result_tile = stack.currentWidget().model().index(0, 0).data(TILE_ROLE)
     qtbot.waitUntil(lambda: result_tile.thumbnail is not None)
 
@@ -254,9 +236,7 @@ def test_moving_the_cursor_onto_a_result_shows_that_results_tags_in_the_status_b
     library.enter(folder / "IMG_1.png", "beach")
     library.enter(folder / "IMG_2.png", "beach family")
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
-    qtbot.keyClicks(window.search_bar, "beach")
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+    search_for(qtbot, window, stack, "beach")
 
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
 
@@ -267,9 +247,7 @@ def test_entering_family_in_the_tag_prompt_on_a_result_adds_it_to_that_item_and_
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     Library.open(drive).enter(folder / "IMG_1.png", "beach")
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
-    qtbot.keyClicks(window.search_bar, "beach")
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+    search_for(qtbot, window, stack, "beach")
     results = stack.currentWidget()
 
     enter_in_the_grids_tag_prompt(qtbot, window, stack, "family")
@@ -280,18 +258,14 @@ def test_entering_family_in_the_tag_prompt_on_a_result_adds_it_to_that_item_and_
 
 
 def test_a_result_whose_path_no_longer_exists_is_drawn_as_a_missing_tile_with_a_distinct_glyph_and_its_name(qtbot, tmp_path):
-    from mediatagger.grid import MISSING_GLYPH
-
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     library = Library.open(drive)
     make_image(folder / "IMG_2.png", "blue")
     library.enter(folder / "IMG_2.png", "beach")
     (folder / "IMG_2.png").unlink()
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
 
-    qtbot.keyClicks(window.search_bar, "beach")
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+    search_for(qtbot, window, stack, "beach")
 
     texts = painted_texts(stack.currentWidget(), 0)
     assert (MISSING_GLYPH in texts, "IMG_2.png" in texts, MISSING_GLYPH not in (IMAGE_GLYPH, FOLDER_GLYPH, VIDEO_GLYPH)) == (True, True, True)
