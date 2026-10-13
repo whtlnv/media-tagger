@@ -140,14 +140,15 @@ class Library:
         connection.close()
         return counts
 
-    def items_tagged(self, tag):
+    def items_tagged_any(self, tags):
+        """The items tagged with any of the tags, read in one query."""
         connection = sqlite3.connect(self._tags_db)
         rows = connection.execute(
-            "SELECT items.rel_path FROM item_tags"
+            "SELECT DISTINCT items.rel_path FROM item_tags"
             " JOIN items ON items.id = item_tags.item_id"
             " JOIN tags ON tags.id = item_tags.tag_id"
-            " WHERE tags.name = ?",
-            (tag,),
+            f" WHERE tags.name IN ({', '.join('?' * len(tags))})",
+            tags,
         )
         paths = [self.root / rel_path for (rel_path,) in rows]
         connection.close()
