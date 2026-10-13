@@ -295,3 +295,16 @@ def test_launching_the_window_with_no_path_into_a_remembered_folder_whose_first_
     show_exposed(qtbot, window)
 
     assert "beach family" in shown_status_bar_texts(window)
+
+
+def test_running_a_search_when_the_state_file_would_land_on_the_drive_being_viewed_leaves_the_query_out_of_the_state_file(qtbot, tmp_path, monkeypatch):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    config_home = drive / "config"
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(config_home))
+    state_file = write_state_file(json.dumps({"searches": ["family"]}))
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+
+    window.run_search("beach")
+
+    assert json.loads(state_file.read_text())["searches"] == ["family"]

@@ -144,6 +144,9 @@ class Window(QWidget):
         frame = self.normalGeometry() if self.isFullScreen() else self.geometry()
         remember_geometry(self._state_file, _geometry_of(frame))
 
+    def run_search(self, query):
+        pass
+
     def _may_write_state(self):
         return not (self._is_on_the_apps_own_drive(self._state_file) or self._is_on_the_drive_being_viewed(self._state_file))
 
