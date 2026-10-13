@@ -80,7 +80,8 @@ def _result_kind(path):
 
 
 def _result_tiles(paths, library):
-    return [_Tile(path, path.name, _result_kind(path), len(library.tags(path))) for path in paths]
+    counts = library.own_tag_counts()
+    return [_Tile(path, path.name, _result_kind(path), counts.get(str(path), 0)) for path in paths]
 
 
 class _FolderModel(QAbstractListModel):

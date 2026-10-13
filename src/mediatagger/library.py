@@ -168,6 +168,17 @@ class Library:
         connection.close()
         return items
 
+    def own_tag_counts(self):
+        """Every tagged item's own-tag count, keyed by its full path as a string, read in one query."""
+        root = f"{self.root}/"
+        connection = sqlite3.connect(self._tags_db)
+        rows = connection.execute(
+            "SELECT items.rel_path, COUNT(*) FROM item_tags JOIN items ON items.id = item_tags.item_id GROUP BY items.rel_path"
+        )
+        counts = {root + rel_path: count for rel_path, count in rows}
+        connection.close()
+        return counts
+
     def tags(self, path):
         key = self._key(path)
         return self._tags_by_key([key])[key]

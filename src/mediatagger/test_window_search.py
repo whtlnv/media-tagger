@@ -7,7 +7,9 @@ from mediatagger.library import Library
 from mediatagger.state import remembered_folder, state_file
 from mediatagger import grid as grid_module
 from mediatagger.grid import FOLDER_GLYPH, IMAGE_GLYPH, MISSING_GLYPH, TAG_BADGE, TILE_ROLE, VIDEO_GLYPH
-from mediatagger.test_grid import painted_texts, tile_names
+from mediatagger.grid import Grid
+from mediatagger.search import search
+from mediatagger.test_grid import fastest_of_three, painted_texts, tile_names
 from mediatagger.test_viewer import make_image, shown_texts
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image
 from mediatagger.test_window_state import write_state_file
@@ -613,3 +615,18 @@ def test_searching_again_after_esc_ended_a_search_and_its_results_were_deleted_s
     search_for(qtbot, window, stack, "beach")
 
     assert (tile_names(stack.currentWidget()), window.breadcrumb.text()) == (["IMG_1.png"], "Search: beach")
+
+
+def test_the_results_grid_of_a_search_matching_5000_tagged_files_opens_in_under_150_ms(qtbot, tmp_path):
+    library = Library.create(tmp_path)
+    for album in range(50):
+        folder = tmp_path / f"album-{album}"
+        folder.mkdir()
+        for number in range(100):
+            (folder / f"IMG_{number}.jpg").touch()
+            library.enter(folder / f"IMG_{number}.jpg", "beach")
+    paths = search(library, "beach")
+
+    fastest, grid = fastest_of_three(qtbot, lambda: Grid(tmp_path, library=library, paths=paths))
+
+    assert (fastest < 0.150, grid.model().rowCount()) == (True, 5000)
