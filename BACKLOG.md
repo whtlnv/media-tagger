@@ -28,3 +28,9 @@
 
 - **[src/mediatagger/test_grid.py] The 5,000-file timing tests depend on collecting garbage first** (added: 2026-10-11)
   Inside the full suite a garbage collection during the timed opening pushed it past 150 ms; `fastest_of_three` now collects before each opening. In the app the GUI-thread GC timer can still fire mid-open; if opening feels slow on the Pi, look there first.
+
+- **[src/mediatagger/window.py:Window._show_results] Back from a results slideshow, the results grid's thumbnails stay stopped** (added: 2026-10-13)
+  Opening a result file stops the results grid's thumbnail workers (as for a folder grid), but `Esc` returns to the same results grid instead of building a new one, so tiles whose thumbnails had not arrived keep their glyph until the next search. Restarting generation on return (or rebuilding the results grid) would fix it.
+
+- **[src/mediatagger/grid.py:_result_kind] Each result stats its path twice when the results grid opens** (added: 2026-10-13)
+  `exists()` then `is_dir()` per result; 5,000 results open in ~80 ms on the Mac. On a Pi's USB stick this may be several times slower; one `os.stat` per path (or trusting the library's recorded kind for folders) would halve it. Measure on the Pi first.

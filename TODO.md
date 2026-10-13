@@ -68,3 +68,17 @@ Phase 10 notes for every cycle (Phases 1–9b are delivered — see DONE.md; Pha
 - [x] `↓` in the search bar after `↑` recalls the next newer search
 - [x] `↓` past the newest search leaves the search bar empty
 - [x] Running the `mediatagger` command on a folder of a drive with a tagged library, pressing `/`, typing a query and `Enter` shows the `Search: <query>` breadcrumb over the matching items
+- [x] a search run in the window is remembered and recalled by ↑
+- [x] ↑ in a reopened search bar starts again from the most recent search
+- [x] the search bar opens empty after an earlier search
+- [x] Esc in the results grid clears the search breadcrumb
+- [x] after Esc ends a search, Esc in a folder's slideshow returns to the folder, not the results
+- [x] Esc after searching again from the results returns to the folder searched from first
+- [x] searching again after Esc deleted the results shows new results
+- [x] the results grid of a search matching 5,000 tagged files opens in under 150 ms
+- [x] a result video is drawn as a video until its thumbnail arrives
+- [x] while the results' thumbnails generate, the status bar counts them
+- [x] ↑ with no remembered searches keeps what was typed
+- [x] ↓ before any ↑ keeps what was typed
+- [x] searching a schema version 1 library on a read-only drive finds nothing
+- [x] the results grid of a search in a schema version 1 library on a read-only drive is empty
