@@ -8,7 +8,7 @@ from mediatagger.grid import TAG_BADGE, TILE_ROLE
 from mediatagger.test_grid import painted_texts, tile_names
 from mediatagger.test_viewer import make_image
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image
-from mediatagger.test_window import window_showing_the_grid_with_its_cursor_on_its_first_tile
+from mediatagger.test_window import shown_status_bar_texts, window_showing_the_grid_with_its_cursor_on_its_first_tile
 from mediatagger.thumbnails import thumbnail_and_duration
 
 
@@ -245,3 +245,19 @@ def test_a_result_files_tile_shows_the_thumbnail_already_cached_on_its_drive_wit
     qtbot.waitUntil(lambda: result_tile.thumbnail is not None)
 
     assert generated == [folder / "IMG_1.png"]
+
+
+def test_moving_the_cursor_onto_a_result_shows_that_results_tags_in_the_status_bar(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    library = Library.open(drive)
+    make_image(folder / "IMG_2.png", "blue")
+    library.enter(folder / "IMG_1.png", "beach")
+    library.enter(folder / "IMG_2.png", "beach family")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+    qtbot.keyClicks(window.search_bar, "beach")
+    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
+
+    assert "beach family" in shown_status_bar_texts(window)
