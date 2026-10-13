@@ -1,5 +1,7 @@
 import time
 
+import pytest
+
 from mediatagger.library import Library
 from mediatagger.search import search
 
@@ -31,22 +33,25 @@ def _quickest_search(library, query):
     return min(timings), results
 
 
-def test_searching_a_library_for_beach_finds_a_tagged_file_whose_own_tags_include_beach(tmp_path):
-    library, photo = _library_with_one_file(tmp_path, "dunes.jpg", "beach family")
+@pytest.mark.parametrize("tags, query", [
+    pytest.param("beach family", "beach", id="beach finds a file whose own tags include beach"),
+    pytest.param("beach", "BeAcH", id="beach in any letter case finds a file tagged beach"),
+    pytest.param("beach", "beach -sunset", id="beach minus sunset finds a file tagged beach that has no sunset"),
+    pytest.param("pool", "beach|pool", id="beach or pool finds a file tagged only pool"),
+    pytest.param("mountain snow", "-beach|pool", id="not beach or pool finds a tagged file that has neither beach nor pool"),
+    pytest.param("people:ana", "people:", id="people prefix finds a file tagged people:ana"),
+    pytest.param("beach", "beach -", id="a lone minus is ignored so beach minus finds a file tagged beach"),
+])
+def test_searching_a_library_finds_a_file_whose_tags_match_the_query(tmp_path, tags, query):
+    library, photo = _library_with_one_file(tmp_path, "dunes.jpg", tags)
 
-    assert search(library, "beach") == [photo]
+    assert search(library, query) == [photo]
 
 
 def test_searching_a_library_for_beach_leaves_out_a_tagged_file_whose_tags_dont_include_beach(tmp_path):
     library, _ = _library_with_one_file(tmp_path, "peak.jpg", "mountain snow")
 
     assert search(library, "beach") == []
-
-
-def test_searching_for_beach_in_any_letter_case_finds_a_file_tagged_beach(tmp_path):
-    library, photo = _library_with_one_file(tmp_path, "dunes.jpg", "beach")
-
-    assert search(library, "BeAcH") == [photo]
 
 
 def test_an_exact_term_does_not_find_a_longer_tag_that_starts_with_it(tmp_path):
@@ -80,22 +85,10 @@ def test_family_beach_finds_a_file_tagged_beach_inside_a_folder_tagged_family(tm
     assert search(library, "family beach") == [photo]
 
 
-def test_beach_minus_sunset_finds_a_file_tagged_beach_that_has_no_sunset(tmp_path):
-    library, photo = _library_with_one_file(tmp_path, "dunes.jpg", "beach")
-
-    assert search(library, "beach -sunset") == [photo]
-
-
 def test_beach_minus_sunset_leaves_out_a_file_tagged_both_beach_and_sunset(tmp_path):
     library, _ = _library_with_one_file(tmp_path, "dusk.jpg", "beach sunset")
 
     assert search(library, "beach -sunset") == []
-
-
-def test_beach_or_pool_finds_a_file_tagged_only_pool(tmp_path):
-    library, photo = _library_with_one_file(tmp_path, "splash.jpg", "pool")
-
-    assert search(library, "beach|pool") == [photo]
 
 
 def test_beach_or_pool_leaves_out_a_file_tagged_neither_beach_nor_pool(tmp_path):
@@ -110,28 +103,10 @@ def test_not_beach_or_pool_leaves_out_a_file_tagged_pool(tmp_path):
     assert search(library, "-beach|pool") == []
 
 
-def test_not_beach_or_pool_finds_a_tagged_file_that_has_neither_beach_nor_pool(tmp_path):
-    library, photo = _library_with_one_file(tmp_path, "peak.jpg", "mountain snow")
-
-    assert search(library, "-beach|pool") == [photo]
-
-
-def test_people_prefix_finds_a_file_tagged_people_ana(tmp_path):
-    library, photo = _library_with_one_file(tmp_path, "portrait.jpg", "people:ana")
-
-    assert search(library, "people:") == [photo]
-
-
 def test_people_prefix_leaves_out_a_file_tagged_only_pets_rex(tmp_path):
     library, _ = _library_with_one_file(tmp_path, "dog.jpg", "pets:rex")
 
     assert search(library, "people:") == []
-
-
-def test_a_lone_minus_is_ignored_so_beach_minus_finds_a_file_tagged_beach(tmp_path):
-    library, photo = _library_with_one_file(tmp_path, "dunes.jpg", "beach")
-
-    assert search(library, "beach -") == [photo]
 
 
 def test_a_blank_query_finds_nothing_even_in_a_library_with_tagged_files(tmp_path):
