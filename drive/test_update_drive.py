@@ -56,3 +56,18 @@ def test_update_drive_leaves_unchecked_hash_bytecode_next_to_every_module_in_the
         for pyc in [Path(importlib.util.cache_from_source(str(module)))]
     }
     assert flags and flags == {name: unchecked_hash for name in flags}
+
+
+def test_update_drive_removes_a_module_and_its_bytecode_left_in_the_drive_app_by_an_earlier_update(tmp_path):
+    drive = tmp_path / "drive"
+    app = drive / "mediatagger" / "app" / "mediatagger"
+    app.mkdir(parents=True)
+    stale = app / "stale.py"
+    stale.write_text("")
+    stale_pyc = Path(importlib.util.cache_from_source(str(stale)))
+    stale_pyc.parent.mkdir()
+    stale_pyc.write_bytes(b"")
+
+    subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True)
+
+    assert (stale.exists(), stale_pyc.exists()) == (False, False)
