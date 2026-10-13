@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from PySide6.QtCore import QRect, Qt
+from PySide6.QtCore import QEvent, QRect, Qt
 from PySide6.QtWidgets import QApplication, QLabel, QLineEdit, QStackedWidget, QStyle, QVBoxLayout, QWidget
 
 from mediatagger.drive_session import DriveSession
@@ -36,7 +36,7 @@ class Window(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         self.search_bar = QLineEdit(self)
         self.search_bar.hide()
-        self.search_bar.returnPressed.connect(lambda: self.run_search(self.search_bar.text()))
+        self.search_bar.installEventFilter(self)
         self.breadcrumb = QLabel(self)
         self.breadcrumb.hide()
         layout.addWidget(self.search_bar)
@@ -71,6 +71,13 @@ class Window(QWidget):
         self.status_bar.place_along_the_bottom_of(self.rect())
         self.status_bar.raise_()
         self.tag_prompt.place()
+
+    def eventFilter(self, watched, event):
+        """Enter in the search bar runs the search and stops there, rather than going on to the page shown below it."""
+        if watched is self.search_bar and event.type() == QEvent.Type.KeyPress and event.key() == Qt.Key.Key_Return:
+            self.run_search(self.search_bar.text())
+            return True
+        return super().eventFilter(watched, event)
 
     def keyPressEvent(self, event):
         if self.tag_prompt.has_focus():
@@ -160,7 +167,11 @@ class Window(QWidget):
         self.search_bar.setFocus()
 
     def run_search(self, query):
-        grid = Grid(self.session.drive, paths=search(self.session.library, query))
+        if not query.strip():
+            self.search_bar.hide()
+            self.stack.currentWidget().setFocus()
+            return
+        grid =Grid(self.session.drive, paths=search(self.session.library, query))
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
         self.search_bar.hide()
