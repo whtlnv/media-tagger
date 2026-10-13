@@ -354,3 +354,19 @@ def test_enter_on_a_result_file_opens_a_slideshow_at_that_file(qtbot, tmp_path):
     shown = stack.currentWidget()
     assert isinstance(shown, Viewer)
     assert shown.slideshow.current == folder / "IMG_2.png"
+
+
+def test_next_in_a_slideshow_opened_from_results_goes_to_the_next_result_file(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    library = Library.open(drive)
+    make_image(folder / "IMG_2.png", "blue")
+    make_image(folder / "IMG_3.png", "green")
+    library.enter(folder / "IMG_1.png", "beach")
+    library.enter(folder / "IMG_3.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    search_for(qtbot, window, stack, "beach")
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
+
+    assert stack.currentWidget().slideshow.current == folder / "IMG_3.png"

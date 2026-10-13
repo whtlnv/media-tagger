@@ -8,6 +8,7 @@ from mediatagger.folder_thumbnails import GENERATING_THUMBNAILS_TEXT, progress_t
 from mediatagger.grid import TILE_ROLE, Grid
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
 from mediatagger.search import search
+from mediatagger.slideshow import Slideshow
 from mediatagger.state import remember, remember_geometry, remembered_folder, remembered_geometry, state_file
 from mediatagger.status_bar import StatusBar
 from mediatagger.tag_prompt import TagPrompt
@@ -178,8 +179,9 @@ class Window(QWidget):
             self.stack.currentWidget().setFocus()
             return
         searched_from = self.stack.currentWidget()
-        grid = Grid(self.session.drive, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache(), paths=search(self.session.library, query))
-        grid.activated.connect(self._open_tile)
+        paths = search(self.session.library, query)
+        grid = Grid(self.session.drive, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache(), paths=paths)
+        grid.activated.connect(lambda index: self._open_result(index, paths))
         grid.escaped.connect(lambda: self._return_to(searched_from))
         grid.search.connect(self._open_search_bar)
         grid.tag.connect(lambda: self._tag(grid.currentIndex()))
@@ -250,6 +252,10 @@ class Window(QWidget):
             self._show_current_tags()
             return
         self._open(path)
+
+    def _open_result(self, index, paths):
+        self._open_tile(index)
+        self.viewer.slideshow = Slideshow(paths, paths.index(index.data(TILE_ROLE).path))
 
     def _open(self, path):
         if isinstance(self.stack.currentWidget(), Grid):  # a tile's Enter, or a drop onto the grid
