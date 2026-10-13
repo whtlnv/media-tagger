@@ -91,3 +91,9 @@ def test_not_beach_or_pool_finds_a_tagged_file_that_has_neither_beach_nor_pool(t
     library, photo = _library_with_one_file(tmp_path, "peak.jpg", "mountain snow")
 
     assert search(library, "-beach|pool") == [photo]
+
+
+def test_people_prefix_finds_a_file_tagged_people_ana(tmp_path):
+    library, photo = _library_with_one_file(tmp_path, "portrait.jpg", "people:ana")
+
+    assert search(library, "people:") == [photo]
