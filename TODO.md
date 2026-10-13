@@ -32,7 +32,7 @@ Phase 10 notes for every cycle (Phases 1–9b are delivered — see DONE.md; Pha
 - [x] Running a query already in `searches` moves it to the end instead of adding it twice
 - [x] `searches` keeps at most the 50 most recent queries, dropping the oldest
 - [x] Remembering the last folder keeps the remembered `searches` (backlog: src/mediatagger/state.py:17 `remember` keeps the remembered geometry by name, while `remember_geometry` keeps everything)
-- [ ] `/` in a grid on a drive with a library shows a search bar above the grid with keyboard focus
+- [x] `/` in a grid on a drive with a library shows a search bar above the grid with keyboard focus
 - [ ] `/` in a grid on a drive without a library shows no search bar
 - [ ] Typing a non-blank query and pressing `Enter` replaces the grid with tiles of the matching items, named by each item's own name, in results order
 - [ ] After `Enter` runs a search, the search bar is hidden and the results grid has focus with the cursor on the first result

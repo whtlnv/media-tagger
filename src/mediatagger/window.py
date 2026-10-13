@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from PySide6.QtCore import QRect, Qt
-from PySide6.QtWidgets import QApplication, QStackedWidget, QStyle, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QApplication, QLineEdit, QStackedWidget, QStyle, QVBoxLayout, QWidget
 
 from mediatagger.drive_session import DriveSession
 from mediatagger.folder_thumbnails import GENERATING_THUMBNAILS_TEXT, progress_text
@@ -33,6 +33,9 @@ class Window(QWidget):
         self.stack = QStackedWidget(self)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
+        self.search_bar = QLineEdit(self)
+        self.search_bar.hide()
+        layout.addWidget(self.search_bar)
         layout.addWidget(self.stack)
         self.status_bar = StatusBar(self)
         self.tag_prompt = TagPrompt(self, self.status_bar, on_close=self._show_saved_tags)
@@ -113,6 +116,7 @@ class Window(QWidget):
         grid.up.connect(lambda: self._leave(grid.folder))
         grid.escaped.connect(self.close)
         grid.tag.connect(lambda: self._tag(grid.currentIndex()))
+        grid.search.connect(self._open_search_bar)
         grid.dropped.connect(self._open)
         grid.selectionModel().currentChanged.connect(self._show_tags_of)
         grid.thumbnail_progress.connect(self._show_thumbnail_progress)
@@ -143,6 +147,10 @@ class Window(QWidget):
             return
         frame = self.normalGeometry() if self.isFullScreen() else self.geometry()
         remember_geometry(self._state_file, _geometry_of(frame))
+
+    def _open_search_bar(self):
+        self.search_bar.show()
+        self.search_bar.setFocus()
 
     def run_search(self, query):
         pass
