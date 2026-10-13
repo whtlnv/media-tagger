@@ -167,6 +167,14 @@ def test_update_drive_leaves_macos_resource_fork_files_outside_the_drive_mediata
     assert [fork for fork in forks if not fork.exists()] == []
 
 
+def snapshot(root, folders):
+    return {
+        str(p.relative_to(root)): p.read_bytes() if p.is_file() else None
+        for folder in folders
+        for p in folder.rglob("*")
+    }
+
+
 def test_update_drive_leaves_the_drive_lib_and_debs_exactly_as_they_were(tmp_path):
     drive = tmp_path / "drive"
     mediatagger = drive / "mediatagger"
@@ -181,16 +189,9 @@ def test_update_drive_leaves_the_drive_lib_and_debs_exactly_as_they_were(tmp_pat
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(content)
     (mediatagger / "debs" / "partial").mkdir()
-
-    def snapshot():
-        return {
-            str(p.relative_to(mediatagger)): p.read_bytes() if p.is_file() else None
-            for folder in ["lib-linux-aarch64-cp313", "debs"]
-            for p in (mediatagger / folder).rglob("*")
-        }
-
-    before = snapshot()
+    folders = [mediatagger / "lib-linux-aarch64-cp313", mediatagger / "debs"]
+    before = snapshot(mediatagger, folders)
 
     update_drive(drive)
 
-    assert snapshot() == before
+    assert snapshot(mediatagger, folders) == before
