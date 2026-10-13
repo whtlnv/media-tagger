@@ -91,7 +91,7 @@ class Window(QWidget):
             return True
         if event.key() == Qt.Key.Key_Down:
             self._recalled -= 1
-            self.search_bar.setText(remembered_searches(self._state_file)[-self._recalled])
+            self.search_bar.setText(remembered_searches(self._state_file)[-self._recalled] if self._recalled else "")
             return True
         return super().eventFilter(watched, event)
 

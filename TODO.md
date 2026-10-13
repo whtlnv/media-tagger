@@ -66,5 +66,5 @@ Phase 10 notes for every cycle (Phases 1–9b are delivered — see DONE.md; Pha
 - [x] Each further `↑` in the search bar recalls the next older search
 - [x] `↑` at the oldest remembered search keeps it in the search bar
 - [x] `↓` in the search bar after `↑` recalls the next newer search
-- [ ] `↓` past the newest search leaves the search bar empty
+- [x] `↓` past the newest search leaves the search bar empty
 - [ ] Running the `mediatagger` command on a folder of a drive with a tagged library, pressing `/`, typing a query and `Enter` shows the `Search: <query>` breadcrumb over the matching items
