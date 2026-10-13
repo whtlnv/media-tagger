@@ -198,6 +198,7 @@ class Window(QWidget):
     def _open_search_bar(self):
         if not self.session.library:
             return
+        self._recalled = 0
         self.search_bar.show()
         self.search_bar.setFocus()
 
