@@ -41,14 +41,18 @@ def test_update_drive_leaves_test_modules_and_conftest_out_of_the_drive_app(tmp_
     assert leaked == set()
 
 
-def test_update_drive_leaves_unchecked_hash_bytecode_next_to_every_module_in_the_drive_app(tmp_path):
+def env_with_python313_on_path(tmp_path):
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
     (bin_dir / "python3.13").write_text(f'#!/bin/sh\nexec "{sys.executable}" "$@"\n')
     (bin_dir / "python3.13").chmod(0o755)
+    return {**os.environ, "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}"}
+
+
+def test_update_drive_leaves_unchecked_hash_bytecode_next_to_every_module_in_the_drive_app(tmp_path):
+    env = env_with_python313_on_path(tmp_path)
     drive = tmp_path / "drive"
     drive.mkdir()
-    env = {**os.environ, "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}"}
 
     subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True, env=env)
 
