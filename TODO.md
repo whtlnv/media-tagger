@@ -37,7 +37,7 @@ Phase 10 notes for every cycle (Phases 1–9b are delivered — see DONE.md; Pha
 - [x] Typing a non-blank query and pressing `Enter` replaces the grid with tiles of the matching items, named by each item's own name, in results order
 - [x] After `Enter` runs a search, the search bar is hidden and the results grid has focus with the cursor on the first result
 - [x] A breadcrumb line above the results grid reads `Search: <query>`
-- [ ] A search with no matches shows the `Search: <query>` breadcrumb over an empty grid
+- [x] A search with no matches shows the `Search: <query>` breadcrumb over an empty grid
 - [ ] A search run from a subfolder finds tagged items elsewhere on the same drive
 - [ ] `Enter` on a blank query closes the search bar and returns focus to the unchanged grid
 - [ ] `Esc` while typing in the search bar closes it and returns focus to the unchanged grid

@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-12 23:49 · `src/mediatagger/test_window_search.py::test_a_search_with_no_matches_shows_the_search_breadcrumb_over_an_empty_grid`
+- Behavior: A search with no matches shows the `Search: <query>` breadcrumb over an empty grid
+- Predicted: passes — `run_search` builds the results grid and breadcrumb the same way whatever `search` returns (a red step expected to fail, but the code read said otherwise)
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: The pass is not vacuous: the empty tile list rules out the original folder grid (which holds IMG_1.png) and the breadcrumb text proves the search ran. The behavior already falls out of the generic results path, so there is nothing missing for a failing test to drive. Kept the test as a pin and did not rewrite it.
+
 ## 2026-10-12 19:52 · `src/mediatagger/test_search.py::test_a_matching_folder_inside_a_matching_folder_is_left_out_so_only_the_top_most_folder_is_found`
 - Behavior: A matching folder inside a matching folder is left out; only the top-most folder is found
 - Predicted: passes on first run (no right-reason failure available) — the previous green's filter drops any item with a found ancestor, files and folders alike

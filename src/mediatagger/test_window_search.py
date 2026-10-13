@@ -76,3 +76,18 @@ def test_after_enter_runs_a_search_a_breadcrumb_line_above_the_results_grid_read
     results = stack.currentWidget()
     [crumb] = [label for label in window.findChildren(QLabel) if label.isVisible() and label.text() == "Search: beach"]
     assert crumb.mapTo(window, QPoint(0, crumb.height())).y() <= results.mapTo(window, QPoint(0, 0)).y()
+
+
+def test_a_search_with_no_matches_shows_the_search_breadcrumb_over_an_empty_grid(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+
+    qtbot.keyClicks(window.search_bar, "mountain")
+    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+
+    results = stack.currentWidget()
+    [crumb] = [label for label in window.findChildren(QLabel) if label.isVisible() and label.text() == "Search: mountain"]
+    assert crumb.mapTo(window, QPoint(0, crumb.height())).y() <= results.mapTo(window, QPoint(0, 0)).y()
+    assert tile_names(results) == []
