@@ -172,3 +172,23 @@ def test_backspace_in_the_results_grid_leaves_the_results_shown(qtbot, tmp_path)
     qtbot.keyClick(results, Qt.Key.Key_Backspace)
 
     assert (stack.currentWidget() is results, tile_names(results), window.breadcrumb.isVisible(), window.focusWidget() is results) == (True, ["IMG_1.png"], True, True)
+
+
+def test_slash_in_the_results_grid_opens_the_search_bar_and_a_new_query_replaces_the_results(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    library = Library.open(drive)
+    make_image(folder / "IMG_2.png", "blue")
+    library.enter(folder / "IMG_1.png", "beach")
+    library.enter(folder / "IMG_2.png", "pool")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+    qtbot.keyClicks(window.search_bar, "beach")
+    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+    bar_opened_with_focus = window.search_bar.isVisible() and window.focusWidget() is window.search_bar
+    window.search_bar.clear()
+    qtbot.keyClicks(window.search_bar, "pool")
+    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+
+    assert (bar_opened_with_focus, tile_names(stack.currentWidget()), window.breadcrumb.text()) == (True, ["IMG_2.png"], "Search: pool")

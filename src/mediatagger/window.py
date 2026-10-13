@@ -180,6 +180,7 @@ class Window(QWidget):
         searched_from = self.stack.currentWidget()
         grid = Grid(self.session.drive, paths=search(self.session.library, query))
         grid.escaped.connect(lambda: self._return_to(searched_from))
+        grid.search.connect(self._open_search_bar)
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
         self.breadcrumb.setText(f"Search: {query}")
