@@ -139,3 +139,22 @@ def test_esc_while_typing_in_the_search_bar_closes_it_and_returns_focus_to_the_u
 
     visible_lines = [line for line in window.findChildren(QLineEdit) if line.isVisible()]
     assert (window.isVisible(), visible_lines, stack.currentWidget() is grid, window.focusWidget() is grid, tile_names(grid)) == (True, [], True, True, names)
+
+
+def test_esc_in_the_results_grid_shows_the_folder_searched_from_with_the_cursor_where_it_was(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    library = Library.open(drive)
+    for name in ("IMG_2.png", "IMG_3.png"):
+        make_image(folder / name, "blue")
+    library.enter(folder / "IMG_3.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    names = tile_names(stack.currentWidget())
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+    qtbot.keyClicks(window.search_bar, "beach")
+    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    shown = stack.currentWidget()
+    assert (tile_names(shown), shown.currentIndex().data(Qt.ItemDataRole.DisplayRole), window.focusWidget() is shown) == (names, "IMG_2.png", True)

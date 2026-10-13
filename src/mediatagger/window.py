@@ -177,12 +177,18 @@ class Window(QWidget):
         if not query.strip():
             self.stack.currentWidget().setFocus()
             return
+        searched_from = self.stack.currentWidget()
         grid = Grid(self.session.drive, paths=search(self.session.library, query))
+        grid.escaped.connect(lambda: self._return_to(searched_from))
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
         self.breadcrumb.setText(f"Search: {query}")
         self.breadcrumb.show()
         grid.setCurrentIndex(grid.model().index(0, 0))
+        grid.setFocus()
+
+    def _return_to(self, grid):
+        self.stack.setCurrentWidget(grid)
         grid.setFocus()
 
     def _may_write_state(self):
