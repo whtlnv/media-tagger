@@ -80,7 +80,9 @@ Rules:
 4. Opening a directory from results shows that folder normally (all contents, unfiltered).
 5. `Enter` on a file in results starts a slideshow **over the result list**, starting at that file.
 
-Search history is remembered (`↑` in the search box).
+Results show under a `Search: <query>` breadcrumb; a result whose path no longer exists is drawn as a missing tile (❓ and its name).
+
+`↑`/`↓` in the search box step through the 50 most recent searches, remembered in `state.json`.
 
 ## Media
 
