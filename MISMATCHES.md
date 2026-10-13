@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-13 15:18 · `drive/test_update_drive.py::test_update_drive_leaves_macos_resource_fork_files_outside_the_drive_mediatagger_folder_in_place`
+- Behavior: `sh drive/update-drive.sh <drive>` leaves `._*` files outside `<drive>/mediatagger/` in place
+- Predicted: passes on first run — `find "$mediatagger"` (update-drive.sh:15) is already scoped to `<drive>/mediatagger/`
+- Actual: passed on first run, as predicted
+- Type: passed unexpectedly
+- Resolution: The previous cycle already delivered this behavior when it scoped the `._*` cleanup. The test was not rewritten, because no stronger test is possible for this behavior. Widening `find` to `"$1"` made it fail, so it is a real regression guard and not vacuous.
+
 ## 2026-10-13 14:37 · `drive/test_update_drive.py::test_update_drive_writes_unknown_to_the_drive_app_version_when_git_log_fails`
 - Behavior: After `sh drive/update-drive.sh <drive>` when `git log` fails, `app/VERSION` holds `unknown`
 - Predicted: AssertionError — `VERSION` is created empty by the redirect, `'' != 'unknown'`

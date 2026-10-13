@@ -139,3 +139,20 @@ def test_update_drive_deletes_macos_resource_fork_files_anywhere_under_the_drive
     subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True)
 
     assert [fork for fork in forks if fork.exists()] == []
+
+
+def test_update_drive_leaves_macos_resource_fork_files_outside_the_drive_mediatagger_folder_in_place(tmp_path):
+    drive = tmp_path / "drive"
+    (drive / "mediatagger").mkdir(parents=True)
+    forks = [
+        drive / "._photo.jpg",
+        drive / ".mediatagger" / "._tags.db",
+        drive / "videos" / "nested" / "._clip.mov",
+    ]
+    for fork in forks:
+        fork.parent.mkdir(parents=True, exist_ok=True)
+        fork.write_bytes(b"\x00\x05\x16\x07")
+
+    subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True)
+
+    assert [fork for fork in forks if not fork.exists()] == []
