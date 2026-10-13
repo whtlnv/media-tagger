@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from PySide6.QtCore import QRect, Qt
-from PySide6.QtWidgets import QApplication, QLineEdit, QStackedWidget, QStyle, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QApplication, QLabel, QLineEdit, QStackedWidget, QStyle, QVBoxLayout, QWidget
 
 from mediatagger.drive_session import DriveSession
 from mediatagger.folder_thumbnails import GENERATING_THUMBNAILS_TEXT, progress_text
@@ -37,7 +37,10 @@ class Window(QWidget):
         self.search_bar = QLineEdit(self)
         self.search_bar.hide()
         self.search_bar.returnPressed.connect(lambda: self.run_search(self.search_bar.text()))
+        self.breadcrumb = QLabel(self)
+        self.breadcrumb.hide()
         layout.addWidget(self.search_bar)
+        layout.addWidget(self.breadcrumb)
         layout.addWidget(self.stack)
         self.status_bar = StatusBar(self)
         self.tag_prompt = TagPrompt(self, self.status_bar, on_close=self._show_saved_tags)
@@ -161,6 +164,8 @@ class Window(QWidget):
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
         self.search_bar.hide()
+        self.breadcrumb.setText(f"Search: {query}")
+        self.breadcrumb.show()
         grid.setCurrentIndex(grid.model().index(0, 0))
         grid.setFocus()
 

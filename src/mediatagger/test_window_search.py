@@ -1,5 +1,5 @@
 from PySide6.QtCore import QPoint, Qt
-from PySide6.QtWidgets import QLineEdit
+from PySide6.QtWidgets import QLabel, QLineEdit
 
 from mediatagger.library import Library
 from mediatagger.test_grid import tile_names
@@ -62,3 +62,17 @@ def test_after_enter_runs_a_search_the_search_bar_is_hidden_and_the_results_grid
     results = stack.currentWidget()
     visible_lines = [line for line in window.findChildren(QLineEdit) if line.isVisible()]
     assert (visible_lines, window.focusWidget() is results, results.currentIndex().row()) == ([], True, 0)
+
+
+def test_after_enter_runs_a_search_a_breadcrumb_line_above_the_results_grid_reads_search_and_the_query(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+
+    qtbot.keyClicks(window.search_bar, "beach")
+    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+
+    results = stack.currentWidget()
+    [crumb] = [label for label in window.findChildren(QLabel) if label.isVisible() and label.text() == "Search: beach"]
+    assert crumb.mapTo(window, QPoint(0, crumb.height())).y() <= results.mapTo(window, QPoint(0, 0)).y()
