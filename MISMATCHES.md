@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-12 19:31 · `src/mediatagger/test_search.py::test_a_file_whose_tags_were_all_removed_is_not_found_by_the_next_search`
+- Behavior: An item whose tags were all removed is not found by the next search
+- Predicted: passes on first run — removing a file's last tag deletes its `items` row and the orphaned tag, and search reads the database fresh each time, so an exclusion-only query has no candidates
+- Actual: passed (1 passed)
+- Type: passed unexpectedly
+- Resolution: The library's tag removal (deleting the `items` row and pruning orphaned tags) plus the stateless `search` already give this behavior. A rewrite can't fail honestly without breaking production code. The test stays as a regression pin. It uses the exclusion-only query `-sunset`, the form that would regress if search ever cached results or walked untagged items. This item needs no /green.
+
 ## 2026-10-12 19:25 · `src/mediatagger/test_search.py::test_a_query_of_only_exclusions_never_finds_an_untagged_file_inside_a_tagged_folder`
 - Behavior: A query of only exclusions never finds an untagged file inside a tagged folder
 - Predicted: passes on first run — with no required terms, candidates come from `items_tagged` over `all_tags()`, which reads only the `items` table, so an untagged file is never a candidate

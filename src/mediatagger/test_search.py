@@ -125,3 +125,10 @@ def test_a_query_of_only_exclusions_never_finds_an_untagged_file_inside_a_tagged
     (folder / "dunes.jpg").touch()
 
     assert search(library, "-beach") == [folder]
+
+
+def test_a_file_whose_tags_were_all_removed_is_not_found_by_the_next_search(tmp_path):
+    library, photo = _library_with_one_file(tmp_path, "dunes.jpg", "beach")
+    library.enter(photo, "-beach")
+
+    assert search(library, "-sunset") == []
