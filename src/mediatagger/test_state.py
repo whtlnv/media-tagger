@@ -22,3 +22,13 @@ def test_remembering_a_search_adds_its_query_at_the_end_of_searches_in_the_state
     remember_search(state, "beach -sunset")
 
     assert json.loads(state.read_text())["searches"] == ["family", "beach -sunset"]
+
+
+def test_remembering_a_search_already_in_searches_moves_it_to_the_end_instead_of_adding_it_twice(tmp_path):
+    state = tmp_path / "mediatagger" / "state.json"
+    state.parent.mkdir()
+    state.write_text(json.dumps({"searches": ["beach", "family"]}))
+
+    remember_search(state, "beach")
+
+    assert json.loads(state.read_text())["searches"] == ["family", "beach"]
