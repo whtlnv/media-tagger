@@ -1,3 +1,83 @@
+- [x] 2026-10-13 · Searching a library for `beach` finds a tagged file whose own tags include `beach`
+- [x] 2026-10-13 · Searching a library for `beach` leaves out a tagged file whose tags don't include `beach`
+- [x] 2026-10-13 · Searching for `Beach` (any letter case) finds a file tagged `beach`
+- [x] 2026-10-13 · An exact term does not find a longer tag that starts with it (`people:ana` leaves out a file tagged only `people:anabel`)
+- [x] 2026-10-13 · `beach family` finds a file tagged `beach` inside a folder tagged `family` (matched against effective tags)
+- [x] 2026-10-13 · `beach family` leaves out a file tagged `beach` whose folders carry no `family`
+- [x] 2026-10-13 · `beach -sunset` finds a file tagged `beach` that has no `sunset`
+- [x] 2026-10-13 · `beach -sunset` leaves out a file tagged both `beach` and `sunset`
+- [x] 2026-10-13 · `beach|pool` finds a file tagged only `pool`
+- [x] 2026-10-13 · `beach|pool` leaves out a file tagged neither `beach` nor `pool`
+- [x] 2026-10-13 · `-beach|pool` leaves out a file tagged `pool`
+- [x] 2026-10-13 · `-beach|pool` finds a tagged file that has neither `beach` nor `pool`
+- [x] 2026-10-13 · `people:` finds a file tagged `people:ana`
+- [x] 2026-10-13 · `people:` leaves out a file tagged only `pets:rex`
+- [x] 2026-10-13 · A lone `-` in a query is ignored (`beach -` finds a file tagged `beach`)
+- [x] 2026-10-13 · An empty or blank query finds nothing, even in a library with tagged items
+- [x] 2026-10-13 · A query of only exclusions never finds an untagged file inside a tagged folder
+- [x] 2026-10-13 · An item whose tags were all removed is not found by the next search
+- [x] 2026-10-13 · A matching file inside a matching folder is left out; only the folder is found
+- [x] 2026-10-13 · A matching folder inside a matching folder is left out; only the top-most folder is found
+- [x] 2026-10-13 · Search results list folders before files
+- [x] 2026-10-13 · Search results within folders and within files are in natural order of their path relative to the drive root (`IMG_2` before `IMG_10`)
+- [x] 2026-10-13 · Searching a library of 5,000 tagged items returns its results in under 200 ms
+- [x] 2026-10-13 · `family beach` finds a file tagged `beach` inside a folder tagged `family` (a file is found whichever term its folders supply, in any order of the query's words)
+- [x] 2026-10-13 · `people:` over a library of 5,000 tagged items holding 1,000 different `people:` tags returns its results in under 200 ms
+- [x] 2026-10-13 · Running a search when the state file may be written adds the query at the end of `searches` in `state.json`
+- [x] 2026-10-13 · Running a search when the state file may not be written leaves `state.json` without the query
+- [x] 2026-10-13 · Running a query already in `searches` moves it to the end instead of adding it twice
+- [x] 2026-10-13 · `searches` keeps at most the 50 most recent queries, dropping the oldest
+- [x] 2026-10-13 · Remembering the last folder keeps the remembered `searches` (backlog: src/mediatagger/state.py:17 `remember` keeps the remembered geometry by name, while `remember_geometry` keeps everything)
+- [x] 2026-10-13 · `/` in a grid on a drive with a library shows a search bar above the grid with keyboard focus
+- [x] 2026-10-13 · `/` in a grid on a drive without a library shows no search bar
+- [x] 2026-10-13 · Typing a non-blank query and pressing `Enter` replaces the grid with tiles of the matching items, named by each item's own name, in results order
+- [x] 2026-10-13 · After `Enter` runs a search, the search bar is hidden and the results grid has focus with the cursor on the first result
+- [x] 2026-10-13 · A breadcrumb line above the results grid reads `Search: <query>`
+- [x] 2026-10-13 · A search with no matches shows the `Search: <query>` breadcrumb over an empty grid
+- [x] 2026-10-13 · A search run from a subfolder finds tagged items elsewhere on the same drive
+- [x] 2026-10-13 · `Enter` on a blank query closes the search bar and returns focus to the unchanged grid
+- [x] 2026-10-13 · `Esc` while typing in the search bar closes it and returns focus to the unchanged grid
+- [x] 2026-10-13 · `Esc` in the results grid shows the folder you searched from with the cursor where it was
+- [x] 2026-10-13 · `Backspace` in the results grid leaves the results shown
+- [x] 2026-10-13 · `/` in the results grid opens the search bar, and a new query replaces the results
+- [x] 2026-10-13 · Showing search results does not change the remembered last folder
+- [x] 2026-10-13 · A result tile's badge counts the item's own tags, not those inherited from its folders
+- [x] 2026-10-13 · A result file's tile shows its thumbnail
+- [x] 2026-10-13 · Moving the cursor onto a result shows that result's tags in the status bar
+- [x] 2026-10-13 · `t` on a result adds the entered tag to that item and its badge updates in place
+- [x] 2026-10-13 · A result whose path no longer exists is drawn as a missing tile with a distinct glyph and its name
+- [x] 2026-10-13 · A result whose path exists is not drawn as missing
+- [x] 2026-10-13 · No thumbnail is requested for a missing tile
+- [x] 2026-10-13 · `t` with `-tag` on a missing tile removes that tag from the item
+- [x] 2026-10-13 · Removing a missing tile's last tag leaves the tile shown in the current results
+- [x] 2026-10-13 · `Enter` on a result file opens a slideshow at that file
+- [x] 2026-10-13 · Next in a slideshow opened from results goes to the next result file, not the next file in its folder
+- [x] 2026-10-13 · A slideshow opened from results skips result folders and missing paths
+- [x] 2026-10-13 · Searching a library of 5,000 tagged items for `beach` or for `people:` returns its results in under 50 ms (a Pi is several times slower than the Mac; read every item's path, kind and tags in one query and work on the relative-path strings, telling folders by the library's recorded kind rather than asking the filesystem)
+- [x] 2026-10-13 · `Esc` in a slideshow opened from results returns to the results grid with the cursor on the current file
+- [x] 2026-10-13 · `Enter` on a result folder opens that folder's normal, unfiltered grid with the cursor on its first item
+- [x] 2026-10-13 · `Esc` in a folder opened from results does not return to the results
+- [x] 2026-10-13 · `Enter` on a missing tile does nothing
+- [x] 2026-10-13 · `↑` in the search bar replaces its text with the most recent search
+- [x] 2026-10-13 · Each further `↑` in the search bar recalls the next older search
+- [x] 2026-10-13 · `↑` at the oldest remembered search keeps it in the search bar
+- [x] 2026-10-13 · `↓` in the search bar after `↑` recalls the next newer search
+- [x] 2026-10-13 · `↓` past the newest search leaves the search bar empty
+- [x] 2026-10-13 · Running the `mediatagger` command on a folder of a drive with a tagged library, pressing `/`, typing a query and `Enter` shows the `Search: <query>` breadcrumb over the matching items
+- [x] 2026-10-13 · a search run in the window is remembered and recalled by ↑
+- [x] 2026-10-13 · ↑ in a reopened search bar starts again from the most recent search
+- [x] 2026-10-13 · the search bar opens empty after an earlier search
+- [x] 2026-10-13 · Esc in the results grid clears the search breadcrumb
+- [x] 2026-10-13 · after Esc ends a search, Esc in a folder's slideshow returns to the folder, not the results
+- [x] 2026-10-13 · Esc after searching again from the results returns to the folder searched from first
+- [x] 2026-10-13 · searching again after Esc deleted the results shows new results
+- [x] 2026-10-13 · the results grid of a search matching 5,000 tagged files opens in under 150 ms
+- [x] 2026-10-13 · a result video is drawn as a video until its thumbnail arrives
+- [x] 2026-10-13 · while the results' thumbnails generate, the status bar counts them
+- [x] 2026-10-13 · ↑ with no remembered searches keeps what was typed
+- [x] 2026-10-13 · ↓ before any ↑ keeps what was typed
+- [x] 2026-10-13 · searching a schema version 1 library on a read-only drive finds nothing
+- [x] 2026-10-13 · the results grid of a search in a schema version 1 library on a read-only drive is empty
 - [x] 2026-10-12 · When mpv asks the video surface's GL function lookup for `glFenceSync`, it gets a non-null address of a stand-in function, and calling that stand-in returns no fence (null)
 - [x] 2026-10-12 · When mpv asks the video surface's GL function lookup for any other GL function (e.g. `glClear`), it gets exactly the address the real OpenGL context reports for that name
 - [x] 2026-10-12 · The `glFenceSync` stand-in handed to mpv is still callable after a garbage collection, for as long as the lookup that handed it out is alive
