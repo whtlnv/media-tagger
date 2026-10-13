@@ -115,3 +115,13 @@ def test_a_blank_query_finds_nothing_even_in_a_library_with_tagged_files(tmp_pat
     library, _ = _library_with_one_file(tmp_path, "dunes.jpg", "beach")
 
     assert search(library, "   ") == []
+
+
+def test_a_query_of_only_exclusions_never_finds_an_untagged_file_inside_a_tagged_folder(tmp_path):
+    library = Library.create(tmp_path)
+    folder = tmp_path / "summer"
+    folder.mkdir()
+    library.enter(folder, "family")
+    (folder / "dunes.jpg").touch()
+
+    assert search(library, "-beach") == [folder]

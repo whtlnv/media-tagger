@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-12 19:25 · `src/mediatagger/test_search.py::test_a_query_of_only_exclusions_never_finds_an_untagged_file_inside_a_tagged_folder`
+- Behavior: A query of only exclusions never finds an untagged file inside a tagged folder
+- Predicted: passes on first run — with no required terms, candidates come from `items_tagged` over `all_tags()`, which reads only the `items` table, so an untagged file is never a candidate
+- Actual: passed (1 passed)
+- Type: passed unexpectedly
+- Resolution: Candidates already come only from the tagged items, so this behavior was built by the `-beach|pool` cycle. A rewrite can't fail honestly without breaking production code. The test stays as a regression pin against an exclusion-only query walking the filesystem, and it asserts the exact `[folder]` result. This item needs no /green.
+
 ## 2026-10-12 19:09 · `src/mediatagger/test_search.py::test_a_lone_minus_is_ignored_so_beach_minus_finds_a_file_tagged_beach`
 - Behavior: A lone `-` in a query is ignored (`beach -` finds a file tagged `beach`)
 - Predicted: passes on first run — a lone `-` yields an exclusion of the empty tag `""`, which no file carries, so it excludes nothing
