@@ -45,5 +45,7 @@ class SearchBar(QLineEdit):
     def recall_older_search(self):
         """Each call puts the next older remembered search in the search bar, stopping at the oldest."""
         searches = remembered_searches(self._state_file)
+        if not searches:
+            return
         self._recalled = min(self._recalled + 1, len(searches))
         self.setText(searches[-self._recalled])
