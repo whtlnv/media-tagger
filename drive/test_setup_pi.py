@@ -6,6 +6,13 @@ from pathlib import Path
 SETUP_PI = Path(__file__).resolve().parent / "setup-pi.sh"
 
 
+def drive_with_setup_pi(tmp_path):
+    mediatagger = (tmp_path / "drive" / "mediatagger").resolve()
+    (mediatagger / "debs").mkdir(parents=True)
+    shutil.copy(SETUP_PI, mediatagger / "setup-pi.sh")
+    return mediatagger
+
+
 def fake_command(bin_dir, name, script):
     (bin_dir / name).write_text(f"#!/bin/sh\n{script}\n")
     (bin_dir / name).chmod(0o755)
@@ -48,9 +55,7 @@ def split_apt_options(args):
 
 
 def test_setup_pi_without_libmpv2_installs_it_with_sudo_apt_get_from_a_temporary_trusted_source_on_the_drives_debs(tmp_path):
-    mediatagger = (tmp_path / "drive" / "mediatagger").resolve()
-    (mediatagger / "debs").mkdir(parents=True)
-    shutil.copy(SETUP_PI, mediatagger / "setup-pi.sh")
+    mediatagger = drive_with_setup_pi(tmp_path)
     record = tmp_path / "apt-get-calls"
     record.mkdir()
     bin_dir = tmp_path / "bin"
@@ -84,9 +89,7 @@ def test_setup_pi_without_libmpv2_installs_it_with_sudo_apt_get_from_a_temporary
 
 
 def test_setup_pi_with_libmpv2_already_installed_runs_neither_sudo_nor_apt_get(tmp_path):
-    mediatagger = (tmp_path / "drive" / "mediatagger").resolve()
-    (mediatagger / "debs").mkdir(parents=True)
-    shutil.copy(SETUP_PI, mediatagger / "setup-pi.sh")
+    mediatagger = drive_with_setup_pi(tmp_path)
     record = tmp_path / "apt-get-calls"
     record.mkdir()
     sudo_ran = tmp_path / "sudo-ran"
