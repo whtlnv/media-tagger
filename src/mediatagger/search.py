@@ -1,5 +1,7 @@
 def search(library, query):
     terms = query.lower().split()
+    if not terms:
+        return []
     required = [_alternatives(library, term) for term in terms if not term.startswith("-")]
     excluded = {tag for term in terms if term.startswith("-") for tag in term[1:].split("|")}
     candidates = required[0] if required else library.all_tags()
