@@ -144,3 +144,15 @@ def test_a_matching_file_inside_a_matching_folder_is_left_out_so_only_the_folder
     library.enter(photo, "beach")
 
     assert search(library, "beach") == [folder]
+
+
+def test_a_matching_folder_inside_a_matching_folder_is_left_out_so_only_the_top_most_folder_is_found(tmp_path):
+    library = Library.create(tmp_path)
+    folder = tmp_path / "summer"
+    folder.mkdir()
+    library.enter(folder, "beach")
+    inner = folder / "day-one"
+    inner.mkdir()
+    library.enter(inner, "beach")
+
+    assert search(library, "beach") == [folder]

@@ -21,7 +21,7 @@ Phase 10 notes for every cycle (Phases 1–9b are delivered — see DONE.md; Pha
 - [x] A query of only exclusions never finds an untagged file inside a tagged folder
 - [x] An item whose tags were all removed is not found by the next search
 - [x] A matching file inside a matching folder is left out; only the folder is found
-- [ ] A matching folder inside a matching folder is left out; only the top-most folder is found
+- [x] A matching folder inside a matching folder is left out; only the top-most folder is found
 - [ ] Search results list folders before files
 - [ ] Search results within folders and within files are in natural order of their path relative to the drive root (`IMG_2` before `IMG_10`)
 - [ ] Searching a library of 5,000 tagged items returns its results in under 200 ms

@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-12 19:52 · `src/mediatagger/test_search.py::test_a_matching_folder_inside_a_matching_folder_is_left_out_so_only_the_top_most_folder_is_found`
+- Behavior: A matching folder inside a matching folder is left out; only the top-most folder is found
+- Predicted: passes on first run (no right-reason failure available) — the previous green's filter drops any item with a found ancestor, files and folders alike
+- Actual: passes (1 passed)
+- Type: passed unexpectedly
+- Resolution: The previous cycle's `not set(path.parents) & set(found)` already covers nested folders at any depth, so no failing test exists for this behavior; kept the test as a pin (without that filter the result would be `[folder, inner]`) and left /green with nothing to implement.
+
 ## 2026-10-12 19:31 · `src/mediatagger/test_search.py::test_a_file_whose_tags_were_all_removed_is_not_found_by_the_next_search`
 - Behavior: An item whose tags were all removed is not found by the next search
 - Predicted: passes on first run — removing a file's last tag deletes its `items` row and the orphaned tag, and search reads the database fresh each time, so an exclusion-only query has no candidates
