@@ -14,7 +14,7 @@ Phase 11 notes for every cycle (Phases 1–10 are delivered — see DONE.md; dec
 - [x] `sh drive/update-drive.sh <drive>` leaves the drive's `lib-linux-aarch64-cp313/` and `debs/` exactly as they were
 - [x] `sh drive/update-drive.sh <drive>` leaves every file in `<drive>/.mediatagger/` (the drive's tags) byte-identical
 - [x] `sh drive/update-drive.sh` with no drive argument fails with a usage message and writes nothing
-- [ ] `sh <drive>/mediatagger/run.sh` starts `python3 -c 'import mediatagger; mediatagger.main()'` with its arguments passed through unchanged, spaces kept
+- [x] `sh <drive>/mediatagger/run.sh` starts `python3 -c 'import mediatagger; mediatagger.main()'` with its arguments passed through unchanged, spaces kept
 - [ ] `sh <drive>/mediatagger/run.sh` started from any working directory gives python3 a `PYTHONPATH` of its own folder's `app` then `lib-linux-aarch64-cp313`
 - [ ] `sh <drive>/mediatagger/run.sh` starts python3 with `PYTHONDONTWRITEBYTECODE=1`
 - [ ] `sh <drive>/mediatagger/setup-pi.sh` on a Pi without libmpv2 installs it with `sudo apt-get` (update, then `install -y --no-install-recommends libmpv2`) from a temporary trusted `file:` source pointing at the drive's `debs/`, with its own lists folder
