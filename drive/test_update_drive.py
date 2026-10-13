@@ -9,6 +9,10 @@ UPDATE_DRIVE = REPO / "drive" / "update-drive.sh"
 PACKAGE = REPO / "src" / "mediatagger"
 
 
+def update_drive(drive, env=None):
+    subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True, env=env)
+
+
 def app_on(drive):
     return drive / "mediatagger" / "app" / "mediatagger"
 
@@ -17,7 +21,7 @@ def modules_on_drive_after_update(tmp_path):
     drive = tmp_path / "drive"
     drive.mkdir()
 
-    subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True)
+    update_drive(drive)
 
     return {p.name for p in app_on(drive).glob("*.py")}
 
@@ -54,7 +58,7 @@ def test_update_drive_leaves_unchecked_hash_bytecode_next_to_every_module_in_the
     drive = tmp_path / "drive"
     drive.mkdir()
 
-    subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True, env=env)
+    update_drive(drive, env=env)
 
     app = app_on(drive)
     unchecked_hash = 0b01
@@ -76,7 +80,7 @@ def test_update_drive_removes_a_module_and_its_bytecode_left_in_the_drive_app_by
     stale_pyc.parent.mkdir()
     stale_pyc.write_bytes(b"")
 
-    subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True)
+    update_drive(drive)
 
     assert (stale.exists(), stale_pyc.exists()) == (False, False)
 
@@ -85,7 +89,7 @@ def test_update_drive_writes_the_repo_last_commit_as_short_hash_and_subject_to_t
     drive = tmp_path / "drive"
     drive.mkdir()
 
-    subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True)
+    update_drive(drive)
 
     last_commit = subprocess.run(
         ["git", "-C", str(REPO), "log", "-1", "--format=%h %s"],
@@ -103,7 +107,7 @@ def test_update_drive_writes_unknown_to_the_drive_app_version_when_git_log_fails
     drive = tmp_path / "drive"
     drive.mkdir()
 
-    subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True, env=env)
+    update_drive(drive, env=env)
 
     version = drive / "mediatagger" / "app" / "VERSION"
     assert version.read_text().strip() == "unknown"
@@ -113,7 +117,7 @@ def test_update_drive_copies_the_drive_scripts_into_the_drive_mediatagger_folder
     drive = tmp_path / "drive"
     drive.mkdir()
 
-    subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True)
+    update_drive(drive)
 
     scripts = ["run.sh", "setup-pi.sh", "check-video-leak.sh"]
     on_drive = {
@@ -140,7 +144,7 @@ def test_update_drive_deletes_macos_resource_fork_files_anywhere_under_the_drive
     ]
     write_resource_forks(forks)
 
-    subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True)
+    update_drive(drive)
 
     assert [fork for fork in forks if fork.exists()] == []
 
@@ -155,6 +159,6 @@ def test_update_drive_leaves_macos_resource_fork_files_outside_the_drive_mediata
     ]
     write_resource_forks(forks)
 
-    subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True)
+    update_drive(drive)
 
     assert [fork for fork in forks if not fork.exists()] == []
