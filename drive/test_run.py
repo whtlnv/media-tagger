@@ -21,6 +21,10 @@ def env_with_recording_python3(tmp_path, record):
     return {**os.environ, "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}"}
 
 
+def recorded_args(record):
+    return record.read_bytes().split(b"\0")[:-1] if record.exists() else None
+
+
 def test_run_starts_python3_importing_mediatagger_main_with_its_arguments_passed_through_unchanged(tmp_path):
     mediatagger = drive_with_run_script(tmp_path)
     record = tmp_path / "python3-args"
@@ -31,8 +35,7 @@ def test_run_starts_python3_importing_mediatagger_main_with_its_arguments_passed
         check=True, env=env,
     )
 
-    args = record.read_bytes().split(b"\0")[:-1] if record.exists() else None
-    assert args == [
+    assert recorded_args(record) == [
         b"-c", b"import mediatagger; mediatagger.main()",
         b"/media/My Videos", b"two  spaces", b"",
     ]
