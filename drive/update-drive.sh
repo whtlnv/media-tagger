@@ -8,3 +8,4 @@ rm -f "$app"/test_*.py "$app"/conftest.py
 python3.13 -m compileall -q --invalidation-mode unchecked-hash "$app"
 version="$1/mediatagger/app/VERSION"
 git -C "$here/.." log -1 --format="%h %s" > "$version" || echo unknown > "$version"
+cp "$here"/run.sh "$here"/setup-pi.sh "$here"/check-video-leak.sh "$1/mediatagger"/

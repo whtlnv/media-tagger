@@ -107,3 +107,18 @@ def test_update_drive_writes_unknown_to_the_drive_app_version_when_git_log_fails
 
     version = drive / "mediatagger" / "app" / "VERSION"
     assert version.read_text().strip() == "unknown"
+
+
+def test_update_drive_copies_the_drive_scripts_into_the_drive_mediatagger_folder(tmp_path):
+    drive = tmp_path / "drive"
+    drive.mkdir()
+
+    subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True)
+
+    scripts = ["run.sh", "setup-pi.sh", "check-video-leak.sh"]
+    on_drive = {
+        name: copy.read_bytes() if copy.exists() else None
+        for name in scripts
+        for copy in [drive / "mediatagger" / name]
+    }
+    assert on_drive == {name: (UPDATE_DRIVE.parent / name).read_bytes() for name in scripts}
