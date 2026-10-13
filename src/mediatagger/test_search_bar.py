@@ -1,5 +1,6 @@
 import json
 
+import pytest
 from PySide6.QtCore import Qt
 
 from mediatagger.search_bar import SearchBar
@@ -42,52 +43,24 @@ def test_down_before_any_up_keeps_what_was_typed(qtbot, tmp_path):
     assert bar.text() == "beach"
 
 
-def test_up_in_the_search_bar_replaces_its_text_with_the_most_recent_search(qtbot, tmp_path):
-    window, _ = window_with_the_search_bar_open_over_remembered_searches(qtbot, tmp_path, ["family", "beach -sunset"])
-    qtbot.keyClicks(window.search_bar, "moun")
-
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
-
-    assert window.search_bar.text() == "beach -sunset"
+UP, DOWN = Qt.Key.Key_Up, Qt.Key.Key_Down
 
 
-def test_each_further_up_in_the_search_bar_recalls_the_next_older_search(qtbot, tmp_path):
-    window, _ = window_with_the_search_bar_open_over_remembered_searches(qtbot, tmp_path, ["family", "beach -sunset", "mountain"])
+@pytest.mark.parametrize("searches, typed, keys, shown", [
+    pytest.param(["family", "beach -sunset"], "moun", [UP], "beach -sunset", id="up replaces its text with the most recent search"),
+    pytest.param(["family", "beach -sunset", "mountain"], "", [UP, UP], "beach -sunset", id="each further up recalls the next older search"),
+    pytest.param(["family", "mountain"], "", [UP, UP, UP], "family", id="up at the oldest remembered search keeps it"),
+    pytest.param(["family", "beach -sunset", "mountain"], "", [UP, UP, UP, DOWN], "beach -sunset", id="down after up recalls the next newer search"),
+    pytest.param(["family", "beach -sunset", "mountain"], "", [UP, DOWN], "", id="down past the newest search leaves it empty"),
+])
+def test_up_and_down_in_the_search_bar_recall_remembered_searches(qtbot, tmp_path, searches, typed, keys, shown):
+    window, _ = window_with_the_search_bar_open_over_remembered_searches(qtbot, tmp_path, searches)
+    qtbot.keyClicks(window.search_bar, typed)
 
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
+    for key in keys:
+        qtbot.keyClick(window.search_bar, key)
 
-    assert window.search_bar.text() == "beach -sunset"
-
-
-def test_up_at_the_oldest_remembered_search_keeps_it_in_the_search_bar(qtbot, tmp_path):
-    window, _ = window_with_the_search_bar_open_over_remembered_searches(qtbot, tmp_path, ["family", "mountain"])
-
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
-
-    assert window.search_bar.text() == "family"
-
-
-def test_down_in_the_search_bar_after_up_recalls_the_next_newer_search(qtbot, tmp_path):
-    window, _ = window_with_the_search_bar_open_over_remembered_searches(qtbot, tmp_path, ["family", "beach -sunset", "mountain"])
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
-
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Down)
-
-    assert window.search_bar.text() == "beach -sunset"
-
-
-def test_down_past_the_newest_search_leaves_the_search_bar_empty(qtbot, tmp_path):
-    window, _ = window_with_the_search_bar_open_over_remembered_searches(qtbot, tmp_path, ["family", "beach -sunset", "mountain"])
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
-
-    qtbot.keyClick(window.search_bar, Qt.Key.Key_Down)
-
-    assert window.search_bar.text() == ""
+    assert window.search_bar.text() == shown
 
 
 def test_a_search_run_in_the_window_is_recalled_by_up_when_the_search_bar_next_opens(qtbot, tmp_path):
