@@ -149,6 +149,8 @@ class Window(QWidget):
         remember_geometry(self._state_file, _geometry_of(frame))
 
     def _open_search_bar(self):
+        if not self.session.library:
+            return
         self.search_bar.show()
         self.search_bar.setFocus()
 
