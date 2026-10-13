@@ -222,6 +222,7 @@ class Window(QWidget):
         grid.search.connect(self._open_search_bar)
         grid.tag.connect(lambda: self._tag(grid.currentIndex()))
         grid.selectionModel().currentChanged.connect(self._show_tags_of)
+        grid.thumbnail_progress.connect(self._show_thumbnail_progress)
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
         self.breadcrumb.setText(f"Search: {query}")

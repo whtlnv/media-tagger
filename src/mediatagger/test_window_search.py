@@ -641,3 +641,21 @@ def test_a_result_video_is_drawn_as_a_video_until_its_thumbnail_arrives(qtbot, t
     search_for(qtbot, window, stack, "beach")
 
     assert VIDEO_GLYPH in painted_texts(stack.currentWidget(), 0)
+
+
+def test_while_the_results_thumbnails_generate_the_status_bar_counts_them(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    library = Library.open(drive)
+    trips = drive / "Trips"  # outside the folder shown, so their thumbnails aren't generated before the search
+    trips.mkdir()
+    for name in ("IMG_2.png", "IMG_3.png"):
+        make_image(trips / name, "blue")
+        library.enter(trips / name, "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    seen = []
+    original = window.status_bar.show_background
+    window.status_bar.show_background = lambda text, finished=False: (seen.append(text), original(text, finished))
+
+    search_for(qtbot, window, stack, "beach")
+
+    qtbot.waitUntil(lambda: any(text.startswith("⟳ Generating thumbnails") and text.endswith("/ 2") for text in seen))
