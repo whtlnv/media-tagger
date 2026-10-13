@@ -2,6 +2,8 @@ def search(library, query):
     terms = query.lower().split()
     required = [set(term.split("|")) for term in terms if not term.startswith("-")]
     excluded = {term[1:] for term in terms if term.startswith("-")}
+    if not required:
+        return []
     return [
         path
         for path in _items_tagged_any(library, required[0])
