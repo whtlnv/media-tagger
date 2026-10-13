@@ -1,15 +1,16 @@
 from pathlib import Path
 
-from PySide6.QtCore import QEvent, QRect, Qt
-from PySide6.QtWidgets import QApplication, QLabel, QLineEdit, QStackedWidget, QStyle, QVBoxLayout, QWidget
+from PySide6.QtCore import QRect, Qt
+from PySide6.QtWidgets import QApplication, QLabel, QStackedWidget, QStyle, QVBoxLayout, QWidget
 
 from mediatagger.drive_session import DriveSession
 from mediatagger.folder_thumbnails import GENERATING_THUMBNAILS_TEXT, progress_text
 from mediatagger.grid import TILE_ROLE, Grid
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
 from mediatagger.search import search
+from mediatagger.search_bar import SearchBar
 from mediatagger.slideshow import Slideshow
-from mediatagger.state import remember, remember_geometry, remember_search, remembered_folder, remembered_geometry, remembered_searches, state_file
+from mediatagger.state import remember, remember_geometry, remember_search, remembered_folder, remembered_geometry, state_file
 from mediatagger.status_bar import StatusBar
 from mediatagger.tag_prompt import TagPrompt
 from mediatagger.viewer import Viewer
@@ -35,9 +36,8 @@ class Window(QWidget):
         self.stack = QStackedWidget(self)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
-        self.search_bar = QLineEdit(self)
-        self.search_bar.hide()
-        self.search_bar.installEventFilter(self)
+        self.search_bar = SearchBar(self._state_file, self)
+        self.search_bar.submitted.connect(self.run_search)
         self.breadcrumb = QLabel(self)
         self.breadcrumb.hide()
         layout.addWidget(self.search_bar)
@@ -51,7 +51,6 @@ class Window(QWidget):
         self.stack.addWidget(self.viewer)
         self._forwarding = False
         self._results = None
-        self._recalled = 0
         self.setAcceptDrops(True)
         geometry = remembered_geometry(self._state_file)
         if geometry:
@@ -74,36 +73,6 @@ class Window(QWidget):
         self.status_bar.place_along_the_bottom_of(self.rect())
         self.status_bar.raise_()
         self.tag_prompt.place()
-
-    def eventFilter(self, watched, event):
-        """Enter in the search bar runs the search, and Esc abandons it; either stops there, rather than going on to the
-        page shown below it."""
-        if watched is not self.search_bar or event.type() != QEvent.Type.KeyPress:
-            return super().eventFilter(watched, event)
-        if event.key() == Qt.Key.Key_Return:
-            self.run_search(self.search_bar.text())
-            return True
-        if event.key() == Qt.Key.Key_Escape:
-            self.run_search("")
-            return True
-        if event.key() == Qt.Key.Key_Up:
-            self.recall_older_search()
-            return True
-        if event.key() == Qt.Key.Key_Down:
-            self.recall_newer_search()
-            return True
-        return super().eventFilter(watched, event)
-
-    def recall_newer_search(self):
-        """Each call puts the next newer remembered search in the search bar, emptying it past the newest."""
-        self._recalled -= 1
-        self.search_bar.setText(remembered_searches(self._state_file)[-self._recalled] if self._recalled else "")
-
-    def recall_older_search(self):
-        """Each call puts the next older remembered search in the search bar, stopping at the oldest."""
-        searches = remembered_searches(self._state_file)
-        self._recalled = min(self._recalled + 1, len(searches))
-        self.search_bar.setText(searches[-self._recalled])
 
     def keyPressEvent(self, event):
         if self.tag_prompt.has_focus():
@@ -198,10 +167,7 @@ class Window(QWidget):
     def _open_search_bar(self):
         if not self.session.library:
             return
-        self._recalled = 0
-        self.search_bar.clear()
-        self.search_bar.show()
-        self.search_bar.setFocus()
+        self.search_bar.open()
 
     def run_search(self, query):
         self.search_bar.hide()
