@@ -48,7 +48,7 @@ Phase 10 notes for every cycle (Phases 1–9b are delivered — see DONE.md; Pha
 - [x] A result tile's badge counts the item's own tags, not those inherited from its folders
 - [x] A result file's tile shows its thumbnail
 - [x] Moving the cursor onto a result shows that result's tags in the status bar
-- [ ] `t` on a result adds the entered tag to that item and its badge updates in place
+- [x] `t` on a result adds the entered tag to that item and its badge updates in place
 - [ ] A result whose path no longer exists is drawn as a missing tile with a distinct glyph and its name
 - [ ] A result whose path exists is not drawn as missing
 - [ ] No thumbnail is requested for a missing tile

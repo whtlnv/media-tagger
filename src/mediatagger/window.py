@@ -181,6 +181,7 @@ class Window(QWidget):
         grid = Grid(self.session.drive, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache(), paths=search(self.session.library, query))
         grid.escaped.connect(lambda: self._return_to(searched_from))
         grid.search.connect(self._open_search_bar)
+        grid.tag.connect(lambda: self._tag(grid.currentIndex()))
         grid.selectionModel().currentChanged.connect(self._show_tags_of)
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
