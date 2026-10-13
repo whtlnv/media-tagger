@@ -18,7 +18,10 @@ def env_with_fake_python3(tmp_path, script):
     bin_dir.mkdir()
     (bin_dir / "python3").write_text(f"#!/bin/sh\n{script}\n")
     (bin_dir / "python3").chmod(0o755)
-    env = {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
+    env = {
+        k: v for k, v in os.environ.items()
+        if k not in ("PYTHONPATH", "PYTHONDONTWRITEBYTECODE")
+    }
     return {**env, "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}"}
 
 
@@ -67,7 +70,6 @@ def test_run_starts_python3_with_pythondontwritebytecode_set_to_1(tmp_path):
     env = env_with_fake_python3(
         tmp_path, f"printf '%s' \"${{PYTHONDONTWRITEBYTECODE-unset}}\" > \"{record}\""
     )
-    env.pop("PYTHONDONTWRITEBYTECODE", None)
 
     subprocess.run(["sh", str(mediatagger / "run.sh")], check=True, env=env)
 
