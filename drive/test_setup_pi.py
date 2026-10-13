@@ -11,6 +11,17 @@ def fake_command(bin_dir, name, script):
     (bin_dir / name).chmod(0o755)
 
 
+def fake_recording_apt_get(bin_dir, record):
+    fake_command(bin_dir, "apt-get", f"""
+i=1; while [ -e "{record}/$i" ]; do i=$((i+1)); done
+mkdir "{record}/$i"
+printf '%s\\0' "$@" > "{record}/$i/args"
+printf '%s' "${{FAKE_SUDO-no}}" > "{record}/$i/via-sudo"
+for a; do
+  case "$a" in Dir::Etc::sourcelist=*) cp "${{a#Dir::Etc::sourcelist=}}" "{record}/$i/sourcelist";; esac
+done""")
+
+
 def apt_get_calls(record):
     calls = []
     for call in sorted(record.iterdir(), key=lambda d: int(d.name)):
@@ -46,14 +57,7 @@ def test_setup_pi_without_libmpv2_installs_it_with_sudo_apt_get_from_a_temporary
     bin_dir.mkdir()
     fake_command(bin_dir, "dpkg-query", "exit 1")
     fake_command(bin_dir, "sudo", 'FAKE_SUDO=yes exec "$@"')
-    fake_command(bin_dir, "apt-get", f"""
-i=1; while [ -e "{record}/$i" ]; do i=$((i+1)); done
-mkdir "{record}/$i"
-printf '%s\\0' "$@" > "{record}/$i/args"
-printf '%s' "${{FAKE_SUDO-no}}" > "{record}/$i/via-sudo"
-for a; do
-  case "$a" in Dir::Etc::sourcelist=*) cp "${{a#Dir::Etc::sourcelist=}}" "{record}/$i/sourcelist";; esac
-done""")
+    fake_recording_apt_get(bin_dir, record)
     (tmp_path / "home").mkdir()
     (tmp_path / "tmp").mkdir()
     env = {
