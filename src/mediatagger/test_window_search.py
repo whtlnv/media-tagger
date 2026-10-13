@@ -1,6 +1,6 @@
 import json
 
-from PySide6.QtCore import QPoint, Qt
+from PySide6.QtCore import QCoreApplication, QEvent, QPoint, Qt
 from PySide6.QtWidgets import QLabel, QLineEdit
 
 from mediatagger.library import Library
@@ -600,3 +600,16 @@ def test_esc_after_searching_again_from_the_results_returns_to_the_folder_search
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
 
     assert stack.currentWidget() is folder_grid
+
+
+def test_searching_again_after_esc_ended_a_search_and_its_results_were_deleted_shows_new_results(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    search_for(qtbot, window, stack, "beach")
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+
+    search_for(qtbot, window, stack, "beach")
+
+    assert (tile_names(stack.currentWidget()), window.breadcrumb.text()) == (["IMG_1.png"], "Search: beach")
