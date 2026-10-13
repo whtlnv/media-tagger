@@ -39,3 +39,23 @@ def test_run_starts_python3_importing_mediatagger_main_with_its_arguments_passed
         b"-c", b"import mediatagger; mediatagger.main()",
         b"/media/My Videos", b"two  spaces", b"",
     ]
+
+
+def test_run_from_any_working_directory_gives_python3_a_pythonpath_of_its_own_app_then_lib_folders(tmp_path):
+    mediatagger = drive_with_run_script(tmp_path).resolve()
+    record = tmp_path / "python3-pythonpath"
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    (bin_dir / "python3").write_text(f"#!/bin/sh\nprintf '%s' \"$PYTHONPATH\" > \"{record}\"\n")
+    (bin_dir / "python3").chmod(0o755)
+    env = {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
+    env["PATH"] = f"{bin_dir}{os.pathsep}{os.environ['PATH']}"
+    elsewhere = tmp_path / "elsewhere"
+    elsewhere.mkdir()
+
+    subprocess.run(
+        ["sh", os.path.relpath(mediatagger / "run.sh", elsewhere)],
+        check=True, env=env, cwd=elsewhere,
+    )
+
+    assert record.read_text() == f"{mediatagger}/app:{mediatagger}/lib-linux-aarch64-cp313"
