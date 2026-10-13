@@ -59,3 +59,16 @@ def test_run_from_any_working_directory_gives_python3_a_pythonpath_of_its_own_ap
     )
 
     assert record.read_text() == f"{mediatagger}/app:{mediatagger}/lib-linux-aarch64-cp313"
+
+
+def test_run_starts_python3_with_pythondontwritebytecode_set_to_1(tmp_path):
+    mediatagger = drive_with_run_script(tmp_path)
+    record = tmp_path / "python3-dontwritebytecode"
+    env = env_with_fake_python3(
+        tmp_path, f"printf '%s' \"${{PYTHONDONTWRITEBYTECODE-unset}}\" > \"{record}\""
+    )
+    env.pop("PYTHONDONTWRITEBYTECODE", None)
+
+    subprocess.run(["sh", str(mediatagger / "run.sh")], check=True, env=env)
+
+    assert record.read_text() == "1"
