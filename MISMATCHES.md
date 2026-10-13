@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-12 23:54 · `src/mediatagger/test_window_search.py::test_a_search_run_from_a_subfolder_finds_tagged_items_elsewhere_on_the_same_drive`
+- Behavior: A search run from a subfolder finds tagged items elsewhere on the same drive
+- Predicted: passes — `Window.run_search` searches `session.library` (the whole drive's library), never the grid's folder, and the earlier results-order test already finds `Trips/Summer` from `Photos`
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: The pass is not vacuous: it starts from a nested `Photos/2024` grid and asserts the only result is `Trips/IMG_5.png`, a branch the grid can't see. Drive-wide scope came with the first results cycle, so there is nothing missing for a failing test to drive. Kept the test as a pin and did not rewrite it.
+
 ## 2026-10-12 23:49 · `src/mediatagger/test_window_search.py::test_a_search_with_no_matches_shows_the_search_breadcrumb_over_an_empty_grid`
 - Behavior: A search with no matches shows the `Search: <query>` breadcrumb over an empty grid
 - Predicted: passes — `run_search` builds the results grid and breadcrumb the same way whatever `search` returns (a red step expected to fail, but the code read said otherwise)

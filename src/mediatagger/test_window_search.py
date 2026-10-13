@@ -91,3 +91,21 @@ def test_a_search_with_no_matches_shows_the_search_breadcrumb_over_an_empty_grid
     [crumb] = [label for label in window.findChildren(QLabel) if label.isVisible() and label.text() == "Search: mountain"]
     assert crumb.mapTo(window, QPoint(0, crumb.height())).y() <= results.mapTo(window, QPoint(0, 0)).y()
     assert tile_names(results) == []
+
+
+def test_a_search_run_from_a_subfolder_finds_tagged_items_elsewhere_on_the_same_drive(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    subfolder = folder / "2024"
+    subfolder.mkdir()
+    make_image(subfolder / "IMG_3.png", "red")
+    elsewhere = drive / "Trips"
+    elsewhere.mkdir()
+    make_image(elsewhere / "IMG_5.png", "blue")
+    Library.open(drive).enter(elsewhere / "IMG_5.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, subfolder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+
+    qtbot.keyClicks(window.search_bar, "beach")
+    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+
+    assert tile_names(stack.currentWidget()) == ["IMG_5.png"]

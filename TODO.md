@@ -38,7 +38,7 @@ Phase 10 notes for every cycle (Phases 1–9b are delivered — see DONE.md; Pha
 - [x] After `Enter` runs a search, the search bar is hidden and the results grid has focus with the cursor on the first result
 - [x] A breadcrumb line above the results grid reads `Search: <query>`
 - [x] A search with no matches shows the `Search: <query>` breadcrumb over an empty grid
-- [ ] A search run from a subfolder finds tagged items elsewhere on the same drive
+- [x] A search run from a subfolder finds tagged items elsewhere on the same drive
 - [ ] `Enter` on a blank query closes the search bar and returns focus to the unchanged grid
 - [ ] `Esc` while typing in the search bar closes it and returns focus to the unchanged grid
 - [ ] `Esc` in the results grid shows the folder you searched from with the cursor where it was
