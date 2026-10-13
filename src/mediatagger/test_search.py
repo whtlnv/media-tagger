@@ -149,3 +149,11 @@ def test_a_matching_folder_inside_a_matching_folder_is_left_out_so_only_the_top_
     _tagged_folder(library, folder / "day-one", "beach")
 
     assert search(library, "beach") == [folder]
+
+
+def test_search_results_list_a_matching_folder_before_a_matching_file(tmp_path):
+    library = Library.create(tmp_path)
+    photo = _tagged_file(library, tmp_path / "a-dunes.jpg", "beach")
+    folder = _tagged_folder(library, tmp_path / "z-summer", "beach")
+
+    assert search(library, "beach") == [folder, photo]

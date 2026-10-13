@@ -10,7 +10,8 @@ def search(library, query):
         for path in _items_tagged_any(library, candidates)
         if _matches(_all_effective_tags(library, path), required, excluded)
     ]
-    return [path for path in found if not set(path.parents) & set(found)]
+    top_most = [path for path in found if not set(path.parents) & set(found)]
+    return sorted(top_most, key=lambda path: not path.is_dir())
 
 
 def _alternatives(library, term):
