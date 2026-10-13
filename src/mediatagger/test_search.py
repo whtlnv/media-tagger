@@ -132,3 +132,15 @@ def test_a_file_whose_tags_were_all_removed_is_not_found_by_the_next_search(tmp_
     library.enter(photo, "-beach")
 
     assert search(library, "-sunset") == []
+
+
+def test_a_matching_file_inside_a_matching_folder_is_left_out_so_only_the_folder_is_found(tmp_path):
+    library = Library.create(tmp_path)
+    folder = tmp_path / "summer"
+    folder.mkdir()
+    library.enter(folder, "beach")
+    photo = folder / "dunes.jpg"
+    photo.touch()
+    library.enter(photo, "beach")
+
+    assert search(library, "beach") == [folder]
