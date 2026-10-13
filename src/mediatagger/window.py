@@ -7,6 +7,7 @@ from mediatagger.drive_session import DriveSession
 from mediatagger.folder_thumbnails import GENERATING_THUMBNAILS_TEXT, progress_text
 from mediatagger.grid import TILE_ROLE, Grid
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
+from mediatagger.search import search
 from mediatagger.state import remember, remember_geometry, remembered_folder, remembered_geometry, state_file
 from mediatagger.status_bar import StatusBar
 from mediatagger.tag_prompt import TagPrompt
@@ -35,6 +36,7 @@ class Window(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         self.search_bar = QLineEdit(self)
         self.search_bar.hide()
+        self.search_bar.returnPressed.connect(lambda: self.run_search(self.search_bar.text()))
         layout.addWidget(self.search_bar)
         layout.addWidget(self.stack)
         self.status_bar = StatusBar(self)
@@ -155,7 +157,9 @@ class Window(QWidget):
         self.search_bar.setFocus()
 
     def run_search(self, query):
-        pass
+        grid = Grid(self.session.drive, paths=search(self.session.library, query))
+        self.stack.addWidget(grid)
+        self.stack.setCurrentWidget(grid)
 
     def _may_write_state(self):
         return not (self._is_on_the_apps_own_drive(self._state_file) or self._is_on_the_drive_being_viewed(self._state_file))

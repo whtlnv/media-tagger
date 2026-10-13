@@ -70,6 +70,10 @@ def _tiles(folder, tag_counts):
     return [_Tile(folder / name, name, kind, counts_by_name.get(name, 0)) for name, kind in zip(subfolders + media, kinds)]
 
 
+def _result_tiles(paths):
+    return [_Tile(path, path.name, _Kind.FOLDER if path.is_dir() else _Kind.IMAGE) for path in paths]
+
+
 class _FolderModel(QAbstractListModel):
     def __init__(self, tiles, parent):
         super().__init__(parent)
@@ -180,7 +184,7 @@ class Grid(QListView):
     search = Signal()
     dropped = Signal(Path)
 
-    def __init__(self, folder, at=None, library=None, thumbnail_cache=None):
+    def __init__(self, folder, at=None, library=None, thumbnail_cache=None, paths=None):
         super().__init__()
         self.folder = folder
         self.setFlow(QListView.Flow.LeftToRight)
@@ -188,7 +192,7 @@ class Grid(QListView):
         self.setGridSize(TILE_SIZE)
         self.setUniformItemSizes(True)  # lays out thousands of tiles without asking each one its size
         self.setVerticalScrollMode(QListView.ScrollMode.ScrollPerPixel)
-        tiles = _tiles(folder, library.tag_counts(folder) if library else {})
+        tiles = _result_tiles(paths) if paths is not None else _tiles(folder, library.tag_counts(folder) if library else {})
         self.setModel(_FolderModel(tiles, self))
         self.setItemDelegate(_TileDelegate(self))
         self._generate_thumbnails(tiles, thumbnail_cache or ThumbnailCache(":memory:"))
