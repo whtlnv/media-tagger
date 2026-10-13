@@ -18,6 +18,14 @@ def search_for(qtbot, window, stack, query):
     qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
 
 
+def drive_with_a_missing_image_tagged(tmp_path, tags):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    Library.open(drive).enter(folder / "IMG_2.png", tags)
+    (folder / "IMG_2.png").unlink()
+    return drive, folder
+
+
 def test_pressing_slash_in_the_windows_grid_on_a_drive_with_a_library_shows_a_search_bar_above_the_grid_with_keyboard_focus(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
@@ -258,11 +266,7 @@ def test_entering_family_in_the_tag_prompt_on_a_result_adds_it_to_that_item_and_
 
 
 def test_a_result_whose_path_no_longer_exists_is_drawn_as_a_missing_tile_with_a_distinct_glyph_and_its_name(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    library = Library.open(drive)
-    make_image(folder / "IMG_2.png", "blue")
-    library.enter(folder / "IMG_2.png", "beach")
-    (folder / "IMG_2.png").unlink()
+    drive, folder = drive_with_a_missing_image_tagged(tmp_path, "beach")
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
 
     search_for(qtbot, window, stack, "beach")
@@ -311,10 +315,7 @@ def test_no_thumbnail_is_requested_for_a_missing_tile(qtbot, tmp_path, monkeypat
 
 
 def test_entering_minus_family_in_the_tag_prompt_on_a_missing_tile_removes_that_tag_from_the_item(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    make_image(folder / "IMG_2.png", "blue")
-    Library.open(drive).enter(folder / "IMG_2.png", "beach family")
-    (folder / "IMG_2.png").unlink()
+    drive, folder = drive_with_a_missing_image_tagged(tmp_path, "beach family")
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
     search_for(qtbot, window, stack, "beach")
 
@@ -324,10 +325,7 @@ def test_entering_minus_family_in_the_tag_prompt_on_a_missing_tile_removes_that_
 
 
 def test_removing_a_missing_tiles_last_tag_leaves_the_tile_shown_in_the_current_results(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    make_image(folder / "IMG_2.png", "blue")
-    Library.open(drive).enter(folder / "IMG_2.png", "beach")
-    (folder / "IMG_2.png").unlink()
+    drive, folder = drive_with_a_missing_image_tagged(tmp_path, "beach")
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
     search_for(qtbot, window, stack, "beach")
     results = stack.currentWidget()
