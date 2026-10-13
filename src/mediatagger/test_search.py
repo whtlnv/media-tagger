@@ -1,3 +1,5 @@
+import time
+
 from mediatagger.library import Library
 from mediatagger.search import search
 
@@ -165,3 +167,20 @@ def test_search_results_list_matching_files_in_natural_order_of_their_path(tmp_p
     second = _tagged_file(library, tmp_path / "IMG_2.jpg", "beach")
 
     assert search(library, "beach") == [second, tenth]
+
+
+def test_searching_a_library_of_5000_tagged_items_returns_its_results_in_under_200_ms(tmp_path):
+    library = Library.create(tmp_path)
+    for album in range(50):
+        folder = tmp_path / f"album-{album}"
+        folder.mkdir()
+        for number in range(100):
+            _tagged_file(library, folder / f"IMG_{number}.jpg", f"beach year:{2000 + album}")
+
+    timings = []
+    for _ in range(3):  # the quickest of three: a single search can be held up by whatever else the machine is doing
+        started = time.perf_counter()
+        results = search(library, "beach")
+        timings.append(time.perf_counter() - started)
+
+    assert (min(timings) < 0.200, len(results)) == (True, 5000)

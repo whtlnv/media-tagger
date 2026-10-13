@@ -24,7 +24,7 @@ Phase 10 notes for every cycle (Phases 1–9b are delivered — see DONE.md; Pha
 - [x] A matching folder inside a matching folder is left out; only the top-most folder is found
 - [x] Search results list folders before files
 - [x] Search results within folders and within files are in natural order of their path relative to the drive root (`IMG_2` before `IMG_10`)
-- [ ] Searching a library of 5,000 tagged items returns its results in under 200 ms
+- [x] Searching a library of 5,000 tagged items returns its results in under 200 ms
 - [ ] Running a search when the state file may be written adds the query at the end of `searches` in `state.json`
 - [ ] Running a search when the state file may not be written leaves `state.json` without the query
 - [ ] Running a query already in `searches` moves it to the end instead of adding it twice

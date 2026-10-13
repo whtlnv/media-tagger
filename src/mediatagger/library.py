@@ -158,12 +158,21 @@ class Library:
         return self._tags_by_key([key])[key]
 
     def effective_tags(self, path):
-        ancestor_keys = [str(folder) for folder in path.relative_to(self.root).parents]
-        key = self._key(path)
-        tags_by_key = self._tags_by_key([key, *ancestor_keys])
-        own = tags_by_key[key]
-        inherited = sorted({tag for k in ancestor_keys for tag in tags_by_key[k]} - set(own))
-        return EffectiveTags(own=own, inherited=inherited)
+        return self.effective_tags_of([path])[path]
+
+    def effective_tags_of(self, paths):
+        """Each path's effective tags, read in one query."""
+        root = self.root
+        relative = {path: path.relative_to(root) for path in paths}
+        keys = {path: str(rel) for path, rel in relative.items()}
+        ancestor_keys = {path: [str(folder) for folder in rel.parents] for path, rel in relative.items()}
+        tags_by_key = self._tags_by_key(list({*keys.values(), *(k for ks in ancestor_keys.values() for k in ks)}))
+        effective = {}
+        for path in paths:
+            own = tags_by_key[keys[path]]
+            inherited = sorted({tag for k in ancestor_keys[path] for tag in tags_by_key[k]} - set(own))
+            effective[path] = EffectiveTags(own=own, inherited=inherited)
+        return effective
 
     def _tags_by_key(self, keys):
         if self.schema_version < 2:  # a read-only drive left at schema 1 has no tag tables

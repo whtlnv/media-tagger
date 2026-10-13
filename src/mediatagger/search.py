@@ -8,12 +8,10 @@ def search(library, query):
     required = [_alternatives(library, term) for term in terms if not term.startswith("-")]
     excluded = {tag for term in terms if term.startswith("-") for tag in term[1:].split("|")}
     candidates = required[0] if required else library.all_tags()
-    found = [
-        path
-        for path in _items_tagged_any(library, candidates)
-        if _matches(_all_effective_tags(library, path), required, excluded)
-    ]
-    top_most = [path for path in found if not set(path.parents) & set(found)]
+    effective = library.effective_tags_of(list(_items_tagged_any(library, candidates)))
+    found = {path for path, tags in effective.items() if _matches({*tags.own, *tags.inherited}, required, excluded)}
+    found_within = {folder: not found.isdisjoint((folder, *folder.parents)) for folder in {path.parent for path in found}}
+    top_most = [path for path in found if not found_within[path.parent]]
     return sorted(top_most, key=lambda path: (not path.is_dir(), _natural_name_key(str(path))))
 
 
@@ -29,8 +27,3 @@ def _items_tagged_any(library, alternatives):
 
 def _matches(tags, required, excluded):
     return all(group & tags for group in required) and not excluded & tags
-
-
-def _all_effective_tags(library, path):
-    tags = library.effective_tags(path)
-    return {*tags.own, *tags.inherited}
