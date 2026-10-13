@@ -160,6 +160,9 @@ class Window(QWidget):
         grid = Grid(self.session.drive, paths=search(self.session.library, query))
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
+        self.search_bar.hide()
+        grid.setCurrentIndex(grid.model().index(0, 0))
+        grid.setFocus()
 
     def _may_write_state(self):
         return not (self._is_on_the_apps_own_drive(self._state_file) or self._is_on_the_drive_being_viewed(self._state_file))

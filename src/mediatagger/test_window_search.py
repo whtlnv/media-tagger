@@ -45,3 +45,20 @@ def test_typing_a_query_and_pressing_enter_replaces_the_grid_with_tiles_of_the_m
     qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
 
     assert tile_names(stack.currentWidget()) == ["Summer", "IMG_2.png", "IMG_10.png"]
+
+
+def test_after_enter_runs_a_search_the_search_bar_is_hidden_and_the_results_grid_has_focus_with_its_cursor_on_the_first_result(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    library = Library.open(drive)
+    for name in ("IMG_1.png", "IMG_2.png"):
+        make_image(folder / name, "blue")
+        library.enter(folder / name, "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+
+    qtbot.keyClicks(window.search_bar, "beach")
+    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+
+    results = stack.currentWidget()
+    visible_lines = [line for line in window.findChildren(QLineEdit) if line.isVisible()]
+    assert (visible_lines, window.focusWidget() is results, results.currentIndex().row()) == ([], True, 0)
