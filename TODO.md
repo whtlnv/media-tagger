@@ -27,7 +27,7 @@ Phase 10 notes for every cycle (Phases 1–9b are delivered — see DONE.md; Pha
 - [x] Searching a library of 5,000 tagged items returns its results in under 200 ms
 - [x] `family beach` finds a file tagged `beach` inside a folder tagged `family` (a file is found whichever term its folders supply, in any order of the query's words)
 - [x] `people:` over a library of 5,000 tagged items holding 1,000 different `people:` tags returns its results in under 200 ms
-- [ ] Running a search when the state file may be written adds the query at the end of `searches` in `state.json`
+- [x] Running a search when the state file may be written adds the query at the end of `searches` in `state.json`
 - [ ] Running a search when the state file may not be written leaves `state.json` without the query
 - [ ] Running a query already in `searches` moves it to the end instead of adding it twice
 - [ ] `searches` keeps at most the 50 most recent queries, dropping the oldest

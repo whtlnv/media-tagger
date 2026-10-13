@@ -33,6 +33,12 @@ def remember_geometry(state, geometry):
         pass  # the window still closes; next time it opens centred
 
 
+def remember_search(state, query):
+    remembering = _read(state)
+    remembering["searches"].append(query)
+    state.write_text(json.dumps(remembering))
+
+
 def remembered_geometry(state):
     return _remembered(state, "geometry")
 
