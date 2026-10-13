@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from PySide6.QtCore import QRect, Qt
-from PySide6.QtWidgets import QApplication, QLabel, QStackedWidget, QStyle, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QApplication, QStackedWidget, QStyle, QVBoxLayout, QWidget
 
 from mediatagger.drive_session import DriveSession
 from mediatagger.folder_thumbnails import GENERATING_THUMBNAILS_TEXT, progress_text
@@ -11,7 +11,7 @@ from mediatagger.search import search
 from mediatagger.search_bar import SearchBar
 from mediatagger.slideshow import Slideshow
 from mediatagger.state import remember, remember_geometry, remember_search, remembered_folder, remembered_geometry, state_file
-from mediatagger.status_bar import StatusBar
+from mediatagger.status_bar import StatusBar, overlay_label
 from mediatagger.tag_prompt import TagPrompt
 from mediatagger.viewer import Viewer
 
@@ -38,7 +38,7 @@ class Window(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         self.search_bar = SearchBar(self._state_file, self)
         self.search_bar.submitted.connect(self.run_search)
-        self.breadcrumb = QLabel(self)
+        self.breadcrumb = overlay_label("", self)  # styled like the status bar, readable on a TV
         self.breadcrumb.setTextFormat(Qt.TextFormat.PlainText)  # a query is shown as typed, never as markup
         self.breadcrumb.hide()
         layout.addWidget(self.search_bar)

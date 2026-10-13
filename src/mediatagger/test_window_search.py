@@ -450,3 +450,14 @@ def test_a_search_with_no_results_shows_no_item_tags_in_the_status_bar(qtbot, tm
     search_for(qtbot, window, stack, "nothing")
 
     assert "pool" not in shown_status_bar_texts(window)
+
+
+def test_the_breadcrumb_is_drawn_in_the_status_bars_font_size(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+
+    search_for(qtbot, window, stack, "beach")
+
+    for label in (window.breadcrumb, window.status_bar.tags_status):
+        label.ensurePolished()
+    assert window.breadcrumb.font().pixelSize() == window.status_bar.tags_status.font().pixelSize()
