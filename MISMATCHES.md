@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-13 14:37 · `drive/test_update_drive.py::test_update_drive_writes_unknown_to_the_drive_app_version_when_git_log_fails`
+- Behavior: After `sh drive/update-drive.sh <drive>` when `git log` fails, `app/VERSION` holds `unknown`
+- Predicted: AssertionError — `VERSION` is created empty by the redirect, `'' != 'unknown'`
+- Actual: CalledProcessError — script exits 128 because `git log` is its last command, so its failure becomes the script's exit status before the assertion is reached
+- Type: right-reason mismatch
+- Resolution: Accepted as right-reason — a successful update with an `unknown` fallback is exactly what's missing; green must both swallow the git failure and write `unknown`.
+
 ## 2026-10-13 08:05 · `src/mediatagger/test_main.py::test_running_the_mediatagger_command_on_a_folder_of_a_drive_with_a_tagged_library_then_searching_from_its_grid_shows_the_search_breadcrumb_over_the_matching_items`
 - Behavior: Running the `mediatagger` command on a folder of a drive with a tagged library, pressing `/`, typing a query and `Enter` shows the `Search: <query>` breadcrumb over the matching items
 - Predicted: passes on first run — every piece (search bar, search, breadcrumb) was already delivered and wired in `Window`; this item is an end-to-end acceptance check of the command path

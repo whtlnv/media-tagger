@@ -7,7 +7,7 @@ Phase 11 notes for every cycle (Phases 1–10 are delivered — see DONE.md; dec
 - [x] After `sh drive/update-drive.sh <drive>`, every module in the drive's `app/` has unchecked-hash precompiled bytecode next to it
 - [x] After `sh drive/update-drive.sh <drive>`, a module and its bytecode left in `app/` by an earlier update are gone
 - [x] After `sh drive/update-drive.sh <drive>`, `app/VERSION` holds the repo's last commit as `<short hash> <subject>`
-- [ ] After `sh drive/update-drive.sh <drive>` when `git log` fails, `app/VERSION` holds `unknown`
+- [x] After `sh drive/update-drive.sh <drive>` when `git log` fails, `app/VERSION` holds `unknown`
 - [ ] After `sh drive/update-drive.sh <drive>`, `<drive>/mediatagger/` holds the `run.sh`, `setup-pi.sh` and `check-video-leak.sh` from `drive/`
 - [ ] `sh drive/update-drive.sh <drive>` deletes macOS `._*` files anywhere under `<drive>/mediatagger/`
 - [ ] `sh drive/update-drive.sh <drive>` leaves `._*` files outside `<drive>/mediatagger/` in place

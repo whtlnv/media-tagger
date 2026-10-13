@@ -93,3 +93,17 @@ def test_update_drive_writes_the_repo_last_commit_as_short_hash_and_subject_to_t
     ).stdout.strip()
     version = drive / "mediatagger" / "app" / "VERSION"
     assert version.read_text().strip() == last_commit
+
+
+def test_update_drive_writes_unknown_to_the_drive_app_version_when_git_log_fails(tmp_path):
+    env = env_with_python313_on_path(tmp_path)
+    failing_git = tmp_path / "bin" / "git"
+    failing_git.write_text("#!/bin/sh\nexit 128\n")
+    failing_git.chmod(0o755)
+    drive = tmp_path / "drive"
+    drive.mkdir()
+
+    subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True, env=env)
+
+    version = drive / "mediatagger" / "app" / "VERSION"
+    assert version.read_text().strip() == "unknown"
