@@ -255,7 +255,8 @@ class Window(QWidget):
 
     def _open_result(self, index, paths):
         self._open_tile(index)
-        self.viewer.slideshow = Slideshow(paths, paths.index(index.data(TILE_ROLE).path))
+        files = [path for path in paths if path.is_file()]
+        self.viewer.slideshow = Slideshow(files, files.index(index.data(TILE_ROLE).path))
 
     def _open(self, path):
         if isinstance(self.stack.currentWidget(), Grid):  # a tile's Enter, or a drop onto the grid

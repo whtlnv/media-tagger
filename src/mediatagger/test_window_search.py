@@ -6,7 +6,7 @@ from mediatagger.state import remembered_folder, state_file
 from mediatagger import grid as grid_module
 from mediatagger.grid import FOLDER_GLYPH, IMAGE_GLYPH, MISSING_GLYPH, TAG_BADGE, TILE_ROLE, VIDEO_GLYPH
 from mediatagger.test_grid import painted_texts, tile_names
-from mediatagger.test_viewer import make_image
+from mediatagger.test_viewer import make_image, shown_texts
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image
 from mediatagger.test_window import enter_in_the_grids_tag_prompt, shown_status_bar_texts, window_showing_the_grid_with_its_cursor_on_its_first_tile
 from mediatagger.thumbnails import thumbnail_and_duration
@@ -370,3 +370,22 @@ def test_next_in_a_slideshow_opened_from_results_goes_to_the_next_result_file(qt
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
 
     assert stack.currentWidget().slideshow.current == folder / "IMG_3.png"
+
+
+def test_a_slideshow_opened_from_results_skips_result_folders_and_missing_paths(qtbot, tmp_path):
+    drive, folder = drive_with_a_missing_image_tagged(tmp_path, "beach")
+    library = Library.open(drive)
+    make_image(folder / "IMG_3.png", "green")
+    summer = drive / "Trips" / "Summer"
+    summer.mkdir(parents=True)
+    for path in (summer, folder / "IMG_1.png", folder / "IMG_3.png"):
+        library.enter(path, "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    search_for(qtbot, window, stack, "beach")
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_I)
+
+    [overlay] = [text for text in shown_texts(stack.currentWidget()) if "IMG_1.png" in text]
+    assert "1 / 2" in overlay

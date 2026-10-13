@@ -56,7 +56,7 @@ Phase 10 notes for every cycle (Phases 1–9b are delivered — see DONE.md; Pha
 - [x] Removing a missing tile's last tag leaves the tile shown in the current results
 - [x] `Enter` on a result file opens a slideshow at that file
 - [x] Next in a slideshow opened from results goes to the next result file, not the next file in its folder
-- [ ] A slideshow opened from results skips result folders and missing paths
+- [x] A slideshow opened from results skips result folders and missing paths
 - [ ] `Esc` in a slideshow opened from results returns to the results grid with the cursor on the current file
 - [ ] `Enter` on a result folder opens that folder's normal, unfiltered grid with the cursor on its first item
 - [ ] `Esc` in a folder opened from results does not return to the results

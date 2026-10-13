@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-13 04:11 · `src/mediatagger/test_window_search.py::test_a_slideshow_opened_from_results_skips_result_folders_and_missing_paths`
+- Behavior: A slideshow opened from results skips result folders and missing paths
+- Predicted: AssertionError — the `i` overlay reads `IMG_1.png 2 / 4` (slideshow is built over every result path)
+- Actual: ValueError — `[text] = shown_texts(viewer)` got two texts: the overlay plus the status bar's `beach` tag
+- Type: wrong-reason
+- Resolution: with a library open the viewer's status bar shows the file's tags as a visible label too; the test now picks the overlay by filename and fails as predicted (`'1 / 2' in 'IMG_1.png 2 / 4'`).
+
 ## 2026-10-13 03:26 · `src/mediatagger/test_window_search.py::test_removing_a_missing_tiles_last_tag_leaves_the_tile_shown_in_the_current_results`
 - Behavior: Removing a missing tile's last tag leaves the tile shown in the current results
 - Predicted: passes on first run — `Window._show_saved_tags` only calls `grid.show_tag_count` on the current grid and never re-runs the search or relists results
