@@ -4,10 +4,19 @@ from mediatagger.search import search
 
 def _library_with_one_file(tmp_path, name, tags):
     library = Library.create(tmp_path)
-    photo = tmp_path / name
+    return library, _tagged_file(library, tmp_path / name, tags)
+
+
+def _tagged_file(library, photo, tags):
     photo.touch()
     library.enter(photo, tags)
-    return library, photo
+    return photo
+
+
+def _tagged_folder(library, folder, tags):
+    folder.mkdir()
+    library.enter(folder, tags)
+    return folder
 
 
 def test_searching_a_library_for_beach_finds_a_tagged_file_whose_own_tags_include_beach(tmp_path):
@@ -36,12 +45,8 @@ def test_an_exact_term_does_not_find_a_longer_tag_that_starts_with_it(tmp_path):
 
 def test_beach_family_finds_a_file_tagged_beach_inside_a_folder_tagged_family(tmp_path):
     library = Library.create(tmp_path)
-    folder = tmp_path / "summer"
-    folder.mkdir()
-    library.enter(folder, "family")
-    photo = folder / "dunes.jpg"
-    photo.touch()
-    library.enter(photo, "beach")
+    folder = _tagged_folder(library, tmp_path / "summer", "family")
+    photo = _tagged_file(library, folder / "dunes.jpg", "beach")
 
     assert search(library, "beach family") == [photo]
 
@@ -50,9 +55,7 @@ def test_beach_family_leaves_out_a_file_tagged_beach_whose_folders_carry_no_fami
     library = Library.create(tmp_path)
     folder = tmp_path / "summer"
     folder.mkdir()
-    photo = folder / "dunes.jpg"
-    photo.touch()
-    library.enter(photo, "beach")
+    photo = _tagged_file(library, folder / "dunes.jpg", "beach")
 
     assert search(library, "beach family") == []
 
@@ -119,9 +122,7 @@ def test_a_blank_query_finds_nothing_even_in_a_library_with_tagged_files(tmp_pat
 
 def test_a_query_of_only_exclusions_never_finds_an_untagged_file_inside_a_tagged_folder(tmp_path):
     library = Library.create(tmp_path)
-    folder = tmp_path / "summer"
-    folder.mkdir()
-    library.enter(folder, "family")
+    folder = _tagged_folder(library, tmp_path / "summer", "family")
     (folder / "dunes.jpg").touch()
 
     assert search(library, "-beach") == [folder]
@@ -136,23 +137,15 @@ def test_a_file_whose_tags_were_all_removed_is_not_found_by_the_next_search(tmp_
 
 def test_a_matching_file_inside_a_matching_folder_is_left_out_so_only_the_folder_is_found(tmp_path):
     library = Library.create(tmp_path)
-    folder = tmp_path / "summer"
-    folder.mkdir()
-    library.enter(folder, "beach")
-    photo = folder / "dunes.jpg"
-    photo.touch()
-    library.enter(photo, "beach")
+    folder = _tagged_folder(library, tmp_path / "summer", "beach")
+    _tagged_file(library, folder / "dunes.jpg", "beach")
 
     assert search(library, "beach") == [folder]
 
 
 def test_a_matching_folder_inside_a_matching_folder_is_left_out_so_only_the_top_most_folder_is_found(tmp_path):
     library = Library.create(tmp_path)
-    folder = tmp_path / "summer"
-    folder.mkdir()
-    library.enter(folder, "beach")
-    inner = folder / "day-one"
-    inner.mkdir()
-    library.enter(inner, "beach")
+    folder = _tagged_folder(library, tmp_path / "summer", "beach")
+    _tagged_folder(library, folder / "day-one", "beach")
 
     assert search(library, "beach") == [folder]
