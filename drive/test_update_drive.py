@@ -1,4 +1,7 @@
+import importlib.util
+import os
 import subprocess
+import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
@@ -32,3 +35,24 @@ def test_update_drive_leaves_test_modules_and_conftest_out_of_the_drive_app(tmp_
 
     leaked = {name for name in on_drive if name.startswith("test_") or name == "conftest.py"}
     assert leaked == set()
+
+
+def test_update_drive_leaves_unchecked_hash_bytecode_next_to_every_module_in_the_drive_app(tmp_path):
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    (bin_dir / "python3.13").write_text(f'#!/bin/sh\nexec "{sys.executable}" "$@"\n')
+    (bin_dir / "python3.13").chmod(0o755)
+    drive = tmp_path / "drive"
+    drive.mkdir()
+    env = {**os.environ, "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}"}
+
+    subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True, env=env)
+
+    app = drive / "mediatagger" / "app" / "mediatagger"
+    unchecked_hash = 0b01
+    flags = {
+        module.name: int.from_bytes(pyc.read_bytes()[4:8], "little") if pyc.exists() else None
+        for module in app.glob("*.py")
+        for pyc in [Path(importlib.util.cache_from_source(str(module)))]
+    }
+    assert flags and flags == {name: unchecked_hash for name in flags}

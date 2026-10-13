@@ -4,3 +4,4 @@ app="$1/mediatagger/app/mediatagger"
 mkdir -p "$app"
 cp "$here"/../src/mediatagger/*.py "$app"/
 rm -f "$app"/test_*.py "$app"/conftest.py
+python3.13 -m compileall -q --invalidation-mode unchecked-hash "$app"
