@@ -2,9 +2,6 @@
 
 ## Out of Scope
 
-- **[src/mediatagger/state.py:17] `remember` keeps the remembered geometry by name, while `remember_geometry` keeps everything** (added: 2026-10-12)
-  Each new remembered key must also be carried over by hand in `remember`, or remembering a folder drops it. Unifying both through `_read` would also keep keys the app never wrote, and `remember` would start swallowing write errors as `remember_geometry` does; both are behavior changes a refactor may not make.
-
 - **[src/mediatagger/folder.py:39] The video and media extension rules are defined twice, once on Paths and once on names** (added: 2026-10-10)
   `is_video`/`_has_media_extension` use `Path.suffix` while `is_video_name` and `subfolder_and_media_names` use `os.path.splitext`; unifying them changes how a name such as `..mp4` is classified (`Path.suffix` gives `.mp4`, `splitext` gives none), a behavior change a refactor may not make.
 
