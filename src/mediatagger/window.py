@@ -178,7 +178,7 @@ class Window(QWidget):
             self.stack.currentWidget().setFocus()
             return
         searched_from = self.stack.currentWidget()
-        grid = Grid(self.session.drive, library=self.session.library, paths=search(self.session.library, query))
+        grid = Grid(self.session.drive, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache(), paths=search(self.session.library, query))
         grid.escaped.connect(lambda: self._return_to(searched_from))
         grid.search.connect(self._open_search_bar)
         self.stack.addWidget(grid)

@@ -3,11 +3,13 @@ from PySide6.QtWidgets import QLabel, QLineEdit
 
 from mediatagger.library import Library
 from mediatagger.state import remembered_folder, state_file
-from mediatagger.grid import TAG_BADGE
+from mediatagger import grid as grid_module
+from mediatagger.grid import TAG_BADGE, TILE_ROLE
 from mediatagger.test_grid import painted_texts, tile_names
 from mediatagger.test_viewer import make_image
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image
 from mediatagger.test_window import window_showing_the_grid_with_its_cursor_on_its_first_tile
+from mediatagger.thumbnails import thumbnail_and_duration
 
 
 def test_pressing_slash_in_the_windows_grid_on_a_drive_with_a_library_shows_a_search_bar_above_the_grid_with_keyboard_focus(qtbot, tmp_path):
@@ -220,3 +222,26 @@ def test_a_result_tiles_badge_counts_the_items_own_tags_not_those_inherited_from
     qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
 
     assert [text for text in painted_texts(stack.currentWidget(), 0) if TAG_BADGE in text] == [f"{TAG_BADGE}1"]
+
+
+def test_a_result_files_tile_shows_the_thumbnail_already_cached_on_its_drive_without_generating_it_again(qtbot, tmp_path, monkeypatch):
+    generated = []
+
+    def generate(path):
+        generated.append(path)
+        return thumbnail_and_duration(path)
+
+    monkeypatch.setattr(grid_module, "thumbnail_and_duration", generate)
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    folder_tile = stack.currentWidget().model().index(0, 0).data(TILE_ROLE)
+    qtbot.waitUntil(lambda: folder_tile.thumbnail is not None)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+
+    qtbot.keyClicks(window.search_bar, "beach")
+    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+    result_tile = stack.currentWidget().model().index(0, 0).data(TILE_ROLE)
+    qtbot.waitUntil(lambda: result_tile.thumbnail is not None)
+
+    assert generated == [folder / "IMG_1.png"]
