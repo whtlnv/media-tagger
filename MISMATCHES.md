@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-13 16:27 · `drive/test_update_drive.py::test_update_drive_leaves_every_file_in_the_drive_tags_folder_byte_identical`
+- Behavior: `sh drive/update-drive.sh <drive>` leaves every file in `<drive>/.mediatagger/` (the drive's tags) byte-identical
+- Predicted: test passes, because update-drive.sh only writes, deletes and runs `find` under `$1/mediatagger`, never `$1/.mediatagger`
+- Actual: passed (1 passed)
+- Type: passed unexpectedly
+- Resolution: The behavior already holds by construction, so the test is a characterization guard (tags.db, -wal, a `._` fork and a nested thumb, all bytes snapshotted); it was kept as written, not contrived into a failure, and /green has nothing to implement.
+
 ## 2026-10-13 15:56 · `drive/test_update_drive.py::test_update_drive_leaves_the_drive_lib_and_debs_exactly_as_they_were`
 - Behavior: `sh drive/update-drive.sh <drive>` leaves the drive's `lib-linux-aarch64-cp313/` and `debs/` exactly as they were
 - Predicted: passes on first run — update-drive.sh only replaces `app/`, copies three scripts, and sweeps `._*` files; nothing touches `lib-…/` or `debs/`

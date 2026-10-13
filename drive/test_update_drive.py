@@ -197,3 +197,19 @@ def test_update_drive_leaves_the_drive_lib_and_debs_exactly_as_they_were(tmp_pat
     update_drive(drive)
 
     assert snapshot(mediatagger, folders) == before
+
+
+def test_update_drive_leaves_every_file_in_the_drive_tags_folder_byte_identical(tmp_path):
+    drive = tmp_path / "drive"
+    tags = drive / ".mediatagger"
+    write_files({
+        tags / "tags.db": b"SQLite format 3\x00tags",
+        tags / "tags.db-wal": b"\x37\x7f\x06\x82wal",
+        tags / "._tags.db": b"\x00\x05\x16\x07",
+        tags / "thumbs" / "clip.mov.jpg": b"\xff\xd8\xff\xe0thumb",
+    })
+    before = snapshot(drive, [tags])
+
+    update_drive(drive)
+
+    assert snapshot(drive, [tags]) == before
