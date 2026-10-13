@@ -561,3 +561,13 @@ def test_the_search_bar_opens_empty_after_an_earlier_search(qtbot, tmp_path):
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
 
     assert window.search_bar.text() == ""
+
+
+def test_esc_in_the_results_grid_clears_the_search_breadcrumb(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    search_for(qtbot, window, stack, "beach")
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    assert [label for label in window.findChildren(QLabel) if label.isVisible() and label.text().startswith("Search:")] == []

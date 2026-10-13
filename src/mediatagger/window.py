@@ -214,7 +214,7 @@ class Window(QWidget):
         paths = search(self.session.library, query)
         grid = Grid(self.session.drive, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache(), paths=paths)
         grid.activated.connect(lambda index: self._open_result(index, paths, grid))
-        grid.escaped.connect(lambda: self._return_to(searched_from))
+        grid.escaped.connect(lambda: self._end_search(searched_from))
         grid.search.connect(self._open_search_bar)
         grid.tag.connect(lambda: self._tag(grid.currentIndex()))
         grid.selectionModel().currentChanged.connect(self._show_tags_of)
@@ -224,6 +224,10 @@ class Window(QWidget):
         self.breadcrumb.show()
         grid.setCurrentIndex(grid.model().index(0, 0))
         grid.setFocus()
+
+    def _end_search(self, searched_from):
+        self.breadcrumb.hide()
+        self._return_to(searched_from)
 
     def _return_to(self, grid):
         self.stack.setCurrentWidget(grid)
