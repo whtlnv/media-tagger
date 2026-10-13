@@ -53,7 +53,7 @@ Phase 10 notes for every cycle (Phases 1–9b are delivered — see DONE.md; Pha
 - [x] A result whose path exists is not drawn as missing
 - [x] No thumbnail is requested for a missing tile
 - [x] `t` with `-tag` on a missing tile removes that tag from the item
-- [ ] Removing a missing tile's last tag leaves the tile shown in the current results
+- [x] Removing a missing tile's last tag leaves the tile shown in the current results
 - [ ] `Enter` on a result file opens a slideshow at that file
 - [ ] Next in a slideshow opened from results goes to the next result file, not the next file in its folder
 - [ ] A slideshow opened from results skips result folders and missing paths

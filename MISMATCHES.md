@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-13 03:26 · `src/mediatagger/test_window_search.py::test_removing_a_missing_tiles_last_tag_leaves_the_tile_shown_in_the_current_results`
+- Behavior: Removing a missing tile's last tag leaves the tile shown in the current results
+- Predicted: passes on first run — `Window._show_saved_tags` only calls `grid.show_tag_count` on the current grid and never re-runs the search or relists results
+- Actual: passed (matches prediction)
+- Type: passed unexpectedly
+- Resolution: Nothing to drive — results are a snapshot until the next search. Kept as a regression guard. Mutation check (dropping the tile from the results model when its tags become empty) failed it with `[] == ['IMG_2.png']`; a first mutation via `removeRow` was a no-op since `_FolderModel` doesn't implement it. window.py restored.
+
 ## 2026-10-13 03:18 · `src/mediatagger/test_window_search.py::test_entering_minus_family_in_the_tag_prompt_on_a_missing_tile_removes_that_tag_from_the_item`
 - Behavior: `t` with `-tag` on a missing tile removes that tag from the item
 - Predicted: passes on first run — `Window._tag`, `TagPrompt._record_tags` and `Library.enter` never check that the path exists, and `enter` updates the item's tags by its relative path

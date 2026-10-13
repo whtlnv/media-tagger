@@ -321,3 +321,20 @@ def test_entering_minus_family_in_the_tag_prompt_on_a_missing_tile_removes_that_
     enter_in_the_grids_tag_prompt(qtbot, window, stack, "-family")
 
     assert Library.open(drive).tags(folder / "IMG_2.png") == ["beach"]
+
+
+def test_removing_a_missing_tiles_last_tag_leaves_the_tile_shown_in_the_current_results(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    Library.open(drive).enter(folder / "IMG_2.png", "beach")
+    (folder / "IMG_2.png").unlink()
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    search_for(qtbot, window, stack, "beach")
+    results = stack.currentWidget()
+
+    enter_in_the_grids_tag_prompt(qtbot, window, stack, "-beach")
+
+    assert Library.open(drive).tags(folder / "IMG_2.png") == []
+    assert stack.currentWidget() is results
+    assert tile_names(results) == ["IMG_2.png"]
+    assert MISSING_GLYPH in painted_texts(results, 0)
