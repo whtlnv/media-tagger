@@ -142,6 +142,8 @@ class Library:
 
     def tagged_items(self):
         """Every tagged item's kind and own tags, keyed by its path relative to the root, read in one query."""
+        if self.schema_version < 2:  # a read-only drive left at schema 1 has no tag tables
+            return {}
         connection = sqlite3.connect(self._tags_db)
         rows = connection.execute(
             "SELECT items.rel_path, items.kind, tags.name FROM item_tags"

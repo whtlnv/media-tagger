@@ -230,3 +230,14 @@ def test_searching_a_library_of_5000_tagged_items_for_beach_or_for_people_return
         return min(timings) < 0.050, len(results)
 
     assert (quickest_of_three("beach"), quickest_of_three("people:")) == ((True, 5000), (True, 5000))
+
+
+def test_searching_a_schema_version_1_library_on_a_read_only_drive_finds_nothing(tmp_path):
+    from mediatagger.test_library import _create_schema_version_1_library, _read_only_drive
+
+    _create_schema_version_1_library(tmp_path, "read-only-drive")
+    with _read_only_drive(tmp_path):
+        library = Library.open(tmp_path)
+        results = search(library, "beach")
+
+    assert results == []
