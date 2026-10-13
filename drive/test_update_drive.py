@@ -9,13 +9,17 @@ UPDATE_DRIVE = REPO / "drive" / "update-drive.sh"
 PACKAGE = REPO / "src" / "mediatagger"
 
 
+def app_on(drive):
+    return drive / "mediatagger" / "app" / "mediatagger"
+
+
 def modules_on_drive_after_update(tmp_path):
     drive = tmp_path / "drive"
     drive.mkdir()
 
     subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True)
 
-    return {p.name for p in (drive / "mediatagger" / "app" / "mediatagger").glob("*.py")}
+    return {p.name for p in app_on(drive).glob("*.py")}
 
 
 def test_update_drive_puts_every_non_test_module_into_the_drive_app(tmp_path):
@@ -48,7 +52,7 @@ def test_update_drive_leaves_unchecked_hash_bytecode_next_to_every_module_in_the
 
     subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True, env=env)
 
-    app = drive / "mediatagger" / "app" / "mediatagger"
+    app = app_on(drive)
     unchecked_hash = 0b01
     flags = {
         module.name: int.from_bytes(pyc.read_bytes()[4:8], "little") if pyc.exists() else None
@@ -60,7 +64,7 @@ def test_update_drive_leaves_unchecked_hash_bytecode_next_to_every_module_in_the
 
 def test_update_drive_removes_a_module_and_its_bytecode_left_in_the_drive_app_by_an_earlier_update(tmp_path):
     drive = tmp_path / "drive"
-    app = drive / "mediatagger" / "app" / "mediatagger"
+    app = app_on(drive)
     app.mkdir(parents=True)
     stale = app / "stale.py"
     stale.write_text("")
