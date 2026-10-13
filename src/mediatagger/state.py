@@ -36,7 +36,7 @@ def remember_geometry(state, geometry):
 def remember_search(state, query):
     remembering = _read(state)
     earlier_searches = [search for search in remembering["searches"] if search != query]
-    remembering["searches"] = earlier_searches + [query]
+    remembering["searches"] = (earlier_searches + [query])[-50:]
     state.write_text(json.dumps(remembering))
 
 

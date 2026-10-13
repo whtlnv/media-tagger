@@ -32,3 +32,14 @@ def test_remembering_a_search_already_in_searches_moves_it_to_the_end_instead_of
     remember_search(state, "beach")
 
     assert json.loads(state.read_text())["searches"] == ["family", "beach"]
+
+
+def test_remembering_a_search_when_searches_holds_50_queries_drops_the_oldest(tmp_path):
+    state = tmp_path / "mediatagger" / "state.json"
+    state.parent.mkdir()
+    fifty_queries = [f"query {n}" for n in range(50)]
+    state.write_text(json.dumps({"searches": fifty_queries}))
+
+    remember_search(state, "beach")
+
+    assert json.loads(state.read_text())["searches"] == fifty_queries[1:] + ["beach"]
