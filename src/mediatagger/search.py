@@ -11,7 +11,8 @@ def search(library, query):
     ancestors = {key: _ancestor_keys(key) for key in items}
     found = {key for key, (_, tags) in items.items() if _matches(_effective(items, tags, ancestors[key]), required, excluded)}
     top_most = [key for key in found if found.isdisjoint(ancestors[key])]
-    return [library.root / key for key in sorted(top_most, key=lambda key: (items[key][0] != "dir", _natural_name_key(key)))]
+    root = library.root
+    return [root / key for key in sorted(top_most, key=lambda key: (items[key][0] != "dir", _natural_name_key(key)))]
 
 
 def _alternatives(library, term):
