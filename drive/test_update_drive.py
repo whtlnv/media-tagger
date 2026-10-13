@@ -79,3 +79,17 @@ def test_update_drive_removes_a_module_and_its_bytecode_left_in_the_drive_app_by
     subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True)
 
     assert (stale.exists(), stale_pyc.exists()) == (False, False)
+
+
+def test_update_drive_writes_the_repo_last_commit_as_short_hash_and_subject_to_the_drive_app_version(tmp_path):
+    drive = tmp_path / "drive"
+    drive.mkdir()
+
+    subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True)
+
+    last_commit = subprocess.run(
+        ["git", "-C", str(REPO), "log", "-1", "--format=%h %s"],
+        check=True, capture_output=True, text=True,
+    ).stdout.strip()
+    version = drive / "mediatagger" / "app" / "VERSION"
+    assert version.read_text().strip() == last_commit
