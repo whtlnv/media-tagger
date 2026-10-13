@@ -1,12 +1,11 @@
 def search(library, query):
     terms = query.lower().split()
     required = [set(term.split("|")) for term in terms if not term.startswith("-")]
-    excluded = {term[1:] for term in terms if term.startswith("-")}
-    if not required:
-        return []
+    excluded = {tag for term in terms if term.startswith("-") for tag in term[1:].split("|")}
+    candidates = required[0] if required else library.all_tags()
     return [
         path
-        for path in _items_tagged_any(library, required[0])
+        for path in _items_tagged_any(library, candidates)
         if _matches(_all_effective_tags(library, path), required, excluded)
     ]
 

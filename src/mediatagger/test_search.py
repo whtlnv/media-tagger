@@ -85,3 +85,9 @@ def test_not_beach_or_pool_leaves_out_a_file_tagged_pool(tmp_path):
     library, _ = _library_with_one_file(tmp_path, "splash.jpg", "pool")
 
     assert search(library, "-beach|pool") == []
+
+
+def test_not_beach_or_pool_finds_a_tagged_file_that_has_neither_beach_nor_pool(tmp_path):
+    library, photo = _library_with_one_file(tmp_path, "peak.jpg", "mountain snow")
+
+    assert search(library, "-beach|pool") == [photo]
