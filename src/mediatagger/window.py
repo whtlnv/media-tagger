@@ -199,6 +199,7 @@ class Window(QWidget):
         if not self.session.library:
             return
         self._recalled = 0
+        self.search_bar.clear()
         self.search_bar.show()
         self.search_bar.setFocus()
 

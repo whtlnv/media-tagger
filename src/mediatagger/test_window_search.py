@@ -551,3 +551,13 @@ def test_up_in_a_reopened_search_bar_starts_again_from_the_most_recent_search(qt
     qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
 
     assert window.search_bar.text() == "mountain"
+
+
+def test_the_search_bar_opens_empty_after_an_earlier_search(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    search_for(qtbot, window, stack, "beach")
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+
+    assert window.search_bar.text() == ""
