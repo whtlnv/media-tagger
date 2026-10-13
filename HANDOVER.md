@@ -17,7 +17,7 @@ State of the project and how it has been run, for the next session. Read `DESIGN
 | 9 Tag folders & inherited tags | done, validated (557 tests) |
 | 9a Pi fixes & video controls | done, validated on the Mac (`1402d2e`, 605 tests); Pi run pending |
 | 9b Video playback never leaks | done, validated on the Mac (`946d17b`, 611 tests); Pi run pending — see "Video crash on the Pi" |
-| 10 Search | delivered (`6cfea2f`), not yet validated |
+| 10 Search | done, validated on the Mac (`c54a2a5`, 695 tests); Pi timing unmeasured — see "Phase 10 — done" |
 | 11 Run from the drive on the Pi | not started (spike tooling exists in `spikes/drive/`) |
 
 Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), `grid.py`, `viewer.py`, `tag_prompt.py` (the `t` prompt, shared by grid and viewer), `status_bar.py`, `drive_session.py` (library open/create/restore/backup), `library.py` (SQLite, schema v2), `backup.py`, `state.py` (last folder, geometry, recent searches; `$XDG_CONFIG_HOME`), `search.py` (query matching), `search_bar.py` (the `/` box and its `↑`/`↓` history), `folder.py`, `slideshow.py`, `thumbnails.py` (image/video/folder thumbnails, `ffmpeg`/`ffprobe`), `thumbnail_cache.py`, `thumbnail_scheduler.py` (3 workers + prefetch), `folder_thumbnails.py` (a folder's thumbnails for its grid), `video.py` + `mpv_surface.py` (libmpv render API), `video_controls.py` (Phase 9a: video progress bar — in progress), `gui_thread_gc.py`. Tests are co-located (`test_*.py`). Open structural debt is in `BACKLOG.md`.
@@ -32,6 +32,14 @@ Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), 
   - send the agent back with a numbered fix list if anything is off.
 - Progress is relayed to the user in chat from a `Monitor` that polls `git log`, `TODO.md` checkbox counts, `~/Library/Logs/DiagnosticReports/Python-*.ips` and `/Volumes/MEDIATAGGER`. Monitors expire every 30 min; re-arm.
 - The user asked for progress to be printed in the conversation and for questions only when a decision is genuinely theirs.
+
+## Phase 10 — done
+
+Spec: PLAN.md "Phase 10"; the agent's decisions (query syntax, whole-drive scope, folders-first natural order, `/` needs a library, Backspace inert in results, ❓ missing tiles, results slideshow skips folders/missing, 50 searches newest last) are listed in DESIGN.md "Search" and may be overruled by the user. Delivered 80 items + 14 closing-check fixes; native check (2026-10-13) found 3 more, fixed with tests (`1ad5a3c` breadcrumb rendered the query as rich text, `1add39b` empty results kept the previous item's tags in the status bar, `910865e`/`c54a2a5` bar and breadcrumb in a tiny default font — now the status bar's style). Checked natively: AND/NOT/OR/prefix results, collapse into the top-most folder, missing tile, slideshow over results and Esc back to them, `↑` recall, result folder opens normally, fullscreen, `searches` saved in `state.json`.
+
+- **Not checked natively:** search speed on the Pi (33 ms for 5,000 items on the Mac; budget test is 50 ms) and the results grid's per-path existence checks on a USB stick (~80 ms/5,000 on the Mac).
+- **Known:** keypad Enter is not handled anywhere in the app (only `Key_Return`); back from a results slideshow, unloaded result thumbnails stay as glyphs (BACKLOG).
+- The `test_grid` 5,000-image timing test failed once while another test run was loading the machine; passes on an idle machine (BACKLOG already notes its GC sensitivity).
 
 ## Phase 9a — done
 
