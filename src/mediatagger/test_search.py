@@ -48,16 +48,19 @@ def test_searching_a_library_finds_a_file_whose_tags_match_the_query(tmp_path, t
     assert search(library, query) == [photo]
 
 
-def test_searching_a_library_for_beach_leaves_out_a_tagged_file_whose_tags_dont_include_beach(tmp_path):
-    library, _ = _library_with_one_file(tmp_path, "peak.jpg", "mountain snow")
+@pytest.mark.parametrize("tags, query", [
+    pytest.param("mountain snow", "beach", id="beach leaves out a tagged file whose tags dont include beach"),
+    pytest.param("people:anabel", "people:ana", id="an exact term does not find a longer tag that starts with it"),
+    pytest.param("beach sunset", "beach -sunset", id="beach minus sunset leaves out a file tagged both beach and sunset"),
+    pytest.param("mountain snow", "beach|pool", id="beach or pool leaves out a file tagged neither beach nor pool"),
+    pytest.param("pool", "-beach|pool", id="not beach or pool leaves out a file tagged pool"),
+    pytest.param("pets:rex", "people:", id="people prefix leaves out a file tagged only pets:rex"),
+    pytest.param("beach", "   ", id="a blank query finds nothing even in a library with tagged files"),
+])
+def test_searching_a_library_leaves_out_a_file_whose_tags_dont_match_the_query(tmp_path, tags, query):
+    library, _ = _library_with_one_file(tmp_path, "dunes.jpg", tags)
 
-    assert search(library, "beach") == []
-
-
-def test_an_exact_term_does_not_find_a_longer_tag_that_starts_with_it(tmp_path):
-    library, _ = _library_with_one_file(tmp_path, "party.jpg", "people:anabel")
-
-    assert search(library, "people:ana") == []
+    assert search(library, query) == []
 
 
 def test_beach_family_finds_a_file_tagged_beach_inside_a_folder_tagged_family(tmp_path):
@@ -83,36 +86,6 @@ def test_family_beach_finds_a_file_tagged_beach_inside_a_folder_tagged_family(tm
     photo = _tagged_file(library, folder / "dunes.jpg", "beach")
 
     assert search(library, "family beach") == [photo]
-
-
-def test_beach_minus_sunset_leaves_out_a_file_tagged_both_beach_and_sunset(tmp_path):
-    library, _ = _library_with_one_file(tmp_path, "dusk.jpg", "beach sunset")
-
-    assert search(library, "beach -sunset") == []
-
-
-def test_beach_or_pool_leaves_out_a_file_tagged_neither_beach_nor_pool(tmp_path):
-    library, _ = _library_with_one_file(tmp_path, "peak.jpg", "mountain snow")
-
-    assert search(library, "beach|pool") == []
-
-
-def test_not_beach_or_pool_leaves_out_a_file_tagged_pool(tmp_path):
-    library, _ = _library_with_one_file(tmp_path, "splash.jpg", "pool")
-
-    assert search(library, "-beach|pool") == []
-
-
-def test_people_prefix_leaves_out_a_file_tagged_only_pets_rex(tmp_path):
-    library, _ = _library_with_one_file(tmp_path, "dog.jpg", "pets:rex")
-
-    assert search(library, "people:") == []
-
-
-def test_a_blank_query_finds_nothing_even_in_a_library_with_tagged_files(tmp_path):
-    library, _ = _library_with_one_file(tmp_path, "dunes.jpg", "beach")
-
-    assert search(library, "   ") == []
 
 
 def test_a_query_of_only_exclusions_never_finds_an_untagged_file_inside_a_tagged_folder(tmp_path):
