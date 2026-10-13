@@ -124,3 +124,18 @@ def test_enter_on_a_blank_query_closes_the_search_bar_and_returns_focus_to_the_u
 
     visible_lines = [line for line in window.findChildren(QLineEdit) if line.isVisible()]
     assert (visible_lines, stack.currentWidget() is grid, window.focusWidget() is grid, tile_names(grid)) == ([], True, True, names)
+
+
+def test_esc_while_typing_in_the_search_bar_closes_it_and_returns_focus_to_the_unchanged_grid(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    grid = stack.currentWidget()
+    names = tile_names(grid)
+    qtbot.keyClick(grid, Qt.Key.Key_Slash)
+
+    qtbot.keyClicks(window.search_bar, "bea")
+    qtbot.keyClick(window.search_bar, Qt.Key.Key_Escape)
+
+    visible_lines = [line for line in window.findChildren(QLineEdit) if line.isVisible()]
+    assert (window.isVisible(), visible_lines, stack.currentWidget() is grid, window.focusWidget() is grid, tile_names(grid)) == (True, [], True, True, names)

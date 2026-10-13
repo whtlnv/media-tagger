@@ -77,6 +77,9 @@ class Window(QWidget):
         if watched is self.search_bar and event.type() == QEvent.Type.KeyPress and event.key() == Qt.Key.Key_Return:
             self.run_search(self.search_bar.text())
             return True
+        if watched is self.search_bar and event.type() == QEvent.Type.KeyPress and event.key() == Qt.Key.Key_Escape:
+            self.run_search("")
+            return True
         return super().eventFilter(watched, event)
 
     def keyPressEvent(self, event):
