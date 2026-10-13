@@ -122,3 +122,20 @@ def test_update_drive_copies_the_drive_scripts_into_the_drive_mediatagger_folder
         for copy in [drive / "mediatagger" / name]
     }
     assert on_drive == {name: (UPDATE_DRIVE.parent / name).read_bytes() for name in scripts}
+
+
+def test_update_drive_deletes_macos_resource_fork_files_anywhere_under_the_drive_mediatagger_folder(tmp_path):
+    drive = tmp_path / "drive"
+    mediatagger = drive / "mediatagger"
+    forks = [
+        mediatagger / "._run.sh",
+        mediatagger / "app" / "._VERSION",
+        mediatagger / "logs" / "nested" / "._session.log",
+    ]
+    for fork in forks:
+        fork.parent.mkdir(parents=True, exist_ok=True)
+        fork.write_bytes(b"\x00\x05\x16\x07")
+
+    subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True)
+
+    assert [fork for fork in forks if fork.exists()] == []

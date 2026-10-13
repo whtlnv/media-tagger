@@ -9,7 +9,7 @@ Phase 11 notes for every cycle (Phases 1–10 are delivered — see DONE.md; dec
 - [x] After `sh drive/update-drive.sh <drive>`, `app/VERSION` holds the repo's last commit as `<short hash> <subject>`
 - [x] After `sh drive/update-drive.sh <drive>` when `git log` fails, `app/VERSION` holds `unknown`
 - [x] After `sh drive/update-drive.sh <drive>`, `<drive>/mediatagger/` holds the `run.sh`, `setup-pi.sh` and `check-video-leak.sh` from `drive/`
-- [ ] `sh drive/update-drive.sh <drive>` deletes macOS `._*` files anywhere under `<drive>/mediatagger/`
+- [x] `sh drive/update-drive.sh <drive>` deletes macOS `._*` files anywhere under `<drive>/mediatagger/`
 - [ ] `sh drive/update-drive.sh <drive>` leaves `._*` files outside `<drive>/mediatagger/` in place
 - [ ] `sh drive/update-drive.sh <drive>` leaves the drive's `lib-linux-aarch64-cp313/` and `debs/` exactly as they were
 - [ ] `sh drive/update-drive.sh <drive>` leaves every file in `<drive>/.mediatagger/` (the drive's tags) byte-identical
