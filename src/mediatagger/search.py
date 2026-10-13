@@ -5,9 +5,12 @@ def search(library, query):
     return [
         path
         for path in library.items_tagged(required[0])
-        if set(required) <= _all_effective_tags(library, path)
-        and not excluded & _all_effective_tags(library, path)
+        if _matches(_all_effective_tags(library, path), required, excluded)
     ]
+
+
+def _matches(tags, required, excluded):
+    return set(required) <= tags and not excluded & tags
 
 
 def _all_effective_tags(library, path):
