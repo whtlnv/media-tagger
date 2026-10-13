@@ -571,3 +571,19 @@ def test_esc_in_the_results_grid_clears_the_search_breadcrumb(qtbot, tmp_path):
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
 
     assert [label for label in window.findChildren(QLabel) if label.isVisible() and label.text().startswith("Search:")] == []
+
+
+def test_after_esc_ends_a_search_esc_in_a_slideshow_from_the_folder_returns_to_the_folder_not_to_the_results(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    Library.open(drive).enter(folder / "IMG_2.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    search_for(qtbot, window, stack, "beach")
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    assert tile_names(stack.currentWidget()) == ["IMG_1.png", "IMG_2.png"]

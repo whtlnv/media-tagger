@@ -227,6 +227,7 @@ class Window(QWidget):
 
     def _end_search(self, searched_from):
         self.breadcrumb.hide()
+        self._results = None
         self._return_to(searched_from)
 
     def _return_to(self, grid):
