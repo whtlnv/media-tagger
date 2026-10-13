@@ -61,3 +61,9 @@ def test_beach_minus_sunset_finds_a_file_tagged_beach_that_has_no_sunset(tmp_pat
     library, photo = _library_with_one_file(tmp_path, "dunes.jpg", "beach")
 
     assert search(library, "beach -sunset") == [photo]
+
+
+def test_beach_minus_sunset_leaves_out_a_file_tagged_both_beach_and_sunset(tmp_path):
+    library, _ = _library_with_one_file(tmp_path, "dusk.jpg", "beach sunset")
+
+    assert search(library, "beach -sunset") == []
