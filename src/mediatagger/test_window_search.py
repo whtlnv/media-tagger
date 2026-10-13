@@ -389,3 +389,22 @@ def test_a_slideshow_opened_from_results_skips_result_folders_and_missing_paths(
 
     [overlay] = [text for text in shown_texts(stack.currentWidget()) if "IMG_1.png" in text]
     assert "1 / 2" in overlay
+
+
+def test_esc_in_a_slideshow_opened_from_results_returns_to_the_results_grid_with_the_cursor_on_the_current_file(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    library = Library.open(drive)
+    make_image(folder / "IMG_2.png", "blue")
+    make_image(folder / "IMG_3.png", "green")
+    library.enter(folder / "IMG_1.png", "beach")
+    library.enter(folder / "IMG_3.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    search_for(qtbot, window, stack, "beach")
+    results = stack.currentWidget()
+    qtbot.keyClick(results, Qt.Key.Key_Return)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    shown = stack.currentWidget()
+    assert (shown is results, shown.currentIndex().data(TILE_ROLE).path) == (True, folder / "IMG_3.png")

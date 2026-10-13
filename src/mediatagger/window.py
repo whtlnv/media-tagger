@@ -50,6 +50,7 @@ class Window(QWidget):
             on_drop=self._record_state)
         self.stack.addWidget(self.viewer)
         self._forwarding = False
+        self._results = None
         self.setAcceptDrops(True)
         geometry = remembered_geometry(self._state_file)
         if geometry:
@@ -121,6 +122,12 @@ class Window(QWidget):
         if self.viewer.slideshow is None:
             self.close()
             return
+        if self._results is not None:
+            grid, paths = self._results
+            self.viewer.stop_video()
+            grid.setCurrentIndex(grid.model().index(paths.index(self.viewer.slideshow.current), 0))
+            self._return_to(grid)
+            return
         self._show_grid()
 
     def _show_grid(self):
@@ -181,7 +188,7 @@ class Window(QWidget):
         searched_from = self.stack.currentWidget()
         paths = search(self.session.library, query)
         grid = Grid(self.session.drive, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache(), paths=paths)
-        grid.activated.connect(lambda index: self._open_result(index, paths))
+        grid.activated.connect(lambda index: self._open_result(index, paths, grid))
         grid.escaped.connect(lambda: self._return_to(searched_from))
         grid.search.connect(self._open_search_bar)
         grid.tag.connect(lambda: self._tag(grid.currentIndex()))
@@ -253,7 +260,8 @@ class Window(QWidget):
             return
         self._open(path)
 
-    def _open_result(self, index, paths):
+    def _open_result(self, index, paths, grid):
+        self._results = (grid, paths)
         self._open_tile(index)
         files = [path for path in paths if path.is_file()]
         self.viewer.slideshow = Slideshow(files, files.index(index.data(TILE_ROLE).path))
