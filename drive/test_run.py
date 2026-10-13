@@ -13,12 +13,17 @@ def drive_with_run_script(tmp_path):
     return mediatagger
 
 
-def env_with_recording_python3(tmp_path, record):
+def env_with_fake_python3(tmp_path, script):
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
-    (bin_dir / "python3").write_text(f"#!/bin/sh\nprintf '%s\\0' \"$@\" > \"{record}\"\n")
+    (bin_dir / "python3").write_text(f"#!/bin/sh\n{script}\n")
     (bin_dir / "python3").chmod(0o755)
-    return {**os.environ, "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}"}
+    env = {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
+    return {**env, "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}"}
+
+
+def env_with_recording_python3(tmp_path, record):
+    return env_with_fake_python3(tmp_path, f"printf '%s\\0' \"$@\" > \"{record}\"")
 
 
 def recorded_args(record):
@@ -44,12 +49,7 @@ def test_run_starts_python3_importing_mediatagger_main_with_its_arguments_passed
 def test_run_from_any_working_directory_gives_python3_a_pythonpath_of_its_own_app_then_lib_folders(tmp_path):
     mediatagger = drive_with_run_script(tmp_path).resolve()
     record = tmp_path / "python3-pythonpath"
-    bin_dir = tmp_path / "bin"
-    bin_dir.mkdir()
-    (bin_dir / "python3").write_text(f"#!/bin/sh\nprintf '%s' \"$PYTHONPATH\" > \"{record}\"\n")
-    (bin_dir / "python3").chmod(0o755)
-    env = {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
-    env["PATH"] = f"{bin_dir}{os.pathsep}{os.environ['PATH']}"
+    env = env_with_fake_python3(tmp_path, f"printf '%s' \"$PYTHONPATH\" > \"{record}\"")
     elsewhere = tmp_path / "elsewhere"
     elsewhere.mkdir()
 
