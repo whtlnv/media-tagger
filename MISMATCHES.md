@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-13 02:54 · `src/mediatagger/test_window_search.py::test_a_result_whose_path_exists_is_not_drawn_as_missing`
+- Behavior: A result whose path exists is not drawn as missing
+- Predicted: passes on first run — `_result_kind` (prior green) already returns MISSING only when `not path.exists()`
+- Actual: passed (matches prediction)
+- Type: passed unexpectedly
+- Resolution: The previous green step built both sides of the exists/missing split, so there was nothing left to drive here. Kept the test without rewriting it as a regression guard; a mutation check (forcing MISSING for every result) made it fail with `(True, True) == (False, True)`, so the pass is real. grid.py was restored afterwards.
+
 ## 2026-10-13 01:15 · `src/mediatagger/test_window_search.py::test_showing_search_results_does_not_change_the_remembered_last_folder`
 - Behavior: Showing search results does not change the remembered last folder
 - Predicted: passes on first run — `Window.run_search` builds the results grid itself and never goes through `_show`/`_record_state`

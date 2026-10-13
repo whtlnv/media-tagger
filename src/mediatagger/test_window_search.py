@@ -269,3 +269,14 @@ def test_a_result_whose_path_no_longer_exists_is_drawn_as_a_missing_tile_with_a_
 
     texts = painted_texts(stack.currentWidget(), 0)
     assert (MISSING_GLYPH in texts, "IMG_2.png" in texts, MISSING_GLYPH not in (IMAGE_GLYPH, FOLDER_GLYPH, VIDEO_GLYPH)) == (True, True, True)
+
+
+def test_a_result_whose_path_exists_is_not_drawn_as_missing(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+
+    search_for(qtbot, window, stack, "beach")
+
+    texts = painted_texts(stack.currentWidget(), 0)
+    assert (MISSING_GLYPH in texts, "IMG_1.png" in texts) == (False, True)
