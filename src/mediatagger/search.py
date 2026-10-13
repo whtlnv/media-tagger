@@ -1,16 +1,17 @@
 def search(library, query):
     terms = query.lower().split()
-    required = [term for term in terms if not term.startswith("-")]
+    required = [set(term.split("|")) for term in terms if not term.startswith("-")]
     excluded = {term[1:] for term in terms if term.startswith("-")}
+    candidates = [path for tag in required[0] for path in library.items_tagged(tag)]
     return [
         path
-        for path in library.items_tagged(required[0])
+        for path in dict.fromkeys(candidates)
         if _matches(_all_effective_tags(library, path), required, excluded)
     ]
 
 
 def _matches(tags, required, excluded):
-    return set(required) <= tags and not excluded & tags
+    return all(group & tags for group in required) and not excluded & tags
 
 
 def _all_effective_tags(library, path):
