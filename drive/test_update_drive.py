@@ -23,6 +23,10 @@ def app_on(drive):
     return drive / "mediatagger" / "app" / "mediatagger"
 
 
+def version_on(drive):
+    return drive / "mediatagger" / "app" / "VERSION"
+
+
 def modules_on_drive_after_update(tmp_path):
     drive = empty_drive(tmp_path)
 
@@ -98,8 +102,7 @@ def test_update_drive_writes_the_repo_last_commit_as_short_hash_and_subject_to_t
         ["git", "-C", str(REPO), "log", "-1", "--format=%h %s"],
         check=True, capture_output=True, text=True,
     ).stdout.strip()
-    version = drive / "mediatagger" / "app" / "VERSION"
-    assert version.read_text().strip() == last_commit
+    assert version_on(drive).read_text().strip() == last_commit
 
 
 def test_update_drive_writes_unknown_to_the_drive_app_version_when_git_log_fails(tmp_path):
@@ -111,8 +114,7 @@ def test_update_drive_writes_unknown_to_the_drive_app_version_when_git_log_fails
 
     update_drive(drive, env=env)
 
-    version = drive / "mediatagger" / "app" / "VERSION"
-    assert version.read_text().strip() == "unknown"
+    assert version_on(drive).read_text().strip() == "unknown"
 
 
 def test_update_drive_copies_the_drive_scripts_into_the_drive_mediatagger_folder(tmp_path):
