@@ -211,7 +211,7 @@ class Grid(QListView):
             self.setCurrentIndex(self.model().index(names.index(at.name), 0))
 
     def _generate_thumbnails(self, tiles, cache):
-        rows = {tile.path: row for row, tile in enumerate(tiles)}
+        rows = {tile.path: row for row, tile in enumerate(tiles) if tile.kind is not _Kind.MISSING}
         self._thumbnails = FolderThumbnails(list(rows), cache, self, generate=lambda path: thumbnail_and_duration(path))
         self._thumbnails.arrived.connect(lambda path, thumbnail, duration: self._show_thumbnail(tiles, rows[path], thumbnail, duration))
         self.thumbnail_progress = self._thumbnails.progress
@@ -265,7 +265,7 @@ class Grid(QListView):
             last_row += 1
         current = self.currentIndex().row() if self.currentIndex().isValid() else None
         for row in [*range(last_row, first.row() - 1, -1), current]:  # the cursor's tile last, so generated first
-            if row is not None and row not in self._answered:
+            if row is not None and row not in self._answered and tiles[row].kind is not _Kind.MISSING:
                 self._thumbnails.request(tiles[row].path)
 
     def updateGeometries(self):

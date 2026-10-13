@@ -280,3 +280,31 @@ def test_a_result_whose_path_exists_is_not_drawn_as_missing(qtbot, tmp_path):
 
     texts = painted_texts(stack.currentWidget(), 0)
     assert (MISSING_GLYPH in texts, "IMG_1.png" in texts) == (False, True)
+
+
+def test_no_thumbnail_is_requested_for_a_missing_tile(qtbot, tmp_path, monkeypatch):
+    asked = []
+
+    class AskedThumbnails(grid_module.FolderThumbnails):
+        def __init__(self, paths, *args, **kwargs):
+            asked.extend(paths)
+            super().__init__(paths, *args, **kwargs)
+
+        def request(self, path):
+            asked.append(path)
+            super().request(path)
+
+    monkeypatch.setattr(grid_module, "FolderThumbnails", AskedThumbnails)
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    library = Library.open(drive)
+    library.enter(folder / "IMG_1.png", "beach")
+    make_image(folder / "IMG_0.png", "blue")
+    library.enter(folder / "IMG_0.png", "beach")
+    (folder / "IMG_0.png").unlink()
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+
+    search_for(qtbot, window, stack, "beach")
+    existing_tile = stack.currentWidget().model().index(1, 0).data(TILE_ROLE)
+    qtbot.waitUntil(lambda: existing_tile.thumbnail is not None)
+
+    assert folder / "IMG_0.png" not in asked
