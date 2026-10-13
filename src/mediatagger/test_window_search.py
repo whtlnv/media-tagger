@@ -308,3 +308,16 @@ def test_no_thumbnail_is_requested_for_a_missing_tile(qtbot, tmp_path, monkeypat
     qtbot.waitUntil(lambda: existing_tile.thumbnail is not None)
 
     assert folder / "IMG_0.png" not in asked
+
+
+def test_entering_minus_family_in_the_tag_prompt_on_a_missing_tile_removes_that_tag_from_the_item(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    Library.open(drive).enter(folder / "IMG_2.png", "beach family")
+    (folder / "IMG_2.png").unlink()
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    search_for(qtbot, window, stack, "beach")
+
+    enter_in_the_grids_tag_prompt(qtbot, window, stack, "-family")
+
+    assert Library.open(drive).tags(folder / "IMG_2.png") == ["beach"]

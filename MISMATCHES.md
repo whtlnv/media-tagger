@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-13 03:18 · `src/mediatagger/test_window_search.py::test_entering_minus_family_in_the_tag_prompt_on_a_missing_tile_removes_that_tag_from_the_item`
+- Behavior: `t` with `-tag` on a missing tile removes that tag from the item
+- Predicted: passes on first run — `Window._tag`, `TagPrompt._record_tags` and `Library.enter` never check that the path exists, and `enter` updates the item's tags by its relative path
+- Actual: passed (matches prediction)
+- Type: passed unexpectedly
+- Resolution: The tagging path built for folder grids and result tiles already works for a missing path, so there was nothing left to drive. Kept the test as a regression guard. A mutation check (making `Library.enter` skip paths that don't exist) made it fail with `['beach', 'family'] == ['beach']`, so the pass is real. library.py was restored afterwards.
+
 ## 2026-10-13 02:54 · `src/mediatagger/test_window_search.py::test_a_result_whose_path_exists_is_not_drawn_as_missing`
 - Behavior: A result whose path exists is not drawn as missing
 - Predicted: passes on first run — `_result_kind` (prior green) already returns MISSING only when `not path.exists()`
