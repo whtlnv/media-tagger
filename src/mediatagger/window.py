@@ -90,10 +90,14 @@ class Window(QWidget):
             self.recall_older_search()
             return True
         if event.key() == Qt.Key.Key_Down:
-            self._recalled -= 1
-            self.search_bar.setText(remembered_searches(self._state_file)[-self._recalled] if self._recalled else "")
+            self.recall_newer_search()
             return True
         return super().eventFilter(watched, event)
+
+    def recall_newer_search(self):
+        """Each call puts the next newer remembered search in the search bar, emptying it past the newest."""
+        self._recalled -= 1
+        self.search_bar.setText(remembered_searches(self._state_file)[-self._recalled] if self._recalled else "")
 
     def recall_older_search(self):
         """Each call puts the next older remembered search in the search bar, stopping at the oldest."""
