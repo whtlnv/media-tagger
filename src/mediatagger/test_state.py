@@ -1,5 +1,7 @@
 import json
 
+import pytest
+
 from mediatagger.state import remember, remember_geometry, remember_search, remembered_folder, remembered_geometry
 
 
@@ -14,35 +16,19 @@ def test_remembering_the_window_geometry_keeps_the_folder_already_remembered_in_
     assert (remembered_folder(state), remembered_geometry(state)) == (folder, geometry)
 
 
-def test_remembering_a_search_adds_its_query_at_the_end_of_searches_in_the_state_file(tmp_path):
+@pytest.mark.parametrize("searches, query, remembered", [
+    pytest.param(["family"], "beach -sunset", ["family", "beach -sunset"], id="adds its query at the end of searches"),
+    pytest.param(["beach", "family"], "beach", ["family", "beach"], id="already in searches moves it to the end instead of adding it twice"),
+    pytest.param([f"query {n}" for n in range(50)], "beach", [f"query {n}" for n in range(1, 50)] + ["beach"], id="when searches holds 50 queries drops the oldest"),
+])
+def test_remembering_a_search_updates_searches_in_the_state_file(tmp_path, searches, query, remembered):
     state = tmp_path / "mediatagger" / "state.json"
     state.parent.mkdir()
-    state.write_text(json.dumps({"searches": ["family"]}))
+    state.write_text(json.dumps({"searches": searches}))
 
-    remember_search(state, "beach -sunset")
+    remember_search(state, query)
 
-    assert json.loads(state.read_text())["searches"] == ["family", "beach -sunset"]
-
-
-def test_remembering_a_search_already_in_searches_moves_it_to_the_end_instead_of_adding_it_twice(tmp_path):
-    state = tmp_path / "mediatagger" / "state.json"
-    state.parent.mkdir()
-    state.write_text(json.dumps({"searches": ["beach", "family"]}))
-
-    remember_search(state, "beach")
-
-    assert json.loads(state.read_text())["searches"] == ["family", "beach"]
-
-
-def test_remembering_a_search_when_searches_holds_50_queries_drops_the_oldest(tmp_path):
-    state = tmp_path / "mediatagger" / "state.json"
-    state.parent.mkdir()
-    fifty_queries = [f"query {n}" for n in range(50)]
-    state.write_text(json.dumps({"searches": fifty_queries}))
-
-    remember_search(state, "beach")
-
-    assert json.loads(state.read_text())["searches"] == fifty_queries[1:] + ["beach"]
+    assert json.loads(state.read_text())["searches"] == remembered
 
 
 def test_remembering_the_last_folder_keeps_the_searches_already_remembered_in_the_state_file(tmp_path):
