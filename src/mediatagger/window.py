@@ -73,11 +73,14 @@ class Window(QWidget):
         self.tag_prompt.place()
 
     def eventFilter(self, watched, event):
-        """Enter in the search bar runs the search and stops there, rather than going on to the page shown below it."""
-        if watched is self.search_bar and event.type() == QEvent.Type.KeyPress and event.key() == Qt.Key.Key_Return:
+        """Enter in the search bar runs the search, and Esc abandons it; either stops there, rather than going on to the
+        page shown below it."""
+        if watched is not self.search_bar or event.type() != QEvent.Type.KeyPress:
+            return super().eventFilter(watched, event)
+        if event.key() == Qt.Key.Key_Return:
             self.run_search(self.search_bar.text())
             return True
-        if watched is self.search_bar and event.type() == QEvent.Type.KeyPress and event.key() == Qt.Key.Key_Escape:
+        if event.key() == Qt.Key.Key_Escape:
             self.run_search("")
             return True
         return super().eventFilter(watched, event)
