@@ -140,20 +140,6 @@ class Library:
         connection.close()
         return counts
 
-    def items_tagged_any(self, tags):
-        """The items tagged with any of the tags, read in one query."""
-        connection = sqlite3.connect(self._tags_db)
-        rows = connection.execute(
-            "SELECT DISTINCT items.rel_path FROM item_tags"
-            " JOIN items ON items.id = item_tags.item_id"
-            " JOIN tags ON tags.id = item_tags.tag_id"
-            f" WHERE tags.name IN ({', '.join('?' * len(tags))})",
-            tags,
-        )
-        paths = [self.root / rel_path for (rel_path,) in rows]
-        connection.close()
-        return paths
-
     def tagged_items(self):
         """Every tagged item's kind and own tags, keyed by its path relative to the root, read in one query."""
         connection = sqlite3.connect(self._tags_db)
@@ -184,21 +170,12 @@ class Library:
         return self._tags_by_key([key])[key]
 
     def effective_tags(self, path):
-        return self.effective_tags_of([path])[path]
-
-    def effective_tags_of(self, paths):
-        """Each path's effective tags, read in one query."""
-        root = self.root
-        relative = {path: path.relative_to(root) for path in paths}
-        keys = {path: str(rel) for path, rel in relative.items()}
-        ancestor_keys = {path: [str(folder) for folder in rel.parents] for path, rel in relative.items()}
-        tags_by_key = self._tags_by_key(list({*keys.values(), *(k for ks in ancestor_keys.values() for k in ks)}))
-        effective = {}
-        for path in paths:
-            own = tags_by_key[keys[path]]
-            inherited = sorted({tag for k in ancestor_keys[path] for tag in tags_by_key[k]} - set(own))
-            effective[path] = EffectiveTags(own=own, inherited=inherited)
-        return effective
+        ancestor_keys = [str(folder) for folder in path.relative_to(self.root).parents]
+        key = self._key(path)
+        tags_by_key = self._tags_by_key([key, *ancestor_keys])
+        own = tags_by_key[key]
+        inherited = sorted({tag for k in ancestor_keys for tag in tags_by_key[k]} - set(own))
+        return EffectiveTags(own=own, inherited=inherited)
 
     def _tags_by_key(self, keys):
         if self.schema_version < 2:  # a read-only drive left at schema 1 has no tag tables
