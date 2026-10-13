@@ -8,3 +8,4 @@ apt() {
 }
 apt update
 apt install -y --no-install-recommends libmpv2
+sudo rm -rf "$work"

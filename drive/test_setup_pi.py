@@ -109,3 +109,26 @@ def test_setup_pi_with_libmpv2_already_installed_runs_neither_sudo_nor_apt_get(t
 
     assert not sudo_ran.exists()
     assert apt_get_calls(record) == []
+
+
+def test_setup_pi_removes_its_temporary_apt_lists_folder_after_installing_libmpv2(tmp_path):
+    mediatagger = drive_with_setup_pi(tmp_path)
+    lists_record = tmp_path / "lists-dir"
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    fake_command(bin_dir, "dpkg-query", "exit 1")
+    fake_command(bin_dir, "sudo", 'exec "$@"')
+    fake_command(bin_dir, "apt-get", f"""
+for a; do
+  case "$a" in Dir::State::Lists=*) d="${{a#Dir::State::Lists=}}"; mkdir -p "$d/partial"; printf '%s' "$d" > "{lists_record}";; esac
+done""")
+    (tmp_path / "tmp").mkdir()
+    env = {
+        **os.environ,
+        "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}",
+        "TMPDIR": str(tmp_path / "tmp"),
+    }
+
+    subprocess.run(["sh", str(mediatagger / "setup-pi.sh")], check=True, env=env)
+
+    assert not Path(lists_record.read_text()).exists()
