@@ -2,6 +2,8 @@ import json
 import os
 from pathlib import Path
 
+MOST_SEARCHES_REMEMBERED = 50
+
 
 def state_file(home):
     """Where the last folder and the window geometry are remembered: under $XDG_CONFIG_HOME, else <home>/.config (the Pi's home, never a drive)."""
@@ -36,7 +38,7 @@ def remember_geometry(state, geometry):
 def remember_search(state, query):
     remembering = _read(state)
     earlier_searches = [search for search in remembering["searches"] if search != query]
-    remembering["searches"] = (earlier_searches + [query])[-50:]
+    remembering["searches"] = (earlier_searches + [query])[-MOST_SEARCHES_REMEMBERED:]
     state.write_text(json.dumps(remembering))
 
 
