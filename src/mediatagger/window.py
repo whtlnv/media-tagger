@@ -266,6 +266,7 @@ class Window(QWidget):
     def _open_result(self, index, paths, grid):
         if index.data(TILE_ROLE).path.is_dir():
             self.breadcrumb.hide()
+            self._results = None
             self._open_tile(index)
             return
         self._results = (grid, paths)

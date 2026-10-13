@@ -424,3 +424,26 @@ def test_enter_on_a_result_folder_opens_that_folders_unfiltered_grid_with_the_cu
 
     shown = stack.currentWidget()
     assert (shown.folder, tile_names(shown), shown.currentIndex().row(), window.breadcrumb.isVisible()) == (summer, ["IMG_5.png", "IMG_6.png"], 0, False)
+
+
+def test_esc_in_a_slideshow_from_a_folder_opened_from_results_returns_to_that_folder_not_to_the_results(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    library = Library.open(drive)
+    summer = drive / "Trips" / "Summer"
+    summer.mkdir(parents=True)
+    make_image(summer / "IMG_5.png", "blue")
+    library.enter(summer, "beach")
+    library.enter(folder / "IMG_1.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    search_for(qtbot, window, stack, "beach")
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Left)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    shown = stack.currentWidget()
+    assert (shown.folder, shown.currentIndex().data(TILE_ROLE).path, window.breadcrumb.isVisible()) == (summer, summer / "IMG_5.png", False)

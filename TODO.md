@@ -60,7 +60,7 @@ Phase 10 notes for every cycle (Phases 1–9b are delivered — see DONE.md; Pha
 - [x] Searching a library of 5,000 tagged items for `beach` or for `people:` returns its results in under 50 ms (a Pi is several times slower than the Mac; read every item's path, kind and tags in one query and work on the relative-path strings, telling folders by the library's recorded kind rather than asking the filesystem)
 - [x] `Esc` in a slideshow opened from results returns to the results grid with the cursor on the current file
 - [x] `Enter` on a result folder opens that folder's normal, unfiltered grid with the cursor on its first item
-- [ ] `Esc` in a folder opened from results does not return to the results
+- [x] `Esc` in a folder opened from results does not return to the results
 - [ ] `Enter` on a missing tile does nothing
 - [ ] `↑` in the search bar replaces its text with the most recent search
 - [ ] Each further `↑` in the search bar recalls the next older search
