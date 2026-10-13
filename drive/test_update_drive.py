@@ -167,6 +167,12 @@ def test_update_drive_leaves_macos_resource_fork_files_outside_the_drive_mediata
     assert [fork for fork in forks if not fork.exists()] == []
 
 
+def write_files(files):
+    for path, content in files.items():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(content)
+
+
 def snapshot(root, folders):
     return {
         str(p.relative_to(root)): p.read_bytes() if p.is_file() else None
@@ -185,9 +191,7 @@ def test_update_drive_leaves_the_drive_lib_and_debs_exactly_as_they_were(tmp_pat
         mediatagger / "debs" / "libmpv2_0.39.0-3_arm64.deb": b"!<arch>\ndeb",
         mediatagger / "debs" / "Packages": b"Package: libmpv2\n",
     }
-    for path, content in files.items():
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_bytes(content)
+    write_files(files)
     (mediatagger / "debs" / "partial").mkdir()
     folders = [mediatagger / "lib-linux-aarch64-cp313", mediatagger / "debs"]
     before = snapshot(mediatagger, folders)
