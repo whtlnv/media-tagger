@@ -124,6 +124,12 @@ def test_update_drive_copies_the_drive_scripts_into_the_drive_mediatagger_folder
     assert on_drive == {name: (UPDATE_DRIVE.parent / name).read_bytes() for name in scripts}
 
 
+def write_resource_forks(forks):
+    for fork in forks:
+        fork.parent.mkdir(parents=True, exist_ok=True)
+        fork.write_bytes(b"\x00\x05\x16\x07")
+
+
 def test_update_drive_deletes_macos_resource_fork_files_anywhere_under_the_drive_mediatagger_folder(tmp_path):
     drive = tmp_path / "drive"
     mediatagger = drive / "mediatagger"
@@ -132,9 +138,7 @@ def test_update_drive_deletes_macos_resource_fork_files_anywhere_under_the_drive
         mediatagger / "app" / "._VERSION",
         mediatagger / "logs" / "nested" / "._session.log",
     ]
-    for fork in forks:
-        fork.parent.mkdir(parents=True, exist_ok=True)
-        fork.write_bytes(b"\x00\x05\x16\x07")
+    write_resource_forks(forks)
 
     subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True)
 
@@ -149,9 +153,7 @@ def test_update_drive_leaves_macos_resource_fork_files_outside_the_drive_mediata
         drive / ".mediatagger" / "._tags.db",
         drive / "videos" / "nested" / "._clip.mov",
     ]
-    for fork in forks:
-        fork.parent.mkdir(parents=True, exist_ok=True)
-        fork.write_bytes(b"\x00\x05\x16\x07")
+    write_resource_forks(forks)
 
     subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True)
 
