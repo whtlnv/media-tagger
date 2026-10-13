@@ -18,7 +18,7 @@ Phase 11 notes for every cycle (Phases 1–10 are delivered — see DONE.md; dec
 - [x] `sh <drive>/mediatagger/run.sh` started from any working directory gives python3 a `PYTHONPATH` of its own folder's `app` then `lib-linux-aarch64-cp313`
 - [x] `sh <drive>/mediatagger/run.sh` starts python3 with `PYTHONDONTWRITEBYTECODE=1`
 - [x] `sh <drive>/mediatagger/setup-pi.sh` on a Pi without libmpv2 installs it with `sudo apt-get` (update, then `install -y --no-install-recommends libmpv2`) from a temporary trusted `file:` source pointing at the drive's `debs/`, with its own lists folder
-- [ ] `sh <drive>/mediatagger/setup-pi.sh` on a Pi where `dpkg-query` reports libmpv2 `install ok installed` runs neither `sudo` nor `apt-get`
+- [x] `sh <drive>/mediatagger/setup-pi.sh` on a Pi where `dpkg-query` reports libmpv2 `install ok installed` runs neither `sudo` nor `apt-get`
 - [ ] After `sh <drive>/mediatagger/setup-pi.sh` installs libmpv2, its temporary apt lists folder is gone
 - [ ] `sh <drive>/mediatagger/setup-pi.sh` writes `$XDG_DATA_HOME/applications/mediatagger.desktop` (creating the folder) with `[Desktop Entry]`, `Type=Application`, `Name=MediaTagger`, `Exec=sh "<absolute path of the drive's mediatagger folder>/run.sh"`, `Terminal=false` and `Categories=AudioVideo;Video;Graphics;`
 - [ ] `sh <drive>/mediatagger/setup-pi.sh` with `XDG_DATA_HOME` unset writes the menu entry to `$HOME/.local/share/applications/mediatagger.desktop`

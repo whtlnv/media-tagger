@@ -1,4 +1,5 @@
 #!/bin/sh
+dpkg-query -W libmpv2 >/dev/null 2>&1 && exit 0
 here=$(cd "$(dirname "$0")" && pwd -P)
 work=$(mktemp -d)
 printf 'deb [trusted=yes] file:%s/debs ./\n' "$here" > "$work/sources.list"

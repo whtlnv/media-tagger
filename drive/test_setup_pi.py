@@ -81,3 +81,28 @@ def test_setup_pi_without_libmpv2_installs_it_with_sudo_apt_get_from_a_temporary
     assert all(o["Dir::Etc::sourceparts"] == "-" for o in options)
     lists_dirs = {o["Dir::State::Lists"] for o in options}
     assert len(lists_dirs) == 1 and lists_dirs != {"/var/lib/apt/lists"}
+
+
+def test_setup_pi_with_libmpv2_already_installed_runs_neither_sudo_nor_apt_get(tmp_path):
+    mediatagger = (tmp_path / "drive" / "mediatagger").resolve()
+    (mediatagger / "debs").mkdir(parents=True)
+    shutil.copy(SETUP_PI, mediatagger / "setup-pi.sh")
+    record = tmp_path / "apt-get-calls"
+    record.mkdir()
+    sudo_ran = tmp_path / "sudo-ran"
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    fake_command(bin_dir, "dpkg-query", "printf 'install ok installed'")
+    fake_command(bin_dir, "sudo", f'touch "{sudo_ran}"; exec "$@"')
+    fake_recording_apt_get(bin_dir, record)
+    (tmp_path / "tmp").mkdir()
+    env = {
+        **os.environ,
+        "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}",
+        "TMPDIR": str(tmp_path / "tmp"),
+    }
+
+    subprocess.run(["sh", str(mediatagger / "setup-pi.sh")], check=True, env=env)
+
+    assert not sudo_ran.exists()
+    assert apt_get_calls(record) == []
