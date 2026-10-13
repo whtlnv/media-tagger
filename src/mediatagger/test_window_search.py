@@ -659,3 +659,15 @@ def test_while_the_results_thumbnails_generate_the_status_bar_counts_them(qtbot,
     search_for(qtbot, window, stack, "beach")
 
     qtbot.waitUntil(lambda: any(text.startswith("⟳ Generating thumbnails") and text.endswith("/ 2") for text in seen))
+
+
+def test_the_results_grid_of_a_search_in_a_schema_version_1_library_on_a_read_only_drive_is_empty(qtbot, tmp_path):
+    from mediatagger.test_library import _create_schema_version_1_library, _read_only_drive
+
+    _create_schema_version_1_library(tmp_path, "read-only-drive")
+    with _read_only_drive(tmp_path):
+        library = Library.open(tmp_path)
+        grid = Grid(tmp_path, library=library, paths=search(library, "beach"))
+        qtbot.addWidget(grid)
+
+    assert grid.model().rowCount() == 0

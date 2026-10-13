@@ -158,6 +158,8 @@ class Library:
 
     def own_tag_counts(self):
         """Every tagged item's own-tag count, keyed by its full path as a string, read in one query."""
+        if self.schema_version < 2:  # a read-only drive left at schema 1 has no tag tables
+            return {}
         root = f"{self.root}/"
         connection = sqlite3.connect(self._tags_db)
         rows = connection.execute(
