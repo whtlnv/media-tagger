@@ -17,19 +17,17 @@ def remembered_folder(state):
 
 
 def remember(state, folder, mount_point):
-    state.parent.mkdir(parents=True, exist_ok=True)
     remembering = _read(state)
     remembering["folder"] = str(folder)
     remembering["mount_point"] = str(mount_point)
-    state.write_text(json.dumps(remembering))
+    _write(state, remembering)
 
 
 def remember_geometry(state, geometry):
     remembering = _read(state)
     remembering["geometry"] = geometry
     try:
-        state.parent.mkdir(parents=True, exist_ok=True)
-        state.write_text(json.dumps(remembering))
+        _write(state, remembering)
     except OSError:
         pass  # the window still closes; next time it opens centred
 
@@ -39,8 +37,7 @@ def remember_search(state, query):
     earlier_searches = [search for search in remembered_searches(state) if search != query]
     remembering["searches"] = (earlier_searches + [query])[-MOST_SEARCHES_REMEMBERED:]
     try:
-        state.parent.mkdir(parents=True, exist_ok=True)
-        state.write_text(json.dumps(remembering))
+        _write(state, remembering)
     except OSError:
         pass  # the search still runs; it just isn't offered by ↑ next time
 
@@ -65,3 +62,8 @@ def _read(state):
     except (OSError, ValueError):
         return {}
     return remembering if isinstance(remembering, dict) else {}
+
+
+def _write(state, remembering):
+    state.parent.mkdir(parents=True, exist_ok=True)
+    state.write_text(json.dumps(remembering))
