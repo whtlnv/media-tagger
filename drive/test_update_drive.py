@@ -165,3 +165,32 @@ def test_update_drive_leaves_macos_resource_fork_files_outside_the_drive_mediata
     update_drive(drive)
 
     assert [fork for fork in forks if not fork.exists()] == []
+
+
+def test_update_drive_leaves_the_drive_lib_and_debs_exactly_as_they_were(tmp_path):
+    drive = tmp_path / "drive"
+    mediatagger = drive / "mediatagger"
+    files = {
+        mediatagger / "lib-linux-aarch64-cp313" / "mpv.py": b"# mpv binding\n",
+        mediatagger / "lib-linux-aarch64-cp313" / "__pycache__" / "mpv.cpython-313.pyc": b"\x00\x01bytecode",
+        mediatagger / "lib-linux-aarch64-cp313" / "PIL" / "__init__.py": b"",
+        mediatagger / "debs" / "libmpv2_0.39.0-3_arm64.deb": b"!<arch>\ndeb",
+        mediatagger / "debs" / "Packages": b"Package: libmpv2\n",
+    }
+    for path, content in files.items():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(content)
+    (mediatagger / "debs" / "partial").mkdir()
+
+    def snapshot():
+        return {
+            str(p.relative_to(mediatagger)): p.read_bytes() if p.is_file() else None
+            for folder in ["lib-linux-aarch64-cp313", "debs"]
+            for p in (mediatagger / folder).rglob("*")
+        }
+
+    before = snapshot()
+
+    update_drive(drive)
+
+    assert snapshot() == before

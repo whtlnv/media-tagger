@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-13 15:56 · `drive/test_update_drive.py::test_update_drive_leaves_the_drive_lib_and_debs_exactly_as_they_were`
+- Behavior: `sh drive/update-drive.sh <drive>` leaves the drive's `lib-linux-aarch64-cp313/` and `debs/` exactly as they were
+- Predicted: passes on first run — update-drive.sh only replaces `app/`, copies three scripts, and sweeps `._*` files; nothing touches `lib-…/` or `debs/`
+- Actual: passes (1 passed)
+- Type: passed unexpectedly (no missing behavior to drive, but the prediction was right)
+- Resolution: not rewritten. The only change that would make it fail is a `._*` file inside `lib-…/`/`debs/`, and the spec says those get deleted anywhere under `<drive>/mediatagger/`. So the test stays as a regression pin on real files, a nested `__pycache__` and an empty dir. /green has nothing to implement.
+
 ## 2026-10-13 15:18 · `drive/test_update_drive.py::test_update_drive_leaves_macos_resource_fork_files_outside_the_drive_mediatagger_folder_in_place`
 - Behavior: `sh drive/update-drive.sh <drive>` leaves `._*` files outside `<drive>/mediatagger/` in place
 - Predicted: passes on first run — `find "$mediatagger"` (update-drive.sh:15) is already scoped to `<drive>/mediatagger/`
