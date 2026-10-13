@@ -13,13 +13,18 @@ def update_drive(drive, env=None):
     subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], check=True, env=env)
 
 
+def empty_drive(tmp_path):
+    drive = tmp_path / "drive"
+    drive.mkdir()
+    return drive
+
+
 def app_on(drive):
     return drive / "mediatagger" / "app" / "mediatagger"
 
 
 def modules_on_drive_after_update(tmp_path):
-    drive = tmp_path / "drive"
-    drive.mkdir()
+    drive = empty_drive(tmp_path)
 
     update_drive(drive)
 
@@ -55,8 +60,7 @@ def env_with_python313_on_path(tmp_path):
 
 def test_update_drive_leaves_unchecked_hash_bytecode_next_to_every_module_in_the_drive_app(tmp_path):
     env = env_with_python313_on_path(tmp_path)
-    drive = tmp_path / "drive"
-    drive.mkdir()
+    drive = empty_drive(tmp_path)
 
     update_drive(drive, env=env)
 
@@ -86,8 +90,7 @@ def test_update_drive_removes_a_module_and_its_bytecode_left_in_the_drive_app_by
 
 
 def test_update_drive_writes_the_repo_last_commit_as_short_hash_and_subject_to_the_drive_app_version(tmp_path):
-    drive = tmp_path / "drive"
-    drive.mkdir()
+    drive = empty_drive(tmp_path)
 
     update_drive(drive)
 
@@ -104,8 +107,7 @@ def test_update_drive_writes_unknown_to_the_drive_app_version_when_git_log_fails
     failing_git = tmp_path / "bin" / "git"
     failing_git.write_text("#!/bin/sh\nexit 128\n")
     failing_git.chmod(0o755)
-    drive = tmp_path / "drive"
-    drive.mkdir()
+    drive = empty_drive(tmp_path)
 
     update_drive(drive, env=env)
 
@@ -114,8 +116,7 @@ def test_update_drive_writes_unknown_to_the_drive_app_version_when_git_log_fails
 
 
 def test_update_drive_copies_the_drive_scripts_into_the_drive_mediatagger_folder(tmp_path):
-    drive = tmp_path / "drive"
-    drive.mkdir()
+    drive = empty_drive(tmp_path)
 
     update_drive(drive)
 
