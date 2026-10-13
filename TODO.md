@@ -45,7 +45,7 @@ Phase 10 notes for every cycle (Phases 1–9b are delivered — see DONE.md; Pha
 - [x] `Backspace` in the results grid leaves the results shown
 - [x] `/` in the results grid opens the search bar, and a new query replaces the results
 - [x] Showing search results does not change the remembered last folder
-- [ ] A result tile's badge counts the item's own tags, not those inherited from its folders
+- [x] A result tile's badge counts the item's own tags, not those inherited from its folders
 - [ ] A result file's tile shows its thumbnail
 - [ ] Moving the cursor onto a result shows that result's tags in the status bar
 - [ ] `t` on a result adds the entered tag to that item and its badge updates in place

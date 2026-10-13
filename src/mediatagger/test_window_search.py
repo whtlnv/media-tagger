@@ -3,7 +3,8 @@ from PySide6.QtWidgets import QLabel, QLineEdit
 
 from mediatagger.library import Library
 from mediatagger.state import remembered_folder, state_file
-from mediatagger.test_grid import tile_names
+from mediatagger.grid import TAG_BADGE
+from mediatagger.test_grid import painted_texts, tile_names
 from mediatagger.test_viewer import make_image
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image
 from mediatagger.test_window import window_showing_the_grid_with_its_cursor_on_its_first_tile
@@ -205,3 +206,17 @@ def test_showing_search_results_does_not_change_the_remembered_last_folder(qtbot
     qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
 
     assert remembered_folder(state_file(tmp_path)) == folder
+
+
+def test_a_result_tiles_badge_counts_the_items_own_tags_not_those_inherited_from_its_folders(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    library = Library.open(drive)
+    library.enter(folder, "beach summer")
+    library.enter(folder / "IMG_1.png", "family")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+
+    qtbot.keyClicks(window.search_bar, "family")
+    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+
+    assert [text for text in painted_texts(stack.currentWidget(), 0) if TAG_BADGE in text] == [f"{TAG_BADGE}1"]
