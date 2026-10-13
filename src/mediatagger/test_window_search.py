@@ -158,3 +158,17 @@ def test_esc_in_the_results_grid_shows_the_folder_searched_from_with_the_cursor_
 
     shown = stack.currentWidget()
     assert (tile_names(shown), shown.currentIndex().data(Qt.ItemDataRole.DisplayRole), window.focusWidget() is shown) == (names, "IMG_2.png", True)
+
+
+def test_backspace_in_the_results_grid_leaves_the_results_shown(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+    qtbot.keyClicks(window.search_bar, "beach")
+    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+    results = stack.currentWidget()
+
+    qtbot.keyClick(results, Qt.Key.Key_Backspace)
+
+    assert (stack.currentWidget() is results, tile_names(results), window.breadcrumb.isVisible(), window.focusWidget() is results) == (True, ["IMG_1.png"], True, True)

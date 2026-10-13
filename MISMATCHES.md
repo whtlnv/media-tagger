@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-13 00:52 · `src/mediatagger/test_window_search.py::test_backspace_in_the_results_grid_leaves_the_results_shown`
+- Behavior: `Backspace` in the results grid leaves the results shown
+- Predicted: passes on first run — `Window.run_search` connects only the results grid's `escaped`, so its `up` (Backspace) has no receiver
+- Actual: passed on first run
+- Type: passed unexpectedly (for Red; the pass itself was predicted from reading the code)
+- Resolution: the behavior already holds as a side effect of the last cycle; no genuine right-reason failure exists without contrived assertions, so the test is kept as a pin against wiring `up` into result grids later.
+
 ## 2026-10-12 23:54 · `src/mediatagger/test_window_search.py::test_a_search_run_from_a_subfolder_finds_tagged_items_elsewhere_on_the_same_drive`
 - Behavior: A search run from a subfolder finds tagged items elsewhere on the same drive
 - Predicted: passes — `Window.run_search` searches `session.library` (the whole drive's library), never the grid's folder, and the earlier results-order test already finds `Trips/Summer` from `Photos`

@@ -42,7 +42,7 @@ Phase 10 notes for every cycle (Phases 1–9b are delivered — see DONE.md; Pha
 - [x] `Enter` on a blank query closes the search bar and returns focus to the unchanged grid
 - [x] `Esc` while typing in the search bar closes it and returns focus to the unchanged grid
 - [x] `Esc` in the results grid shows the folder you searched from with the cursor where it was
-- [ ] `Backspace` in the results grid leaves the results shown
+- [x] `Backspace` in the results grid leaves the results shown
 - [ ] `/` in the results grid opens the search bar, and a new query replaces the results
 - [ ] Showing search results does not change the remembered last folder
 - [ ] A result tile's badge counts the item's own tags, not those inherited from its folders
