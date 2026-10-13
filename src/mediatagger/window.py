@@ -9,7 +9,7 @@ from mediatagger.grid import TILE_ROLE, Grid
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
 from mediatagger.search import search
 from mediatagger.slideshow import Slideshow
-from mediatagger.state import remember, remember_geometry, remembered_folder, remembered_geometry, remembered_searches, state_file
+from mediatagger.state import remember, remember_geometry, remember_search, remembered_folder, remembered_geometry, remembered_searches, state_file
 from mediatagger.status_bar import StatusBar
 from mediatagger.tag_prompt import TagPrompt
 from mediatagger.viewer import Viewer
@@ -206,6 +206,8 @@ class Window(QWidget):
         if not query.strip():
             self.stack.currentWidget().setFocus()
             return
+        if self._may_write_state():
+            remember_search(self._state_file, query)
         searched_from = self.stack.currentWidget()
         paths = search(self.session.library, query)
         grid = Grid(self.session.drive, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache(), paths=paths)

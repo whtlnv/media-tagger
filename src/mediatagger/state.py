@@ -36,13 +36,18 @@ def remember_geometry(state, geometry):
 
 def remember_search(state, query):
     remembering = _read(state)
-    earlier_searches = [search for search in remembering["searches"] if search != query]
+    earlier_searches = [search for search in remembered_searches(state) if search != query]
     remembering["searches"] = (earlier_searches + [query])[-MOST_SEARCHES_REMEMBERED:]
-    state.write_text(json.dumps(remembering))
+    try:
+        state.parent.mkdir(parents=True, exist_ok=True)
+        state.write_text(json.dumps(remembering))
+    except OSError:
+        pass  # the search still runs; it just isn't offered by ↑ next time
 
 
 def remembered_searches(state):
-    return _remembered(state, "searches")
+    """The searches run before, oldest first; none if nothing is remembered."""
+    return _remembered(state, "searches") or []
 
 
 def remembered_geometry(state):

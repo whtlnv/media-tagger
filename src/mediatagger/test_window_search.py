@@ -525,3 +525,14 @@ def test_down_past_the_newest_search_leaves_the_search_bar_empty(qtbot, tmp_path
     qtbot.keyClick(window.search_bar, Qt.Key.Key_Down)
 
     assert window.search_bar.text() == ""
+
+
+def test_a_search_run_in_the_window_is_recalled_by_up_when_the_search_bar_next_opens(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    search_for(qtbot, window, stack, "beach -sunset")
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+
+    qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
+
+    assert window.search_bar.text() == "beach -sunset"
