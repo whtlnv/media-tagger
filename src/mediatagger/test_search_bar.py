@@ -94,3 +94,17 @@ def test_the_search_bar_opens_empty_after_an_earlier_search(qtbot, tmp_path):
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
 
     assert window.search_bar.text() == ""
+
+
+def test_the_search_bar_is_drawn_in_the_status_bars_font_size(qtbot, tmp_path):
+    from mediatagger.status_bar import overlay_label
+
+    bar = SearchBar(tmp_path / "mediatagger" / "state.json")
+    label = overlay_label("", None)
+    qtbot.addWidget(bar)
+    qtbot.addWidget(label)
+
+    bar.ensurePolished()
+    label.ensurePolished()
+
+    assert bar.font().pixelSize() == label.font().pixelSize()

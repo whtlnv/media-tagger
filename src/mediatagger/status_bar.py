@@ -2,8 +2,8 @@ from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QWidget
 
 # Explicit colours: the desktop theme's default text colour may be black, which vanishes on a black background.
-_LABEL_STYLE = "color: white; background-color: rgba(0, 0, 0, 160); padding: 8px 12px; border-radius: 6px; font-size: 18px;"
-_DIMMED_LABEL_STYLE = _LABEL_STYLE.replace("color: white", "color: grey")
+LABEL_STYLE = "color: white; background-color: rgba(0, 0, 0, 160); padding: 8px 12px; border-radius: 6px; font-size: 18px;"
+_DIMMED_LABEL_STYLE = LABEL_STYLE.replace("color: white", "color: grey")
 CORNER_MARGIN = 16
 NO_LIBRARY_TEXT = "No library open"
 READ_ONLY_STATUS_TEXT = "Read-only — tags can't be saved"
@@ -15,7 +15,7 @@ _FINISHED_MESSAGE_MS = 3000
 
 def overlay_label(text, parent):
     label = QLabel(text, parent)
-    label.setStyleSheet(_LABEL_STYLE)
+    label.setStyleSheet(LABEL_STYLE)
     return label
 
 

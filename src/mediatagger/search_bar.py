@@ -2,6 +2,7 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QLineEdit
 
 from mediatagger.state import remembered_searches
+from mediatagger.status_bar import LABEL_STYLE
 
 
 class SearchBar(QLineEdit):
@@ -14,6 +15,7 @@ class SearchBar(QLineEdit):
         super().__init__(parent)
         self._state_file = state_file
         self._recalled = 0
+        self.setStyleSheet(LABEL_STYLE)  # as large as the status bar's text, readable on a TV
         self.hide()
 
     def open(self):
