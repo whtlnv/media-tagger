@@ -21,6 +21,16 @@ def _tagged_folder(library, folder, tags):
     return folder
 
 
+def _quickest_search(library, query):
+    """The quickest of three searches, and its results: a single search can be held up by whatever else the machine is doing."""
+    timings = []
+    for _ in range(3):
+        started = time.perf_counter()
+        results = search(library, query)
+        timings.append(time.perf_counter() - started)
+    return min(timings), results
+
+
 def test_searching_a_library_for_beach_finds_a_tagged_file_whose_own_tags_include_beach(tmp_path):
     library, photo = _library_with_one_file(tmp_path, "dunes.jpg", "beach family")
 
@@ -185,13 +195,9 @@ def test_searching_a_library_of_5000_tagged_items_returns_its_results_in_under_2
         for number in range(100):
             _tagged_file(library, folder / f"IMG_{number}.jpg", f"beach year:{2000 + album}")
 
-    timings = []
-    for _ in range(3):  # the quickest of three: a single search can be held up by whatever else the machine is doing
-        started = time.perf_counter()
-        results = search(library, "beach")
-        timings.append(time.perf_counter() - started)
+    fastest, results = _quickest_search(library, "beach")
 
-    assert (min(timings) < 0.200, len(results)) == (True, 5000)
+    assert (fastest < 0.200, len(results)) == (True, 5000)
 
 
 def test_people_prefix_over_a_library_of_5000_tagged_items_holding_1000_people_tags_returns_its_results_in_under_200_ms(tmp_path):
@@ -203,13 +209,9 @@ def test_people_prefix_over_a_library_of_5000_tagged_items_holding_1000_people_t
             person = (album * 100 + number) % 1000
             _tagged_file(library, folder / f"IMG_{number}.jpg", f"people:person-{person} year:{2000 + album}")
 
-    timings = []
-    for _ in range(3):  # the quickest of three: a single search can be held up by whatever else the machine is doing
-        started = time.perf_counter()
-        results = search(library, "people:")
-        timings.append(time.perf_counter() - started)
+    fastest, results = _quickest_search(library, "people:")
 
-    assert (min(timings) < 0.200, len(results)) == (True, 5000)
+    assert (fastest < 0.200, len(results)) == (True, 5000)
 
 
 def test_searching_a_library_of_5000_tagged_items_for_beach_or_for_people_returns_its_results_in_under_50_ms(tmp_path):
@@ -221,15 +223,10 @@ def test_searching_a_library_of_5000_tagged_items_for_beach_or_for_people_return
             person = (album * 100 + number) % 1000
             _tagged_file(library, folder / f"IMG_{number}.jpg", f"beach people:person-{person} year:{2000 + album}")
 
-    def quickest_of_three(query):  # a single search can be held up by whatever else the machine is doing
-        timings = []
-        for _ in range(3):
-            started = time.perf_counter()
-            results = search(library, query)
-            timings.append(time.perf_counter() - started)
-        return min(timings) < 0.050, len(results)
+    beach_fastest, beach_results = _quickest_search(library, "beach")
+    people_fastest, people_results = _quickest_search(library, "people:")
 
-    assert (quickest_of_three("beach"), quickest_of_three("people:")) == ((True, 5000), (True, 5000))
+    assert (beach_fastest < 0.050, len(beach_results), people_fastest < 0.050, len(people_results)) == (True, 5000, True, 5000)
 
 
 def test_searching_a_schema_version_1_library_on_a_read_only_drive_finds_nothing(tmp_path):
