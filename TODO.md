@@ -11,7 +11,7 @@ Phase 10 notes for every cycle (Phases 1–9b are delivered — see DONE.md; Pha
 - [x] `beach -sunset` finds a file tagged `beach` that has no `sunset`
 - [x] `beach -sunset` leaves out a file tagged both `beach` and `sunset`
 - [x] `beach|pool` finds a file tagged only `pool`
-- [ ] `beach|pool` leaves out a file tagged neither `beach` nor `pool`
+- [x] `beach|pool` leaves out a file tagged neither `beach` nor `pool`
 - [ ] `-beach|pool` leaves out a file tagged `pool`
 - [ ] `-beach|pool` finds a tagged file that has neither `beach` nor `pool`
 - [ ] `people:` finds a file tagged `people:ana`

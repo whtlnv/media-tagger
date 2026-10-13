@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-12 18:20 · `src/mediatagger/test_search.py::test_beach_or_pool_leaves_out_a_file_tagged_neither_beach_nor_pool`
+- Behavior: `beach|pool` leaves out a file tagged neither `beach` nor `pool`
+- Predicted: passes on first run — `_items_tagged_any` only gathers files tagged with one of the alternatives, so a file tagged neither is never a candidate
+- Actual: passed (1 passed)
+- Type: passed unexpectedly
+- Resolution: The previous cycle (`beach|pool` finds a file tagged only `pool`) already built this behavior. A rewrite can't fail honestly without breaking production code, so the test stays as a regression pin against OR matching every file. This item needs no /green.
+
 ## 2026-10-12 17:08 · `src/mediatagger/test_search.py::test_an_exact_term_does_not_find_a_longer_tag_that_starts_with_it`
 - Behavior: An exact term does not find a longer tag that starts with it (`people:ana` leaves out a file tagged only `people:anabel`)
 - Predicted: passes on first run — `Library.items_tagged` already matches with `tags.name = ?`, so no prefix match is possible
