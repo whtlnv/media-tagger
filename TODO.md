@@ -57,6 +57,7 @@ Phase 10 notes for every cycle (Phases 1–9b are delivered — see DONE.md; Pha
 - [x] `Enter` on a result file opens a slideshow at that file
 - [x] Next in a slideshow opened from results goes to the next result file, not the next file in its folder
 - [x] A slideshow opened from results skips result folders and missing paths
+- [ ] Searching a library of 5,000 tagged items for `beach` or for `people:` returns its results in under 50 ms (a Pi is several times slower than the Mac; read every item's path, kind and tags in one query and work on the relative-path strings, telling folders by the library's recorded kind rather than asking the filesystem)
 - [ ] `Esc` in a slideshow opened from results returns to the results grid with the cursor on the current file
 - [ ] `Enter` on a result folder opens that folder's normal, unfiltered grid with the cursor on its first item
 - [ ] `Esc` in a folder opened from results does not return to the results
