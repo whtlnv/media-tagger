@@ -51,6 +51,7 @@ class Window(QWidget):
         self.stack.addWidget(self.viewer)
         self._forwarding = False
         self._results = None
+        self._recalled = 0
         self.setAcceptDrops(True)
         geometry = remembered_geometry(self._state_file)
         if geometry:
@@ -86,7 +87,8 @@ class Window(QWidget):
             self.run_search("")
             return True
         if event.key() == Qt.Key.Key_Up:
-            self.search_bar.setText(remembered_searches(self._state_file)[-1])
+            self._recalled += 1
+            self.search_bar.setText(remembered_searches(self._state_file)[-self._recalled])
             return True
         return super().eventFilter(watched, event)
 

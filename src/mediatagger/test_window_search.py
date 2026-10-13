@@ -474,3 +474,15 @@ def test_up_in_the_search_bar_replaces_its_text_with_the_most_recent_search(qtbo
     qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
 
     assert window.search_bar.text() == "beach -sunset"
+
+
+def test_each_further_up_in_the_search_bar_recalls_the_next_older_search(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    write_state_file(json.dumps({"searches": ["family", "beach -sunset", "mountain"]}))
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+
+    qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
+    qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
+
+    assert window.search_bar.text() == "beach -sunset"
