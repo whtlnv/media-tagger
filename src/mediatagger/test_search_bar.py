@@ -9,6 +9,14 @@ from mediatagger.test_window_search import search_for
 from mediatagger.test_window_state import write_state_file
 
 
+def window_with_the_search_bar_open_over_remembered_searches(qtbot, tmp_path, searches):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    write_state_file(json.dumps({"searches": searches}))
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+    return window, stack
+
+
 def test_up_with_no_remembered_searches_keeps_what_was_typed(qtbot, tmp_path):
     bar = SearchBar(tmp_path / "mediatagger" / "state.json")
     qtbot.addWidget(bar)
@@ -35,10 +43,7 @@ def test_down_before_any_up_keeps_what_was_typed(qtbot, tmp_path):
 
 
 def test_up_in_the_search_bar_replaces_its_text_with_the_most_recent_search(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    write_state_file(json.dumps({"searches": ["family", "beach -sunset"]}))
-    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+    window, _ = window_with_the_search_bar_open_over_remembered_searches(qtbot, tmp_path, ["family", "beach -sunset"])
     qtbot.keyClicks(window.search_bar, "moun")
 
     qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
@@ -47,10 +52,7 @@ def test_up_in_the_search_bar_replaces_its_text_with_the_most_recent_search(qtbo
 
 
 def test_each_further_up_in_the_search_bar_recalls_the_next_older_search(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    write_state_file(json.dumps({"searches": ["family", "beach -sunset", "mountain"]}))
-    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+    window, _ = window_with_the_search_bar_open_over_remembered_searches(qtbot, tmp_path, ["family", "beach -sunset", "mountain"])
 
     qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
     qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
@@ -59,10 +61,7 @@ def test_each_further_up_in_the_search_bar_recalls_the_next_older_search(qtbot, 
 
 
 def test_up_at_the_oldest_remembered_search_keeps_it_in_the_search_bar(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    write_state_file(json.dumps({"searches": ["family", "mountain"]}))
-    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+    window, _ = window_with_the_search_bar_open_over_remembered_searches(qtbot, tmp_path, ["family", "mountain"])
 
     qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
     qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
@@ -72,10 +71,7 @@ def test_up_at_the_oldest_remembered_search_keeps_it_in_the_search_bar(qtbot, tm
 
 
 def test_down_in_the_search_bar_after_up_recalls_the_next_newer_search(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    write_state_file(json.dumps({"searches": ["family", "beach -sunset", "mountain"]}))
-    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+    window, _ = window_with_the_search_bar_open_over_remembered_searches(qtbot, tmp_path, ["family", "beach -sunset", "mountain"])
     qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
     qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
     qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
@@ -86,10 +82,7 @@ def test_down_in_the_search_bar_after_up_recalls_the_next_newer_search(qtbot, tm
 
 
 def test_down_past_the_newest_search_leaves_the_search_bar_empty(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    write_state_file(json.dumps({"searches": ["family", "beach -sunset", "mountain"]}))
-    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+    window, _ = window_with_the_search_bar_open_over_remembered_searches(qtbot, tmp_path, ["family", "beach -sunset", "mountain"])
     qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
 
     qtbot.keyClick(window.search_bar, Qt.Key.Key_Down)
@@ -109,10 +102,7 @@ def test_a_search_run_in_the_window_is_recalled_by_up_when_the_search_bar_next_o
 
 
 def test_up_in_a_reopened_search_bar_starts_again_from_the_most_recent_search(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    write_state_file(json.dumps({"searches": ["family", "beach -sunset", "mountain"]}))
-    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+    window, stack = window_with_the_search_bar_open_over_remembered_searches(qtbot, tmp_path, ["family", "beach -sunset", "mountain"])
     qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
     qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
     qtbot.keyClick(window.search_bar, Qt.Key.Key_Escape)
