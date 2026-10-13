@@ -430,3 +430,12 @@ def test_the_results_grid_of_a_search_in_a_schema_version_1_library_on_a_read_on
         qtbot.addWidget(grid)
 
     assert grid.model().rowCount() == 0
+
+
+def test_the_breadcrumb_shows_the_query_literally_even_when_it_looks_like_markup(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+
+    search_for(qtbot, window, stack, "<b>nothing</b>")
+
+    assert window.breadcrumb.textFormat() == Qt.TextFormat.PlainText

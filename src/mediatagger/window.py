@@ -39,6 +39,7 @@ class Window(QWidget):
         self.search_bar = SearchBar(self._state_file, self)
         self.search_bar.submitted.connect(self.run_search)
         self.breadcrumb = QLabel(self)
+        self.breadcrumb.setTextFormat(Qt.TextFormat.PlainText)  # a query is shown as typed, never as markup
         self.breadcrumb.hide()
         layout.addWidget(self.search_bar)
         layout.addWidget(self.breadcrumb)
