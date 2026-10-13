@@ -408,3 +408,19 @@ def test_esc_in_a_slideshow_opened_from_results_returns_to_the_results_grid_with
 
     shown = stack.currentWidget()
     assert (shown is results, shown.currentIndex().data(TILE_ROLE).path) == (True, folder / "IMG_3.png")
+
+
+def test_enter_on_a_result_folder_opens_that_folders_unfiltered_grid_with_the_cursor_on_its_first_item_and_ends_the_search(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    summer = drive / "Trips" / "Summer"
+    summer.mkdir(parents=True)
+    make_image(summer / "IMG_5.png", "blue")
+    make_image(summer / "IMG_6.png", "green")
+    Library.open(drive).enter(summer, "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    search_for(qtbot, window, stack, "beach")
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+
+    shown = stack.currentWidget()
+    assert (shown.folder, tile_names(shown), shown.currentIndex().row(), window.breadcrumb.isVisible()) == (summer, ["IMG_5.png", "IMG_6.png"], 0, False)

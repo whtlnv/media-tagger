@@ -264,6 +264,10 @@ class Window(QWidget):
         self._open(path)
 
     def _open_result(self, index, paths, grid):
+        if index.data(TILE_ROLE).path.is_dir():
+            self.breadcrumb.hide()
+            self._open_tile(index)
+            return
         self._results = (grid, paths)
         self._open_tile(index)
         files = [path for path in paths if path.is_file()]
