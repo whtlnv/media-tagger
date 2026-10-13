@@ -1,3 +1,6 @@
+from mediatagger.folder import _natural_name_key
+
+
 def search(library, query):
     terms = query.lower().split()
     if not terms:
@@ -11,7 +14,7 @@ def search(library, query):
         if _matches(_all_effective_tags(library, path), required, excluded)
     ]
     top_most = [path for path in found if not set(path.parents) & set(found)]
-    return sorted(top_most, key=lambda path: not path.is_dir())
+    return sorted(top_most, key=lambda path: (not path.is_dir(), _natural_name_key(str(path))))
 
 
 def _alternatives(library, term):

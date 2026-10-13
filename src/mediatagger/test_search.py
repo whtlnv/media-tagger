@@ -157,3 +157,11 @@ def test_search_results_list_a_matching_folder_before_a_matching_file(tmp_path):
     folder = _tagged_folder(library, tmp_path / "z-summer", "beach")
 
     assert search(library, "beach") == [folder, photo]
+
+
+def test_search_results_list_matching_files_in_natural_order_of_their_path(tmp_path):
+    library = Library.create(tmp_path)
+    tenth = _tagged_file(library, tmp_path / "IMG_10.jpg", "beach")
+    second = _tagged_file(library, tmp_path / "IMG_2.jpg", "beach")
+
+    assert search(library, "beach") == [second, tenth]
