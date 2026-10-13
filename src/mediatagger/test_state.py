@@ -43,3 +43,13 @@ def test_remembering_a_search_when_searches_holds_50_queries_drops_the_oldest(tm
     remember_search(state, "beach")
 
     assert json.loads(state.read_text())["searches"] == fifty_queries[1:] + ["beach"]
+
+
+def test_remembering_the_last_folder_keeps_the_searches_already_remembered_in_the_state_file(tmp_path):
+    state = tmp_path / "mediatagger" / "state.json"
+    state.parent.mkdir()
+    state.write_text(json.dumps({"searches": ["family", "beach -sunset"]}))
+
+    remember(state, tmp_path / "drive" / "photos", tmp_path / "drive")
+
+    assert json.loads(state.read_text())["searches"] == ["family", "beach -sunset"]

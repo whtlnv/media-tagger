@@ -18,10 +18,9 @@ def remembered_folder(state):
 
 def remember(state, folder, mount_point):
     state.parent.mkdir(parents=True, exist_ok=True)
-    remembering = {"folder": str(folder), "mount_point": str(mount_point)}
-    geometry = remembered_geometry(state)
-    if geometry is not None:
-        remembering["geometry"] = geometry
+    remembering = _read(state)
+    remembering["folder"] = str(folder)
+    remembering["mount_point"] = str(mount_point)
     state.write_text(json.dumps(remembering))
 
 
