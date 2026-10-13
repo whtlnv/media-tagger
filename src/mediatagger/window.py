@@ -87,8 +87,9 @@ class Window(QWidget):
             self.run_search("")
             return True
         if event.key() == Qt.Key.Key_Up:
-            self._recalled += 1
-            self.search_bar.setText(remembered_searches(self._state_file)[-self._recalled])
+            searches = remembered_searches(self._state_file)
+            self._recalled = min(self._recalled + 1, len(searches))
+            self.search_bar.setText(searches[-self._recalled])
             return True
         return super().eventFilter(watched, event)
 
