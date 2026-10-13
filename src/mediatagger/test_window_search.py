@@ -447,3 +447,15 @@ def test_esc_in_a_slideshow_from_a_folder_opened_from_results_returns_to_that_fo
 
     shown = stack.currentWidget()
     assert (shown.folder, shown.currentIndex().data(TILE_ROLE).path, window.breadcrumb.isVisible()) == (summer, summer / "IMG_5.png", False)
+
+
+def test_enter_on_a_missing_tile_does_nothing(qtbot, tmp_path):
+    drive, folder = drive_with_a_missing_image_tagged(tmp_path, "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    search_for(qtbot, window, stack, "beach")
+    results = stack.currentWidget()
+
+    qtbot.keyClick(results, Qt.Key.Key_Return)
+
+    shown = stack.currentWidget()
+    assert (shown is results, shown.currentIndex().data(TILE_ROLE).path, window.breadcrumb.isVisible()) == (True, folder / "IMG_2.png", True)
