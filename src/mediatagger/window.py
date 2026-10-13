@@ -210,9 +210,13 @@ class Window(QWidget):
             return
         if self._may_write_state():
             remember_search(self._state_file, query)
-        searched_from = self.stack.currentWidget()
+        shown = self.stack.currentWidget()
+        searched_from = getattr(shown, "searched_from", shown)  # searching again from results still returns to the folder
+        if shown is not searched_from:
+            self._drop_results(shown)
         paths = search(self.session.library, query)
         grid = Grid(self.session.drive, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache(), paths=paths)
+        grid.searched_from = searched_from
         grid.activated.connect(lambda index: self._open_result(index, paths, grid))
         grid.escaped.connect(lambda: self._end_search(searched_from))
         grid.search.connect(self._open_search_bar)
@@ -228,7 +232,14 @@ class Window(QWidget):
     def _end_search(self, searched_from):
         self.breadcrumb.hide()
         self._results = None
+        results = self.stack.currentWidget()
         self._return_to(searched_from)
+        self._drop_results(results)
+
+    def _drop_results(self, results):
+        self._stop_thumbnails_of(results)
+        self.stack.removeWidget(results)
+        results.deleteLater()
 
     def _return_to(self, grid):
         self.stack.setCurrentWidget(grid)

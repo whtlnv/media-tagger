@@ -587,3 +587,16 @@ def test_after_esc_ends_a_search_esc_in_a_slideshow_from_the_folder_returns_to_t
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
 
     assert tile_names(stack.currentWidget()) == ["IMG_1.png", "IMG_2.png"]
+
+
+def test_esc_after_searching_again_from_the_results_returns_to_the_folder_searched_from_first(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach family")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    folder_grid = stack.currentWidget()
+    search_for(qtbot, window, stack, "beach")
+    search_for(qtbot, window, stack, "family")
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    assert stack.currentWidget() is folder_grid
