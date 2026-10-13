@@ -7,7 +7,7 @@ def search(library, query):
         return []
     required = [_alternatives(library, term) for term in terms if not term.startswith("-")]
     excluded = {tag for term in terms if term.startswith("-") for tag in term[1:].split("|")}
-    candidates = required[0] if required else library.all_tags()
+    candidates = set().union(*required) if required else library.all_tags()
     effective = library.effective_tags_of(list(_items_tagged_any(library, candidates)))
     found = {path for path, tags in effective.items() if _matches({*tags.own, *tags.inherited}, required, excluded)}
     return sorted(_top_most(found), key=_folders_first_natural_order)
