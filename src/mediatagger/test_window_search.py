@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QLabel, QLineEdit
 from mediatagger.library import Library
 from mediatagger.state import remembered_folder, state_file
 from mediatagger import grid as grid_module
-from mediatagger.grid import TAG_BADGE, TILE_ROLE
+from mediatagger.grid import FOLDER_GLYPH, IMAGE_GLYPH, TAG_BADGE, TILE_ROLE, VIDEO_GLYPH
 from mediatagger.test_grid import painted_texts, tile_names
 from mediatagger.test_viewer import make_image
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image
@@ -277,3 +277,21 @@ def test_entering_family_in_the_tag_prompt_on_a_result_adds_it_to_that_item_and_
     assert Library.open(drive).tags(folder / "IMG_1.png") == ["beach", "family"]
     assert stack.currentWidget() is results
     assert f"{TAG_BADGE}2" in painted_texts(results, results.currentIndex().row())
+
+
+def test_a_result_whose_path_no_longer_exists_is_drawn_as_a_missing_tile_with_a_distinct_glyph_and_its_name(qtbot, tmp_path):
+    from mediatagger.grid import MISSING_GLYPH
+
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    library = Library.open(drive)
+    make_image(folder / "IMG_2.png", "blue")
+    library.enter(folder / "IMG_2.png", "beach")
+    (folder / "IMG_2.png").unlink()
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+
+    qtbot.keyClicks(window.search_bar, "beach")
+    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+
+    texts = painted_texts(stack.currentWidget(), 0)
+    assert (MISSING_GLYPH in texts, "IMG_2.png" in texts, MISSING_GLYPH not in (IMAGE_GLYPH, FOLDER_GLYPH, VIDEO_GLYPH)) == (True, True, True)

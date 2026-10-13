@@ -18,6 +18,8 @@ IMAGE_GLYPH = "🖼"
 
 VIDEO_GLYPH = "🎬"
 
+MISSING_GLYPH = "❓"
+
 VIDEO_BADGE = "▶"
 
 TAG_BADGE = "🏷"
@@ -47,6 +49,7 @@ class _Kind(Enum):
     FOLDER = FOLDER_GLYPH
     IMAGE = IMAGE_GLYPH
     VIDEO = VIDEO_GLYPH
+    MISSING = MISSING_GLYPH
 
 
 @dataclass
@@ -70,8 +73,14 @@ def _tiles(folder, tag_counts):
     return [_Tile(folder / name, name, kind, counts_by_name.get(name, 0)) for name, kind in zip(subfolders + media, kinds)]
 
 
+def _result_kind(path):
+    if not path.exists():
+        return _Kind.MISSING
+    return _Kind.FOLDER if path.is_dir() else _Kind.IMAGE
+
+
 def _result_tiles(paths, library):
-    return [_Tile(path, path.name, _Kind.FOLDER if path.is_dir() else _Kind.IMAGE, len(library.tags(path))) for path in paths]
+    return [_Tile(path, path.name, _result_kind(path), len(library.tags(path))) for path in paths]
 
 
 class _FolderModel(QAbstractListModel):

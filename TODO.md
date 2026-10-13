@@ -49,7 +49,7 @@ Phase 10 notes for every cycle (Phases 1–9b are delivered — see DONE.md; Pha
 - [x] A result file's tile shows its thumbnail
 - [x] Moving the cursor onto a result shows that result's tags in the status bar
 - [x] `t` on a result adds the entered tag to that item and its badge updates in place
-- [ ] A result whose path no longer exists is drawn as a missing tile with a distinct glyph and its name
+- [x] A result whose path no longer exists is drawn as a missing tile with a distinct glyph and its name
 - [ ] A result whose path exists is not drawn as missing
 - [ ] No thumbnail is requested for a missing tile
 - [ ] `t` with `-tag` on a missing tile removes that tag from the item
