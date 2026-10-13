@@ -10,6 +10,7 @@ from mediatagger.test_viewer import make_image
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image
 from mediatagger.test_window import enter_in_the_grids_tag_prompt, shown_status_bar_texts, window_showing_the_grid_with_its_cursor_on_its_first_tile
 from mediatagger.thumbnails import thumbnail_and_duration
+from mediatagger.viewer import Viewer
 
 
 def search_for(qtbot, window, stack, query):
@@ -336,3 +337,20 @@ def test_removing_a_missing_tiles_last_tag_leaves_the_tile_shown_in_the_current_
     assert stack.currentWidget() is results
     assert tile_names(results) == ["IMG_2.png"]
     assert MISSING_GLYPH in painted_texts(results, 0)
+
+
+def test_enter_on_a_result_file_opens_a_slideshow_at_that_file(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    library = Library.open(drive)
+    make_image(folder / "IMG_2.png", "blue")
+    library.enter(folder / "IMG_1.png", "beach")
+    library.enter(folder / "IMG_2.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    search_for(qtbot, window, stack, "beach")
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+
+    shown = stack.currentWidget()
+    assert isinstance(shown, Viewer)
+    assert shown.slideshow.current == folder / "IMG_2.png"

@@ -179,6 +179,7 @@ class Window(QWidget):
             return
         searched_from = self.stack.currentWidget()
         grid = Grid(self.session.drive, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache(), paths=search(self.session.library, query))
+        grid.activated.connect(self._open_tile)
         grid.escaped.connect(lambda: self._return_to(searched_from))
         grid.search.connect(self._open_search_bar)
         grid.tag.connect(lambda: self._tag(grid.currentIndex()))
