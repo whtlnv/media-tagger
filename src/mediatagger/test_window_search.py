@@ -439,3 +439,14 @@ def test_the_breadcrumb_shows_the_query_literally_even_when_it_looks_like_markup
     search_for(qtbot, window, stack, "<b>nothing</b>")
 
     assert window.breadcrumb.textFormat() == Qt.TextFormat.PlainText
+
+
+def test_a_search_with_no_results_shows_no_item_tags_in_the_status_bar(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "pool")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    search_for(qtbot, window, stack, "pool")
+
+    search_for(qtbot, window, stack, "nothing")
+
+    assert "pool" not in shown_status_bar_texts(window)

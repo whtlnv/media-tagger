@@ -197,6 +197,7 @@ class Window(QWidget):
         self.breadcrumb.setText(f"Search: {query}")
         self.breadcrumb.show()
         grid.setCurrentIndex(grid.model().index(0, 0))
+        self._show_current_tags()  # no results: no cursor, so the last item's tags go
         grid.setFocus()
 
     def _end_search(self, searched_from):
