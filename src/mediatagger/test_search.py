@@ -103,3 +103,9 @@ def test_people_prefix_leaves_out_a_file_tagged_only_pets_rex(tmp_path):
     library, _ = _library_with_one_file(tmp_path, "dog.jpg", "pets:rex")
 
     assert search(library, "people:") == []
+
+
+def test_a_lone_minus_is_ignored_so_beach_minus_finds_a_file_tagged_beach(tmp_path):
+    library, photo = _library_with_one_file(tmp_path, "dunes.jpg", "beach")
+
+    assert search(library, "beach -") == [photo]

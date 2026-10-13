@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-12 19:09 · `src/mediatagger/test_search.py::test_a_lone_minus_is_ignored_so_beach_minus_finds_a_file_tagged_beach`
+- Behavior: A lone `-` in a query is ignored (`beach -` finds a file tagged `beach`)
+- Predicted: passes on first run — a lone `-` yields an exclusion of the empty tag `""`, which no file carries, so it excludes nothing
+- Actual: passed (1 passed)
+- Type: passed unexpectedly
+- Resolution: The NOT parsing ignores a lone `-` by accident, because it only excludes an empty tag. A rewrite can't fail honestly without breaking production code. A query of only `-` is the separate "empty or blank query" item, which is still open. The test stays as a regression pin, so this item needs no /green.
+
 ## 2026-10-12 19:00 · `src/mediatagger/test_search.py::test_people_prefix_leaves_out_a_file_tagged_only_pets_rex`
 - Behavior: `people:` leaves out a file tagged only `pets:rex`
 - Predicted: passes on first run — `_alternatives` already turns `people:` into only the library tags that start with `people:`, so a file tagged only `pets:rex` is never a candidate

@@ -16,7 +16,7 @@ Phase 10 notes for every cycle (Phases 1–9b are delivered — see DONE.md; Pha
 - [x] `-beach|pool` finds a tagged file that has neither `beach` nor `pool`
 - [x] `people:` finds a file tagged `people:ana`
 - [x] `people:` leaves out a file tagged only `pets:rex`
-- [ ] A lone `-` in a query is ignored (`beach -` finds a file tagged `beach`)
+- [x] A lone `-` in a query is ignored (`beach -` finds a file tagged `beach`)
 - [ ] An empty or blank query finds nothing, even in a library with tagged items
 - [ ] A query of only exclusions never finds an untagged file inside a tagged folder
 - [ ] An item whose tags were all removed is not found by the next search
