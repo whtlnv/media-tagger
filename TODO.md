@@ -62,7 +62,7 @@ Phase 10 notes for every cycle (Phases 1–9b are delivered — see DONE.md; Pha
 - [x] `Enter` on a result folder opens that folder's normal, unfiltered grid with the cursor on its first item
 - [x] `Esc` in a folder opened from results does not return to the results
 - [x] `Enter` on a missing tile does nothing
-- [ ] `↑` in the search bar replaces its text with the most recent search
+- [x] `↑` in the search bar replaces its text with the most recent search
 - [ ] Each further `↑` in the search bar recalls the next older search
 - [ ] `↑` at the oldest remembered search keeps it in the search bar
 - [ ] `↓` in the search bar after `↑` recalls the next newer search

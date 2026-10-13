@@ -41,6 +41,10 @@ def remember_search(state, query):
     state.write_text(json.dumps(remembering))
 
 
+def remembered_searches(state):
+    return _remembered(state, "searches")
+
+
 def remembered_geometry(state):
     return _remembered(state, "geometry")
 

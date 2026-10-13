@@ -9,7 +9,7 @@ from mediatagger.grid import TILE_ROLE, Grid
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
 from mediatagger.search import search
 from mediatagger.slideshow import Slideshow
-from mediatagger.state import remember, remember_geometry, remembered_folder, remembered_geometry, state_file
+from mediatagger.state import remember, remember_geometry, remembered_folder, remembered_geometry, remembered_searches, state_file
 from mediatagger.status_bar import StatusBar
 from mediatagger.tag_prompt import TagPrompt
 from mediatagger.viewer import Viewer
@@ -84,6 +84,9 @@ class Window(QWidget):
             return True
         if event.key() == Qt.Key.Key_Escape:
             self.run_search("")
+            return True
+        if event.key() == Qt.Key.Key_Up:
+            self.search_bar.setText(remembered_searches(self._state_file)[-1])
             return True
         return super().eventFilter(watched, event)
 

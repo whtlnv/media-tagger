@@ -1,3 +1,5 @@
+import json
+
 from PySide6.QtCore import QPoint, Qt
 from PySide6.QtWidgets import QLabel, QLineEdit
 
@@ -8,6 +10,7 @@ from mediatagger.grid import FOLDER_GLYPH, IMAGE_GLYPH, MISSING_GLYPH, TAG_BADGE
 from mediatagger.test_grid import painted_texts, tile_names
 from mediatagger.test_viewer import make_image, shown_texts
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image
+from mediatagger.test_window_state import write_state_file
 from mediatagger.test_window import enter_in_the_grids_tag_prompt, shown_status_bar_texts, window_showing_the_grid_with_its_cursor_on_its_first_tile
 from mediatagger.thumbnails import thumbnail_and_duration
 from mediatagger.viewer import Viewer
@@ -459,3 +462,15 @@ def test_enter_on_a_missing_tile_does_nothing(qtbot, tmp_path):
 
     shown = stack.currentWidget()
     assert (shown is results, shown.currentIndex().data(TILE_ROLE).path, window.breadcrumb.isVisible()) == (True, folder / "IMG_2.png", True)
+
+
+def test_up_in_the_search_bar_replaces_its_text_with_the_most_recent_search(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    write_state_file(json.dumps({"searches": ["family", "beach -sunset"]}))
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+    qtbot.keyClicks(window.search_bar, "moun")
+
+    qtbot.keyClick(window.search_bar, Qt.Key.Key_Up)
+
+    assert window.search_bar.text() == "beach -sunset"
