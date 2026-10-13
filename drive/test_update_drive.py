@@ -213,3 +213,13 @@ def test_update_drive_leaves_every_file_in_the_drive_tags_folder_byte_identical(
     update_drive(drive)
 
     assert snapshot(drive, [tags]) == before
+
+
+def test_update_drive_without_a_drive_argument_fails_with_a_usage_message_and_writes_nothing(tmp_path):
+    result = subprocess.run(
+        ["sh", str(UPDATE_DRIVE)], cwd=tmp_path, capture_output=True, text=True,
+    )
+
+    assert result.returncode != 0
+    assert "usage" in result.stderr.lower()
+    assert list(tmp_path.iterdir()) == []

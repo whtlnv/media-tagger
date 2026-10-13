@@ -1,4 +1,5 @@
 #!/bin/sh
+[ -n "$1" ] || { echo "usage: sh drive/update-drive.sh <drive>" >&2; exit 2; }
 here=$(cd "$(dirname "$0")" && pwd)
 mediatagger="$1/mediatagger"
 app="$mediatagger/app/mediatagger"
