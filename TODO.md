@@ -44,7 +44,7 @@ Phase 10 notes for every cycle (Phases 1–9b are delivered — see DONE.md; Pha
 - [x] `Esc` in the results grid shows the folder you searched from with the cursor where it was
 - [x] `Backspace` in the results grid leaves the results shown
 - [x] `/` in the results grid opens the search bar, and a new query replaces the results
-- [ ] Showing search results does not change the remembered last folder
+- [x] Showing search results does not change the remembered last folder
 - [ ] A result tile's badge counts the item's own tags, not those inherited from its folders
 - [ ] A result file's tile shows its thumbnail
 - [ ] Moving the cursor onto a result shows that result's tags in the status bar

@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-13 01:15 · `src/mediatagger/test_window_search.py::test_showing_search_results_does_not_change_the_remembered_last_folder`
+- Behavior: Showing search results does not change the remembered last folder
+- Predicted: passes on first run — `Window.run_search` builds the results grid itself and never goes through `_show`/`_record_state`
+- Actual: passed on first run
+- Type: passed unexpectedly (for Red; the pass itself was predicted from reading the code)
+- Resolution: not vacuous — the search starts from the `Photos` grid while the results grid's folder is the drive root, so recording results would change the remembered folder to the drive root and fail the test. The behavior already holds because the results path skips `_show`, so kept the test as a guard against routing results through `_show` later.
+
 ## 2026-10-13 00:52 · `src/mediatagger/test_window_search.py::test_backspace_in_the_results_grid_leaves_the_results_shown`
 - Behavior: `Backspace` in the results grid leaves the results shown
 - Predicted: passes on first run — `Window.run_search` connects only the results grid's `escaped`, so its `up` (Backspace) has no receiver

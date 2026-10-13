@@ -2,6 +2,7 @@ from PySide6.QtCore import QPoint, Qt
 from PySide6.QtWidgets import QLabel, QLineEdit
 
 from mediatagger.library import Library
+from mediatagger.state import remembered_folder, state_file
 from mediatagger.test_grid import tile_names
 from mediatagger.test_viewer import make_image
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image
@@ -192,3 +193,15 @@ def test_slash_in_the_results_grid_opens_the_search_bar_and_a_new_query_replaces
     qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
 
     assert (bar_opened_with_focus, tile_names(stack.currentWidget()), window.breadcrumb.text()) == (True, ["IMG_2.png"], "Search: pool")
+
+
+def test_showing_search_results_does_not_change_the_remembered_last_folder(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+
+    qtbot.keyClicks(window.search_bar, "beach")
+    qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
+
+    assert remembered_folder(state_file(tmp_path)) == folder
