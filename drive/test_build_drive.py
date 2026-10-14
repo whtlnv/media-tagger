@@ -171,13 +171,14 @@ def test_build_drive_removes_a_package_left_in_the_drive_lib_by_an_earlier_build
     env = fake_build_env(tmp_path, tmp_path / "uv-calls")
     fake_uv_installing_packages(tmp_path, INSTALLED_PACKAGES)
     drive = tmp_path / "drive"
-    stale = drive / "mediatagger" / "lib-linux-aarch64-cp313" / "oldpkg"
+    lib = drive / "mediatagger" / "lib-linux-aarch64-cp313"
+    stale = lib / "oldpkg"
     stale.mkdir(parents=True)
     (stale / "__init__.py").write_text("")
 
     subprocess.run(["sh", str(BUILD_DRIVE), str(drive)], env=env)
 
-    assert not stale.exists()
+    assert {str(p.relative_to(lib)) for p in lib.rglob("*.py")} == set(INSTALLED_PACKAGES)
 
 
 def test_build_drive_copies_every_pi_apt_cache_deb_into_the_drive_debs_with_the_packages_index_built_there(tmp_path):
