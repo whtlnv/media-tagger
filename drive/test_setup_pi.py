@@ -36,6 +36,14 @@ def libmpv2_installed_env(tmp_path):
     return fake_bin_env(tmp_path, bin_dir)
 
 
+def bin_without_libmpv2(tmp_path):
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    fake_command(bin_dir, "dpkg-query", "exit 1")
+    fake_command(bin_dir, "sudo", 'exec "$@"')
+    return bin_dir
+
+
 def fake_recording_apt_get(bin_dir, record):
     fake_command(bin_dir, "apt-get", f"""
 i=1; while [ -e "{record}/$i" ]; do i=$((i+1)); done
@@ -119,10 +127,7 @@ def test_setup_pi_with_libmpv2_already_installed_runs_neither_sudo_nor_apt_get(t
 def test_setup_pi_removes_its_temporary_apt_lists_folder_after_installing_libmpv2(tmp_path):
     mediatagger = drive_with_setup_pi(tmp_path)
     lists_record = tmp_path / "lists-dir"
-    bin_dir = tmp_path / "bin"
-    bin_dir.mkdir()
-    fake_command(bin_dir, "dpkg-query", "exit 1")
-    fake_command(bin_dir, "sudo", 'exec "$@"')
+    bin_dir = bin_without_libmpv2(tmp_path)
     fake_command(bin_dir, "apt-get", f"""
 for a; do
   case "$a" in Dir::State::Lists=*) d="${{a#Dir::State::Lists=}}"; mkdir -p "$d/partial"; printf '%s' "$d" > "{lists_record}";; esac
@@ -205,10 +210,7 @@ def test_setup_pi_with_libmpv2_removed_but_its_config_files_kept_still_installs_
 
 def test_setup_pi_when_installing_libmpv2_fails_exits_non_zero_and_writes_no_desktop_entry(tmp_path):
     mediatagger = drive_with_setup_pi(tmp_path)
-    bin_dir = tmp_path / "bin"
-    bin_dir.mkdir()
-    fake_command(bin_dir, "dpkg-query", "exit 1")
-    fake_command(bin_dir, "sudo", 'exec "$@"')
+    bin_dir = bin_without_libmpv2(tmp_path)
     fake_command(bin_dir, "apt-get", "exit 100")
     env = fake_bin_env(tmp_path, bin_dir)
 
@@ -221,10 +223,7 @@ def test_setup_pi_when_installing_libmpv2_fails_exits_non_zero_and_writes_no_des
 def test_setup_pi_hands_apt_get_update_a_lists_folder_already_holding_an_empty_partial_folder(tmp_path):
     mediatagger = drive_with_setup_pi(tmp_path)
     partial_seen = tmp_path / "partial-seen"
-    bin_dir = tmp_path / "bin"
-    bin_dir.mkdir()
-    fake_command(bin_dir, "dpkg-query", "exit 1")
-    fake_command(bin_dir, "sudo", 'exec "$@"')
+    bin_dir = bin_without_libmpv2(tmp_path)
     fake_command(bin_dir, "apt-get", f"""
 for a; do
   case "$a" in Dir::State::Lists=*) d="${{a#Dir::State::Lists=}}";; esac
