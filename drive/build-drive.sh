@@ -8,6 +8,11 @@ rm -f "$requirements"
 python3.13 -m compileall -q --invalidation-mode unchecked-hash -x /deploy_lib/ "$lib"
 debs="$1/mediatagger/debs"
 rm -rf "$debs"
+archives="${APTPI:-$HOME/aptpi}/var/cache/apt/archives"
+if ! ls "$archives"/*.deb > /dev/null 2>&1; then
+  echo "no .deb in $archives" >&2
+  exit 1
+fi
 mkdir -p "$debs"
-cp "${APTPI:-$HOME/aptpi}"/var/cache/apt/archives/*.deb "$debs"
+cp "$archives"/*.deb "$debs"
 (cd "$debs" && apt-ftparchive packages . > Packages)

@@ -32,7 +32,7 @@ Phase 11 notes for every cycle (Phases 1–10 are delivered — see DONE.md; dec
 - [x] `sh drive/build-drive.sh <drive>` copies every `.deb` from `$APTPI/var/cache/apt/archives/` into `<drive>/mediatagger/debs/` and leaves there the `Packages` index `apt-ftparchive packages .` produces inside `debs/`
 - [x] `sh drive/build-drive.sh <drive>` with `APTPI` unset takes the `.deb`s from `$HOME/aptpi/var/cache/apt/archives/`
 - [x] After `sh drive/build-drive.sh <drive>`, a `.deb` left in `debs/` by an earlier build is gone
-- [ ] `sh drive/build-drive.sh <drive>` when `$APTPI` holds no `.deb` fails with a clear message and leaves no partial `debs/`
+- [x] `sh drive/build-drive.sh <drive>` when `$APTPI` holds no `.deb` fails with a clear message and leaves no partial `debs/`
 - [ ] After `sh drive/build-drive.sh <drive>`, `<drive>/mediatagger/` holds the same `app/` and scripts `update-drive.sh` lays out
 - [ ] After `sh drive/build-drive.sh <drive>`, an empty `<drive>/.metadata_never_index` exists
 - [ ] `sh drive/build-drive.sh <drive>` leaves every file in `<drive>/.mediatagger/` byte-identical and nothing outside `<drive>/mediatagger/` changed except `.metadata_never_index`

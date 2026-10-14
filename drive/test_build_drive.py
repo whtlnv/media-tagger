@@ -228,3 +228,21 @@ def test_build_drive_removes_a_deb_left_in_the_drive_debs_by_an_earlier_build(tm
     subprocess.run(["sh", str(BUILD_DRIVE), str(tmp_path / "drive")], env=env)
 
     assert not stale.exists()
+
+
+def test_build_drive_fails_naming_the_empty_apt_cache_and_leaves_no_drive_debs_when_aptpi_holds_no_deb(tmp_path):
+    env = fake_build_env(tmp_path, tmp_path / "uv-calls")
+    archives = Path(env["APTPI"]) / "var" / "cache" / "apt" / "archives"
+    for deb in archives.glob("*.deb"):
+        deb.unlink()
+    drive = tmp_path / "drive"
+    drive.mkdir()
+
+    result = subprocess.run(["sh", str(BUILD_DRIVE), str(drive)], env=env, capture_output=True, text=True)
+
+    assert {
+        "failed": result.returncode != 0,
+        "names_archives": str(archives) in result.stderr,
+        "raw_cp_error": "cp:" in result.stderr,
+        "debs_left": (drive / "mediatagger" / "debs").exists(),
+    } == {"failed": True, "names_archives": True, "raw_cp_error": False, "debs_left": False}
