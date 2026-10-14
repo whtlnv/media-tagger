@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -46,3 +47,29 @@ def test_check_video_leak_starts_the_app_on_its_target_through_the_drives_run_sh
     )
 
     assert recorded_args(record) == [b"/media/My Videos/clip.mp4"]
+
+
+def test_check_video_leak_logs_under_home_and_copies_the_logs_to_the_drive_results_only_after_the_app_has_exited(tmp_path):
+    mediatagger = drive_with_check_script(tmp_path)
+    results = tmp_path / "drive" / "results"
+    seen_while_running = tmp_path / "results-seen-while-running"
+    write_executable(
+        mediatagger / "run.sh",
+        f"ls -A \"{results}\" > \"{seen_while_running}\" 2>/dev/null; echo app output; echo app error >&2",
+    )
+    env = env_with_fake_tools(tmp_path)
+
+    subprocess.run(
+        ["sh", str(mediatagger / "check-video-leak.sh"), "/media/clip.mp4"],
+        check=True, env=env, timeout=30,
+    )
+
+    [log] = (Path(env["HOME"]) / "mediatagger-check").iterdir()
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2}-\d{6}", log.name)
+    logged = {f.name: f.read_bytes() for f in log.iterdir()}
+    assert {"info.txt", "fds.txt", "app.log"} <= logged.keys()
+    assert b"abc1234 subject" in logged["info.txt"] and b"/media/clip.mp4" in logged["info.txt"]
+    assert b"app output" in logged["app.log"] and b"app error" in logged["app.log"]
+    copied = results / f"check-video-leak-{log.name}"
+    assert {f.name: f.read_bytes() for f in copied.iterdir()} == logged
+    assert seen_while_running.read_text() == ""
