@@ -32,6 +32,13 @@ def fake_bin_env(tmp_path, bin_dir, **extra):
     }
 
 
+def libmpv2_installed_env(tmp_path):
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    fake_command(bin_dir, "dpkg-query", "printf 'install ok installed'")
+    return fake_bin_env(tmp_path, bin_dir)
+
+
 def fake_recording_apt_get(bin_dir, record):
     fake_command(bin_dir, "apt-get", f"""
 i=1; while [ -e "{record}/$i" ]; do i=$((i+1)); done
@@ -132,10 +139,7 @@ done""")
 
 def test_setup_pi_writes_a_mediatagger_desktop_entry_that_launches_the_drives_run_sh(tmp_path):
     mediatagger = drive_with_setup_pi(tmp_path)
-    bin_dir = tmp_path / "bin"
-    bin_dir.mkdir()
-    fake_command(bin_dir, "dpkg-query", "printf 'install ok installed'")
-    env = fake_bin_env(tmp_path, bin_dir)
+    env = libmpv2_installed_env(tmp_path)
 
     subprocess.run(["sh", str(mediatagger / "setup-pi.sh")], check=True, env=env)
 
@@ -154,10 +158,7 @@ def test_setup_pi_writes_a_mediatagger_desktop_entry_that_launches_the_drives_ru
 
 def test_setup_pi_without_xdg_data_home_writes_the_desktop_entry_under_home_local_share(tmp_path):
     mediatagger = drive_with_setup_pi(tmp_path)
-    bin_dir = tmp_path / "bin"
-    bin_dir.mkdir()
-    fake_command(bin_dir, "dpkg-query", "printf 'install ok installed'")
-    env = fake_bin_env(tmp_path, bin_dir)
+    env = libmpv2_installed_env(tmp_path)
     del env["XDG_DATA_HOME"]
 
     subprocess.run(["sh", str(mediatagger / "setup-pi.sh")], check=True, env=env)
@@ -168,10 +169,7 @@ def test_setup_pi_without_xdg_data_home_writes_the_desktop_entry_under_home_loca
 
 def test_setup_pi_replaces_an_older_desktop_entry_and_running_twice_leaves_the_same_single_entry(tmp_path):
     mediatagger = drive_with_setup_pi(tmp_path)
-    bin_dir = tmp_path / "bin"
-    bin_dir.mkdir()
-    fake_command(bin_dir, "dpkg-query", "printf 'install ok installed'")
-    env = fake_bin_env(tmp_path, bin_dir)
+    env = libmpv2_installed_env(tmp_path)
     apps = Path(env["XDG_DATA_HOME"]) / "applications"
     apps.mkdir(parents=True)
     (apps / "mediatagger.desktop").write_text(
