@@ -1,4 +1,7 @@
 #!/bin/sh
+# Run on the Mac (or in the VM): replaces the drive's app/ with this checkout's code, precompiled, and refreshes the drive's
+# scripts. Packages, .debs and the drive's tags (.mediatagger/) are left alone. Use a clean checkout of a validated commit.
+# Usage: sh drive/update-drive.sh <drive mount point>
 [ -n "$1" ] || { echo "usage: sh drive/update-drive.sh <drive>" >&2; exit 2; }
 here=$(cd "$(dirname "$0")" && pwd)
 mediatagger="$1/mediatagger"
@@ -12,3 +15,5 @@ version="$mediatagger/app/VERSION"
 git -C "$here/.." log -1 --format="%h %s" > "$version" 2>/dev/null || echo unknown > "$version"
 cp "$here"/run.sh "$here"/setup-pi.sh "$here"/check-video-leak.sh "$mediatagger"/
 find "$mediatagger" -name "._*" -type f -delete
+sync
+echo "App copied: $(cat "$version")"

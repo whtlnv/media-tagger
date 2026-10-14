@@ -1,4 +1,8 @@
 #!/bin/sh
+# One-time Pi setup, no network needed: installs libmpv2 from this drive's debs/ (apt only adds what the Pi lacks) and adds
+# a "MediaTagger" menu entry that runs this drive's run.sh. Running it again is harmless.
+# apt's "_apt ... Permission denied" notices are harmless (exFAT files aren't readable by apt's sandbox user).
+# Usage: sh setup-pi.sh
 here=$(cd "$(dirname "$0")" && pwd -P)
 libmpv2_installed() {
   dpkg-query -W -f='${Status}' libmpv2 2>/dev/null | grep -q 'install ok installed'
@@ -25,3 +29,4 @@ Exec=sh "$here/run.sh"
 Terminal=false
 Categories=AudioVideo;Video;
 DESKTOP
+echo "MediaTagger is in the menu (runs $here/run.sh)."
