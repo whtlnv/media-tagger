@@ -219,3 +219,26 @@ def test_setup_pi_when_installing_libmpv2_fails_exits_non_zero_and_writes_no_des
 
     assert result.returncode != 0
     assert not (Path(env["XDG_DATA_HOME"]) / "applications" / "mediatagger.desktop").exists()
+
+
+def test_setup_pi_hands_apt_get_update_a_lists_folder_already_holding_an_empty_partial_folder(tmp_path):
+    mediatagger = drive_with_setup_pi(tmp_path)
+    partial_seen = tmp_path / "partial-seen"
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    fake_command(bin_dir, "dpkg-query", "exit 1")
+    fake_command(bin_dir, "sudo", 'exec "$@"')
+    fake_command(bin_dir, "apt-get", f"""
+for a; do
+  case "$a" in Dir::State::Lists=*) d="${{a#Dir::State::Lists=}}";; esac
+done
+for a; do
+  if [ "$a" = update ]; then
+    if [ -d "$d/partial" ] && [ -z "$(ls -A "$d/partial")" ]; then printf 'empty' > "{partial_seen}"; else printf 'missing-or-not-empty' > "{partial_seen}"; fi
+  fi
+done""")
+    env = fake_bin_env(tmp_path, bin_dir)
+
+    subprocess.run(["sh", str(mediatagger / "setup-pi.sh")], check=True, env=env)
+
+    assert partial_seen.read_text() == "empty"

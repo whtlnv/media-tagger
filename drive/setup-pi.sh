@@ -5,6 +5,7 @@ libmpv2_installed() {
 }
 install_libmpv2() {
   work=$(mktemp -d)
+  mkdir -p "$work/lists/partial"
   printf 'deb [trusted=yes] file:%s/debs ./\n' "$here" > "$work/sources.list"
   apt() {
     sudo apt-get -o Dir::Etc::sourcelist="$work/sources.list" -o Dir::Etc::sourceparts=- -o Dir::State::Lists="$work/lists" "$@"
