@@ -644,12 +644,16 @@ def offscreen_environment_with_slow_fake_video_tools_in(folder):
     return environment
 
 
+def put_60_empty_videos_in(folder):
+    for number in range(60):
+        (folder / f"VID_{number:02}.mp4").write_bytes(b"")
+
+
 def test_pressing_esc_to_quit_the_mediatagger_command_from_a_grid_whose_thumbnails_are_still_generating_ends_the_process_within_3_s(tmp_path):
     folder = tmp_path / "videos"
     folder.mkdir()
     make_image(folder / "A.png", "red")
-    for number in range(60):
-        (folder / f"VID_{number:02}.mp4").write_bytes(b"")
+    put_60_empty_videos_in(folder)
     environment = offscreen_environment_with_slow_fake_video_tools_in(tmp_path / "bin")
     returncode, seconds_to_end, stderr = run_python_then_time_from_quitting_to_ending(PRESS_ESC_THEN_SAY_QUITTING_THEN_ESC_IN_THE_GRID_SCRIPT, str(folder), environment)
     assert returncode == 0, stderr
@@ -717,8 +721,7 @@ def test_quitting_the_mediatagger_command_with_a_library_whose_backup_is_due_end
     data_home = tmp_path / "data-home"
     monkeypatch.setenv("XDG_DATA_HOME", str(data_home))
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    for number in range(60):
-        (folder / f"VID_{number:02}.mp4").write_bytes(b"")
+    put_60_empty_videos_in(folder)
     environment = offscreen_environment_with_slow_fake_video_tools_in(tmp_path / "bin")
     returncode, seconds_to_end, stderr = run_python_then_time_from_quitting_to_ending(ENTER_A_TAG_THEN_ESC_THEN_SAY_QUITTING_THEN_ESC_IN_THE_GRID_ON_A_DRIVE_SCRIPT, str(folder), environment)
     assert returncode == 0, stderr
