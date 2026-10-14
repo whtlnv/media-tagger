@@ -3,6 +3,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from fakes import fake_command
+
 SETUP_PI = Path(__file__).resolve().parent / "setup-pi.sh"
 
 
@@ -11,11 +13,6 @@ def drive_with_setup_pi(tmp_path):
     (mediatagger / "debs").mkdir(parents=True)
     shutil.copy(SETUP_PI, mediatagger / "setup-pi.sh")
     return mediatagger
-
-
-def fake_command(bin_dir, name, script):
-    (bin_dir / name).write_text(f"#!/bin/sh\n{script}\n")
-    (bin_dir / name).chmod(0o755)
 
 
 def fake_bin_env(tmp_path, bin_dir, **extra):

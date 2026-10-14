@@ -5,6 +5,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from fakes import fake_command
+
 BUILD_DRIVE = Path(__file__).resolve().parent / "build-drive.sh"
 
 EXPORTED = """\
@@ -17,11 +19,6 @@ python-mpv==0.9.1
 shiboken6==6.4.2
     # via pyside6-essentials
 """
-
-
-def fake_command(bin_dir, name, script):
-    (bin_dir / name).write_text(f"#!/bin/sh\n{script}\n")
-    (bin_dir / name).chmod(0o755)
 
 
 def fake_build_env(tmp_path, record):
