@@ -351,3 +351,22 @@ def test_build_drive_without_a_drive_argument_fails_with_its_usage_message_and_i
         "uv_calls": sorted(p.name for p in record.iterdir()),
         "written_in_cwd": sorted(p.name for p in cwd.iterdir()),
     } == {"failed": True, "usage_names_build_drive": True, "uv_calls": [], "written_in_cwd": []}
+
+
+def test_build_drive_fails_and_lays_out_no_debs_app_or_never_index_marker_when_uv_pip_install_fails(tmp_path):
+    env = fake_build_env(tmp_path, tmp_path / "uv-calls")
+    fake_command(tmp_path / "bin", "uv", f"""
+if [ "$1" = export ]; then cat "{tmp_path / 'exported.txt'}"; exit 0; fi
+echo "error: no matching distribution" >&2
+exit 1""")
+    drive = tmp_path / "drive"
+    drive.mkdir()
+
+    result = subprocess.run(["sh", str(BUILD_DRIVE), str(drive)], env=env, capture_output=True, text=True)
+
+    assert {
+        "failed": result.returncode != 0,
+        "debs": (drive / "mediatagger" / "debs").exists(),
+        "app": (drive / "mediatagger" / "app").exists(),
+        "metadata_never_index": (drive / ".metadata_never_index").exists(),
+    } == {"failed": True, "debs": False, "app": False, "metadata_never_index": False}

@@ -4,7 +4,7 @@ lib="$1/mediatagger/lib-linux-aarch64-cp313"
 rm -rf "$lib"
 requirements=$(mktemp)
 (cd "$(dirname "$0")/.." && uv export --frozen --no-dev --no-hashes --no-emit-project) > "$requirements"
-uv pip install -q --python /usr/bin/python3.13 --target "$lib" -r "$requirements"
+uv pip install -q --python /usr/bin/python3.13 --target "$lib" -r "$requirements" || exit 1
 rm -f "$requirements"
 python3.13 -m compileall -q --invalidation-mode unchecked-hash -x /deploy_lib/ "$lib"
 debs="$1/mediatagger/debs"
