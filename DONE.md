@@ -1,3 +1,46 @@
+- [x] 2026-10-14 · `sh drive/update-drive.sh <drive>` puts every non-test module of the `mediatagger` package into `<drive>/mediatagger/app/mediatagger/`
+- [x] 2026-10-14 · `sh drive/update-drive.sh <drive>` leaves `test_*.py` and `conftest.py` out of the drive's `app/`
+- [x] 2026-10-14 · After `sh drive/update-drive.sh <drive>`, every module in the drive's `app/` has unchecked-hash precompiled bytecode next to it
+- [x] 2026-10-14 · After `sh drive/update-drive.sh <drive>`, a module and its bytecode left in `app/` by an earlier update are gone
+- [x] 2026-10-14 · After `sh drive/update-drive.sh <drive>`, `app/VERSION` holds the repo's last commit as `<short hash> <subject>`
+- [x] 2026-10-14 · After `sh drive/update-drive.sh <drive>` when `git log` fails, `app/VERSION` holds `unknown`
+- [x] 2026-10-14 · After `sh drive/update-drive.sh <drive>`, `<drive>/mediatagger/` holds the `run.sh`, `setup-pi.sh` and `check-video-leak.sh` from `drive/`
+- [x] 2026-10-14 · `sh drive/update-drive.sh <drive>` deletes macOS `._*` files anywhere under `<drive>/mediatagger/`
+- [x] 2026-10-14 · `sh drive/update-drive.sh <drive>` leaves `._*` files outside `<drive>/mediatagger/` in place
+- [x] 2026-10-14 · `sh drive/update-drive.sh <drive>` leaves the drive's `lib-linux-aarch64-cp313/` and `debs/` exactly as they were
+- [x] 2026-10-14 · `sh drive/update-drive.sh <drive>` leaves every file in `<drive>/.mediatagger/` (the drive's tags) byte-identical
+- [x] 2026-10-14 · `sh drive/update-drive.sh` with no drive argument fails with a usage message and writes nothing
+- [x] 2026-10-14 · `sh <drive>/mediatagger/run.sh` starts `python3 -c 'import mediatagger; mediatagger.main()'` with its arguments passed through unchanged, spaces kept
+- [x] 2026-10-14 · `sh <drive>/mediatagger/run.sh` started from any working directory gives python3 a `PYTHONPATH` of its own folder's `app` then `lib-linux-aarch64-cp313`
+- [x] 2026-10-14 · `sh <drive>/mediatagger/run.sh` starts python3 with `PYTHONDONTWRITEBYTECODE=1`
+- [x] 2026-10-14 · `sh <drive>/mediatagger/setup-pi.sh` on a Pi without libmpv2 installs it with `sudo apt-get` (update, then `install -y --no-install-recommends libmpv2`) from a temporary trusted `file:` source pointing at the drive's `debs/`, with its own lists folder
+- [x] 2026-10-14 · `sh <drive>/mediatagger/setup-pi.sh` on a Pi where `dpkg-query` reports libmpv2 `install ok installed` runs neither `sudo` nor `apt-get`
+- [x] 2026-10-14 · After `sh <drive>/mediatagger/setup-pi.sh` installs libmpv2, its temporary apt lists folder is gone
+- [x] 2026-10-14 · `sh <drive>/mediatagger/setup-pi.sh` writes `$XDG_DATA_HOME/applications/mediatagger.desktop` (creating the folder) with `[Desktop Entry]`, `Type=Application`, `Name=MediaTagger`, `Exec=sh "<absolute path of the drive's mediatagger folder>/run.sh"`, `Terminal=false` and `Categories=AudioVideo;Video;Graphics;`
+- [x] 2026-10-14 · `sh <drive>/mediatagger/setup-pi.sh` with `XDG_DATA_HOME` unset writes the menu entry to `$HOME/.local/share/applications/mediatagger.desktop`
+- [x] 2026-10-14 · `sh <drive>/mediatagger/setup-pi.sh` replaces an older `mediatagger.desktop` with the current entry, and running it twice leaves the same single entry
+- [x] 2026-10-14 · `sh <drive>/mediatagger/setup-pi.sh` on a Pi where `dpkg-query -W -f='${Status}' libmpv2` reports it removed with its configuration kept (`deinstall ok config-files`) still installs libmpv2 from the drive
+- [x] 2026-10-14 · `sh <drive>/mediatagger/setup-pi.sh` when installing libmpv2 fails (`apt-get` exits non-zero) exits non-zero and writes no menu entry
+- [x] 2026-10-14 · `sh <drive>/mediatagger/check-video-leak.sh <target>` starts the app on `<target>` through the drive's `run.sh`
+- [x] 2026-10-14 · `sh drive/build-drive.sh <drive>` installs into `<drive>/mediatagger/lib-linux-aarch64-cp313/` with `uv pip install --python /usr/bin/python3.13 --target` exactly the packages and versions `uv export --frozen --no-dev --no-hashes --no-emit-project` gives
+- [x] 2026-10-14 · After `sh drive/build-drive.sh <drive>`, the packages in `lib-linux-aarch64-cp313/` have unchecked-hash precompiled bytecode, except under `deploy_lib`
+- [x] 2026-10-14 · After `sh drive/build-drive.sh <drive>`, a package left in `lib-linux-aarch64-cp313/` by an earlier build is gone
+- [x] 2026-10-14 · `sh drive/build-drive.sh <drive>` copies every `.deb` from `$APTPI/var/cache/apt/archives/` into `<drive>/mediatagger/debs/` and leaves there the `Packages` index `apt-ftparchive packages .` produces inside `debs/`
+- [x] 2026-10-14 · `sh drive/build-drive.sh <drive>` with `APTPI` unset takes the `.deb`s from `$HOME/aptpi/var/cache/apt/archives/`
+- [x] 2026-10-14 · After `sh drive/build-drive.sh <drive>`, a `.deb` left in `debs/` by an earlier build is gone
+- [x] 2026-10-14 · `sh drive/build-drive.sh <drive>` when `$APTPI` holds no `.deb` fails with a clear message and leaves no partial `debs/`
+- [x] 2026-10-14 · After `sh drive/build-drive.sh <drive>`, `<drive>/mediatagger/` holds the same `app/` and scripts `update-drive.sh` lays out
+- [x] 2026-10-14 · After `sh drive/build-drive.sh <drive>`, an empty `<drive>/.metadata_never_index` exists
+- [x] 2026-10-14 · `sh drive/build-drive.sh <drive>` leaves every file in `<drive>/.mediatagger/` byte-identical and nothing outside `<drive>/mediatagger/` changed except `.metadata_never_index`
+- [x] 2026-10-14 · On a drive laid out by `update-drive.sh` (with a `lib-linux-aarch64-cp313/` holding the locked third-party packages), `sh <drive>/mediatagger/run.sh` with a real `python3` and no repo on its path starts the real app from the drive's `app/`, and the drive gains no files while it runs
+- [x] 2026-10-14 · `sh <drive>/mediatagger/setup-pi.sh` hands `apt-get` a lists folder that already holds an empty `partial/` folder (apt refuses to update without it), as the spike does
+- [x] 2026-10-14 · `sh <drive>/mediatagger/check-video-leak.sh [target]` does what the spike's `check-video-leak.sh` does (info, fd log every 10 s while the app runs, default target `../samples/06_clip_hevc_1080p.mp4`, logs under `~/mediatagger-check/<stamp>/`, copied to `<drive>/results/check-video-leak-<stamp>/` only after the app has exited) — ported, starting the app through `run.sh`
+- [x] 2026-10-14 · `sh drive/build-drive.sh <drive>` started from any working directory exports the locked packages of this repo (`uv export` runs on the repo's own `pyproject.toml`/`uv.lock`)
+- [x] 2026-10-14 · `sh drive/update-drive.sh <drive>` from a copy of the repo that is not a git checkout (or with no `git` installed) writes `unknown` to `app/VERSION` without printing an error
+- [x] 2026-10-14 · `sh drive/build-drive.sh` with no drive argument fails with a usage message and removes or writes nothing
+- [x] 2026-10-14 · `sh drive/build-drive.sh <drive>` when installing the Python packages fails (`uv pip install` exits non-zero) exits non-zero and does not go on to lay out `debs/`, `app/` or `.metadata_never_index`
+- [x] 2026-10-14 · `sh drive/update-drive.sh <drive>` when precompiling the app fails (`python3.13` exits non-zero) exits non-zero and copies no scripts onto the drive
+- [x] 2026-10-14 · `sh drive/update-drive.sh <drive>` on a drive where copying leaves a macOS `._<name>` companion (binary, with null bytes) next to each copied file — as the Mac does on exFAT — still precompiles every module, exits zero and leaves no `._*` file under `<drive>/mediatagger/` (found on a scratch exFAT image: compileall tried to compile the `._*.py` files and the update failed)
 - [x] 2026-10-13 · Searching a library for `beach` finds a tagged file whose own tags include `beach`
 - [x] 2026-10-13 · Searching a library for `beach` leaves out a tagged file whose tags don't include `beach`
 - [x] 2026-10-13 · Searching for `Beach` (any letter case) finds a file tagged `beach`
