@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-14 09:24 · `src/mediatagger/test_window_thumbnails.py::test_closing_the_window_stops_its_results_grids_thumbnails_so_one_still_being_generated_reaches_no_tile`
+- Behavior: Closing the window stops thumbnail generation of its results grid: a thumbnail still being generated is delivered to no tile
+- Predicted: passes on first run — the previous cycle's `Window.closeEvent` stops every `Grid` child, and the results grid sits in the same stack as the folder grid
+- Actual: passes; with the `closeEvent` stop loop temporarily removed it fails (the result tile receives its thumbnail), so the test genuinely pins the behavior
+- Type: passed unexpectedly
+- Resolution: The folder-grid fix already covers results grids. Kept the test as a regression pin rather than rewriting it to fail artificially; there is no production code for /green to write.
+
 ## 2026-10-14 07:35 · `src/mediatagger/test_window.py::test_dragging_a_folder_of_another_drive_over_the_windows_grid_viewport_and_dropping_it_then_esc_shows_that_folders_grid_with_the_new_drives_tag_badges`
 - Behavior: Dropping a folder of another drive onto the grid's viewport shows it with that drive's tags
 - Predicted: passes on first run — a real enter → move → drop on the grid's viewport already reaches `Window._open`, the same path `o` takes, and the `o`-from-another-drive tag-badge test already passes

@@ -234,3 +234,46 @@ def test_closing_the_window_stops_its_folder_grids_thumbnails_so_one_still_being
     qtbot.wait(200)  # long enough for a finished thumbnail to be delivered to its tile
 
     assert tile.thumbnail is None
+
+
+def test_closing_the_window_stops_its_results_grids_thumbnails_so_one_still_being_generated_reaches_no_tile(qtbot, tmp_path, monkeypatch):
+    import threading
+
+    from mediatagger import grid as grid_module
+    from mediatagger.library import Library
+    from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image
+    from mediatagger.test_window import window_showing_the_grid_with_its_cursor_on_its_first_tile
+    from mediatagger.test_window_search import search_for
+    from mediatagger.thumbnails import thumbnail_and_duration
+
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    result = drive / "Elsewhere" / "IMG_9.png"
+    result.parent.mkdir()
+    make_image(result, "blue")
+    Library.open(drive).enter(result, "beach")
+    started = threading.Event()
+    release = threading.Event()
+    finished = threading.Event()
+
+    def generate(path):
+        if path != result:
+            return thumbnail_and_duration(path)
+        started.set()
+        release.wait(timeout=10)
+        try:
+            return thumbnail_and_duration(path)
+        finally:
+            finished.set()
+
+    monkeypatch.setattr(grid_module, "thumbnail_and_duration", generate)
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    search_for(qtbot, window, stack, "beach")
+    tile = stack.currentWidget().model().index(0, 0).data(TILE_ROLE)
+    qtbot.waitUntil(started.is_set)
+
+    window.close()
+    release.set()
+    qtbot.waitUntil(finished.is_set)
+    qtbot.wait(200)  # long enough for a finished thumbnail to be delivered to its tile
+
+    assert (tile.path, tile.thumbnail) == (result, None)
