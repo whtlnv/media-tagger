@@ -4,6 +4,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from fakes import recorded_args
+
 RUN = Path(__file__).resolve().parent / "run.sh"
 
 
@@ -28,10 +30,6 @@ def env_with_fake_python3(tmp_path, script):
 
 def env_with_recording_python3(tmp_path, record):
     return env_with_fake_python3(tmp_path, f"printf '%s\\0' \"$@\" > \"{record}\"")
-
-
-def recorded_args(record):
-    return record.read_bytes().split(b"\0")[:-1] if record.exists() else None
 
 
 def test_run_starts_python3_importing_mediatagger_main_with_its_arguments_passed_through_unchanged(tmp_path):

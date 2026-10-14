@@ -4,6 +4,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from fakes import recorded_args
+
 CHECK_VIDEO_LEAK = Path(__file__).resolve().parent / "check-video-leak.sh"
 
 
@@ -29,10 +31,6 @@ def env_with_fake_tools(tmp_path):
     home = tmp_path / "home"
     home.mkdir()
     return {**os.environ, "HOME": str(home), "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}"}
-
-
-def recorded_args(record):
-    return record.read_bytes().split(b"\0")[:-1] if record.exists() else None
 
 
 def test_check_video_leak_starts_the_app_on_its_target_through_the_drives_run_sh(tmp_path):
