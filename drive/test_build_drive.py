@@ -181,3 +181,23 @@ def test_build_drive_removes_a_package_left_in_the_drive_lib_by_an_earlier_build
     subprocess.run(["sh", str(BUILD_DRIVE), str(drive)], env=env)
 
     assert not stale.exists()
+
+
+def test_build_drive_copies_every_pi_apt_cache_deb_into_the_drive_debs_with_the_packages_index_built_there(tmp_path):
+    env = fake_build_env(tmp_path, tmp_path / "uv-calls")
+    fake_command(tmp_path / "bin", "apt-ftparchive", """
+[ "$1" = packages ] && [ "$2" = . ] && [ $# -eq 2 ] || exit 2
+for f in *.deb; do printf 'Filename: %s/%s\\n' "$PWD" "$f"; done""")
+    archives = Path(env["APTPI"]) / "var" / "cache" / "apt" / "archives"
+    (archives / "mpv_0.39.0-3_arm64.deb").write_bytes(b"!<arch>\nmpv")
+    drive = tmp_path / "drive"
+    drive.mkdir()
+
+    subprocess.run(["sh", str(BUILD_DRIVE), str(drive)], env=env)
+
+    debs = drive / "mediatagger" / "debs"
+    pi_debs = sorted(archives.glob("*.deb"))
+    assert {p.name: p.read_bytes() for p in debs.iterdir()} == {
+        **{p.name: p.read_bytes() for p in pi_debs},
+        "Packages": "".join(f"Filename: {debs}/{p.name}\n" for p in pi_debs).encode(),
+    }
