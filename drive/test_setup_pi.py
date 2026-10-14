@@ -150,3 +150,17 @@ def test_setup_pi_writes_a_mediatagger_desktop_entry_that_launches_the_drives_ru
         "Terminal=false",
         "Categories=AudioVideo;Video;Graphics;",
     } <= set(lines[1:])
+
+
+def test_setup_pi_without_xdg_data_home_writes_the_desktop_entry_under_home_local_share(tmp_path):
+    mediatagger = drive_with_setup_pi(tmp_path)
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    fake_command(bin_dir, "dpkg-query", "printf 'install ok installed'")
+    env = fake_bin_env(tmp_path, bin_dir)
+    del env["XDG_DATA_HOME"]
+
+    subprocess.run(["sh", str(mediatagger / "setup-pi.sh")], check=True, env=env)
+
+    desktop = Path(env["HOME"]) / ".local" / "share" / "applications" / "mediatagger.desktop"
+    assert desktop.is_file()

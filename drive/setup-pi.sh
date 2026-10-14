@@ -1,7 +1,8 @@
 #!/bin/sh
 here=$(cd "$(dirname "$0")" && pwd -P)
-mkdir -p "$XDG_DATA_HOME/applications"
-cat > "$XDG_DATA_HOME/applications/mediatagger.desktop" <<DESKTOP
+apps="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
+mkdir -p "$apps"
+cat > "$apps/mediatagger.desktop" <<DESKTOP
 [Desktop Entry]
 Type=Application
 Name=MediaTagger
