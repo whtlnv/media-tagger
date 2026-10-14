@@ -28,6 +28,10 @@ def version_on(drive):
     return drive / "mediatagger" / "app" / "VERSION"
 
 
+def app_modules():
+    return [p.name for p in PACKAGE.glob("*.py") if not p.name.startswith("test_") and p.name != "conftest.py"]
+
+
 def modules_on_drive_after_update(tmp_path):
     drive = empty_drive(tmp_path)
 
@@ -39,12 +43,7 @@ def modules_on_drive_after_update(tmp_path):
 def test_update_drive_puts_every_non_test_module_into_the_drive_app(tmp_path):
     on_drive = modules_on_drive_after_update(tmp_path)
 
-    modules = {
-        p.name
-        for p in PACKAGE.glob("*.py")
-        if not p.name.startswith("test_") and p.name != "conftest.py"
-    }
-    assert modules <= on_drive
+    assert set(app_modules()) <= on_drive
     assert "__init__.py" in on_drive
 
 
@@ -277,13 +276,8 @@ def test_update_drive_on_a_drive_where_copying_leaves_macos_resource_forks_still
     result = subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], env=env, capture_output=True, text=True)
 
     app = app_on(drive)
-    modules = [
-        p.name
-        for p in PACKAGE.glob("*.py")
-        if not p.name.startswith("test_") and p.name != "conftest.py"
-    ]
     assert {
         "returncode": result.returncode,
-        "uncompiled": [m for m in modules if not Path(importlib.util.cache_from_source(str(app / m))).exists()],
+        "uncompiled": [m for m in app_modules() if not Path(importlib.util.cache_from_source(str(app / m))).exists()],
         "forks": [str(p.relative_to(drive)) for p in (drive / "mediatagger").rglob("._*")],
     } == {"returncode": 0, "uncompiled": [], "forks": []}
