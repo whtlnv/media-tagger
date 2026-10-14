@@ -728,3 +728,23 @@ def test_quitting_the_mediatagger_command_with_a_library_whose_backup_is_due_end
     assert seconds_to_end < 3, stderr
     backup_root = data_home / "mediatagger" / "backups"
     assert tags_in_newest_backup(backup_root, drive, tmp_path / "restored", folder.relative_to(drive) / "IMG_1.png") == ["beach"]
+
+REPORT_WAYLAND_TEXTINPUT_WARNINGS_SCRIPT = (
+    "import sys\n"
+    "from PySide6.QtCore import QLoggingCategory, QTimer\n"
+    "from PySide6.QtWidgets import QApplication\n"
+    "app = QApplication([])\n"
+    "def report():\n"
+    "    category = QLoggingCategory('qt.qpa.wayland.textinput')\n"
+    "    print(f'textinput_warnings={category.isWarningEnabled()}', flush=True)\n"
+    "    QApplication.closeAllWindows()\n"
+    "    QApplication.quit()\n"
+    "QTimer.singleShot(1000, report)\n"
+    "sys.argv = ['mediatagger']\n"
+) + RUN_MEDIATAGGER_COMMAND
+
+
+def test_the_mediatagger_command_starts_with_wayland_textinput_warnings_disabled():
+    result = run_python_offscreen(REPORT_WAYLAND_TEXTINPUT_WARNINGS_SCRIPT)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "textinput_warnings=False"

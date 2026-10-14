@@ -26,7 +26,7 @@ Phase 12 notes for every cycle (Phases 1–11 are delivered — see DONE.md; Pha
 - [x] Pressing `Esc` to quit the real `mediatagger` command from a grid whose thumbnails are still generating ends the process within 3 s
 - [x] Quitting the app while a video plays ends the process within 3 s
 - [x] Quitting the app with a library whose backup is due ends the process within 3 s
-- [ ] The real `mediatagger` command starts with `qt.qpa.wayland.textinput` warnings disabled
+- [x] The real `mediatagger` command starts with `qt.qpa.wayland.textinput` warnings disabled
 - [ ] The real `mediatagger` command leaves `qt.qpa.wayland` warnings enabled
 - [ ] The real `mediatagger` command started with `QT_LOGGING_RULES=qt.qpa.wayland.textinput=true` keeps `qt.qpa.wayland.textinput` warnings enabled
 - [ ] Over a white video frame, the progress bar outside its text and track leaves the frame white
