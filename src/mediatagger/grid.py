@@ -326,7 +326,7 @@ class Grid(QListView):
         event.acceptProposedAction()
 
     def dragMoveEvent(self, event):
-        if event.mimeData().hasUrls():
+        if event.mimeData().hasUrls() and event.mimeData().urls()[0].isLocalFile():
             event.acceptProposedAction()
 
     def dropEvent(self, event):
