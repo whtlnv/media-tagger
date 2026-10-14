@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-14 07:24 · `src/mediatagger/test_window.py::test_dragging_a_folder_over_the_windows_grid_viewport_and_dropping_it_shows_that_folders_slideshow_from_its_first_item`
+- Behavior: Dropping a folder onto the grid's viewport shows that folder's slideshow from its first item
+- Predicted: passes on first run — the previous cycle made `Grid.dragMoveEvent` accept local-file moves, and `grid.dropped` is already wired to `Window._open`
+- Actual: passes
+- Type: passed unexpectedly
+- Resolution: the drop through a real enter → move → drop sequence already works; the test is non-vacuous (reverting `Grid.dragMoveEvent` to the inherited `QAbstractItemView` one makes it fail with the grid still shown), so kept as a pin needing no /green.
+
 ## 2026-10-14 06:39 · `src/mediatagger/test_grid.py::test_a_drag_of_plain_text_moving_over_the_grids_viewport_is_refused`
 - Behavior: A drag of plain text moving over the grid's viewport is refused
 - Predicted: AssertionError — `Grid.dragMoveEvent` accepts every drag, so the plain-text move would be accepted

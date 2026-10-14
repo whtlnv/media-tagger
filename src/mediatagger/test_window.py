@@ -13,7 +13,7 @@ from mediatagger.grid import TAG_BADGE, TILE_ROLE, Grid
 from mediatagger.library import Library
 from mediatagger.state import remember, state_file
 from mediatagger.status_bar import READ_ONLY_STATUS_TEXT, TAGS_CANT_BE_SAVED_HERE_TEXT, StatusBar
-from mediatagger.test_grid import painted_texts
+from mediatagger.test_grid import drag_move_over, painted_texts
 from mediatagger.test_tag_prompt import listed
 from mediatagger.test_thumbnail_cache import solid_thumbnail
 from mediatagger.test_video import make_clip
@@ -23,7 +23,7 @@ from mediatagger.test_viewer_library import (
     decline_noting_the_question_in, drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image, enter_in_tag_prompt,
     frame_in, made_read_only, make_tag_library_drive, overwrite_tags_db_with_garbage, resize_and_wait, visible_tag_prompt_texts, visible_tag_prompts,
 )
-from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
+from mediatagger.test_viewer_open import drag_and_drop_onto, drag_enter_over, dragged_local_path, drop_onto, make_folders
 from mediatagger.thumbnail_cache import ThumbnailCache, cache_file
 from mediatagger.viewer import READ_ONLY_BANNER_TEXT, Viewer
 from mediatagger.window import Window
@@ -295,6 +295,27 @@ def test_dropping_a_file_onto_the_windows_grid_starts_its_folders_slideshow_at_t
     shown = stack.currentWidget()
     assert isinstance(shown, Viewer)
     assert shown.slideshow.current == dropped / "y.jpg"
+
+
+def test_dragging_a_folder_over_the_windows_grid_viewport_and_dropping_it_shows_that_folders_slideshow_from_its_first_item(qtbot, tmp_path):
+    viewed, dropped = make_folders(tmp_path, "viewed", "dropped")
+    make_image(viewed / "a.jpg", "red")
+    make_image(dropped / "y.jpg", "blue")
+    make_image(dropped / "x.jpg", "green")
+    window = Window(viewed, player_options=SILENT)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    viewport = stack.currentWidget().viewport()
+    dragged = dragged_local_path(dropped)
+
+    drag_enter_over(viewport, dragged)
+    if drag_move_over(viewport, dragged).isAccepted():  # the platform drops only where the last move was accepted
+        drop_onto(viewport, dragged)
+
+    shown = stack.currentWidget()
+    assert isinstance(shown, Viewer)
+    assert shown.slideshow.current == dropped / "x.jpg"
 
 
 def test_pressing_o_in_the_windows_grid_opens_the_folder_picker_and_choosing_a_folder_shows_its_slideshow_from_its_first_item(qtbot, tmp_path):
