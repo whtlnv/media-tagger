@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-14 03:07 · `src/mediatagger/test_window.py::test_pressing_o_in_the_windows_viewer_while_a_video_plays_opens_the_folder_picker_and_choosing_a_folder_shows_its_slideshow_from_its_first_item`
+- Behavior: `o` in the viewer while a video plays opens the folder picker, and choosing a folder shows that folder's slideshow from its first item
+- Predicted: passes on first run — 5c9c09b moved `o` ahead of the `slideshow is None` guard in `Viewer.keyPressEvent`, and `open()` already stops the video
+- Actual: passes
+- Type: passed unexpectedly
+- Resolution: the previous cycle's fix already covers a playing video (the key is sent to the focused widget and reaches the viewer); kept as a pin, not rewritten, because no honest failing variant exists offscreen.
+
 ## 2026-10-13 20:59 · `drive/test_run.py::test_run_with_a_real_python3_starts_the_real_app_from_the_drive_app_and_the_drive_gains_no_files`
 - Behavior: On a drive laid out by `update-drive.sh` (with a `lib-linux-aarch64-cp313/` holding the locked third-party packages), `sh <drive>/mediatagger/run.sh` with a real `python3` and no repo on its path starts the real app from the drive's `app/`, and the drive gains no files while it runs
 - Predicted: test passes, because run.sh already sets `PYTHONDONTWRITEBYTECODE=1` and `PYTHONPATH=app:lib` and execs `python3`, and the app with no folder argument writes only under `$HOME`

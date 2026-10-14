@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from PySide6.QtCore import QCoreApplication, QEvent, Qt
-from PySide6.QtWidgets import QLabel, QStackedWidget
+from PySide6.QtWidgets import QApplication, QLabel, QStackedWidget
 
 from mediatagger.backup import back_up
 from mediatagger.drive_session import BACKUP_FAILED_TEXT, CREATE_LIBRARY_QUESTION, RESTORE_LIBRARY_QUESTION
@@ -322,6 +322,26 @@ def test_pressing_o_in_the_windows_viewer_on_an_image_opens_the_folder_picker_an
     stack = window.findChild(QStackedWidget)
 
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_O)
+
+    shown = stack.currentWidget()
+    assert isinstance(shown, Viewer)
+    assert shown.slideshow.current == chosen / "x.jpg"
+
+
+def test_pressing_o_in_the_windows_viewer_while_a_video_plays_opens_the_folder_picker_and_choosing_a_folder_shows_its_slideshow_from_its_first_item(qtbot, tmp_path):
+    viewed, chosen = make_folders(tmp_path, "viewed", "chosen")
+    clip = make_clip(viewed / "a.mp4")
+    make_image(chosen / "y.jpg", "blue")
+    make_image(chosen / "x.jpg", "green")
+    window = Window(viewed, player_options=SILENT, folder_picker=lambda: chosen)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    stack = window.findChild(QStackedWidget)
+    viewer = stack.currentWidget()
+    make_surface_ready(viewer)
+    wait_until_loaded(viewer.video_player.engine, clip)
+
+    qtbot.keyClick(QApplication.focusWidget() or viewer, Qt.Key.Key_O)
 
     shown = stack.currentWidget()
     assert isinstance(shown, Viewer)

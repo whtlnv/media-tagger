@@ -6,7 +6,7 @@ Phase 12 notes for every cycle (Phases 1–11 are delivered — see DONE.md; Pha
 - [x] `o` in a folder grid whose folder picker is cancelled leaves the same grid shown, cursor unchanged
 - [x] `o` in a results grid opens the folder picker, and choosing a folder shows that folder's slideshow from its first item
 - [x] `o` in the viewer while an image of a slideshow is shown opens the folder picker, and choosing a folder shows that folder's slideshow from its first item
-- [ ] `o` in the viewer while a video plays opens the folder picker, and choosing a folder shows that folder's slideshow from its first item
+- [x] `o` in the viewer while a video plays opens the folder picker, and choosing a folder shows that folder's slideshow from its first item
 - [ ] `o` in the viewer whose folder picker is cancelled leaves the same item shown
 - [ ] `o` while the tag prompt has focus types an `o` into the prompt and opens no folder picker
 - [ ] A folder of another drive chosen with `o` from a grid, then `Esc`, shows that folder's grid with the new drive's tag badges
