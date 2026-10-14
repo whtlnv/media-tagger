@@ -748,3 +748,23 @@ def test_the_mediatagger_command_starts_with_wayland_textinput_warnings_disabled
     result = run_python_offscreen(REPORT_WAYLAND_TEXTINPUT_WARNINGS_SCRIPT)
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == "textinput_warnings=False"
+
+REPORT_WAYLAND_WARNINGS_SCRIPT = (
+    "import sys\n"
+    "from PySide6.QtCore import QLoggingCategory, QTimer\n"
+    "from PySide6.QtWidgets import QApplication\n"
+    "app = QApplication([])\n"
+    "def report():\n"
+    "    category = QLoggingCategory('qt.qpa.wayland')\n"
+    "    print(f'wayland_warnings={category.isWarningEnabled()}', flush=True)\n"
+    "    QApplication.closeAllWindows()\n"
+    "    QApplication.quit()\n"
+    "QTimer.singleShot(1000, report)\n"
+    "sys.argv = ['mediatagger']\n"
+) + RUN_MEDIATAGGER_COMMAND
+
+
+def test_the_mediatagger_command_leaves_wayland_warnings_enabled():
+    result = run_python_offscreen(REPORT_WAYLAND_WARNINGS_SCRIPT)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "wayland_warnings=True"
