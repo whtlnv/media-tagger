@@ -21,16 +21,14 @@ from mediatagger.window import Window
 
 def test_showing_a_folders_grid_records_that_folder_and_its_drives_mount_point_in_the_state_file_under_the_config_home(qtbot, tmp_path, monkeypatch):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    config_home = tmp_path / "config"
-    monkeypatch.setenv("XDG_CONFIG_HOME", str(config_home))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "config"))
     window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
     qtbot.addWidget(window)
     stack = window.findChild(QStackedWidget)
 
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
 
-    state = json.loads((config_home / "mediatagger" / "state.json").read_text())
-    assert state == {"folder": str(folder), "mount_point": str(drive)}
+    assert recorded_state() == {"folder": str(folder), "mount_point": str(drive)}
 
 
 def test_every_test_runs_with_the_config_home_pointing_at_a_throwaway_folder_outside_the_real_home():
@@ -41,14 +39,12 @@ def test_every_test_runs_with_the_config_home_pointing_at_a_throwaway_folder_out
 
 def test_showing_a_folders_slideshow_records_that_folder_in_the_state_file(qtbot, tmp_path, monkeypatch):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    config_home = tmp_path / "config"
-    monkeypatch.setenv("XDG_CONFIG_HOME", str(config_home))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "config"))
 
     window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
     qtbot.addWidget(window)
 
-    state = json.loads((config_home / "mediatagger" / "state.json").read_text())
-    assert state["folder"] == str(folder)
+    assert recorded_state()["folder"] == str(folder)
 
 
 def test_with_the_config_home_unset_the_state_is_recorded_under_the_dot_config_folder_of_the_injected_home(qtbot, tmp_path, monkeypatch):
@@ -67,37 +63,34 @@ def test_with_the_config_home_unset_the_state_is_recorded_under_the_dot_config_f
 def test_the_state_file_is_not_written_when_it_would_land_on_the_apps_own_drive(qtbot, tmp_path, monkeypatch):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     app_drive = tmp_path / "APP"
-    config_home = app_drive / "config"
-    monkeypatch.setenv("XDG_CONFIG_HOME", str(config_home))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(app_drive / "config"))
 
     window = Window(folder, player_options=SILENT, app_location=app_drive / "app" / "mediatagger", is_mount_point=lambda path: path in (drive, app_drive),
                     ask_to_create_library=lambda question: False)
     qtbot.addWidget(window)
 
-    assert not (config_home / "mediatagger" / "state.json").exists()
+    assert not state_file_path().exists()
 
 
 def test_the_state_file_is_written_when_the_app_and_the_config_home_both_live_on_the_system_disk(qtbot, tmp_path, monkeypatch):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    config_home = tmp_path / "home" / ".config"
-    monkeypatch.setenv("XDG_CONFIG_HOME", str(config_home))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "home" / ".config"))
 
     window = Window(folder, player_options=SILENT, app_location=tmp_path / "app" / "mediatagger", is_mount_point=lambda path: path in (drive, Path("/")),
                     ask_to_create_library=lambda question: False)
     qtbot.addWidget(window)
 
-    assert json.loads((config_home / "mediatagger" / "state.json").read_text())["folder"] == str(folder)
+    assert recorded_state()["folder"] == str(folder)
 
 
 def test_the_state_file_is_not_written_when_it_would_land_on_the_drive_being_viewed(qtbot, tmp_path, monkeypatch):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    config_home = drive / "config"
-    monkeypatch.setenv("XDG_CONFIG_HOME", str(config_home))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(drive / "config"))
 
     window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
     qtbot.addWidget(window)
 
-    assert not (config_home / "mediatagger" / "state.json").exists()
+    assert not state_file_path().exists()
 
 
 def test_launching_the_window_with_no_path_when_the_remembered_folder_exists_opens_that_folders_grid(qtbot, tmp_path):
@@ -161,7 +154,7 @@ def test_launching_the_window_with_no_path_when_the_remembered_folder_no_longer_
 
 
 def test_launching_the_window_with_no_path_and_no_state_file_shows_the_launch_screen(qtbot):
-    assert not (Path(os.environ["XDG_CONFIG_HOME"]) / "mediatagger" / "state.json").exists()
+    assert not state_file_path().exists()
 
     window = Window(player_options=SILENT)
     qtbot.addWidget(window)
@@ -201,17 +194,25 @@ def test_with_a_geometry_remembered_in_the_state_file_the_window_opens_at_that_s
 def test_recording_a_folder_keeps_the_geometry_already_remembered_in_the_state_file(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     geometry = {"x": 30, "y": 40, "width": 600, "height": 400}
-    state_file = write_state_file(json.dumps({"geometry": geometry}))
+    write_state_file(json.dumps({"geometry": geometry}))
 
     window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
     qtbot.addWidget(window)
 
-    state = json.loads(state_file.read_text())
+    state = recorded_state()
     assert (state["folder"], state.get("geometry")) == (str(folder), geometry)
 
 
+def state_file_path():
+    return Path(os.environ["XDG_CONFIG_HOME"]) / "mediatagger" / "state.json"
+
+
+def recorded_state():
+    return json.loads(state_file_path().read_text())
+
+
 def write_state_file(text):
-    state_file = Path(os.environ["XDG_CONFIG_HOME"]) / "mediatagger" / "state.json"
+    state_file = state_file_path()
     state_file.parent.mkdir(parents=True, exist_ok=True)
     state_file.write_text(text)
     return state_file
@@ -234,7 +235,6 @@ def test_launching_the_window_with_no_path_and_a_state_file_it_cannot_use_shows_
 
 
 def test_launching_the_window_with_no_path_and_no_state_file_then_closing_it_leaves_a_state_file_holding_only_its_size_and_position(qtbot):
-    state_file = Path(os.environ["XDG_CONFIG_HOME"]) / "mediatagger" / "state.json"
     available = QGuiApplication.primaryScreen().availableGeometry()
     frame = QRect(available.left() + 20, available.top() + 30, available.width() // 2, available.height() // 2)
 
@@ -245,14 +245,13 @@ def test_launching_the_window_with_no_path_and_no_state_file_then_closing_it_lea
     window.setGeometry(frame)
     window.close()
 
-    assert json.loads(state_file.read_text()) == {"geometry": {"x": frame.x(), "y": frame.y(), "width": frame.width(), "height": frame.height()}}
+    assert recorded_state() == {"geometry": {"x": frame.x(), "y": frame.y(), "width": frame.width(), "height": frame.height()}}
 
 
 
 
 def test_closing_the_window_when_its_state_file_cannot_be_written_raises_nothing_and_leaves_the_file_as_it_was(qtbot):
-    state_file = write_state_file(json.dumps({"mount_point": "/elsewhere"}))
-    state_file.chmod(0o444)
+    write_state_file(json.dumps({"mount_point": "/elsewhere"})).chmod(0o444)
 
     window = Window(player_options=SILENT, is_mount_point=lambda path: False)
     qtbot.addWidget(window)
@@ -260,7 +259,7 @@ def test_closing_the_window_when_its_state_file_cannot_be_written_raises_nothing
     qtbot.waitExposed(window)
     window.close()
 
-    assert json.loads(state_file.read_text()) == {"mount_point": "/elsewhere"}
+    assert recorded_state() == {"mount_point": "/elsewhere"}
 
 def test_launching_the_window_on_a_file_path_records_that_files_folder_in_the_state_file_not_the_file(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
@@ -268,8 +267,7 @@ def test_launching_the_window_on_a_file_path_records_that_files_folder_in_the_st
     window = Window(folder / "IMG_1.png", player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
     qtbot.addWidget(window)
 
-    state = json.loads((Path(os.environ["XDG_CONFIG_HOME"]) / "mediatagger" / "state.json").read_text())
-    assert state["folder"] == str(folder)
+    assert recorded_state()["folder"] == str(folder)
 
 
 def test_dropping_a_folder_onto_the_windows_launch_screen_records_that_folder_in_the_state_file(qtbot, tmp_path):
@@ -279,8 +277,7 @@ def test_dropping_a_folder_onto_the_windows_launch_screen_records_that_folder_in
 
     drag_and_drop_onto(window.findChild(QStackedWidget).currentWidget(), folder)
 
-    state = json.loads((Path(os.environ["XDG_CONFIG_HOME"]) / "mediatagger" / "state.json").read_text())
-    assert state["folder"] == str(folder)
+    assert recorded_state()["folder"] == str(folder)
 
 
 def test_launching_the_window_with_no_path_into_a_remembered_folder_whose_first_item_is_tagged_beach_family_shows_beach_family_in_the_status_bar_before_any_cursor_move(qtbot, tmp_path):
@@ -299,15 +296,14 @@ def test_launching_the_window_with_no_path_into_a_remembered_folder_whose_first_
 
 def test_running_a_search_when_the_state_file_would_land_on_the_drive_being_viewed_leaves_the_query_out_of_the_state_file(qtbot, tmp_path, monkeypatch):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    config_home = drive / "config"
-    monkeypatch.setenv("XDG_CONFIG_HOME", str(config_home))
-    state_file = write_state_file(json.dumps({"searches": ["family"]}))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(drive / "config"))
+    write_state_file(json.dumps({"searches": ["family"]}))
     window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
     qtbot.addWidget(window)
 
     window.run_search("beach")
 
-    assert json.loads(state_file.read_text())["searches"] == ["family"]
+    assert recorded_state()["searches"] == ["family"]
 
 
 def test_a_folder_of_another_drive_chosen_with_o_from_the_windows_grid_is_recorded_with_that_drives_mount_point_in_the_state_file(qtbot, tmp_path):
@@ -320,5 +316,4 @@ def test_a_folder_of_another_drive_chosen_with_o_from_the_windows_grid_is_record
 
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_O)
 
-    state = json.loads((Path(os.environ["XDG_CONFIG_HOME"]) / "mediatagger" / "state.json").read_text())
-    assert state == {"folder": str(chosen), "mount_point": str(second_drive)}
+    assert recorded_state() == {"folder": str(chosen), "mount_point": str(second_drive)}
