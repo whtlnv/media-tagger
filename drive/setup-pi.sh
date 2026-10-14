@@ -3,16 +3,17 @@ here=$(cd "$(dirname "$0")" && pwd -P)
 libmpv2_installed() {
   dpkg-query -W -f='${Status}' libmpv2 2>/dev/null | grep -q 'install ok installed'
 }
-if ! libmpv2_installed; then
+install_libmpv2() {
   work=$(mktemp -d)
   printf 'deb [trusted=yes] file:%s/debs ./\n' "$here" > "$work/sources.list"
   apt() {
     sudo apt-get -o Dir::Etc::sourcelist="$work/sources.list" -o Dir::Etc::sourceparts=- -o Dir::State::Lists="$work/lists" "$@"
   }
   apt update
-  apt install -y --no-install-recommends libmpv2 || exit
+  apt install -y --no-install-recommends libmpv2 || return
   sudo rm -rf "$work"
-fi
+}
+libmpv2_installed || install_libmpv2 || exit
 apps="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
 mkdir -p "$apps"
 cat > "$apps/mediatagger.desktop" <<DESKTOP
