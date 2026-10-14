@@ -186,3 +186,21 @@ def test_setup_pi_replaces_an_older_desktop_entry_and_running_twice_leaves_the_s
     assert f'Exec=sh "{mediatagger}/run.sh"' in lines
     assert "Name=MediaTagger" in lines
     assert not any("old-stick" in l or "OldTagger" in l for l in lines)
+
+
+def test_setup_pi_with_libmpv2_removed_but_its_config_files_kept_still_installs_it_from_the_drive(tmp_path):
+    mediatagger = drive_with_setup_pi(tmp_path)
+    record = tmp_path / "apt-get-calls"
+    record.mkdir()
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    fake_command(bin_dir, "dpkg-query", "printf 'deinstall ok config-files'")
+    fake_command(bin_dir, "sudo", 'exec "$@"')
+    fake_recording_apt_get(bin_dir, record)
+    env = fake_bin_env(tmp_path, bin_dir)
+
+    subprocess.run(["sh", str(mediatagger / "setup-pi.sh")], check=True, env=env)
+
+    assert ["install", "-y", "--no-install-recommends", "libmpv2"] in [
+        split_apt_options(c["args"])[1] for c in apt_get_calls(record)
+    ]

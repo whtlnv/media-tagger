@@ -10,7 +10,7 @@ Exec=sh "$here/run.sh"
 Terminal=false
 Categories=AudioVideo;Video;Graphics;
 DESKTOP
-dpkg-query -W libmpv2 >/dev/null 2>&1 && exit 0
+dpkg-query -W -f='${Status}' libmpv2 2>/dev/null | grep -q 'install ok installed' && exit 0
 work=$(mktemp -d)
 printf 'deb [trusted=yes] file:%s/debs ./\n' "$here" > "$work/sources.list"
 apt() {
