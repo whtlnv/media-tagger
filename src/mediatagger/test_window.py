@@ -348,6 +348,22 @@ def test_pressing_o_in_the_windows_viewer_while_a_video_plays_opens_the_folder_p
     assert shown.slideshow.current == chosen / "x.jpg"
 
 
+def test_pressing_o_in_the_windows_viewer_while_a_video_plays_and_choosing_a_folder_of_images_leaves_the_player_stopped(qtbot, tmp_path):
+    viewed, chosen = make_folders(tmp_path, "viewed", "chosen")
+    clip = make_clip(viewed / "a.mp4")
+    make_image(chosen / "x.jpg", "green")
+    window = Window(viewed, player_options=SILENT, folder_picker=lambda: chosen)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    viewer = window.findChild(QStackedWidget).currentWidget()
+    make_surface_ready(viewer)
+    wait_until_loaded(viewer.video_player.engine, clip)
+
+    qtbot.keyClick(QApplication.focusWidget() or viewer, Qt.Key.Key_O)
+
+    qtbot.waitUntil(lambda: viewer.video_player.engine.path is None, timeout=3000)
+
+
 def test_pressing_o_in_the_windows_viewer_and_cancelling_the_folder_picker_leaves_the_same_item_shown(qtbot, tmp_path):
     make_image(tmp_path / "a.jpg", "red")
     make_image(tmp_path / "b.jpg", "blue")

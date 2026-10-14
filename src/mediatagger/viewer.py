@@ -137,8 +137,9 @@ class Viewer(QWidget):
         if event.key() == Qt.Key.Key_F:
             self._toggle_fullscreen()
             return
-        if event.key() == Qt.Key.Key_O:
-            self.open(self.folder_picker())
+        if event.key() == Qt.Key.Key_O and (picked := self.folder_picker()) is not None:
+            self.stop_video()
+            self.open(picked)
             return
         if self.slideshow is None:
             return
