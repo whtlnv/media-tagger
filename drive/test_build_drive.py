@@ -201,3 +201,18 @@ for f in *.deb; do printf 'Filename: %s/%s\\n' "$PWD" "$f"; done""")
         **{p.name: p.read_bytes() for p in pi_debs},
         "Packages": "".join(f"Filename: {debs}/{p.name}\n" for p in pi_debs).encode(),
     }
+
+
+def test_build_drive_takes_the_debs_from_the_home_aptpi_cache_when_aptpi_is_unset(tmp_path):
+    env = fake_build_env(tmp_path, tmp_path / "uv-calls")
+    del env["APTPI"]
+    archives = Path(env["HOME"]) / "aptpi" / "var" / "cache" / "apt" / "archives"
+    archives.mkdir(parents=True)
+    (archives / "mpv_0.39.0-3_arm64.deb").write_bytes(b"!<arch>\nmpv")
+    drive = tmp_path / "drive"
+    drive.mkdir()
+
+    subprocess.run(["sh", str(BUILD_DRIVE), str(drive)], env=env)
+
+    debs = drive / "mediatagger" / "debs"
+    assert {p.name: p.read_bytes() for p in debs.glob("*.deb")} == {"mpv_0.39.0-3_arm64.deb": b"!<arch>\nmpv"}

@@ -30,7 +30,7 @@ Phase 11 notes for every cycle (Phases 1–10 are delivered — see DONE.md; dec
 - [x] After `sh drive/build-drive.sh <drive>`, the packages in `lib-linux-aarch64-cp313/` have unchecked-hash precompiled bytecode, except under `deploy_lib`
 - [x] After `sh drive/build-drive.sh <drive>`, a package left in `lib-linux-aarch64-cp313/` by an earlier build is gone
 - [x] `sh drive/build-drive.sh <drive>` copies every `.deb` from `$APTPI/var/cache/apt/archives/` into `<drive>/mediatagger/debs/` and leaves there the `Packages` index `apt-ftparchive packages .` produces inside `debs/`
-- [ ] `sh drive/build-drive.sh <drive>` with `APTPI` unset takes the `.deb`s from `$HOME/aptpi/var/cache/apt/archives/`
+- [x] `sh drive/build-drive.sh <drive>` with `APTPI` unset takes the `.deb`s from `$HOME/aptpi/var/cache/apt/archives/`
 - [ ] After `sh drive/build-drive.sh <drive>`, a `.deb` left in `debs/` by an earlier build is gone
 - [ ] `sh drive/build-drive.sh <drive>` when `$APTPI` holds no `.deb` fails with a clear message and leaves no partial `debs/`
 - [ ] After `sh drive/build-drive.sh <drive>`, `<drive>/mediatagger/` holds the same `app/` and scripts `update-drive.sh` lays out
@@ -39,3 +39,4 @@ Phase 11 notes for every cycle (Phases 1–10 are delivered — see DONE.md; dec
 - [ ] On a drive laid out by `update-drive.sh` (with a `lib-linux-aarch64-cp313/` holding the locked third-party packages), `sh <drive>/mediatagger/run.sh` with a real `python3` and no repo on its path starts the real app from the drive's `app/`, and the drive gains no files while it runs
 - [ ] `sh <drive>/mediatagger/setup-pi.sh` hands `apt-get` a lists folder that already holds an empty `partial/` folder (apt refuses to update without it), as the spike does
 - [ ] `sh <drive>/mediatagger/check-video-leak.sh [target]` does what the spike's `check-video-leak.sh` does (info, fd log every 10 s while the app runs, default target `../samples/06_clip_hevc_1080p.mp4`, logs under `~/mediatagger-check/<stamp>/`, copied to `<drive>/results/check-video-leak-<stamp>/` only after the app has exited) — ported, starting the app through `run.sh`
+- [ ] `sh drive/build-drive.sh <drive>` started from any working directory exports the locked packages of this repo (`uv export` runs on the repo's own `pyproject.toml`/`uv.lock`)
