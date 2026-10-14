@@ -170,15 +170,16 @@ exFAT has no symlinks and no Unix permissions, so **no virtualenv on the drive**
     app/                     source (the mediatagger package)
     lib-linux-aarch64-cp313/ third-party packages, installed with `--target` (PySide6-Essentials, python-mpv…)
     debs/                    libmpv2 + the dependencies the Pi lacks
-    run.sh                   PYTHONPATH=app:lib-… python3 -m mediatagger  (started via `sh run.sh`, so no exec bit needed)
+    run.sh                   PYTHONPATH=app:lib-… python3, runs mediatagger.main()  (started via `sh run.sh`, so no exec bit needed)
     setup-pi.sh              ONE-TIME: install debs/, add the "MediaTagger" .desktop menu entry pointing at run.sh
+    check-video-leak.sh      Pi diagnostic: runs the app on a video, logs its open fds, copies the log to results/ after exit
   .mediatagger/              library data for media on this drive (tags.db), as per "The library"
   .metadata_never_index      stops Spotlight indexing the drive on the Mac
 ```
 
 - The only thing installed on the Pi itself is **libmpv2**. It must be the Pi's own build so that it uses the Pi's ffmpeg (`+rpt1`, with HEVC hardware decode). The Pi already has ffmpeg, libxcb-cursor0 and python3-venv.
-- `lib-linux-aarch64-cp313/` and `debs/` are populated **in the VM** (same OS and architecture as the Pi). The Mac uses its own local `.venv` for development.
-- Updating the app = copy new `app/` onto the drive. No install step.
+- `lib-linux-aarch64-cp313/` and `debs/` are populated **in the VM** (same OS and architecture as the Pi) by `sh drive/build-drive.sh <drive>`. The Mac uses its own local `.venv` for development.
+- Updating the app = `sh drive/update-drive.sh <drive>` from a clean checkout (replaces `app/` and the scripts; packages, debs and `.mediatagger/` are left alone). No install step.
 - The menu entry depends on the drive mounting at the same path (`/media/<user>/MEDIATAGGER`), so the label must stay fixed.
 - **The app's own drive is never written while the app runs.** No library is ever created on it (media stored there is viewing only), Python bytecode is precompiled when the drive is built and `PYTHONDONTWRITEBYTECODE=1` is set, and backups/thumbnails go to the Pi's home folder. Libraries live only on media drives.
 
