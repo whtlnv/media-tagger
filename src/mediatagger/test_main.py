@@ -617,6 +617,22 @@ PRESS_ESC_THEN_SAY_QUITTING_THEN_ESC_IN_THE_GRID_SCRIPT = (
 ) + RUN_MEDIATAGGER_COMMAND
 
 
+def run_python_then_time_from_quitting_to_ending(script, argument, environment):
+    process = subprocess.Popen(
+        [sys.executable, "-c", script, argument],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=environment,
+    )
+    try:
+        assert process.stdout.readline().strip() == "quitting"
+        quit_at = time.monotonic()
+        process.wait(timeout=30)
+        seconds_to_end = time.monotonic() - quit_at
+    finally:
+        process.kill()
+        _, stderr = process.communicate()
+    return process.returncode, seconds_to_end, stderr
+
+
 def offscreen_environment_with_slow_fake_video_tools_in(folder):
     folder.mkdir()
     for tool, output in [("ffprobe", "echo 10.0"), ("ffmpeg", "true")]:
@@ -635,19 +651,8 @@ def test_pressing_esc_to_quit_the_mediatagger_command_from_a_grid_whose_thumbnai
     for number in range(60):
         (folder / f"VID_{number:02}.mp4").write_bytes(b"")
     environment = offscreen_environment_with_slow_fake_video_tools_in(tmp_path / "bin")
-    process = subprocess.Popen(
-        [sys.executable, "-c", PRESS_ESC_THEN_SAY_QUITTING_THEN_ESC_IN_THE_GRID_SCRIPT, str(folder)],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=environment,
-    )
-    try:
-        assert process.stdout.readline().strip() == "quitting"
-        quit_at = time.monotonic()
-        process.wait(timeout=30)
-        seconds_to_end = time.monotonic() - quit_at
-    finally:
-        process.kill()
-        _, stderr = process.communicate()
-    assert process.returncode == 0, stderr
+    returncode, seconds_to_end, stderr = run_python_then_time_from_quitting_to_ending(PRESS_ESC_THEN_SAY_QUITTING_THEN_ESC_IN_THE_GRID_SCRIPT, str(folder), environment)
+    assert returncode == 0, stderr
     assert seconds_to_end < 3, stderr
 
 SAY_QUITTING_THEN_CLOSE_THE_WINDOW_WHILE_THE_VIDEO_PLAYS_SCRIPT = (
@@ -678,17 +683,6 @@ SAY_QUITTING_THEN_CLOSE_THE_WINDOW_WHILE_THE_VIDEO_PLAYS_SCRIPT = (
 
 def test_quitting_the_mediatagger_command_while_a_video_plays_ends_the_process_within_3_s(tmp_path):
     clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
-    process = subprocess.Popen(
-        [sys.executable, "-c", SAY_QUITTING_THEN_CLOSE_THE_WINDOW_WHILE_THE_VIDEO_PLAYS_SCRIPT, str(clip)],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=offscreen_environment(),
-    )
-    try:
-        assert process.stdout.readline().strip() == "quitting"
-        quit_at = time.monotonic()
-        process.wait(timeout=30)
-        seconds_to_end = time.monotonic() - quit_at
-    finally:
-        process.kill()
-        _, stderr = process.communicate()
-    assert process.returncode == 0, stderr
+    returncode, seconds_to_end, stderr = run_python_then_time_from_quitting_to_ending(SAY_QUITTING_THEN_CLOSE_THE_WINDOW_WHILE_THE_VIDEO_PLAYS_SCRIPT, str(clip), offscreen_environment())
+    assert returncode == 0, stderr
     assert seconds_to_end < 3, stderr
