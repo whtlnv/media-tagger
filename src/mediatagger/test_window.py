@@ -15,6 +15,7 @@ from mediatagger.state import remember, state_file
 from mediatagger.status_bar import READ_ONLY_STATUS_TEXT, TAGS_CANT_BE_SAVED_HERE_TEXT, StatusBar
 from mediatagger.test_grid import painted_texts
 from mediatagger.test_tag_prompt import listed
+from mediatagger.test_thumbnail_cache import solid_thumbnail
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer_backup import tags_in_newest_backup
 from mediatagger.test_viewer import SILENT, make_image, make_surface_ready, show_exposed, shown_texts, wait_until_loaded
@@ -23,6 +24,7 @@ from mediatagger.test_viewer_library import (
     frame_in, made_read_only, make_tag_library_drive, overwrite_tags_db_with_garbage, resize_and_wait, visible_tag_prompt_texts, visible_tag_prompts,
 )
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
+from mediatagger.thumbnail_cache import ThumbnailCache, cache_file
 from mediatagger.viewer import Viewer
 from mediatagger.window import Window
 
@@ -434,9 +436,6 @@ def test_choosing_a_folder_of_another_drive_with_o_from_the_windows_grid_then_es
 
 
 def test_choosing_a_folder_of_another_drive_with_o_from_the_windows_grid_then_esc_shows_thumbnails_from_the_new_drives_thumbnail_cache(qtbot, tmp_path):
-    from mediatagger.test_thumbnail_cache import solid_thumbnail
-    from mediatagger.thumbnail_cache import ThumbnailCache, cache_file
-
     first_drive, viewed = drive_with_a_tag_library_holding_one_image(tmp_path)
     second_drive = make_tag_library_drive(tmp_path / "ELSEWHERE")
     [chosen] = make_folders(second_drive, "Videos")
