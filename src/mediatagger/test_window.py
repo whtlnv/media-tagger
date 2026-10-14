@@ -395,6 +395,23 @@ def test_pressing_o_in_the_windows_grid_and_cancelling_the_folder_picker_leaves_
     assert grid.currentIndex().data(TILE_ROLE).path == tmp_path / "b.jpg"
 
 
+def test_pressing_o_while_the_windows_grid_tag_prompt_has_focus_types_an_o_into_the_prompt_and_opens_no_folder_picker(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    picked = []
+    window = Window(folder, player_options=SILENT, folder_picker=lambda: picked.append(True), is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_T)
+    [prompt] = visible_tag_prompts(window)
+
+    qtbot.keyClick(prompt, Qt.Key.Key_O)
+
+    assert visible_tag_prompt_texts(window) == ["o"]
+    assert picked == []
+
+
 def test_after_going_back_and_forth_between_grids_and_the_viewer_many_times_the_window_holds_only_the_grid_shown(qtbot, tmp_path):
     make_image(tmp_path / "a.jpg", "red")
     make_image(tmp_path / "b.jpg", "blue")

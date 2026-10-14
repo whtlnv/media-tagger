@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-14 03:32 · `src/mediatagger/test_window.py::test_pressing_o_while_the_windows_grid_tag_prompt_has_focus_types_an_o_into_the_prompt_and_opens_no_folder_picker`
+- Behavior: `o` while the tag prompt has focus types an `o` into the prompt and opens no folder picker
+- Predicted: test passes — a pin, since the focused QLineEdit takes the `o` before Window/Grid see it (TODO: "as today")
+- Actual: first run aborted (Fatal Python error) — `QApplication.focusWidget()` is `None` offscreen, so QTest got a null widget; after sending the key to the visible prompt, it passed
+- Type: wrong-reason, then passed as a pin
+- Resolution: offscreen windows are never active, so tests must send keys to the prompt widget itself, as `enter_in_the_grids_tag_prompt` does; the behavior already holds, so this is a regression pin and needs no /green
+
 ## 2026-10-14 03:18 · `src/mediatagger/test_window.py::test_pressing_o_in_the_windows_viewer_and_cancelling_the_folder_picker_leaves_the_same_item_shown`
 - Behavior: `o` in the viewer whose folder picker is cancelled leaves the same item shown
 - Predicted: passes on first run — `Viewer.open` already returns early when the picker returns `None`
