@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-14 07:35 · `src/mediatagger/test_window.py::test_dragging_a_folder_of_another_drive_over_the_windows_grid_viewport_and_dropping_it_then_esc_shows_that_folders_grid_with_the_new_drives_tag_badges`
+- Behavior: Dropping a folder of another drive onto the grid's viewport shows it with that drive's tags
+- Predicted: passes on first run — a real enter → move → drop on the grid's viewport already reaches `Window._open`, the same path `o` takes, and the `o`-from-another-drive tag-badge test already passes
+- Actual: passes
+- Type: passed unexpectedly
+- Resolution: the drop already switches the session to the dropped folder's drive; the test is non-vacuous (disabling `Grid.dragMoveEvent` makes it fail with the first drive's grid still shown), so kept as a pin needing no /green.
+
 ## 2026-10-14 07:24 · `src/mediatagger/test_window.py::test_dragging_a_folder_over_the_windows_grid_viewport_and_dropping_it_shows_that_folders_slideshow_from_its_first_item`
 - Behavior: Dropping a folder onto the grid's viewport shows that folder's slideshow from its first item
 - Predicted: passes on first run — the previous cycle made `Grid.dragMoveEvent` accept local-file moves, and `grid.dropped` is already wired to `Window._open`

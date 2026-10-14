@@ -318,6 +318,27 @@ def test_dragging_a_folder_over_the_windows_grid_viewport_and_dropping_it_shows_
     assert shown.slideshow.current == dropped / "x.jpg"
 
 
+def test_dragging_a_folder_of_another_drive_over_the_windows_grid_viewport_and_dropping_it_then_esc_shows_that_folders_grid_with_the_new_drives_tag_badges(qtbot, tmp_path):
+    first_drive, viewed, second_drive, dropped = a_second_drive_with_a_folder_holding_one_blue_image(tmp_path)
+    Library.open(second_drive).enter(dropped / "x.png", "beach family")
+    window = Window(viewed, player_options=SILENT, is_mount_point=lambda path: path in (first_drive, second_drive), ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    viewport = stack.currentWidget().viewport()
+    dragged = dragged_local_path(dropped)
+    drag_enter_over(viewport, dragged)
+    if drag_move_over(viewport, dragged).isAccepted():  # the platform drops only where the last move was accepted
+        drop_onto(viewport, dragged)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    grid = stack.currentWidget()
+    assert isinstance(grid, Grid)
+    assert grid.folder == dropped
+    assert f"{TAG_BADGE}2" in painted_texts(grid, 0)
+
+
 def test_pressing_o_in_the_windows_grid_opens_the_folder_picker_and_choosing_a_folder_shows_its_slideshow_from_its_first_item(qtbot, tmp_path):
     viewed, chosen = make_folders(tmp_path, "viewed", "chosen")
     make_image(viewed / "a.jpg", "red")

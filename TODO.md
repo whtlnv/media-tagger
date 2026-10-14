@@ -19,7 +19,7 @@ Phase 12 notes for every cycle (Phases 1–11 are delivered — see DONE.md; Pha
 - [x] A drag of plain text moving over the grid's viewport is refused
 - [x] A drag of a web link moving over the grid's viewport is refused
 - [x] Dropping a folder onto the grid's viewport shows that folder's slideshow from its first item
-- [ ] Dropping a folder of another drive onto the grid's viewport shows it with that drive's tags
+- [x] Dropping a folder of another drive onto the grid's viewport shows it with that drive's tags
 - [ ] Dropping a folder of another drive onto the viewer while a video plays (drag moving over the video surface) shows that folder's slideshow from its first item
 - [ ] Closing the window stops thumbnail generation of its folder grid: a thumbnail still being generated is delivered to no tile
 - [ ] Closing the window stops thumbnail generation of its results grid: a thumbnail still being generated is delivered to no tile
