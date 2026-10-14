@@ -55,12 +55,16 @@ def test_update_drive_leaves_test_modules_and_conftest_out_of_the_drive_app(tmp_
     assert leaked == set()
 
 
-def env_with_python313_on_path(tmp_path):
+def env_with_fake_python313_on_path(tmp_path, script):
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
-    (bin_dir / "python3.13").write_text(f'#!/bin/sh\nexec "{sys.executable}" "$@"\n')
+    (bin_dir / "python3.13").write_text(script)
     (bin_dir / "python3.13").chmod(0o755)
     return {**os.environ, "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}"}
+
+
+def env_with_python313_on_path(tmp_path):
+    return env_with_fake_python313_on_path(tmp_path, f'#!/bin/sh\nexec "{sys.executable}" "$@"\n')
 
 
 def test_update_drive_leaves_unchecked_hash_bytecode_next_to_every_module_in_the_drive_app(tmp_path):
@@ -243,11 +247,7 @@ def test_update_drive_from_a_repo_copy_that_is_not_a_git_checkout_writes_unknown
 
 
 def test_update_drive_fails_and_copies_no_scripts_onto_the_drive_when_precompiling_the_app_fails(tmp_path):
-    bin_dir = tmp_path / "bin"
-    bin_dir.mkdir()
-    (bin_dir / "python3.13").write_text("#!/bin/sh\necho 'compileall: boom' >&2\nexit 1\n")
-    (bin_dir / "python3.13").chmod(0o755)
-    env = {**os.environ, "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}"}
+    env = env_with_fake_python313_on_path(tmp_path, "#!/bin/sh\necho 'compileall: boom' >&2\nexit 1\n")
     drive = empty_drive(tmp_path)
 
     result = subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], env=env, capture_output=True, text=True)
