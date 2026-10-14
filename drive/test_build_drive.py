@@ -335,3 +335,19 @@ cat "{tmp_path / 'exported.txt'}\"""")
         for call in uv_pip_install_calls(record)
     ]
     assert exported == [requirement_specs(EXPORTED)]
+
+
+def test_build_drive_without_a_drive_argument_fails_with_its_usage_message_and_installs_or_writes_nothing(tmp_path):
+    record = tmp_path / "uv-calls"
+    env = fake_build_env(tmp_path, record)
+    cwd = tmp_path / "home"
+
+    result = subprocess.run(["sh", str(BUILD_DRIVE)], env=env, cwd=cwd, capture_output=True, text=True)
+
+    usage = [line for line in result.stderr.splitlines() if "usage" in line.lower()]
+    assert {
+        "failed": result.returncode != 0,
+        "usage_names_build_drive": any("build-drive.sh" in line for line in usage),
+        "uv_calls": sorted(p.name for p in record.iterdir()),
+        "written_in_cwd": sorted(p.name for p in cwd.iterdir()),
+    } == {"failed": True, "usage_names_build_drive": True, "uv_calls": [], "written_in_cwd": []}

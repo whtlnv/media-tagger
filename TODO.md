@@ -41,6 +41,6 @@ Phase 11 notes for every cycle (Phases 1–10 are delivered — see DONE.md; dec
 - [x] `sh <drive>/mediatagger/check-video-leak.sh [target]` does what the spike's `check-video-leak.sh` does (info, fd log every 10 s while the app runs, default target `../samples/06_clip_hevc_1080p.mp4`, logs under `~/mediatagger-check/<stamp>/`, copied to `<drive>/results/check-video-leak-<stamp>/` only after the app has exited) — ported, starting the app through `run.sh`
 - [x] `sh drive/build-drive.sh <drive>` started from any working directory exports the locked packages of this repo (`uv export` runs on the repo's own `pyproject.toml`/`uv.lock`)
 - [x] `sh drive/update-drive.sh <drive>` from a copy of the repo that is not a git checkout (or with no `git` installed) writes `unknown` to `app/VERSION` without printing an error
-- [ ] `sh drive/build-drive.sh` with no drive argument fails with a usage message and removes or writes nothing
+- [x] `sh drive/build-drive.sh` with no drive argument fails with a usage message and removes or writes nothing
 - [ ] `sh drive/build-drive.sh <drive>` when installing the Python packages fails (`uv pip install` exits non-zero) exits non-zero and does not go on to lay out `debs/`, `app/` or `.metadata_never_index`
 - [ ] `sh drive/update-drive.sh <drive>` when precompiling the app fails (`python3.13` exits non-zero) exits non-zero and copies no scripts onto the drive

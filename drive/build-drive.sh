@@ -1,4 +1,5 @@
 #!/bin/sh
+[ -n "$1" ] || { echo "usage: sh drive/build-drive.sh <drive>" >&2; exit 2; }
 lib="$1/mediatagger/lib-linux-aarch64-cp313"
 rm -rf "$lib"
 requirements=$(mktemp)
