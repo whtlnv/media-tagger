@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-14 10:42 · `src/mediatagger/test_main.py::test_quitting_the_mediatagger_command_with_a_library_whose_backup_is_due_ends_the_process_within_3_s`
+- Behavior: Quitting the app with a library whose backup is due ends the process within 3 s
+- Predicted: passes on first run — the backup on close is a quick SQLite copy and `Window.closeEvent` already stops the grid's thumbnail workers
+- Actual: first two runs failed `seconds_to_end < 3` (4.45 s, 3.73 s); every rerun since passes (5/5, alongside the no-library grid sibling)
+- Type: wrong-reason
+- Resolution: The slowdown was machine load (load averages 16–20 at the time), not the backup: instrumenting the real script showed `back_up_library` taking ~0.00 s and `closeEvent` returning at once, with the variable delay between close and interpreter exit (workers finishing their current fake-video file). The test asserts the backup holds the entered tag, so the backup really ran during the quit. Kept as a regression pin; no /green work needed.
+
 ## 2026-10-14 10:19 · `src/mediatagger/test_main.py::test_quitting_the_mediatagger_command_while_a_video_plays_ends_the_process_within_3_s`
 - Behavior: Quitting the app while a video plays ends the process within 3 s
 - Predicted: AssertionError on `seconds_to_end < 3` — the process lingers while mpv tears down

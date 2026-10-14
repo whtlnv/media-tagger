@@ -25,7 +25,7 @@ Phase 12 notes for every cycle (Phases 1–11 are delivered — see DONE.md; Pha
 - [x] Closing the window stops thumbnail generation of its results grid: a thumbnail still being generated is delivered to no tile
 - [x] Pressing `Esc` to quit the real `mediatagger` command from a grid whose thumbnails are still generating ends the process within 3 s
 - [x] Quitting the app while a video plays ends the process within 3 s
-- [ ] Quitting the app with a library whose backup is due ends the process within 3 s
+- [x] Quitting the app with a library whose backup is due ends the process within 3 s
 - [ ] The real `mediatagger` command starts with `qt.qpa.wayland.textinput` warnings disabled
 - [ ] The real `mediatagger` command leaves `qt.qpa.wayland` warnings enabled
 - [ ] The real `mediatagger` command started with `QT_LOGGING_RULES=qt.qpa.wayland.textinput=true` keeps `qt.qpa.wayland.textinput` warnings enabled

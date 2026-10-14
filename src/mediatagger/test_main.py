@@ -686,3 +686,42 @@ def test_quitting_the_mediatagger_command_while_a_video_plays_ends_the_process_w
     returncode, seconds_to_end, stderr = run_python_then_time_from_quitting_to_ending(SAY_QUITTING_THEN_CLOSE_THE_WINDOW_WHILE_THE_VIDEO_PLAYS_SCRIPT, str(clip), offscreen_environment())
     assert returncode == 0, stderr
     assert seconds_to_end < 3, stderr
+
+ENTER_A_TAG_THEN_ESC_THEN_SAY_QUITTING_THEN_ESC_IN_THE_GRID_ON_A_DRIVE_SCRIPT = (
+    "import os, sys\n"
+    "drive = os.path.dirname(sys.argv[1])\n"
+    "os.path.ismount = lambda path: os.fspath(path) == drive\n"
+    "from PySide6.QtCore import Qt, QTimer\n"
+    "from PySide6.QtTest import QTest\n"
+    "from PySide6.QtWidgets import QApplication\n"
+    "app = QApplication([])\n"
+    "def shown_window():\n"
+    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    return window\n"
+    "def quit_from_the_grid():\n"
+    "    print('quitting', flush=True)\n"
+    "    QTest.keyClick(shown_window(), Qt.Key.Key_Escape)\n"
+    "def enter_a_tag_then_esc_then_quit_while_thumbnails_generate():\n"
+    "    window = shown_window()\n"
+    "    QTest.keyClick(window, Qt.Key.Key_T)\n"
+    "    QTest.keyClicks(window.focusWidget(), 'beach')\n"
+    "    QTest.keyClick(window.focusWidget(), Qt.Key.Key_Return)\n"
+    "    QTest.keyClick(window, Qt.Key.Key_Escape)\n"
+    "    QTimer.singleShot(1000, quit_from_the_grid)\n"
+    "QTimer.singleShot(1000, enter_a_tag_then_esc_then_quit_while_thumbnails_generate)\n"
+    "sys.argv = ['mediatagger', sys.argv[1]]\n"
+) + RUN_MEDIATAGGER_COMMAND
+
+
+def test_quitting_the_mediatagger_command_with_a_library_whose_backup_is_due_ends_the_process_within_3_s(tmp_path, monkeypatch):
+    data_home = tmp_path / "data-home"
+    monkeypatch.setenv("XDG_DATA_HOME", str(data_home))
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    for number in range(60):
+        (folder / f"VID_{number:02}.mp4").write_bytes(b"")
+    environment = offscreen_environment_with_slow_fake_video_tools_in(tmp_path / "bin")
+    returncode, seconds_to_end, stderr = run_python_then_time_from_quitting_to_ending(ENTER_A_TAG_THEN_ESC_THEN_SAY_QUITTING_THEN_ESC_IN_THE_GRID_ON_A_DRIVE_SCRIPT, str(folder), environment)
+    assert returncode == 0, stderr
+    assert seconds_to_end < 3, stderr
+    backup_root = data_home / "mediatagger" / "backups"
+    assert tags_in_newest_backup(backup_root, drive, tmp_path / "restored", folder.relative_to(drive) / "IMG_1.png") == ["beach"]
