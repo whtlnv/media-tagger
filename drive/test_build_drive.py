@@ -168,3 +168,16 @@ def test_build_drive_leaves_unchecked_hash_bytecode_next_to_every_installed_modu
         name: None if "deploy_lib" in Path(name).parts else unchecked_hash
         for name in INSTALLED_PACKAGES
     }
+
+
+def test_build_drive_removes_a_package_left_in_the_drive_lib_by_an_earlier_build(tmp_path):
+    env = fake_build_env(tmp_path, tmp_path / "uv-calls")
+    fake_uv_installing_packages(tmp_path, INSTALLED_PACKAGES)
+    drive = tmp_path / "drive"
+    stale = drive / "mediatagger" / "lib-linux-aarch64-cp313" / "oldpkg"
+    stale.mkdir(parents=True)
+    (stale / "__init__.py").write_text("")
+
+    subprocess.run(["sh", str(BUILD_DRIVE), str(drive)], env=env)
+
+    assert not stale.exists()

@@ -28,7 +28,7 @@ Phase 11 notes for every cycle (Phases 1–10 are delivered — see DONE.md; dec
 - [x] `sh <drive>/mediatagger/check-video-leak.sh <target>` starts the app on `<target>` through the drive's `run.sh`
 - [x] `sh drive/build-drive.sh <drive>` installs into `<drive>/mediatagger/lib-linux-aarch64-cp313/` with `uv pip install --python /usr/bin/python3.13 --target` exactly the packages and versions `uv export --frozen --no-dev --no-hashes --no-emit-project` gives
 - [x] After `sh drive/build-drive.sh <drive>`, the packages in `lib-linux-aarch64-cp313/` have unchecked-hash precompiled bytecode, except under `deploy_lib`
-- [ ] After `sh drive/build-drive.sh <drive>`, a package left in `lib-linux-aarch64-cp313/` by an earlier build is gone
+- [x] After `sh drive/build-drive.sh <drive>`, a package left in `lib-linux-aarch64-cp313/` by an earlier build is gone
 - [ ] `sh drive/build-drive.sh <drive>` copies every `.deb` from `$APTPI/var/cache/apt/archives/` into `<drive>/mediatagger/debs/` and leaves there the `Packages` index `apt-ftparchive packages .` produces inside `debs/`
 - [ ] `sh drive/build-drive.sh <drive>` with `APTPI` unset takes the `.deb`s from `$HOME/aptpi/var/cache/apt/archives/`
 - [ ] After `sh drive/build-drive.sh <drive>`, a `.deb` left in `debs/` by an earlier build is gone
