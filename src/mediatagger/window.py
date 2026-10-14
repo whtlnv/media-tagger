@@ -133,7 +133,6 @@ class Window(QWidget):
         grid.up.connect(lambda: self._leave(grid.folder))
         grid.escaped.connect(self.close)
         grid.dropped.connect(self._open)
-        grid.pick_folder.connect(self._pick_folder)
         self._connect_tags_search_and_progress_of(grid)
         for old in self.findChildren(Grid):
             self._stop_thumbnails_of(old)
@@ -145,10 +144,11 @@ class Window(QWidget):
         self._record_state(grid.folder)
 
     def _connect_tags_search_and_progress_of(self, grid):
-        """What a folder's grid and a results grid both do: tag the cursor's item, search again, show its tags, and
-        count its thumbnails."""
+        """What a folder's grid and a results grid both do: tag the cursor's item, search again, pick a folder, show its
+        tags, and count its thumbnails."""
         grid.tag.connect(lambda: self._tag(grid.currentIndex()))
         grid.search.connect(self._open_search_bar)
+        grid.pick_folder.connect(self._pick_folder)
         grid.selectionModel().currentChanged.connect(self._show_tags_of)
         grid.thumbnail_progress.connect(self._show_thumbnail_progress)
 

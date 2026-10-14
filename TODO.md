@@ -4,7 +4,7 @@ Phase 12 notes for every cycle (Phases 1–11 are delivered — see DONE.md; Pha
 
 - [x] `o` in a folder grid opens the folder picker, and choosing a folder shows that folder's slideshow from its first item
 - [x] `o` in a folder grid whose folder picker is cancelled leaves the same grid shown, cursor unchanged
-- [ ] `o` in a results grid opens the folder picker, and choosing a folder shows that folder's slideshow from its first item
+- [x] `o` in a results grid opens the folder picker, and choosing a folder shows that folder's slideshow from its first item
 - [ ] `o` in the viewer while an image of a slideshow is shown opens the folder picker, and choosing a folder shows that folder's slideshow from its first item
 - [ ] `o` in the viewer while a video plays opens the folder picker, and choosing a folder shows that folder's slideshow from its first item
 - [ ] `o` in the viewer whose folder picker is cancelled leaves the same item shown

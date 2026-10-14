@@ -1,5 +1,5 @@
 from PySide6.QtCore import QCoreApplication, QEvent, QPoint, Qt
-from PySide6.QtWidgets import QLabel, QLineEdit
+from PySide6.QtWidgets import QLabel, QLineEdit, QStackedWidget
 
 from mediatagger.library import Library
 from mediatagger.state import remembered_folder, state_file
@@ -8,10 +8,13 @@ from mediatagger.grid import FOLDER_GLYPH, IMAGE_GLYPH, MISSING_GLYPH, TAG_BADGE
 from mediatagger.grid import Grid
 from mediatagger.search import search
 from mediatagger.test_grid import fastest_of_three, painted_texts, tile_names
-from mediatagger.test_viewer import make_image
+from mediatagger.test_viewer import SILENT, make_image
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image
 from mediatagger.test_window import enter_in_the_grids_tag_prompt, shown_status_bar_texts, window_showing_the_grid_with_its_cursor_on_its_first_tile
+from mediatagger.test_viewer_open import make_folders
 from mediatagger.thumbnails import thumbnail_and_duration
+from mediatagger.viewer import Viewer
+from mediatagger.window import Window
 
 
 def search_for(qtbot, window, stack, query):
@@ -194,6 +197,25 @@ def test_slash_in_the_results_grid_opens_the_search_bar_and_a_new_query_replaces
     qtbot.keyClick(window.search_bar, Qt.Key.Key_Return)
 
     assert (bar_opened_with_focus, tile_names(stack.currentWidget()), window.breadcrumb.text()) == (True, ["IMG_2.png"], "Search: pool")
+
+
+def test_pressing_o_in_the_results_grid_opens_the_folder_picker_and_choosing_a_folder_shows_its_slideshow_from_its_first_item(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    [chosen] = make_folders(drive, "Chosen")
+    make_image(chosen / "y.jpg", "blue")
+    make_image(chosen / "x.jpg", "green")
+    window = Window(folder, player_options=SILENT, folder_picker=lambda: chosen, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    search_for(qtbot, window, stack, "beach")
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_O)
+
+    shown = stack.currentWidget()
+    assert isinstance(shown, Viewer)
+    assert shown.slideshow.current == chosen / "x.jpg"
 
 
 def test_showing_search_results_does_not_change_the_remembered_last_folder(qtbot, tmp_path):
