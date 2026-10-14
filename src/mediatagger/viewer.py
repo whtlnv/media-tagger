@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 from PySide6.QtCore import QPoint, Qt
@@ -6,7 +5,7 @@ from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import QFileDialog, QWidget
 
 from mediatagger.drive_session import DriveSession
-from mediatagger.folder import is_video
+from mediatagger.folder import is_openable, is_video
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
 from mediatagger.image_fit import decode_fitted, fitted_rect
 from mediatagger.mpv_surface import MpvSurface
@@ -22,13 +21,6 @@ _VIDEO_KEYS |= {Qt.Key.Key_0 + digit: str(digit) for digit in range(10)}
 _SLIDESHOW_KEYS = {Qt.Key.Key_Left: "Left", Qt.Key.Key_Right: "Right", Qt.Key.Key_Space: "Space"}
 UNSUPPORTED_TEXT = "Unsupported"
 READ_ONLY_BANNER_TEXT = "This drive is read-only — tags can't be saved"
-
-
-def _is_openable(path):
-    """A file is opened with its folder, so the folder must be listable too."""
-    if not os.access(path, os.R_OK):
-        return False
-    return not path.is_file() or os.access(path.parent, os.R_OK)
 
 
 class Viewer(QWidget):
@@ -196,7 +188,7 @@ class Viewer(QWidget):
             return
         if self.tag_prompt.is_open():  # whatever opens next, the prompt must not go on targeting the previous item
             self.tag_prompt.close()
-        if not _is_openable(path):
+        if not is_openable(path):
             self._show_cant_open(path)
             return
         showing_info = self.slideshow is not None and self.slideshow.overlay

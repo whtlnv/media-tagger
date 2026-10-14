@@ -54,3 +54,10 @@ def subfolder_and_media_names(folder):
 def folder_entries(folder):
     subfolders, media = subfolder_and_media_names(folder)
     return [folder / name for name in subfolders + media]
+
+
+def is_openable(path):
+    """A file is opened with its folder, so the folder must be listable too."""
+    if not os.access(path, os.R_OK):
+        return False
+    return not path.is_file() or os.access(path.parent, os.R_OK)
