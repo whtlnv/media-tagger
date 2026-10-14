@@ -312,6 +312,22 @@ def test_pressing_o_in_the_windows_grid_opens_the_folder_picker_and_choosing_a_f
     assert shown.slideshow.current == chosen / "x.jpg"
 
 
+def test_pressing_o_in_the_windows_grid_and_cancelling_the_folder_picker_leaves_the_same_grid_shown_with_its_cursor_unchanged(qtbot, tmp_path):
+    make_image(tmp_path / "a.jpg", "red")
+    make_image(tmp_path / "b.jpg", "blue")
+    window = Window(tmp_path, player_options=SILENT, folder_picker=lambda: None)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    grid = stack.currentWidget()
+    qtbot.keyClick(grid, Qt.Key.Key_Right)
+
+    qtbot.keyClick(grid, Qt.Key.Key_O)
+
+    assert stack.currentWidget() is grid
+    assert grid.currentIndex().data(TILE_ROLE).path == tmp_path / "b.jpg"
+
+
 def test_after_going_back_and_forth_between_grids_and_the_viewer_many_times_the_window_holds_only_the_grid_shown(qtbot, tmp_path):
     make_image(tmp_path / "a.jpg", "red")
     make_image(tmp_path / "b.jpg", "blue")

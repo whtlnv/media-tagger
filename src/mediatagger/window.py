@@ -133,7 +133,7 @@ class Window(QWidget):
         grid.up.connect(lambda: self._leave(grid.folder))
         grid.escaped.connect(self.close)
         grid.dropped.connect(self._open)
-        grid.pick_folder.connect(lambda: self._open(self.viewer.folder_picker()))
+        grid.pick_folder.connect(self._pick_folder)
         self._connect_tags_search_and_progress_of(grid)
         for old in self.findChildren(Grid):
             self._stop_thumbnails_of(old)
@@ -285,6 +285,11 @@ class Window(QWidget):
         self._open_tile(index)
         files = [path for path in paths if path.is_file()]
         self.viewer.slideshow = Slideshow(files, files.index(index.data(TILE_ROLE).path))
+
+    def _pick_folder(self):
+        folder = self.viewer.folder_picker()
+        if folder:
+            self._open(folder)
 
     def _open(self, path):
         if isinstance(self.stack.currentWidget(), Grid):  # a tile's Enter, or a drop onto the grid
