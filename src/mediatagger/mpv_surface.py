@@ -46,15 +46,6 @@ class MpvSurface(QOpenGLWidget):
         self.render_context.update_cb = self.frame_ready.emit
         self.became_ready()
 
-    def dragEnterEvent(self, event):
-        self.parent().dragEnterEvent(event)
-
-    def dragMoveEvent(self, event):
-        self.parent().dragMoveEvent(event)
-
-    def dropEvent(self, event):
-        self.parent().dropEvent(event)
-
     def when_ready(self, load):
         """Run load now if the surface can render, else once it can: mpv drops the video of a clip loaded earlier."""
         if self._ready:
