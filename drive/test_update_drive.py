@@ -240,3 +240,20 @@ def test_update_drive_from_a_repo_copy_that_is_not_a_git_checkout_writes_unknown
     )
 
     assert (result.returncode, result.stderr, version_on(drive).read_text().strip()) == (0, "", "unknown")
+
+
+def test_update_drive_fails_and_copies_no_scripts_onto_the_drive_when_precompiling_the_app_fails(tmp_path):
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    (bin_dir / "python3.13").write_text("#!/bin/sh\necho 'compileall: boom' >&2\nexit 1\n")
+    (bin_dir / "python3.13").chmod(0o755)
+    env = {**os.environ, "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}"}
+    drive = empty_drive(tmp_path)
+
+    result = subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], env=env, capture_output=True, text=True)
+
+    scripts = ["run.sh", "setup-pi.sh", "check-video-leak.sh"]
+    assert {
+        "failed": result.returncode != 0,
+        "scripts_on_drive": [name for name in scripts if (drive / "mediatagger" / name).exists()],
+    } == {"failed": True, "scripts_on_drive": []}
