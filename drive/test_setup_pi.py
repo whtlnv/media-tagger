@@ -165,8 +165,9 @@ def test_setup_pi_without_xdg_data_home_writes_the_desktop_entry_under_home_loca
 
     subprocess.run(["sh", str(mediatagger / "setup-pi.sh")], check=True, env=env)
 
-    desktop = Path(env["HOME"]) / ".local" / "share" / "applications" / "mediatagger.desktop"
-    assert desktop.is_file()
+    apps = Path(env["HOME"]) / ".local" / "share" / "applications"
+    assert [p.name for p in apps.iterdir()] == ["mediatagger.desktop"]
+    assert f'Exec=sh "{mediatagger}/run.sh"' in (apps / "mediatagger.desktop").read_text().splitlines()
 
 
 def test_setup_pi_replaces_an_older_desktop_entry_and_running_twice_leaves_the_same_single_entry(tmp_path):
