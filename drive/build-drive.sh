@@ -17,3 +17,4 @@ mkdir -p "$debs"
 cp "$archives"/*.deb "$debs"
 (cd "$debs" && apt-ftparchive packages . > Packages)
 sh "$(dirname "$0")"/update-drive.sh "$1"
+: > "$1/.metadata_never_index"

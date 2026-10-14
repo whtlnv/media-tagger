@@ -266,3 +266,14 @@ def test_build_drive_lays_out_the_same_app_and_scripts_as_update_drive(tmp_path)
             if p.is_file() and p.relative_to(mediatagger).parts[0] not in {"lib-linux-aarch64-cp313", "debs"}
         }
     assert app_and_scripts(built) == app_and_scripts(updated)
+
+
+def test_build_drive_leaves_an_empty_metadata_never_index_at_the_drive_root(tmp_path):
+    env = fake_build_env(tmp_path, tmp_path / "uv-calls")
+    drive = tmp_path / "drive"
+    drive.mkdir()
+
+    subprocess.run(["sh", str(BUILD_DRIVE), str(drive)], env=env)
+
+    marker = drive / ".metadata_never_index"
+    assert marker.is_file() and marker.read_bytes() == b""

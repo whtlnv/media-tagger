@@ -34,7 +34,7 @@ Phase 11 notes for every cycle (Phases 1–10 are delivered — see DONE.md; dec
 - [x] After `sh drive/build-drive.sh <drive>`, a `.deb` left in `debs/` by an earlier build is gone
 - [x] `sh drive/build-drive.sh <drive>` when `$APTPI` holds no `.deb` fails with a clear message and leaves no partial `debs/`
 - [x] After `sh drive/build-drive.sh <drive>`, `<drive>/mediatagger/` holds the same `app/` and scripts `update-drive.sh` lays out
-- [ ] After `sh drive/build-drive.sh <drive>`, an empty `<drive>/.metadata_never_index` exists
+- [x] After `sh drive/build-drive.sh <drive>`, an empty `<drive>/.metadata_never_index` exists
 - [ ] `sh drive/build-drive.sh <drive>` leaves every file in `<drive>/.mediatagger/` byte-identical and nothing outside `<drive>/mediatagger/` changed except `.metadata_never_index`
 - [ ] On a drive laid out by `update-drive.sh` (with a `lib-linux-aarch64-cp313/` holding the locked third-party packages), `sh <drive>/mediatagger/run.sh` with a real `python3` and no repo on its path starts the real app from the drive's `app/`, and the drive gains no files while it runs
 - [ ] `sh <drive>/mediatagger/setup-pi.sh` hands `apt-get` a lists folder that already holds an empty `partial/` folder (apt refuses to update without it), as the spike does
