@@ -3,7 +3,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from fakes import fake_command
+from fakes import fake_command, recorded_args
 
 SETUP_PI = Path(__file__).resolve().parent / "setup-pi.sh"
 
@@ -50,7 +50,7 @@ done""")
 def apt_get_calls(record):
     calls = []
     for call in sorted(record.iterdir(), key=lambda d: int(d.name)):
-        args = (call / "args").read_bytes().split(b"\0")[:-1]
+        args = recorded_args(call / "args")
         sourcelist = call / "sourcelist"
         calls.append({
             "via_sudo": (call / "via-sudo").read_text() == "yes",

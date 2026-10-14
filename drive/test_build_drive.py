@@ -5,7 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from fakes import fake_command
+from fakes import fake_command, recorded_args
 
 BUILD_DRIVE = Path(__file__).resolve().parent / "build-drive.sh"
 
@@ -64,7 +64,7 @@ done""")
 def uv_pip_install_calls(record):
     calls = []
     for call in sorted(record.iterdir(), key=lambda d: int(d.name)):
-        args = [a.decode() for a in (call / "args").read_bytes().split(b"\0")[:-1]]
+        args = [a.decode() for a in recorded_args(call / "args")]
         if args[:2] != ["pip", "install"]:
             continue
         requirements = call / "requirements"
