@@ -755,3 +755,13 @@ def test_the_mediatagger_command_leaves_wayland_warnings_enabled():
     result = run_python_offscreen(script_reporting_whether_the_mediatagger_command_enables_warnings_for("qt.qpa.wayland"))
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == "warnings=True"
+
+
+def test_the_mediatagger_command_started_with_textinput_warnings_enabled_in_qt_logging_rules_keeps_them_enabled():
+    result = subprocess.run(
+        [sys.executable, "-c", script_reporting_whether_the_mediatagger_command_enables_warnings_for("qt.qpa.wayland.textinput")],
+        capture_output=True, text=True, timeout=30,
+        env={**offscreen_environment(), "QT_LOGGING_RULES": "qt.qpa.wayland.textinput=true"},
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "warnings=True"
