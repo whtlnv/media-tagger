@@ -10,6 +10,7 @@ rm -rf "$app"
 mkdir -p "$app"
 cp "$here"/../src/mediatagger/*.py "$app"/
 rm -f "$app"/test_*.py "$app"/conftest.py
+find "$app" -name "._*" -type f -delete
 python3.13 -m compileall -q --invalidation-mode unchecked-hash "$app" || exit 1
 version="$mediatagger/app/VERSION"
 git -C "$here/.." log -1 --format="%h %s" > "$version" 2>/dev/null || echo unknown > "$version"

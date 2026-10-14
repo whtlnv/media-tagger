@@ -257,3 +257,33 @@ def test_update_drive_fails_and_copies_no_scripts_onto_the_drive_when_precompili
         "failed": result.returncode != 0,
         "scripts_on_drive": [name for name in scripts if (drive / "mediatagger" / name).exists()],
     } == {"failed": True, "scripts_on_drive": []}
+
+
+def test_update_drive_on_a_drive_where_copying_leaves_macos_resource_forks_still_precompiles_every_module_and_leaves_no_fork(tmp_path):
+    env = env_with_python313_on_path(tmp_path)
+    forking_cp = tmp_path / "bin" / "cp"
+    forking_cp.write_text(
+        "#!/bin/sh\n"
+        '/bin/cp "$@" || exit $?\n'
+        "for dest; do :; done\n"
+        "for src; do\n"
+        '  [ "$src" = "$dest" ] && break\n'
+        "  printf '\\000\\005\\026\\007\\000\\000' > \"$dest/._$(basename \"$src\")\"\n"
+        "done\n"
+    )
+    forking_cp.chmod(0o755)
+    drive = empty_drive(tmp_path)
+
+    result = subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], env=env, capture_output=True, text=True)
+
+    app = app_on(drive)
+    modules = [
+        p.name
+        for p in PACKAGE.glob("*.py")
+        if not p.name.startswith("test_") and p.name != "conftest.py"
+    ]
+    assert {
+        "returncode": result.returncode,
+        "uncompiled": [m for m in modules if not Path(importlib.util.cache_from_source(str(app / m))).exists()],
+        "forks": [str(p.relative_to(drive)) for p in (drive / "mediatagger").rglob("._*")],
+    } == {"returncode": 0, "uncompiled": [], "forks": []}
