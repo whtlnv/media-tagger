@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 RUN = Path(__file__).resolve().parent / "run.sh"
@@ -74,3 +75,69 @@ def test_run_starts_python3_with_pythondontwritebytecode_set_to_1(tmp_path):
     subprocess.run(["sh", str(mediatagger / "run.sh")], check=True, env=env)
 
     assert record.read_text() == "1"
+
+
+REPO = RUN.parent.parent
+
+
+def files_under(folder):
+    return sorted(str(p.relative_to(folder)) for p in folder.rglob("*"))
+
+
+def drive_laid_out_by_update_drive_with_the_locked_packages(tmp_path):
+    drive = tmp_path / "drive"
+    drive.mkdir()
+    shims = tmp_path / "shims"
+    shims.mkdir()
+    (shims / "python3.13").symlink_to(sys._base_executable)
+    subprocess.run(
+        ["sh", str(REPO / "drive" / "update-drive.sh"), str(drive)], check=True,
+        env={**os.environ, "PATH": f"{shims}{os.pathsep}{os.environ['PATH']}"},
+    )
+    requirements = tmp_path / "requirements.txt"
+    subprocess.run(
+        ["uv", "export", "--frozen", "--no-dev", "--no-hashes", "--no-emit-project",
+         "--output-file", str(requirements)],
+        check=True, cwd=REPO, capture_output=True,
+    )
+    subprocess.run(
+        ["uv", "pip", "install", "--offline", "--python", sys._base_executable,
+         "--target", str(drive / "mediatagger" / "lib-linux-aarch64-cp313"),
+         "-r", str(requirements)],
+        check=True, capture_output=True,
+    )
+    return drive.resolve()
+
+
+def test_run_with_a_real_python3_starts_the_real_app_from_the_drive_app_and_the_drive_gains_no_files(tmp_path):
+    drive = drive_laid_out_by_update_drive_with_the_locked_packages(tmp_path)
+    before = files_under(drive)
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    (bin_dir / "python3").symlink_to(sys._base_executable)
+    home = tmp_path / "home"
+    home.mkdir()
+    env = {
+        **{k: v for k, v in os.environ.items() if not k.startswith("PYTHON") and k != "VIRTUAL_ENV"},
+        "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}",
+        "HOME": str(home), "XDG_DATA_HOME": str(home / "data"),
+        "XDG_CONFIG_HOME": str(home / "config"), "XDG_CACHE_HOME": str(home / "cache"),
+        "QT_QPA_PLATFORM": "offscreen", "PYTHONVERBOSE": "1",
+    }
+
+    app = subprocess.Popen(
+        ["sh", str(drive / "mediatagger" / "run.sh")],
+        env=env, cwd=home, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True,
+    )
+    try:
+        _, log = app.communicate(timeout=8)
+        still_running = False
+    except subprocess.TimeoutExpired:
+        app.kill()
+        _, log = app.communicate()
+        still_running = True
+
+    window = drive / "mediatagger" / "app" / "mediatagger" / "__pycache__" / "window.cpython-313.pyc"
+    assert f"code object from '{window}'" in log
+    assert still_running, log[-3000:]
+    assert files_under(drive) == before

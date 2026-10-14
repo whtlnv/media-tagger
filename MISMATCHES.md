@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-13 20:59 · `drive/test_run.py::test_run_with_a_real_python3_starts_the_real_app_from_the_drive_app_and_the_drive_gains_no_files`
+- Behavior: On a drive laid out by `update-drive.sh` (with a `lib-linux-aarch64-cp313/` holding the locked third-party packages), `sh <drive>/mediatagger/run.sh` with a real `python3` and no repo on its path starts the real app from the drive's `app/`, and the drive gains no files while it runs
+- Predicted: test passes, because run.sh already sets `PYTHONDONTWRITEBYTECODE=1` and `PYTHONPATH=app:lib` and execs `python3`, and the app with no folder argument writes only under `$HOME`
+- Actual: passed (1 passed, ~12 s)
+- Type: passed unexpectedly
+- Resolution: the behaviour already holds; kept the test as an end-to-end pin (real update-drive.sh, offline `uv pip install --target` of the `uv export` lock, base interpreter without the venv, offscreen Qt, `PYTHONVERBOSE` showing `window` loaded from the drive's precompiled `__pycache__`, app still running after 8 s, drive file list unchanged). Dropping `PYTHONDONTWRITEBYTECODE=1` from run.sh makes it fail on new `__pycache__` in lib, so it is not vacuous; /green has nothing to implement.
+
 ## 2026-10-13 20:49 · `drive/test_build_drive.py::test_build_drive_leaves_the_drive_tags_byte_identical_and_nothing_outside_its_mediatagger_folder_changed`
 - Behavior: `sh drive/build-drive.sh <drive>` leaves every file in `<drive>/.mediatagger/` byte-identical and nothing outside `<drive>/mediatagger/` changed except `.metadata_never_index`
 - Predicted: test passes, because build-drive.sh only removes/writes `$1/mediatagger/lib-…` and `$1/mediatagger/debs`, delegates the rest to update-drive.sh (scoped to `$1/mediatagger`), and touches only `$1/.metadata_never_index` outside it; its temp requirements file comes from `mktemp`, off the drive
