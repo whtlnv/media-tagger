@@ -307,3 +307,31 @@ def test_build_drive_leaves_the_drive_tags_byte_identical_and_nothing_outside_it
     subprocess.run(["sh", str(BUILD_DRIVE), str(drive)], env=env)
 
     assert outside_mediatagger() == before
+
+
+def test_build_drive_from_another_working_directory_installs_the_packages_uv_exports_from_this_repos_project(tmp_path):
+    record = tmp_path / "uv-calls"
+    env = fake_build_env(tmp_path, record)
+    repo = BUILD_DRIVE.parent.parent
+    bin_dir = tmp_path / "bin"
+    (bin_dir / "uv").rename(bin_dir / "uv-recording")
+    fake_command(bin_dir, "uv", f"""
+case " $* " in *" export "*) ;; *) exec "{bin_dir / 'uv-recording'}" "$@";; esac
+project=$PWD; prev=
+for a; do
+  case "$prev" in --project|--directory) project=$a;; esac
+  case "$a" in --project=*|--directory=*) project=${{a#*=}};; esac
+  prev=$a
+done
+[ "$(cd "$project" && pwd -P)" = "$(cd "{repo}" && pwd -P)" ] || exit 2
+cat "{tmp_path / 'exported.txt'}\"""")
+    drive = tmp_path / "drive"
+    drive.mkdir()
+
+    subprocess.run(["sh", str(BUILD_DRIVE), str(drive)], env=env, cwd=tmp_path / "home")
+
+    exported = [
+        positional_specs(call["args"]) | requirement_specs(call["requirements"])
+        for call in uv_pip_install_calls(record)
+    ]
+    assert exported == [requirement_specs(EXPORTED)]
