@@ -1,5 +1,6 @@
 import importlib.util
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -223,3 +224,19 @@ def test_update_drive_without_a_drive_argument_fails_with_a_usage_message_and_wr
     assert result.returncode != 0
     assert "usage" in result.stderr.lower()
     assert list(tmp_path.iterdir()) == []
+
+
+def test_update_drive_from_a_repo_copy_that_is_not_a_git_checkout_writes_unknown_version_without_printing_an_error(tmp_path):
+    copy = tmp_path / "repo-copy"
+    ignore = shutil.ignore_patterns("__pycache__")
+    shutil.copytree(REPO / "drive", copy / "drive", ignore=ignore)
+    shutil.copytree(PACKAGE, copy / "src" / "mediatagger", ignore=ignore)
+    env = {**env_with_python313_on_path(tmp_path), "GIT_CEILING_DIRECTORIES": str(tmp_path)}
+    drive = empty_drive(tmp_path)
+
+    result = subprocess.run(
+        ["sh", str(copy / "drive" / "update-drive.sh"), str(drive)],
+        env=env, capture_output=True, text=True,
+    )
+
+    assert (result.returncode, result.stderr, version_on(drive).read_text().strip()) == (0, "", "unknown")

@@ -40,4 +40,4 @@ Phase 11 notes for every cycle (Phases 1–10 are delivered — see DONE.md; dec
 - [x] `sh <drive>/mediatagger/setup-pi.sh` hands `apt-get` a lists folder that already holds an empty `partial/` folder (apt refuses to update without it), as the spike does
 - [x] `sh <drive>/mediatagger/check-video-leak.sh [target]` does what the spike's `check-video-leak.sh` does (info, fd log every 10 s while the app runs, default target `../samples/06_clip_hevc_1080p.mp4`, logs under `~/mediatagger-check/<stamp>/`, copied to `<drive>/results/check-video-leak-<stamp>/` only after the app has exited) — ported, starting the app through `run.sh`
 - [x] `sh drive/build-drive.sh <drive>` started from any working directory exports the locked packages of this repo (`uv export` runs on the repo's own `pyproject.toml`/`uv.lock`)
-- [ ] `sh drive/update-drive.sh <drive>` from a copy of the repo that is not a git checkout (or with no `git` installed) writes `unknown` to `app/VERSION` without printing an error
+- [x] `sh drive/update-drive.sh <drive>` from a copy of the repo that is not a git checkout (or with no `git` installed) writes `unknown` to `app/VERSION` without printing an error
