@@ -216,3 +216,15 @@ def test_build_drive_takes_the_debs_from_the_home_aptpi_cache_when_aptpi_is_unse
 
     debs = drive / "mediatagger" / "debs"
     assert {p.name: p.read_bytes() for p in debs.glob("*.deb")} == {"mpv_0.39.0-3_arm64.deb": b"!<arch>\nmpv"}
+
+
+def test_build_drive_removes_a_deb_left_in_the_drive_debs_by_an_earlier_build(tmp_path):
+    env = fake_build_env(tmp_path, tmp_path / "uv-calls")
+    debs = tmp_path / "drive" / "mediatagger" / "debs"
+    debs.mkdir(parents=True)
+    stale = debs / "libmpv1_0.35.1-4_arm64.deb"
+    stale.write_bytes(b"!<arch>\nold")
+
+    subprocess.run(["sh", str(BUILD_DRIVE), str(tmp_path / "drive")], env=env)
+
+    assert not stale.exists()
