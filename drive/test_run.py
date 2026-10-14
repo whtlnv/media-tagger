@@ -4,7 +4,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from fakes import recorded_args
+from fakes import fake_command, recorded_args
 
 RUN = Path(__file__).resolve().parent / "run.sh"
 
@@ -19,8 +19,7 @@ def drive_with_run_script(tmp_path):
 def env_with_fake_python3(tmp_path, script):
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
-    (bin_dir / "python3").write_text(f"#!/bin/sh\n{script}\n")
-    (bin_dir / "python3").chmod(0o755)
+    fake_command(bin_dir, "python3", script)
     env = {
         k: v for k, v in os.environ.items()
         if k not in ("PYTHONPATH", "PYTHONDONTWRITEBYTECODE")
