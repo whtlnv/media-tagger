@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-14 05:55 · `src/mediatagger/test_main.py::test_pressing_o_in_the_grid_of_the_mediatagger_command_opens_its_folder_picker`
+- Behavior: In the window the `mediatagger` command builds, `o` in the grid opens the folder picker the window was given
+- Predicted: passes on first run — the real command builds `Window` without a `folder_picker`, so the grid's `o` reaches `Window._pick_folder` → `viewer.folder_picker`, the viewer's default directory-mode `QFileDialog`
+- Actual: passes
+- Type: passed unexpectedly
+- Resolution: the real command already wires the grid's `o` to the window's picker; the test is non-vacuous (dropping the `grid.pick_folder` connection in `window.py` makes it fail with empty stdout, no dialog shown), so kept as a pin needing no /green.
+
 ## 2026-10-14 04:51 · `src/mediatagger/test_window_state.py::test_a_folder_of_another_drive_chosen_with_o_from_the_windows_grid_is_recorded_with_that_drives_mount_point_in_the_state_file`
 - Behavior: A folder chosen with `o` from a grid is recorded as the last folder in `state.json`
 - Predicted: passes on first run — the grid's `o` goes through `Window._pick_folder` → `Window._open`, which already calls `_record_state` for the opened slideshow's folder

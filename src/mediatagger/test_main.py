@@ -563,3 +563,34 @@ def test_running_the_mediatagger_command_on_a_folder_of_a_drive_with_a_tagged_li
     result = run_python_offscreen(SEARCH_FROM_THE_GRID_THEN_REPORT_THE_BREADCRUMB_AND_TILES_SCRIPT, str(drive), str(folder), "beach")
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == "crumbs=['Search: beach'] tiles=['IMG_2.png']"
+
+PRESS_ESC_THEN_O_IN_THE_GRID_THEN_REPORT_THE_PICKER_SCRIPT = (
+    "import sys\n"
+    "from PySide6.QtCore import Qt, QTimer\n"
+    "from PySide6.QtTest import QTest\n"
+    "from PySide6.QtWidgets import QApplication, QFileDialog, QListView\n"
+    "app = QApplication([])\n"
+    "def report_the_picker():\n"
+    "    pickers = [widget for widget in QApplication.topLevelWidgets() if isinstance(widget, QFileDialog) and widget.isVisible()]\n"
+    "    print(f'pickers={len(pickers)} folders={[picker.fileMode() == QFileDialog.FileMode.Directory for picker in pickers]}', flush=True)\n"
+    "    for picker in pickers:\n"
+    "        picker.reject()\n"
+    "def press_esc_then_o_in_the_grid():\n"
+    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    QTest.keyClick(window, Qt.Key.Key_Escape)\n"
+    "    (grid,) = [grid for grid in window.findChildren(QListView) if grid.isVisible()]\n"
+    "    QTimer.singleShot(500, report_the_picker)\n"
+    "    QTest.keyClick(grid, Qt.Key.Key_O)\n"
+    "    QApplication.closeAllWindows()\n"
+    "    QApplication.quit()\n"
+    "QTimer.singleShot(1000, press_esc_then_o_in_the_grid)\n"
+    "sys.argv = ['mediatagger', sys.argv[1]]\n"
+) + RUN_MEDIATAGGER_COMMAND
+
+
+def test_pressing_o_in_the_grid_of_the_mediatagger_command_opens_its_folder_picker(tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    make_image(tmp_path / "IMG_2.png", "blue")
+    result = run_python_offscreen(PRESS_ESC_THEN_O_IN_THE_GRID_THEN_REPORT_THE_PICKER_SCRIPT, str(tmp_path / "IMG_2.png"))
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "pickers=1 folders=[True]"

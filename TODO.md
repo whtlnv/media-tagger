@@ -14,7 +14,7 @@ Phase 12 notes for every cycle (Phases 1–11 are delivered — see DONE.md; Pha
 - [x] A folder of another drive chosen with `o` from a grid, then `Esc`, shows thumbnails from the new drive's thumbnail cache
 - [x] A folder of another read-only drive chosen with `o` from the viewer shows the read-only banner
 - [x] A folder chosen with `o` from a grid is recorded as the last folder in `state.json`
-- [ ] In the window the `mediatagger` command builds, `o` in the grid opens the folder picker the window was given
+- [x] In the window the `mediatagger` command builds, `o` in the grid opens the folder picker the window was given
 - [ ] A drag of local files entering and moving over the grid's viewport is accepted
 - [ ] A drag of plain text moving over the grid's viewport is refused
 - [ ] A drag of a web link moving over the grid's viewport is refused
