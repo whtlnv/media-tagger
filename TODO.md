@@ -24,7 +24,7 @@ Phase 11 notes for every cycle (Phases 1–10 are delivered — see DONE.md; dec
 - [x] `sh <drive>/mediatagger/setup-pi.sh` with `XDG_DATA_HOME` unset writes the menu entry to `$HOME/.local/share/applications/mediatagger.desktop`
 - [x] `sh <drive>/mediatagger/setup-pi.sh` replaces an older `mediatagger.desktop` with the current entry, and running it twice leaves the same single entry
 - [x] `sh <drive>/mediatagger/setup-pi.sh` on a Pi where `dpkg-query -W -f='${Status}' libmpv2` reports it removed with its configuration kept (`deinstall ok config-files`) still installs libmpv2 from the drive
-- [ ] `sh <drive>/mediatagger/setup-pi.sh` when installing libmpv2 fails (`apt-get` exits non-zero) exits non-zero and writes no menu entry
+- [x] `sh <drive>/mediatagger/setup-pi.sh` when installing libmpv2 fails (`apt-get` exits non-zero) exits non-zero and writes no menu entry
 - [ ] `sh <drive>/mediatagger/check-video-leak.sh <target>` starts the app on `<target>` through the drive's `run.sh`
 - [ ] `sh drive/build-drive.sh <drive>` installs into `<drive>/mediatagger/lib-linux-aarch64-cp313/` with `uv pip install --python /usr/bin/python3.13 --target` exactly the packages and versions `uv export --frozen --no-dev --no-hashes --no-emit-project` gives
 - [ ] After `sh drive/build-drive.sh <drive>`, the packages in `lib-linux-aarch64-cp313/` have unchecked-hash precompiled bytecode, except under `deploy_lib`

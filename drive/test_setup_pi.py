@@ -204,3 +204,18 @@ def test_setup_pi_with_libmpv2_removed_but_its_config_files_kept_still_installs_
     assert ["install", "-y", "--no-install-recommends", "libmpv2"] in [
         split_apt_options(c["args"])[1] for c in apt_get_calls(record)
     ]
+
+
+def test_setup_pi_when_installing_libmpv2_fails_exits_non_zero_and_writes_no_desktop_entry(tmp_path):
+    mediatagger = drive_with_setup_pi(tmp_path)
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    fake_command(bin_dir, "dpkg-query", "exit 1")
+    fake_command(bin_dir, "sudo", 'exec "$@"')
+    fake_command(bin_dir, "apt-get", "exit 100")
+    env = fake_bin_env(tmp_path, bin_dir)
+
+    result = subprocess.run(["sh", str(mediatagger / "setup-pi.sh")], env=env)
+
+    assert result.returncode != 0
+    assert not (Path(env["XDG_DATA_HOME"]) / "applications" / "mediatagger.desktop").exists()
