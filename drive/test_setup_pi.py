@@ -135,12 +135,11 @@ def test_setup_pi_writes_a_mediatagger_desktop_entry_that_launches_the_drives_ru
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
     fake_command(bin_dir, "dpkg-query", "printf 'install ok installed'")
-    data_home = tmp_path / "home" / "share"
-    env = fake_bin_env(tmp_path, bin_dir, HOME=str(tmp_path / "home"), XDG_DATA_HOME=str(data_home))
+    env = fake_bin_env(tmp_path, bin_dir)
 
     subprocess.run(["sh", str(mediatagger / "setup-pi.sh")], check=True, env=env)
 
-    desktop = data_home / "applications" / "mediatagger.desktop"
+    desktop = Path(env["XDG_DATA_HOME"]) / "applications" / "mediatagger.desktop"
     assert desktop.is_file()
     lines = desktop.read_text().splitlines()
     assert lines[0] == "[Desktop Entry]"
