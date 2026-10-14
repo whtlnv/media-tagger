@@ -133,6 +133,7 @@ class Window(QWidget):
         grid.up.connect(lambda: self._leave(grid.folder))
         grid.escaped.connect(self.close)
         grid.dropped.connect(self._open)
+        grid.pick_folder.connect(lambda: self._open(self.viewer.folder_picker()))
         self._connect_tags_search_and_progress_of(grid)
         for old in self.findChildren(Grid):
             self._stop_thumbnails_of(old)

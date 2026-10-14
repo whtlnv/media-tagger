@@ -194,6 +194,7 @@ class Grid(QListView):
     escaped = Signal()
     tag = Signal()
     search = Signal()
+    pick_folder = Signal()
     dropped = Signal(Path)
 
     def __init__(self, folder, at=None, library=None, thumbnail_cache=None, paths=None):
@@ -307,6 +308,9 @@ class Grid(QListView):
             return
         if event.key() == Qt.Key.Key_Slash:
             self.search.emit()
+            return
+        if event.key() == Qt.Key.Key_O:
+            self.pick_folder.emit()
             return
         if event.key() == Qt.Key.Key_F:
             if self.window().isFullScreen():
