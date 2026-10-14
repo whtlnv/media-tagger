@@ -25,7 +25,7 @@ from mediatagger.test_viewer_library import (
 )
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger.thumbnail_cache import ThumbnailCache, cache_file
-from mediatagger.viewer import Viewer
+from mediatagger.viewer import READ_ONLY_BANNER_TEXT, Viewer
 from mediatagger.window import Window
 
 
@@ -815,6 +815,25 @@ def test_the_windows_grid_tag_prompt_sits_at_the_bottom_centre_just_above_the_st
     assert window.rect().contains(frame)
     assert abs(frame.center().x() - window.rect().center().x()) <= 1
     assert frame.bottom() == window.status_bar.geometry().top() - 1
+
+
+def test_choosing_a_folder_of_another_read_only_drive_with_o_from_the_windows_viewer_shows_the_read_only_banner(qtbot, tmp_path):
+    first_drive, viewed = drive_with_a_tag_library_holding_one_image(tmp_path)
+    second_drive = make_tag_library_drive(tmp_path / "ELSEWHERE")
+    [chosen] = make_folders(second_drive, "Videos")
+    make_image(chosen / "x.png", "blue")
+    window = Window(viewed, player_options=SILENT, folder_picker=lambda: chosen, is_mount_point=lambda path: path in (first_drive, second_drive),
+                    ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    viewer = window.findChild(QStackedWidget).currentWidget()
+
+    with made_read_only(second_drive):
+        qtbot.keyClick(viewer, Qt.Key.Key_O)
+        shown = shown_texts(viewer)
+
+    assert viewer.slideshow.current == chosen / "x.png"
+    assert READ_ONLY_BANNER_TEXT in shown
 
 
 def test_moving_the_windows_grid_cursor_onto_an_untagged_item_shows_no_tags_in_the_status_bar(qtbot, tmp_path):
