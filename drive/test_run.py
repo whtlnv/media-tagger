@@ -109,6 +109,19 @@ def drive_laid_out_by_update_drive_with_the_locked_packages(tmp_path):
     return drive.resolve()
 
 
+def stderr_and_whether_still_running_after(seconds, command, **popen_kwargs):
+    process = subprocess.Popen(
+        command, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True, **popen_kwargs,
+    )
+    try:
+        _, log = process.communicate(timeout=seconds)
+        return log, False
+    except subprocess.TimeoutExpired:
+        process.kill()
+        _, log = process.communicate()
+        return log, True
+
+
 def test_run_with_a_real_python3_starts_the_real_app_from_the_drive_app_and_the_drive_gains_no_files(tmp_path):
     drive = drive_laid_out_by_update_drive_with_the_locked_packages(tmp_path)
     before = files_under(drive)
@@ -125,17 +138,9 @@ def test_run_with_a_real_python3_starts_the_real_app_from_the_drive_app_and_the_
         "QT_QPA_PLATFORM": "offscreen", "PYTHONVERBOSE": "1",
     }
 
-    app = subprocess.Popen(
-        ["sh", str(drive / "mediatagger" / "run.sh")],
-        env=env, cwd=home, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True,
+    log, still_running = stderr_and_whether_still_running_after(
+        8, ["sh", str(drive / "mediatagger" / "run.sh")], env=env, cwd=home,
     )
-    try:
-        _, log = app.communicate(timeout=8)
-        still_running = False
-    except subprocess.TimeoutExpired:
-        app.kill()
-        _, log = app.communicate()
-        still_running = True
 
     window = drive / "mediatagger" / "app" / "mediatagger" / "__pycache__" / "window.cpython-313.pyc"
     assert f"code object from '{window}'" in log
