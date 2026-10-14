@@ -649,3 +649,46 @@ def test_pressing_esc_to_quit_the_mediatagger_command_from_a_grid_whose_thumbnai
         _, stderr = process.communicate()
     assert process.returncode == 0, stderr
     assert seconds_to_end < 3, stderr
+
+SAY_QUITTING_THEN_CLOSE_THE_WINDOW_WHILE_THE_VIDEO_PLAYS_SCRIPT = (
+    "import sys\n"
+    "from PySide6.QtCore import QTimer\n"
+    "from PySide6.QtWidgets import QApplication, QStackedWidget\n"
+    "import mediatagger.viewer\n"
+    "from mediatagger.test_viewer import SILENT, make_surface_ready\n"
+    "unsilenced_engine = mediatagger.viewer.new_engine\n"
+    "mediatagger.viewer.new_engine = lambda **options: unsilenced_engine(**{**options, **SILENT})\n"
+    "app = QApplication([])\n"
+    "def shown():\n"
+    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    return window, window.findChild(QStackedWidget).currentWidget()\n"
+    "def stand_in_for_the_video_surface_becoming_ready():\n"
+    "    window, viewer = shown()\n"
+    "    make_surface_ready(viewer)\n"
+    "    QTimer.singleShot(1500, quit_while_the_video_plays)\n"
+    "def quit_while_the_video_plays():\n"
+    "    window, viewer = shown()\n"
+    "    viewer.video_player.engine.wait_for_property('time-pos', lambda pos: pos is not None and pos > 0, timeout=5)\n"
+    "    print('quitting', flush=True)\n"
+    "    window.close()\n"
+    "QTimer.singleShot(1000, stand_in_for_the_video_surface_becoming_ready)\n"
+    "sys.argv = ['mediatagger', sys.argv[1]]\n"
+) + RUN_MEDIATAGGER_COMMAND
+
+
+def test_quitting_the_mediatagger_command_while_a_video_plays_ends_the_process_within_3_s(tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
+    process = subprocess.Popen(
+        [sys.executable, "-c", SAY_QUITTING_THEN_CLOSE_THE_WINDOW_WHILE_THE_VIDEO_PLAYS_SCRIPT, str(clip)],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=offscreen_environment(),
+    )
+    try:
+        assert process.stdout.readline().strip() == "quitting"
+        quit_at = time.monotonic()
+        process.wait(timeout=30)
+        seconds_to_end = time.monotonic() - quit_at
+    finally:
+        process.kill()
+        _, stderr = process.communicate()
+    assert process.returncode == 0, stderr
+    assert seconds_to_end < 3, stderr

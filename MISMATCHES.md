@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-14 10:19 · `src/mediatagger/test_main.py::test_quitting_the_mediatagger_command_while_a_video_plays_ends_the_process_within_3_s`
+- Behavior: Quitting the app while a video plays ends the process within 3 s
+- Predicted: AssertionError on `seconds_to_end < 3` — the process lingers while mpv tears down
+- Actual: passed (1 passed in 7.33 s)
+- Type: passed unexpectedly
+- Resolution: The test is not vacuous: the script waits for mpv's `time-pos` > 0 before printing `quitting` (otherwise the readline would hang), so a video really was playing. `Window.closeEvent` → `viewer.close()` already shuts the player down promptly. Phase 12's TODO notes frame this item as a pin ("Also pin quitting while a video plays"), so I kept it as a regression pin and didn't rewrite it to force a failure.
+
 ## 2026-10-14 09:24 · `src/mediatagger/test_window_thumbnails.py::test_closing_the_window_stops_its_results_grids_thumbnails_so_one_still_being_generated_reaches_no_tile`
 - Behavior: Closing the window stops thumbnail generation of its results grid: a thumbnail still being generated is delivered to no tile
 - Predicted: passes on first run — the previous cycle's `Window.closeEvent` stops every `Grid` child, and the results grid sits in the same stack as the folder grid
