@@ -20,8 +20,7 @@ from mediatagger.test_viewer_backup import tags_in_newest_backup
 from mediatagger.test_viewer import SILENT, make_image, make_surface_ready, show_exposed, shown_texts, wait_until_loaded
 from mediatagger.test_viewer_library import (
     decline_noting_the_question_in, drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image, enter_in_tag_prompt,
-    make_tag_library_drive,
-    frame_in, made_read_only, overwrite_tags_db_with_garbage, resize_and_wait, visible_tag_prompt_texts, visible_tag_prompts,
+    frame_in, made_read_only, make_tag_library_drive, overwrite_tags_db_with_garbage, resize_and_wait, visible_tag_prompt_texts, visible_tag_prompts,
 )
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger.viewer import Viewer
