@@ -348,6 +348,21 @@ def test_pressing_o_in_the_windows_viewer_while_a_video_plays_opens_the_folder_p
     assert shown.slideshow.current == chosen / "x.jpg"
 
 
+def test_pressing_o_in_the_windows_viewer_and_cancelling_the_folder_picker_leaves_the_same_item_shown(qtbot, tmp_path):
+    make_image(tmp_path / "a.jpg", "red")
+    make_image(tmp_path / "b.jpg", "blue")
+    window = Window(tmp_path, player_options=SILENT, folder_picker=lambda: None)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    viewer = stack.currentWidget()
+    qtbot.keyClick(viewer, Qt.Key.Key_Right)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_O)
+
+    assert stack.currentWidget() is viewer
+    assert viewer.slideshow.current == tmp_path / "b.jpg"
+
+
 def test_pressing_o_in_the_windows_grid_and_cancelling_the_folder_picker_leaves_the_same_grid_shown_with_its_cursor_unchanged(qtbot, tmp_path):
     make_image(tmp_path / "a.jpg", "red")
     make_image(tmp_path / "b.jpg", "blue")

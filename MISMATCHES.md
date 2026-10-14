@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-14 03:18 · `src/mediatagger/test_window.py::test_pressing_o_in_the_windows_viewer_and_cancelling_the_folder_picker_leaves_the_same_item_shown`
+- Behavior: `o` in the viewer whose folder picker is cancelled leaves the same item shown
+- Predicted: passes on first run — `Viewer.open` already returns early when the picker returns `None`
+- Actual: passes
+- Type: passed unexpectedly
+- Resolution: the cancel path was built in with `o` on the launch screen (`open(None)` is a no-op); the test is non-vacuous (it asserts the second item, reached with Right, stays shown in the same viewer), so kept as a pin rather than rewritten.
+
 ## 2026-10-14 03:07 · `src/mediatagger/test_window.py::test_pressing_o_in_the_windows_viewer_while_a_video_plays_opens_the_folder_picker_and_choosing_a_folder_shows_its_slideshow_from_its_first_item`
 - Behavior: `o` in the viewer while a video plays opens the folder picker, and choosing a folder shows that folder's slideshow from its first item
 - Predicted: passes on first run — 5c9c09b moved `o` ahead of the `slideshow is None` guard in `Viewer.keyPressEvent`, and `open()` already stops the video
