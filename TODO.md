@@ -35,7 +35,7 @@ Phase 11 notes for every cycle (Phases 1–10 are delivered — see DONE.md; dec
 - [x] `sh drive/build-drive.sh <drive>` when `$APTPI` holds no `.deb` fails with a clear message and leaves no partial `debs/`
 - [x] After `sh drive/build-drive.sh <drive>`, `<drive>/mediatagger/` holds the same `app/` and scripts `update-drive.sh` lays out
 - [x] After `sh drive/build-drive.sh <drive>`, an empty `<drive>/.metadata_never_index` exists
-- [ ] `sh drive/build-drive.sh <drive>` leaves every file in `<drive>/.mediatagger/` byte-identical and nothing outside `<drive>/mediatagger/` changed except `.metadata_never_index`
+- [x] `sh drive/build-drive.sh <drive>` leaves every file in `<drive>/.mediatagger/` byte-identical and nothing outside `<drive>/mediatagger/` changed except `.metadata_never_index`
 - [ ] On a drive laid out by `update-drive.sh` (with a `lib-linux-aarch64-cp313/` holding the locked third-party packages), `sh <drive>/mediatagger/run.sh` with a real `python3` and no repo on its path starts the real app from the drive's `app/`, and the drive gains no files while it runs
 - [ ] `sh <drive>/mediatagger/setup-pi.sh` hands `apt-get` a lists folder that already holds an empty `partial/` folder (apt refuses to update without it), as the spike does
 - [ ] `sh <drive>/mediatagger/check-video-leak.sh [target]` does what the spike's `check-video-leak.sh` does (info, fd log every 10 s while the app runs, default target `../samples/06_clip_hevc_1080p.mp4`, logs under `~/mediatagger-check/<stamp>/`, copied to `<drive>/results/check-video-leak-<stamp>/` only after the app has exited) — ported, starting the app through `run.sh`

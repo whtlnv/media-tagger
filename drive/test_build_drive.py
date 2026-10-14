@@ -277,3 +277,33 @@ def test_build_drive_leaves_an_empty_metadata_never_index_at_the_drive_root(tmp_
 
     marker = drive / ".metadata_never_index"
     assert marker.is_file() and marker.read_bytes() == b""
+
+
+def test_build_drive_leaves_the_drive_tags_byte_identical_and_nothing_outside_its_mediatagger_folder_changed(tmp_path):
+    env = fake_build_env(tmp_path, tmp_path / "uv-calls")
+    drive = tmp_path / "drive"
+    files = {
+        drive / ".mediatagger" / "tags.db": b"SQLite format 3\x00tags",
+        drive / ".mediatagger" / "tags.db-wal": b"\x37\x7f\x06\x82wal",
+        drive / ".mediatagger" / "._tags.db": b"\x00\x05\x16\x07",
+        drive / ".mediatagger" / "thumbs" / "clip.mov.jpg": b"\xff\xd8\xff\xe0thumb",
+        drive / "photo.jpg": b"\xff\xd8\xff\xe0photo",
+        drive / "._photo.jpg": b"\x00\x05\x16\x07",
+        drive / "videos" / "nested" / "clip.mov": b"\x00\x00\x00\x14ftypqt",
+    }
+    for path, body in files.items():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(body)
+    (drive / "empty-folder").mkdir()
+
+    def outside_mediatagger():
+        return {
+            str(p.relative_to(drive)): p.read_bytes() if p.is_file() else None
+            for p in drive.rglob("*")
+            if p.relative_to(drive).parts[0] not in {"mediatagger", ".metadata_never_index"}
+        }
+    before = outside_mediatagger()
+
+    subprocess.run(["sh", str(BUILD_DRIVE), str(drive)], env=env)
+
+    assert outside_mediatagger() == before

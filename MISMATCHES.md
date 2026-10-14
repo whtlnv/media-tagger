@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-13 20:49 · `drive/test_build_drive.py::test_build_drive_leaves_the_drive_tags_byte_identical_and_nothing_outside_its_mediatagger_folder_changed`
+- Behavior: `sh drive/build-drive.sh <drive>` leaves every file in `<drive>/.mediatagger/` byte-identical and nothing outside `<drive>/mediatagger/` changed except `.metadata_never_index`
+- Predicted: test passes, because build-drive.sh only removes/writes `$1/mediatagger/lib-…` and `$1/mediatagger/debs`, delegates the rest to update-drive.sh (scoped to `$1/mediatagger`), and touches only `$1/.metadata_never_index` outside it; its temp requirements file comes from `mktemp`, off the drive
+- Actual: passed (1 passed)
+- Type: passed unexpectedly
+- Resolution: the behaviour already holds by construction; kept the test as a pin (tags.db, -wal, a `._` fork, a nested thumb, root media, a `._` fork at the root, a nested video and an empty folder, all snapshotted by path and bytes) rather than contriving a failure; /green has nothing to implement.
+
 ## 2026-10-13 18:31 · `drive/test_setup_pi.py::test_setup_pi_replaces_an_older_desktop_entry_and_running_twice_leaves_the_same_single_entry`
 - Behavior: `sh <drive>/mediatagger/setup-pi.sh` replaces an older `mediatagger.desktop` with the current entry, and running it twice leaves the same single entry
 - Predicted: test passes, because setup-pi.sh already writes the entry with `cat > "$apps/mediatagger.desktop"`, which truncates any older file and always writes the same fixed name
