@@ -1,0 +1,2 @@
+Cannot load libcuda.so.1
+qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x2bf59490 but 0x0 is focused

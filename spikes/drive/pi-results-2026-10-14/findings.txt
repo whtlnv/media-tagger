@@ -1,0 +1,21 @@
+I opened the app without a drive as a parameter, and it opened the last one used (the test videos), which was fine, but then i couldn't open a different drive. either by dragging or pressing "o". check results_01.txt
+
+After a long session, when i closed the app (using esc) the terminal showed several "qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x3d5e9660 but 0x0 is focused" messages and became unresponsive.
+
+the video progress bar seems to be composed of a light bar showing the actual progress and a darker taller bar the same height but that has no discernible purpose, other that maybe help with the light bar visibility. i think we could do without that other darker bar
+
+i would like to be able to quickly rotate a video 90 degrees to the right with a key
+
+i would like the app to look for a file mediatagger_config.json located next to or close to the drive database or at the actual drive, whatever makes obvious what drive that file is modifying. Inside that file, In the "requiredRoots" key, an array of required tag "roots" will be read. for example "type:", "size:", etc... then for each file on the grid view a small label with an icon will display how many of those required tags the file is missing. I could be convinced to store this configurations elsewhere, like the database or another form or place, but we'd need to talk about it.
+
+i would like to be able to increase playback speed with "[" and decrease it with "]", with a range between .25x to 8x. with sensible steps in between. the speed needs to be shown in the video ui as the progress bar
+
+i need a key bind thats pretty much a no op, but that will just show the video ui, that is, the progress. i know any will do right now, but i would like to assign one just for that purpose.
+
+another harmless key bind, i would like to toggle on and off the total list of keybindings and their action in the background of the app. like, instead of a flat black background, a cheat sheet of all keybindings in our app.
+
+we need to start adding some filters to our grid view. i propose a simple floating button at the bottom corner, like material design used to do, that when clicked will allow me to select some predefined filters: With tags, No tags, Missing tags. this will probably become more complicated later, but right now all options are toggles and mutually exclusive. Well, a file could have tags and missing tags at the same time, but i don't care for that case right now.
+
+for the next big feature, i would like to be able to create "chapters" for any video. using our existing database and tagging system, i would like to create timestamped tags with a simple hot key that will allow me to set a name for that moment and store the original time selected with that name. Then, i'll have that timestamp available to navigate to that point in the video any time i'm looking at it.
+
+I would like to be able to zoom using the mouse scroll wheel, where the mouse is pointing, that's the center of the zoom. we would only be able to zoom out to the original size of the video. So, we would be able to go from 100% to 300%  progressively, up and down.

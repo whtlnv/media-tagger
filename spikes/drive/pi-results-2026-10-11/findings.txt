@@ -1,0 +1,5 @@
+app crashes when seeing video
+drive name is irrelevant, remove
+can't seek in video
+can't watch video progress
+windowed mode would be very desirable

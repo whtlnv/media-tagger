@@ -1,0 +1,43 @@
+== qt-widget-only
+  t=   7s sync_files=1
+  t=  12s sync_files=1
+  t=  16s sync_files=1
+  t=  22s sync_files=1
+  t=  27s sync_files=1
+  exit=0  errors: 
+== qt-window-only
+  t=   6s sync_files=1
+  t=  11s sync_files=1
+  t=  16s sync_files=1
+  t=  21s sync_files=1
+  t=  26s sync_files=1
+  exit=0  errors: 
+== mpv-standalone
+  t=   7s sync_files=1
+  t=  12s sync_files=1
+  t=  17s sync_files=1
+  t=  22s sync_files=1
+  t=  27s sync_files=1
+  exit=0  errors: 
+== mpv-in-qt-widget
+  t=   5s sync_files=4
+  t=  10s sync_files=4
+  t=  15s sync_files=4
+  t=  20s sync_files=4
+  t=  25s sync_files=4
+  exit=0  errors: Cannot load libcuda.so.1 
+== mpv-in-qt-window
+  t=   6s sync_files=3
+  t=  11s sync_files=3
+  t=  16s sync_files=3
+  t=  21s sync_files=3
+  t=  26s sync_files=3
+  exit=0  errors: Cannot load libcuda.so.1 
+== mpv-wid-xcb
+  t=   6s sync_files=1
+  t=  11s sync_files=1
+  t=  16s sync_files=1
+  t=  21s sync_files=1
+  t=  26s sync_files=1
+  exit=0  errors: 
+done — now run:  cp ~/diag-video2.txt /media/rb/MEDIATAGGER/results/

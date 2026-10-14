@@ -1,0 +1,12 @@
+qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x36cb5370 but 0x0 is focused
+qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x36cb5370 but 0x0 is focused
+Cannot load libcuda.so.1
+qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x37095810 but 0x0 is focused
+qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x37095810 but 0x0 is focused
+export failed
+failed to export dumb buffer: Too many open files
+Failed to create scanout resource
+export failed
+error marshalling arguments for add: dup failed: Too many open files
+Error marshalling request for zwp_linux_buffer_params_v1.add: Too many open files
+The Wayland connection experienced a fatal error: Too many open files

@@ -1,0 +1,6 @@
+app: 3bd9a25 docs: handover — Phase 10 validated on the Mac
+libmpv: 0.40.0-3+deb13u1
+session: wayland wayland=wayland-0
+target: /media/rb/MEDIATAGGER/mediatagger/../samples/06_clip_hevc_1080p.mp4
+fd limit: 1024
+exit code: 0

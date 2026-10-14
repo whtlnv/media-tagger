@@ -1,0 +1,50 @@
+== nested
+  t=   9s sync_files=3
+  t=  14s sync_files=3
+  t=  19s sync_files=3
+  t=  24s sync_files=3
+  t=  29s sync_files=3
+  errors: Cannot load libcuda.so.1 
+== nested-fullscreen
+  t=   6s sync_files=4
+  t=  11s sync_files=4
+  t=  16s sync_files=4
+  t=  21s sync_files=4
+  t=  26s sync_files=4
+  errors: Cannot load libcuda.so.1 
+== nested-overlay
+  t=   6s sync_files=3
+  t=  11s sync_files=3
+  t=  15s sync_files=3
+  t=  21s sync_files=3
+  t=  26s sync_files=3
+  errors: Cannot load libcuda.so.1 
+== nested-overlay-fullscreen
+  t=   6s sync_files=4
+  t=  11s sync_files=4
+  t=  16s sync_files=4
+  t=  21s sync_files=4
+  t=  26s sync_files=4
+  errors: Cannot load libcuda.so.1 
+== nested-sound
+  t=   6s sync_files=3
+  t=  11s sync_files=3
+  t=  16s sync_files=3
+  t=  21s sync_files=3
+  t=  26s sync_files=3
+  errors: Cannot load libcuda.so.1 
+== app-fullscreen
+  t=5s sync_files=32
+  t=10s sync_files=103
+  t=15s sync_files=176
+  t=20s sync_files=252
+  t=25s sync_files=329
+  errors: Cannot load libcuda.so.1 
+== app-windowed
+  t=5s sync_files=44
+  t=10s sync_files=123
+  t=15s sync_files=203
+  t=20s sync_files=285
+  t=25s sync_files=370
+  errors: Cannot load libcuda.so.1 
+done — now run:  cp ~/diag-video3.txt /media/rb/MEDIATAGGER/results/

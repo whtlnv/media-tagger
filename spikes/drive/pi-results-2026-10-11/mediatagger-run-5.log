@@ -1,0 +1,101 @@
+qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x2df23360 but 0x0 is focused
+qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x2df23360 but 0x0 is focused
+Cannot load libcuda.so.1
+qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x2e303990 but 0x0 is focused
+qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x2e303990 but 0x0 is focused
+Error calling Python override of QWidget::keyPressEvent(): Traceback (most recent call last):
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/viewer.py", line 218, in keyPressEvent
+    self.on_escape()
+    ~~~~~~~~~~~~~~^^
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/window.py", line 78, in _escape
+    self._show_grid()
+    ~~~~~~~~~~~~~~~^^
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/window.py", line 82, in _show_grid
+    self._show_parent_of(self.viewer.slideshow.current)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/window.py", line 135, in _show_parent_of
+    self._show(self._grid_of(path.parent, at=path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/window.py", line 95, in _show
+    self._stop_thumbnails_of(old)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/window.py", line 105, in _stop_thumbnails_of
+    grid.stop_generating_thumbnails()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/grid.py", line 215, in stop_generating_thumbnails
+    self._thumbnails.stop()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/folder_thumbnails.py", line 47, in stop
+    self._scheduler.shut_down()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/thumbnail_scheduler.py", line 144, in shut_down
+    self._work.emitter.deleteLater()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+RuntimeError: libshiboken: Internal C++ object (_Generated) already deleted.
+Error calling Python override of QWidget::keyPressEvent(): Traceback (most recent call last):
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/viewer.py", line 240, in keyPressEvent
+    self.video_player.press(_VIDEO_KEYS[event.key()])
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/video.py", line 47, in press
+    self._seek(-10)
+    ~~~~~~~~~~^^^^^
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/video.py", line 58, in _seek
+    self.engine.seek(seconds, precision="exact")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/rb/MEDIATAGGER/mediatagger/lib-linux-aarch64-cp313/mpv.py", line 1264, in seek
+    self.command('seek', amount, reference, precision)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/rb/MEDIATAGGER/mediatagger/lib-linux-aarch64-cp313/mpv.py", line 1257, in command
+    _mpv_command_node(self.handle, ppointer, out)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/rb/MEDIATAGGER/mediatagger/lib-linux-aarch64-cp313/mpv.py", line 162, in raise_for_ec
+    raise ex
+SystemError: ('Error running mpv command', -12, (<MpvHandle object at 0x7f9d965ad0>, <mpv.LP_MpvNode object at 0x7f9c119450>, <mpv.LP_MpvNode object at 0x7f9c119350>))
+Error calling Python override of QWidget::keyPressEvent(): Traceback (most recent call last):
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/viewer.py", line 240, in keyPressEvent
+    self.video_player.press(_VIDEO_KEYS[event.key()])
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/video.py", line 47, in press
+    self._seek(-10)
+    ~~~~~~~~~~^^^^^
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/video.py", line 58, in _seek
+    self.engine.seek(seconds, precision="exact")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/rb/MEDIATAGGER/mediatagger/lib-linux-aarch64-cp313/mpv.py", line 1264, in seek
+    self.command('seek', amount, reference, precision)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/rb/MEDIATAGGER/mediatagger/lib-linux-aarch64-cp313/mpv.py", line 1257, in command
+    _mpv_command_node(self.handle, ppointer, out)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/rb/MEDIATAGGER/mediatagger/lib-linux-aarch64-cp313/mpv.py", line 162, in raise_for_ec
+    raise ex
+SystemError: ('Error running mpv command', -12, (<MpvHandle object at 0x7f9d965ad0>, <mpv.LP_MpvNode object at 0x7f9c11aa50>, <mpv.LP_MpvNode object at 0x7f9c11a950>))
+Error calling Python override of QWidget::keyPressEvent(): Traceback (most recent call last):
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/viewer.py", line 218, in keyPressEvent
+    self.on_escape()
+    ~~~~~~~~~~~~~~^^
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/window.py", line 78, in _escape
+    self._show_grid()
+    ~~~~~~~~~~~~~~~^^
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/window.py", line 82, in _show_grid
+    self._show_parent_of(self.viewer.slideshow.current)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/window.py", line 135, in _show_parent_of
+    self._show(self._grid_of(path.parent, at=path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/window.py", line 95, in _show
+    self._stop_thumbnails_of(old)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/window.py", line 105, in _stop_thumbnails_of
+    grid.stop_generating_thumbnails()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/grid.py", line 215, in stop_generating_thumbnails
+    self._thumbnails.stop()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/folder_thumbnails.py", line 47, in stop
+    self._scheduler.shut_down()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/media/rb/MEDIATAGGER/mediatagger/app/mediatagger/thumbnail_scheduler.py", line 144, in shut_down
+    self._work.emitter.deleteLater()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+RuntimeError: libshiboken: Internal C++ object (_Generated) already deleted.
