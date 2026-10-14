@@ -18,7 +18,7 @@ State of the project and how it has been run, for the next session. Read `DESIGN
 | 9a Pi fixes & video controls | done, validated on the Mac (`1402d2e`, 605 tests); Pi run pending |
 | 9b Video playback never leaks | done, validated on the Mac (`946d17b`, 611 tests); Pi run pending — see "Video crash on the Pi" |
 | 10 Search | done, validated on the Mac (`c54a2a5`, 695 tests); Pi timing unmeasured — see "Phase 10 — done" |
-| 11 Run from the drive on the Pi | built in `drive/` (`build-drive.sh`, `update-drive.sh`, `run.sh`, `setup-pi.sh`); not yet validated |
+| 11 Run from the drive on the Pi | done, validated on the Mac + VM (`abe5ae3`, 738 tests); Pi run pending — see "Phase 11 — done" |
 
 Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), `grid.py`, `viewer.py`, `tag_prompt.py` (the `t` prompt, shared by grid and viewer), `status_bar.py`, `drive_session.py` (library open/create/restore/backup), `library.py` (SQLite, schema v2), `backup.py`, `state.py` (last folder, geometry, recent searches; `$XDG_CONFIG_HOME`), `search.py` (query matching), `search_bar.py` (the `/` box and its `↑`/`↓` history), `folder.py`, `slideshow.py`, `thumbnails.py` (image/video/folder thumbnails, `ffmpeg`/`ffprobe`), `thumbnail_cache.py`, `thumbnail_scheduler.py` (3 workers + prefetch), `folder_thumbnails.py` (a folder's thumbnails for its grid), `video.py` + `mpv_surface.py` (libmpv render API), `video_controls.py` (Phase 9a: video progress bar — in progress), `gui_thread_gc.py`. Tests are co-located (`test_*.py`). Open structural debt is in `BACKLOG.md`.
 
@@ -32,6 +32,14 @@ Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), 
   - send the agent back with a numbered fix list if anything is off.
 - Progress is relayed to the user in chat from a `Monitor` that polls `git log`, `TODO.md` checkbox counts, `~/Library/Logs/DiagnosticReports/Python-*.ips` and `/Volumes/MEDIATAGGER`. Monitors expire every 30 min; re-arm.
 - The user asked for progress to be printed in the conversation and for questions only when a decision is genuinely theirs.
+
+## Phase 11 — done
+
+Product scripts in `drive/` (tests co-located, external commands faked on PATH): `build-drive.sh` (VM: packages pinned to `uv.lock`, all of `~/aptpi`'s .debs + index, then `update-drive.sh`), `update-drive.sh` (Mac or VM: app + scripts only; replaces `spikes/drive/push-app.sh`), `run.sh`, `setup-pi.sh` (libmpv2 only if missing, then the menu entry), `check-video-leak.sh`. Orchestrator check: suite twice (738), script review; the agent ran the build in the VM into a scratch folder, `setup-pi.sh` with apt in simulate mode, and an update onto a scratch exFAT image on the Mac (found and fixed `._*.py` breaking compileall).
+
+- **Stick as of 2026-10-14:** build `3bd9a25` pushed with the old `spikes/drive/push-app.sh` (old layout: `run-app.sh`, old `setup-pi.sh`), with `PI-CHECKLIST.txt` for 9a/9b/10. Old spike files moved to `results/old-files-2026-10-13/`. Next update: `sh drive/update-drive.sh /Volumes/MEDIATAGGER` from a clean worktree, then `sh setup-pi.sh` once on the Pi for the menu entry.
+- **Pi-only checks pending:** `setup-pi.sh` with real sudo/apt offline; the menu entry starts the app; `build-drive.sh` onto the real stick via VM passthrough.
+- **Known:** an update whose precompile fails leaves the drive without `app/mediatagger` until rerun; a failed install leaves `setup-pi.sh`'s temp folder.
 
 ## Phase 10 — done
 
