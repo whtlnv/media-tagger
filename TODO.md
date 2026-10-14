@@ -20,7 +20,7 @@ Phase 12 notes for every cycle (Phases 1–11 are delivered — see DONE.md; Pha
 - [x] A drag of a web link moving over the grid's viewport is refused
 - [x] Dropping a folder onto the grid's viewport shows that folder's slideshow from its first item
 - [x] Dropping a folder of another drive onto the grid's viewport shows it with that drive's tags
-- [ ] Dropping a folder of another drive onto the viewer while a video plays (drag moving over the video surface) shows that folder's slideshow from its first item
+- [x] Dropping a folder of another drive onto the viewer while a video plays (drag moving over the video surface) shows that folder's slideshow from its first item
 - [ ] Closing the window stops thumbnail generation of its folder grid: a thumbnail still being generated is delivered to no tile
 - [ ] Closing the window stops thumbnail generation of its results grid: a thumbnail still being generated is delivered to no tile
 - [ ] Pressing `Esc` to quit the real `mediatagger` command from a grid whose thumbnails are still generating ends the process within 3 s

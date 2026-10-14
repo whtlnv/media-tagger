@@ -117,6 +117,8 @@ class Viewer(QWidget):
         if any(url.isLocalFile() for url in event.mimeData().urls()):
             event.acceptProposedAction()
 
+    dragMoveEvent = dragEnterEvent
+
     def dropEvent(self, event):
         self.stop_video()
         path = Path(event.mimeData().urls()[0].toLocalFile())
