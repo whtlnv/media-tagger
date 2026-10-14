@@ -22,7 +22,7 @@ Phase 11 notes for every cycle (Phases 1–10 are delivered — see DONE.md; dec
 - [x] After `sh <drive>/mediatagger/setup-pi.sh` installs libmpv2, its temporary apt lists folder is gone
 - [x] `sh <drive>/mediatagger/setup-pi.sh` writes `$XDG_DATA_HOME/applications/mediatagger.desktop` (creating the folder) with `[Desktop Entry]`, `Type=Application`, `Name=MediaTagger`, `Exec=sh "<absolute path of the drive's mediatagger folder>/run.sh"`, `Terminal=false` and `Categories=AudioVideo;Video;Graphics;`
 - [x] `sh <drive>/mediatagger/setup-pi.sh` with `XDG_DATA_HOME` unset writes the menu entry to `$HOME/.local/share/applications/mediatagger.desktop`
-- [ ] `sh <drive>/mediatagger/setup-pi.sh` replaces an older `mediatagger.desktop` with the current entry, and running it twice leaves the same single entry
+- [x] `sh <drive>/mediatagger/setup-pi.sh` replaces an older `mediatagger.desktop` with the current entry, and running it twice leaves the same single entry
 - [ ] `sh <drive>/mediatagger/setup-pi.sh` on a Pi where `dpkg-query -W -f='${Status}' libmpv2` reports it removed with its configuration kept (`deinstall ok config-files`) still installs libmpv2 from the drive
 - [ ] `sh <drive>/mediatagger/setup-pi.sh` when installing libmpv2 fails (`apt-get` exits non-zero) exits non-zero and writes no menu entry
 - [ ] `sh <drive>/mediatagger/check-video-leak.sh <target>` starts the app on `<target>` through the drive's `run.sh`

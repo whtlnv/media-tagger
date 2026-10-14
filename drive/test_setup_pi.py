@@ -164,3 +164,27 @@ def test_setup_pi_without_xdg_data_home_writes_the_desktop_entry_under_home_loca
 
     desktop = Path(env["HOME"]) / ".local" / "share" / "applications" / "mediatagger.desktop"
     assert desktop.is_file()
+
+
+def test_setup_pi_replaces_an_older_desktop_entry_and_running_twice_leaves_the_same_single_entry(tmp_path):
+    mediatagger = drive_with_setup_pi(tmp_path)
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    fake_command(bin_dir, "dpkg-query", "printf 'install ok installed'")
+    env = fake_bin_env(tmp_path, bin_dir)
+    apps = Path(env["XDG_DATA_HOME"]) / "applications"
+    apps.mkdir(parents=True)
+    (apps / "mediatagger.desktop").write_text(
+        "[Desktop Entry]\nType=Application\nName=OldTagger\nExec=sh \"/media/old-stick/mediatagger/run.sh\"\n"
+    )
+
+    subprocess.run(["sh", str(mediatagger / "setup-pi.sh")], check=True, env=env)
+    first = (apps / "mediatagger.desktop").read_text()
+    subprocess.run(["sh", str(mediatagger / "setup-pi.sh")], check=True, env=env)
+
+    assert [p.name for p in apps.iterdir()] == ["mediatagger.desktop"]
+    assert (apps / "mediatagger.desktop").read_text() == first
+    lines = first.splitlines()
+    assert f'Exec=sh "{mediatagger}/run.sh"' in lines
+    assert "Name=MediaTagger" in lines
+    assert not any("old-stick" in l or "OldTagger" in l for l in lines)

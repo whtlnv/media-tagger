@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-13 18:31 · `drive/test_setup_pi.py::test_setup_pi_replaces_an_older_desktop_entry_and_running_twice_leaves_the_same_single_entry`
+- Behavior: `sh <drive>/mediatagger/setup-pi.sh` replaces an older `mediatagger.desktop` with the current entry, and running it twice leaves the same single entry
+- Predicted: test passes, because setup-pi.sh already writes the entry with `cat > "$apps/mediatagger.desktop"`, which truncates any older file and always writes the same fixed name
+- Actual: passed (1 passed)
+- Type: passed unexpectedly
+- Resolution: the behaviour was already delivered by the commit that writes the desktop entry (77925a3); kept the test as a pin of the requested behaviour rather than inventing a stricter failing variant; nothing is left for /green to implement
+
 ## 2026-10-13 16:27 · `drive/test_update_drive.py::test_update_drive_leaves_every_file_in_the_drive_tags_folder_byte_identical`
 - Behavior: `sh drive/update-drive.sh <drive>` leaves every file in `<drive>/.mediatagger/` (the drive's tags) byte-identical
 - Predicted: test passes, because update-drive.sh only writes, deletes and runs `find` under `$1/mediatagger`, never `$1/.mediatagger`
