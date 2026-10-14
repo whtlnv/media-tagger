@@ -246,3 +246,23 @@ def test_build_drive_fails_naming_the_empty_apt_cache_and_leaves_no_drive_debs_w
         "raw_cp_error": "cp:" in result.stderr,
         "debs_left": (drive / "mediatagger" / "debs").exists(),
     } == {"failed": True, "names_archives": True, "raw_cp_error": False, "debs_left": False}
+
+
+def test_build_drive_lays_out_the_same_app_and_scripts_as_update_drive(tmp_path):
+    env = fake_build_env(tmp_path, tmp_path / "uv-calls")
+    built, updated = tmp_path / "built", tmp_path / "updated"
+    built.mkdir()
+    updated.mkdir()
+
+    subprocess.run(["sh", str(BUILD_DRIVE), str(built)], env=env)
+    subprocess.run(["sh", str(BUILD_DRIVE.parent / "update-drive.sh"), str(updated)], env=env, check=True)
+
+    def app_and_scripts(drive):
+        mediatagger = drive / "mediatagger"
+        # Bytecode records the absolute path it was compiled at, so it is compared by name only.
+        return {
+            str(p.relative_to(mediatagger)): None if p.suffix == ".pyc" else p.read_bytes()
+            for p in mediatagger.rglob("*")
+            if p.is_file() and p.relative_to(mediatagger).parts[0] not in {"lib-linux-aarch64-cp313", "debs"}
+        }
+    assert app_and_scripts(built) == app_and_scripts(updated)
