@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-14 04:02 · `src/mediatagger/test_window.py::test_choosing_a_folder_of_another_drive_with_o_from_the_windows_grid_then_esc_shows_thumbnails_from_the_new_drives_thumbnail_cache`
+- Behavior: A folder of another drive chosen with `o` from a grid, then `Esc`, shows thumbnails from the new drive's thumbnail cache
+- Predicted: passes on first run — `DriveSession.thumbnail_cache()` reopens per `(drive, drive_id)`, and `Window._grid_of` asks the session after `_open` switched drives
+- Actual: passes
+- Type: passed unexpectedly
+- Resolution: drive switching via `o` already reaches the thumbnail cache; the test is non-vacuous (seeding the first drive's cache instead makes it fail with the generated blue), so kept as a pin needing no /green.
+
 ## 2026-10-14 03:32 · `src/mediatagger/test_window.py::test_pressing_o_while_the_windows_grid_tag_prompt_has_focus_types_an_o_into_the_prompt_and_opens_no_folder_picker`
 - Behavior: `o` while the tag prompt has focus types an `o` into the prompt and opens no folder picker
 - Predicted: test passes — a pin, since the focused QLineEdit takes the `o` before Window/Grid see it (TODO: "as today")

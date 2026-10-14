@@ -433,6 +433,32 @@ def test_choosing_a_folder_of_another_drive_with_o_from_the_windows_grid_then_es
     assert f"{TAG_BADGE}2" in painted_texts(grid, 0)
 
 
+def test_choosing_a_folder_of_another_drive_with_o_from_the_windows_grid_then_esc_shows_thumbnails_from_the_new_drives_thumbnail_cache(qtbot, tmp_path):
+    from mediatagger.test_thumbnail_cache import solid_thumbnail
+    from mediatagger.thumbnail_cache import ThumbnailCache, cache_file
+
+    first_drive, viewed = drive_with_a_tag_library_holding_one_image(tmp_path)
+    second_drive = make_tag_library_drive(tmp_path / "ELSEWHERE")
+    [chosen] = make_folders(second_drive, "Videos")
+    make_image(chosen / "x.png", "blue")
+    cached = cache_file(Library.open(second_drive).drive_id, Path.home())
+    cached.parent.mkdir(parents=True)
+    stat = (chosen / "x.png").stat()
+    ThumbnailCache(cached, root=second_drive).store(chosen / "x.png", stat.st_size, stat.st_mtime, solid_thumbnail("red"))
+    window = Window(viewed, player_options=SILENT, folder_picker=lambda: chosen, is_mount_point=lambda path: path in (first_drive, second_drive))
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_O)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    tile = stack.currentWidget().model().index(0, 0).data(TILE_ROLE)
+    qtbot.waitUntil(lambda: tile.thumbnail is not None)
+    color = tile.thumbnail.pixelColor(tile.thumbnail.width() // 2, tile.thumbnail.height() // 2)
+    assert color.red() > 200 and color.blue() < 50  # the cached red, not the blue the file would generate
+
+
 def test_after_going_back_and_forth_between_grids_and_the_viewer_many_times_the_window_holds_only_the_grid_shown(qtbot, tmp_path):
     make_image(tmp_path / "a.jpg", "red")
     make_image(tmp_path / "b.jpg", "blue")
