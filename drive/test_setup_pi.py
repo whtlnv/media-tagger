@@ -19,11 +19,15 @@ def fake_command(bin_dir, name, script):
 
 
 def fake_bin_env(tmp_path, bin_dir, **extra):
+    """An environment whose commands come from bin_dir first and whose home and data folders are under tmp_path."""
     (tmp_path / "tmp").mkdir()
+    (tmp_path / "home").mkdir(exist_ok=True)
     return {
-        **{k: v for k, v in os.environ.items() if k != "FAKE_SUDO"},
+        **{k: v for k, v in os.environ.items() if k not in ("FAKE_SUDO", "XDG_DATA_HOME")},
         "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}",
         "TMPDIR": str(tmp_path / "tmp"),
+        "HOME": str(tmp_path / "home"),
+        "XDG_DATA_HOME": str(tmp_path / "home" / "share"),
         **extra,
     }
 
@@ -73,12 +77,7 @@ def test_setup_pi_without_libmpv2_installs_it_with_sudo_apt_get_from_a_temporary
     fake_command(bin_dir, "dpkg-query", "exit 1")
     fake_command(bin_dir, "sudo", 'FAKE_SUDO=yes exec "$@"')
     fake_recording_apt_get(bin_dir, record)
-    (tmp_path / "home").mkdir()
-    env = fake_bin_env(
-        tmp_path, bin_dir,
-        HOME=str(tmp_path / "home"),
-        XDG_DATA_HOME=str(tmp_path / "home" / "share"),
-    )
+    env = fake_bin_env(tmp_path, bin_dir)
 
     subprocess.run(["sh", str(mediatagger / "setup-pi.sh")], check=True, env=env)
 
@@ -129,3 +128,26 @@ done""")
     subprocess.run(["sh", str(mediatagger / "setup-pi.sh")], check=True, env=env)
 
     assert not Path(lists_record.read_text()).exists()
+
+
+def test_setup_pi_writes_a_mediatagger_desktop_entry_that_launches_the_drives_run_sh(tmp_path):
+    mediatagger = drive_with_setup_pi(tmp_path)
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    fake_command(bin_dir, "dpkg-query", "printf 'install ok installed'")
+    data_home = tmp_path / "home" / "share"
+    env = fake_bin_env(tmp_path, bin_dir, HOME=str(tmp_path / "home"), XDG_DATA_HOME=str(data_home))
+
+    subprocess.run(["sh", str(mediatagger / "setup-pi.sh")], check=True, env=env)
+
+    desktop = data_home / "applications" / "mediatagger.desktop"
+    assert desktop.is_file()
+    lines = desktop.read_text().splitlines()
+    assert lines[0] == "[Desktop Entry]"
+    assert {
+        "Type=Application",
+        "Name=MediaTagger",
+        f'Exec=sh "{mediatagger}/run.sh"',
+        "Terminal=false",
+        "Categories=AudioVideo;Video;Graphics;",
+    } <= set(lines[1:])
