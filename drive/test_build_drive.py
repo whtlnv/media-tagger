@@ -1,4 +1,6 @@
+import importlib.util
 import os
+import shlex
 import subprocess
 import sys
 from pathlib import Path
@@ -123,3 +125,46 @@ def test_build_drive_installs_exactly_the_uv_exported_locked_packages_into_the_d
         "target": str(lib),
         "specs": requirement_specs(EXPORTED),
     }]
+
+
+INSTALLED_PACKAGES = {
+    "mpv.py": "import os\n",
+    "PySide6/__init__.py": "",
+    "PySide6/scripts/__init__.py": "",
+    "PySide6/scripts/deploy_lib/__init__.py": "",
+    "PySide6/scripts/deploy_lib/config.py": "x = 1\n",
+}
+
+
+def fake_uv_installing_packages(tmp_path, files):
+    """Replace the fake uv with one whose `pip install --target <lib>` writes `files` into <lib>."""
+    writes = "\n".join(
+        f'mkdir -p "$target/{os.path.dirname(name)}" && printf %s {shlex.quote(body)} > "$target/{name}"'
+        for name, body in files.items()
+    )
+    fake_command(tmp_path / "bin", "uv", f"""
+if [ "$1" = export ]; then cat "{tmp_path / 'exported.txt'}"; exit 0; fi
+target=; prev=
+for a; do [ "$prev" = --target ] && target=$a; prev=$a; done
+{writes}""")
+
+
+def test_build_drive_leaves_unchecked_hash_bytecode_next_to_every_installed_module_except_under_deploy_lib(tmp_path):
+    env = fake_build_env(tmp_path, tmp_path / "uv-calls")
+    fake_uv_installing_packages(tmp_path, INSTALLED_PACKAGES)
+    drive = tmp_path / "drive"
+    drive.mkdir()
+
+    subprocess.run(["sh", str(BUILD_DRIVE), str(drive)], env=env)
+
+    lib = drive / "mediatagger" / "lib-linux-aarch64-cp313"
+    unchecked_hash = 0b01
+    flags = {
+        str(module.relative_to(lib)): int.from_bytes(pyc.read_bytes()[4:8], "little") if pyc.exists() else None
+        for module in lib.rglob("*.py")
+        for pyc in [Path(importlib.util.cache_from_source(str(module)))]
+    }
+    assert flags == {
+        name: None if "deploy_lib" in Path(name).parts else unchecked_hash
+        for name in INSTALLED_PACKAGES
+    }
