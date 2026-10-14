@@ -23,5 +23,5 @@ Type=Application
 Name=MediaTagger
 Exec=sh "$here/run.sh"
 Terminal=false
-Categories=AudioVideo;Video;Graphics;
+Categories=AudioVideo;Video;
 DESKTOP

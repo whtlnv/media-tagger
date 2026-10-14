@@ -152,7 +152,7 @@ def test_setup_pi_writes_a_mediatagger_desktop_entry_that_launches_the_drives_ru
         "Name=MediaTagger",
         f'Exec=sh "{mediatagger}/run.sh"',
         "Terminal=false",
-        "Categories=AudioVideo;Video;Graphics;",
+        "Categories=AudioVideo;Video;",
     } <= set(lines[1:])
 
 
