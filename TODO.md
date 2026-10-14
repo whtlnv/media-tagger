@@ -26,7 +26,7 @@ Phase 11 notes for every cycle (Phases 1–10 are delivered — see DONE.md; dec
 - [x] `sh <drive>/mediatagger/setup-pi.sh` on a Pi where `dpkg-query -W -f='${Status}' libmpv2` reports it removed with its configuration kept (`deinstall ok config-files`) still installs libmpv2 from the drive
 - [x] `sh <drive>/mediatagger/setup-pi.sh` when installing libmpv2 fails (`apt-get` exits non-zero) exits non-zero and writes no menu entry
 - [x] `sh <drive>/mediatagger/check-video-leak.sh <target>` starts the app on `<target>` through the drive's `run.sh`
-- [ ] `sh drive/build-drive.sh <drive>` installs into `<drive>/mediatagger/lib-linux-aarch64-cp313/` with `uv pip install --python /usr/bin/python3.13 --target` exactly the packages and versions `uv export --frozen --no-dev --no-hashes --no-emit-project` gives
+- [x] `sh drive/build-drive.sh <drive>` installs into `<drive>/mediatagger/lib-linux-aarch64-cp313/` with `uv pip install --python /usr/bin/python3.13 --target` exactly the packages and versions `uv export --frozen --no-dev --no-hashes --no-emit-project` gives
 - [ ] After `sh drive/build-drive.sh <drive>`, the packages in `lib-linux-aarch64-cp313/` have unchecked-hash precompiled bytecode, except under `deploy_lib`
 - [ ] After `sh drive/build-drive.sh <drive>`, a package left in `lib-linux-aarch64-cp313/` by an earlier build is gone
 - [ ] `sh drive/build-drive.sh <drive>` copies every `.deb` from `$APTPI/var/cache/apt/archives/` into `<drive>/mediatagger/debs/` and leaves there the `Packages` index `apt-ftparchive packages .` produces inside `debs/`
@@ -37,3 +37,5 @@ Phase 11 notes for every cycle (Phases 1–10 are delivered — see DONE.md; dec
 - [ ] After `sh drive/build-drive.sh <drive>`, an empty `<drive>/.metadata_never_index` exists
 - [ ] `sh drive/build-drive.sh <drive>` leaves every file in `<drive>/.mediatagger/` byte-identical and nothing outside `<drive>/mediatagger/` changed except `.metadata_never_index`
 - [ ] On a drive laid out by `update-drive.sh` (with a `lib-linux-aarch64-cp313/` holding the locked third-party packages), `sh <drive>/mediatagger/run.sh` with a real `python3` and no repo on its path starts the real app from the drive's `app/`, and the drive gains no files while it runs
+- [ ] `sh <drive>/mediatagger/setup-pi.sh` hands `apt-get` a lists folder that already holds an empty `partial/` folder (apt refuses to update without it), as the spike does
+- [ ] `sh <drive>/mediatagger/check-video-leak.sh [target]` does what the spike's `check-video-leak.sh` does (info, fd log every 10 s while the app runs, default target `../samples/06_clip_hevc_1080p.mp4`, logs under `~/mediatagger-check/<stamp>/`, copied to `<drive>/results/check-video-leak-<stamp>/` only after the app has exited) — ported, starting the app through `run.sh`
