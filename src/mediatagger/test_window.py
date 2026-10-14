@@ -312,6 +312,22 @@ def test_pressing_o_in_the_windows_grid_opens_the_folder_picker_and_choosing_a_f
     assert shown.slideshow.current == chosen / "x.jpg"
 
 
+def test_pressing_o_in_the_windows_viewer_on_an_image_opens_the_folder_picker_and_choosing_a_folder_shows_its_slideshow_from_its_first_item(qtbot, tmp_path):
+    viewed, chosen = make_folders(tmp_path, "viewed", "chosen")
+    make_image(viewed / "a.jpg", "red")
+    make_image(chosen / "y.jpg", "blue")
+    make_image(chosen / "x.jpg", "green")
+    window = Window(viewed, player_options=SILENT, folder_picker=lambda: chosen)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_O)
+
+    shown = stack.currentWidget()
+    assert isinstance(shown, Viewer)
+    assert shown.slideshow.current == chosen / "x.jpg"
+
+
 def test_pressing_o_in_the_windows_grid_and_cancelling_the_folder_picker_leaves_the_same_grid_shown_with_its_cursor_unchanged(qtbot, tmp_path):
     make_image(tmp_path / "a.jpg", "red")
     make_image(tmp_path / "b.jpg", "blue")
