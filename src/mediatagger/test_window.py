@@ -306,12 +306,8 @@ def test_dragging_a_folder_over_the_windows_grid_viewport_and_dropping_it_shows_
     qtbot.addWidget(window)
     stack = window.findChild(QStackedWidget)
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
-    viewport = stack.currentWidget().viewport()
-    dragged = dragged_local_path(dropped)
 
-    drag_enter_over(viewport, dragged)
-    if drag_move_over(viewport, dragged).isAccepted():  # the platform drops only where the last move was accepted
-        drop_onto(viewport, dragged)
+    drag_move_and_drop_onto(stack.currentWidget().viewport(), dropped)
 
     shown = stack.currentWidget()
     assert isinstance(shown, Viewer)
@@ -325,11 +321,7 @@ def test_dragging_a_folder_of_another_drive_over_the_windows_grid_viewport_and_d
     qtbot.addWidget(window)
     stack = window.findChild(QStackedWidget)
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
-    viewport = stack.currentWidget().viewport()
-    dragged = dragged_local_path(dropped)
-    drag_enter_over(viewport, dragged)
-    if drag_move_over(viewport, dragged).isAccepted():  # the platform drops only where the last move was accepted
-        drop_onto(viewport, dragged)
+    drag_move_and_drop_onto(stack.currentWidget().viewport(), dropped)
 
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
 
@@ -454,6 +446,13 @@ def test_pressing_o_while_the_windows_grid_tag_prompt_has_focus_types_an_o_into_
 
     assert visible_tag_prompt_texts(window) == ["o"]
     assert picked == []
+
+
+def drag_move_and_drop_onto(widget, path):
+    dragged = dragged_local_path(path)
+    drag_enter_over(widget, dragged)
+    if drag_move_over(widget, dragged).isAccepted():  # the platform drops only where the last move was accepted
+        drop_onto(widget, dragged)
 
 
 def a_second_drive_with_a_folder_holding_one_blue_image(tmp_path):
