@@ -18,6 +18,16 @@ def fake_command(bin_dir, name, script):
     (bin_dir / name).chmod(0o755)
 
 
+def fake_bin_env(tmp_path, bin_dir, **extra):
+    (tmp_path / "tmp").mkdir()
+    return {
+        **{k: v for k, v in os.environ.items() if k != "FAKE_SUDO"},
+        "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}",
+        "TMPDIR": str(tmp_path / "tmp"),
+        **extra,
+    }
+
+
 def fake_recording_apt_get(bin_dir, record):
     fake_command(bin_dir, "apt-get", f"""
 i=1; while [ -e "{record}/$i" ]; do i=$((i+1)); done
@@ -64,14 +74,11 @@ def test_setup_pi_without_libmpv2_installs_it_with_sudo_apt_get_from_a_temporary
     fake_command(bin_dir, "sudo", 'FAKE_SUDO=yes exec "$@"')
     fake_recording_apt_get(bin_dir, record)
     (tmp_path / "home").mkdir()
-    (tmp_path / "tmp").mkdir()
-    env = {
-        **{k: v for k, v in os.environ.items() if k != "FAKE_SUDO"},
-        "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}",
-        "HOME": str(tmp_path / "home"),
-        "XDG_DATA_HOME": str(tmp_path / "home" / "share"),
-        "TMPDIR": str(tmp_path / "tmp"),
-    }
+    env = fake_bin_env(
+        tmp_path, bin_dir,
+        HOME=str(tmp_path / "home"),
+        XDG_DATA_HOME=str(tmp_path / "home" / "share"),
+    )
 
     subprocess.run(["sh", str(mediatagger / "setup-pi.sh")], check=True, env=env)
 
@@ -98,12 +105,7 @@ def test_setup_pi_with_libmpv2_already_installed_runs_neither_sudo_nor_apt_get(t
     fake_command(bin_dir, "dpkg-query", "printf 'install ok installed'")
     fake_command(bin_dir, "sudo", f'touch "{sudo_ran}"; exec "$@"')
     fake_recording_apt_get(bin_dir, record)
-    (tmp_path / "tmp").mkdir()
-    env = {
-        **os.environ,
-        "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}",
-        "TMPDIR": str(tmp_path / "tmp"),
-    }
+    env = fake_bin_env(tmp_path, bin_dir)
 
     subprocess.run(["sh", str(mediatagger / "setup-pi.sh")], check=True, env=env)
 
@@ -122,12 +124,7 @@ def test_setup_pi_removes_its_temporary_apt_lists_folder_after_installing_libmpv
 for a; do
   case "$a" in Dir::State::Lists=*) d="${{a#Dir::State::Lists=}}"; mkdir -p "$d/partial"; printf '%s' "$d" > "{lists_record}";; esac
 done""")
-    (tmp_path / "tmp").mkdir()
-    env = {
-        **os.environ,
-        "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}",
-        "TMPDIR": str(tmp_path / "tmp"),
-    }
+    env = fake_bin_env(tmp_path, bin_dir)
 
     subprocess.run(["sh", str(mediatagger / "setup-pi.sh")], check=True, env=env)
 
