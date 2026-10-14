@@ -199,3 +199,38 @@ def test_starting_a_slideshow_while_thumbnails_generate_takes_their_progress_off
     qtbot.wait(200)
 
     assert [text for text in shown() if "humbnail" in text] == []
+
+
+def test_closing_the_window_stops_its_folder_grids_thumbnails_so_one_still_being_generated_reaches_no_tile(qtbot, tmp_path, monkeypatch):
+    import threading
+
+    from mediatagger import grid as grid_module
+    from mediatagger.thumbnails import thumbnail_and_duration
+
+    started = threading.Event()
+    release = threading.Event()
+    finished = threading.Event()
+
+    def generate(path):
+        started.set()
+        release.wait(timeout=10)
+        try:
+            return thumbnail_and_duration(path)
+        finally:
+            finished.set()
+
+    monkeypatch.setattr(grid_module, "thumbnail_and_duration", generate)
+    make_image(tmp_path / "a.jpg", "red")
+    window = Window(tmp_path / "a.jpg", player_options=SILENT)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    tile = stack.currentWidget().model().index(0, 0).data(TILE_ROLE)
+    qtbot.waitUntil(started.is_set)
+
+    window.close()
+    release.set()
+    qtbot.waitUntil(finished.is_set)
+    qtbot.wait(200)  # long enough for a finished thumbnail to be delivered to its tile
+
+    assert tile.thumbnail is None

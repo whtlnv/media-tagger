@@ -103,6 +103,8 @@ class Window(QWidget):
 
     def closeEvent(self, event):
         self._record_geometry()
+        for grid in self.findChildren(Grid):
+            grid.stop_generating_thumbnails()
         self.viewer.close()  # shuts down its video player and backs up the session's library
         super().closeEvent(event)
 
