@@ -325,5 +325,8 @@ class Grid(QListView):
     def dragEnterEvent(self, event):
         event.acceptProposedAction()
 
+    def dragMoveEvent(self, event):
+        event.acceptProposedAction()
+
     def dropEvent(self, event):
         self.dropped.emit(Path(event.mimeData().urls()[0].toLocalFile()))
