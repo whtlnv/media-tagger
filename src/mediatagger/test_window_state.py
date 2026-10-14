@@ -14,7 +14,7 @@ from mediatagger.test_grid import painted_texts
 from mediatagger.test_viewer import SILENT, show_exposed
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image
 from mediatagger.test_viewer_open import drag_and_drop_onto
-from mediatagger.test_window import shown_status_bar_texts
+from mediatagger.test_window import a_second_drive_with_a_folder_holding_one_blue_image, shown_status_bar_texts
 from mediatagger.viewer import Viewer
 from mediatagger.window import Window
 
@@ -308,3 +308,17 @@ def test_running_a_search_when_the_state_file_would_land_on_the_drive_being_view
     window.run_search("beach")
 
     assert json.loads(state_file.read_text())["searches"] == ["family"]
+
+
+def test_a_folder_of_another_drive_chosen_with_o_from_the_windows_grid_is_recorded_with_that_drives_mount_point_in_the_state_file(qtbot, tmp_path):
+    first_drive, viewed, second_drive, chosen = a_second_drive_with_a_folder_holding_one_blue_image(tmp_path)
+    window = Window(viewed, player_options=SILENT, folder_picker=lambda: chosen, is_mount_point=lambda path: path in (first_drive, second_drive),
+                    ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_O)
+
+    state = json.loads((Path(os.environ["XDG_CONFIG_HOME"]) / "mediatagger" / "state.json").read_text())
+    assert state == {"folder": str(chosen), "mount_point": str(second_drive)}

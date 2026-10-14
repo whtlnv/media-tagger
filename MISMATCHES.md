@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-14 04:51 · `src/mediatagger/test_window_state.py::test_a_folder_of_another_drive_chosen_with_o_from_the_windows_grid_is_recorded_with_that_drives_mount_point_in_the_state_file`
+- Behavior: A folder chosen with `o` from a grid is recorded as the last folder in `state.json`
+- Predicted: passes on first run — the grid's `o` goes through `Window._pick_folder` → `Window._open`, which already calls `_record_state` for the opened slideshow's folder
+- Actual: passes
+- Type: passed unexpectedly
+- Resolution: recording via `o` already works; the test is non-vacuous (temporarily dropping `_record_state` from `_open` makes it fail, with the state still holding the first drive's folder), so kept as a pin needing no /green.
+
 ## 2026-10-14 04:02 · `src/mediatagger/test_window.py::test_choosing_a_folder_of_another_drive_with_o_from_the_windows_grid_then_esc_shows_thumbnails_from_the_new_drives_thumbnail_cache`
 - Behavior: A folder of another drive chosen with `o` from a grid, then `Esc`, shows thumbnails from the new drive's thumbnail cache
 - Predicted: passes on first run — `DriveSession.thumbnail_cache()` reopens per `(drive, drive_id)`, and `Window._grid_of` asks the session after `_open` switched drives
