@@ -1,5 +1,7 @@
+import os
 import subprocess
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -594,3 +596,56 @@ def test_pressing_o_in_the_grid_of_the_mediatagger_command_opens_its_folder_pick
     result = run_python_offscreen(PRESS_ESC_THEN_O_IN_THE_GRID_THEN_REPORT_THE_PICKER_SCRIPT, str(tmp_path / "IMG_2.png"))
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == "pickers=1 folders=[True]"
+
+PRESS_ESC_THEN_SAY_QUITTING_THEN_ESC_IN_THE_GRID_SCRIPT = (
+    "import sys\n"
+    "from PySide6.QtCore import Qt, QTimer\n"
+    "from PySide6.QtTest import QTest\n"
+    "from PySide6.QtWidgets import QApplication\n"
+    "app = QApplication([])\n"
+    "def shown_window():\n"
+    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    return window\n"
+    "def quit_from_the_grid():\n"
+    "    print('quitting', flush=True)\n"
+    "    QTest.keyClick(shown_window(), Qt.Key.Key_Escape)\n"
+    "def press_esc_then_quit_while_thumbnails_generate():\n"
+    "    QTest.keyClick(shown_window(), Qt.Key.Key_Escape)\n"
+    "    QTimer.singleShot(1000, quit_from_the_grid)\n"
+    "QTimer.singleShot(1000, press_esc_then_quit_while_thumbnails_generate)\n"
+    "sys.argv = ['mediatagger', sys.argv[1]]\n"
+) + RUN_MEDIATAGGER_COMMAND
+
+
+def slow_fake_video_tools_in(folder):
+    folder.mkdir()
+    for tool, output in [("ffprobe", "echo 10.0"), ("ffmpeg", "true")]:
+        script = folder / tool
+        script.write_text(f"#!/bin/sh\nsleep 0.5\n{output}\n")
+        script.chmod(0o755)
+    return folder
+
+
+def test_pressing_esc_to_quit_the_mediatagger_command_from_a_grid_whose_thumbnails_are_still_generating_ends_the_process_within_3_s(tmp_path):
+    folder = tmp_path / "videos"
+    folder.mkdir()
+    make_image(folder / "A.png", "red")
+    for number in range(60):
+        (folder / f"VID_{number:02}.mp4").write_bytes(b"")
+    tools = slow_fake_video_tools_in(tmp_path / "bin")
+    environment = offscreen_environment()
+    environment["PATH"] = f"{tools}{os.pathsep}{environment['PATH']}"
+    process = subprocess.Popen(
+        [sys.executable, "-c", PRESS_ESC_THEN_SAY_QUITTING_THEN_ESC_IN_THE_GRID_SCRIPT, str(folder)],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=environment,
+    )
+    try:
+        assert process.stdout.readline().strip() == "quitting"
+        quit_at = time.monotonic()
+        process.wait(timeout=30)
+        seconds_to_end = time.monotonic() - quit_at
+    finally:
+        process.kill()
+        _, stderr = process.communicate()
+    assert process.returncode == 0, stderr
+    assert seconds_to_end < 3, stderr

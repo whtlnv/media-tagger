@@ -23,7 +23,7 @@ Phase 12 notes for every cycle (Phases 1–11 are delivered — see DONE.md; Pha
 - [x] Dropping a folder of another drive onto the viewer while a video plays (drag moving over the video surface) shows that folder's slideshow from its first item
 - [x] Closing the window stops thumbnail generation of its folder grid: a thumbnail still being generated is delivered to no tile
 - [x] Closing the window stops thumbnail generation of its results grid: a thumbnail still being generated is delivered to no tile
-- [ ] Pressing `Esc` to quit the real `mediatagger` command from a grid whose thumbnails are still generating ends the process within 3 s
+- [x] Pressing `Esc` to quit the real `mediatagger` command from a grid whose thumbnails are still generating ends the process within 3 s
 - [ ] Quitting the app while a video plays ends the process within 3 s
 - [ ] Quitting the app with a library whose backup is due ends the process within 3 s
 - [ ] The real `mediatagger` command starts with `qt.qpa.wayland.textinput` warnings disabled
