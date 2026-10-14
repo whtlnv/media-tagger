@@ -296,6 +296,21 @@ def test_the_progress_bar_shows_light_text_and_a_light_filled_track_over_a_black
     assert bar_over(QColor("black")).pixelColor(5, 18).lightness() > 200  # the filled track reads over a black frame
 
 
+def test_over_a_white_video_frame_the_progress_bar_outside_its_text_and_track_leaves_the_frame_white(qtbot):
+    frame = QWidget()
+    frame.setStyleSheet("background: white")
+    qtbot.addWidget(frame)
+    bar = ProgressBar(frame)
+    bar.resize(300, 20)
+    bar.start(SimpleNamespace(duration=60, time_pos=0))
+    frame.show()
+    qtbot.waitExposed(frame)
+
+    image = frame.grab(bar.geometry()).toImage()
+
+    assert image.pixelColor(295, 5) == QColor("white")  # right of the text, above the track
+
+
 def test_the_filled_track_is_a_thin_strip_along_the_bottom_of_the_progress_bar_so_the_light_text_never_sits_on_it(qtbot):
     parent = QWidget()
     parent.setStyleSheet("background: black")
