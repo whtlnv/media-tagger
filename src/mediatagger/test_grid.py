@@ -502,13 +502,18 @@ def test_painting_a_tile_with_a_thumbnail_after_its_file_and_library_are_gone_fr
     assert f"{TAG_BADGE}3" in painted_texts(grid, 0)
 
 
+def drag_move_over(widget, dragged):
+    drag_move = QDragMoveEvent(
+        QPointF(widget.rect().center()), Qt.DropAction.CopyAction, dragged, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier,
+    )
+    QApplication.sendEvent(widget, drag_move)
+    return drag_move
+
+
 def test_a_drag_of_local_files_entering_and_moving_over_the_grids_viewport_is_accepted(qtbot, tmp_path):
     grid = shown_two_tile_grid(qtbot, tmp_path, 1000)
     dragged = dragged_local_path(tmp_path / "a.jpg")
     drag_enter = drag_enter_over(grid.viewport(), dragged)
-    drag_move = QDragMoveEvent(
-        QPointF(grid.viewport().rect().center()), Qt.DropAction.CopyAction, dragged, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier,
-    )
-    QApplication.sendEvent(grid.viewport(), drag_move)
+    drag_move = drag_move_over(grid.viewport(), dragged)
 
     assert (drag_enter.isAccepted(), drag_move.isAccepted()) == (True, True)
