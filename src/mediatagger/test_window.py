@@ -20,6 +20,7 @@ from mediatagger.test_viewer_backup import tags_in_newest_backup
 from mediatagger.test_viewer import SILENT, make_image, make_surface_ready, show_exposed, shown_texts, wait_until_loaded
 from mediatagger.test_viewer_library import (
     decline_noting_the_question_in, drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image, enter_in_tag_prompt,
+    make_tag_library_drive,
     frame_in, made_read_only, overwrite_tags_db_with_garbage, resize_and_wait, visible_tag_prompt_texts, visible_tag_prompts,
 )
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
@@ -410,6 +411,27 @@ def test_pressing_o_while_the_windows_grid_tag_prompt_has_focus_types_an_o_into_
 
     assert visible_tag_prompt_texts(window) == ["o"]
     assert picked == []
+
+
+def test_choosing_a_folder_of_another_drive_with_o_from_the_windows_grid_then_esc_shows_that_folders_grid_with_the_new_drives_tag_badges(qtbot, tmp_path):
+    first_drive, viewed = drive_with_a_tag_library_holding_one_image(tmp_path)
+    second_drive = make_tag_library_drive(tmp_path / "ELSEWHERE")
+    [chosen] = make_folders(second_drive, "Videos")
+    make_image(chosen / "x.png", "blue")
+    Library.open(second_drive).enter(chosen / "x.png", "beach family")
+    window = Window(viewed, player_options=SILENT, folder_picker=lambda: chosen, is_mount_point=lambda path: path in (first_drive, second_drive),
+                    ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_O)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    grid = stack.currentWidget()
+    assert isinstance(grid, Grid)
+    assert grid.folder == chosen
+    assert f"{TAG_BADGE}2" in painted_texts(grid, 0)
 
 
 def test_after_going_back_and_forth_between_grids_and_the_viewer_many_times_the_window_holds_only_the_grid_shown(qtbot, tmp_path):

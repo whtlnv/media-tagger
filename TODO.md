@@ -10,7 +10,7 @@ Phase 12 notes for every cycle (Phases 1–11 are delivered — see DONE.md; Pha
 - [x] `o` in the viewer whose folder picker is cancelled leaves the same item shown
 - [x] `o` in the viewer while a video plays, choosing a folder of images, leaves the player stopped (inserted by the deliverer: the video kept playing unseen)
 - [x] `o` while the tag prompt has focus types an `o` into the prompt and opens no folder picker
-- [ ] A folder of another drive chosen with `o` from a grid, then `Esc`, shows that folder's grid with the new drive's tag badges
+- [x] A folder of another drive chosen with `o` from a grid, then `Esc`, shows that folder's grid with the new drive's tag badges
 - [ ] A folder of another drive chosen with `o` from a grid, then `Esc`, shows thumbnails from the new drive's thumbnail cache
 - [ ] A folder of another read-only drive chosen with `o` from the viewer shows the read-only banner
 - [ ] A folder chosen with `o` from a grid is recorded as the last folder in `state.json`
