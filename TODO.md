@@ -16,7 +16,7 @@ Phase 12 notes for every cycle (Phases 1–11 are delivered — see DONE.md; Pha
 - [x] A folder chosen with `o` from a grid is recorded as the last folder in `state.json`
 - [x] In the window the `mediatagger` command builds, `o` in the grid opens the folder picker the window was given
 - [x] A drag of local files entering and moving over the grid's viewport is accepted
-- [ ] A drag of plain text moving over the grid's viewport is refused
+- [x] A drag of plain text moving over the grid's viewport is refused
 - [ ] A drag of a web link moving over the grid's viewport is refused
 - [ ] Dropping a folder onto the grid's viewport shows that folder's slideshow from its first item
 - [ ] Dropping a folder of another drive onto the grid's viewport shows it with that drive's tags

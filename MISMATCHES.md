@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-14 06:39 · `src/mediatagger/test_grid.py::test_a_drag_of_plain_text_moving_over_the_grids_viewport_is_refused`
+- Behavior: A drag of plain text moving over the grid's viewport is refused
+- Predicted: AssertionError — `Grid.dragMoveEvent` accepts every drag, so the plain-text move would be accepted
+- Actual: passed — a lone DragMove sent with no DragEnter before it never reaches `Grid.dragMoveEvent`; Qt refuses it whatever the payload (a local-file move is refused too)
+- Type: passed unexpectedly
+- Resolution: A real drag always sends DragEnter before DragMove, so the test now sends a DragEnter first; it now fails with `assert not True` because enter and move both accept anything.
+
 ## 2026-10-14 05:55 · `src/mediatagger/test_main.py::test_pressing_o_in_the_grid_of_the_mediatagger_command_opens_its_folder_picker`
 - Behavior: In the window the `mediatagger` command builds, `o` in the grid opens the folder picker the window was given
 - Predicted: passes on first run — the real command builds `Window` without a `folder_picker`, so the grid's `o` reaches `Window._pick_folder` → `viewer.folder_picker`, the viewer's default directory-mode `QFileDialog`

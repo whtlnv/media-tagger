@@ -2,7 +2,7 @@ import shutil
 import time
 
 import pytest
-from PySide6.QtCore import QPointF, QRect, Qt
+from PySide6.QtCore import QMimeData, QPointF, QRect, Qt
 from PySide6.QtGui import QDragMoveEvent, QFontMetrics, QGuiApplication, QImage, QPainter
 from PySide6.QtWidgets import QApplication, QStyle, QStyleOptionViewItem
 
@@ -517,3 +517,14 @@ def test_a_drag_of_local_files_entering_and_moving_over_the_grids_viewport_is_ac
     drag_move = drag_move_over(grid.viewport(), dragged)
 
     assert (drag_enter.isAccepted(), drag_move.isAccepted()) == (True, True)
+
+
+def test_a_drag_of_plain_text_moving_over_the_grids_viewport_is_refused(qtbot, tmp_path):
+    grid = shown_two_tile_grid(qtbot, tmp_path, 1000)
+    dragged = QMimeData()
+    dragged.setText("just some words")
+    drag_enter_over(grid.viewport(), dragged)
+
+    drag_move = drag_move_over(grid.viewport(), dragged)
+
+    assert not drag_move.isAccepted()
