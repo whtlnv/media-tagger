@@ -617,13 +617,15 @@ PRESS_ESC_THEN_SAY_QUITTING_THEN_ESC_IN_THE_GRID_SCRIPT = (
 ) + RUN_MEDIATAGGER_COMMAND
 
 
-def slow_fake_video_tools_in(folder):
+def offscreen_environment_with_slow_fake_video_tools_in(folder):
     folder.mkdir()
     for tool, output in [("ffprobe", "echo 10.0"), ("ffmpeg", "true")]:
         script = folder / tool
         script.write_text(f"#!/bin/sh\nsleep 0.5\n{output}\n")
         script.chmod(0o755)
-    return folder
+    environment = offscreen_environment()
+    environment["PATH"] = f"{folder}{os.pathsep}{environment['PATH']}"
+    return environment
 
 
 def test_pressing_esc_to_quit_the_mediatagger_command_from_a_grid_whose_thumbnails_are_still_generating_ends_the_process_within_3_s(tmp_path):
@@ -632,9 +634,7 @@ def test_pressing_esc_to_quit_the_mediatagger_command_from_a_grid_whose_thumbnai
     make_image(folder / "A.png", "red")
     for number in range(60):
         (folder / f"VID_{number:02}.mp4").write_bytes(b"")
-    tools = slow_fake_video_tools_in(tmp_path / "bin")
-    environment = offscreen_environment()
-    environment["PATH"] = f"{tools}{os.pathsep}{environment['PATH']}"
+    environment = offscreen_environment_with_slow_fake_video_tools_in(tmp_path / "bin")
     process = subprocess.Popen(
         [sys.executable, "-c", PRESS_ESC_THEN_SAY_QUITTING_THEN_ESC_IN_THE_GRID_SCRIPT, str(folder)],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=environment,
