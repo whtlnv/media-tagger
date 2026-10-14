@@ -225,7 +225,7 @@ def test_build_drive_removes_a_deb_left_in_the_drive_debs_by_an_earlier_build(tm
 
     subprocess.run(["sh", str(BUILD_DRIVE), str(tmp_path / "drive")], env=env)
 
-    assert not stale.exists()
+    assert sorted(p.name for p in debs.glob("*.deb")) == ["libmpv2_0.39.0-3_arm64.deb"]
 
 
 def test_build_drive_fails_naming_the_empty_apt_cache_and_leaves_no_drive_debs_when_aptpi_holds_no_deb(tmp_path):
