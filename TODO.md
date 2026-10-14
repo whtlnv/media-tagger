@@ -30,7 +30,6 @@ Phase 12 notes for every cycle (Phases 1–11 are delivered — see DONE.md; Pha
 - [x] The real `mediatagger` command leaves `qt.qpa.wayland` warnings enabled
 - [x] The real `mediatagger` command started with `QT_LOGGING_RULES=qt.qpa.wayland.textinput=true` keeps `qt.qpa.wayland.textinput` warnings enabled
 - [ ] Over a white video frame, the progress bar outside its text and track leaves the frame white
-  - predicted-contradiction: `src/mediatagger/test_video_controls.py::test_the_progress_bar_shows_light_text_and_a_light_track_on_a_dark_background_over_both_black_and_white_frames` — asserts: pixel (295, 10) of the bar over a white frame is darkened (lightness < 128) by the backdrop — retired-by: "Over a white video frame, the progress bar outside its text and track leaves the frame white"
 - [ ] Over a black video frame, the progress bar outside its text and track leaves the frame black
 - [ ] Over a white video frame, the light `elapsed / total` text is edged with dark pixels so it stays readable
 - [ ] Over a white video frame, the light filled part of the track is edged with dark pixels so it stays readable

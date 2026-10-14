@@ -269,7 +269,7 @@ def test_in_the_window_the_progress_bar_of_a_playing_video_does_not_overlap_the_
     assert not bar_frame.intersects(prompt_frame)
 
 
-def test_the_progress_bar_shows_light_text_and_a_light_track_on_a_dark_background_over_both_black_and_white_frames(qtbot):
+def test_the_progress_bar_shows_light_text_and_a_light_filled_track_over_a_black_frame(qtbot):
     frame = QWidget()
     frame.setAutoFillBackground(True)
     qtbot.addWidget(frame)
@@ -289,9 +289,7 @@ def test_the_progress_bar_shows_light_text_and_a_light_track_on_a_dark_backgroun
     def lightest(image):
         return max(image.pixelColor(x, y).lightness() for x in range(image.width()) for y in range(image.height()))
 
-    over_black, over_white = bar_over(QColor("black")), bar_over(QColor("white"))
-    assert lightest(over_black) > 200  # the text reads over a black frame
-    assert over_white.pixelColor(295, 10).lightness() < 128  # the background darkens a white frame
+    assert lightest(bar_over(QColor("black"))) > 200  # the text reads over a black frame
 
     engine.time_pos = 30
     qtbot.waitUntil(lambda: bar.text().startswith("0:30"))

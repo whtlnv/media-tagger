@@ -44,3 +44,8 @@ Append-only record of tests removed because a delivered change retired the behav
 - Asserted: closing a window launched with no path and no state file leaves no `state.json`
 - Retired by: Phase 9a — "Closing the window writes its size and position to `state.json` under the config home"
 - Migrated to: `test_launching_the_window_with_no_path_and_no_state_file_then_closing_it_leaves_a_state_file_holding_only_its_size_and_position` — same setup, now asserts the file holds only `{"geometry": …}` (no folder)
+
+## 2026-10-14 · narrowed `src/mediatagger/test_video_controls.py::test_the_progress_bar_shows_light_text_and_a_light_track_on_a_dark_background_over_both_black_and_white_frames`
+- Now `test_the_progress_bar_shows_light_text_and_a_light_filled_track_over_a_black_frame`.
+- Removed assertion: pixel (295, 10) of the bar over a white frame is darkened by the backdrop (lightness < 128).
+- Why: Phase 12 drops the progress bar's dark backdrop ("Over a white video frame, the progress bar outside its text and track leaves the frame white"). The black-frame checks (light text, light filled track) are unaffected and kept (migrate, not delete).
