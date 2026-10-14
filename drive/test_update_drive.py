@@ -5,6 +5,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from fakes import fake_command
+
 REPO = Path(__file__).resolve().parent.parent
 UPDATE_DRIVE = REPO / "drive" / "update-drive.sh"
 PACKAGE = REPO / "src" / "mediatagger"
@@ -57,13 +59,12 @@ def test_update_drive_leaves_test_modules_and_conftest_out_of_the_drive_app(tmp_
 def env_with_fake_python313_on_path(tmp_path, script):
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
-    (bin_dir / "python3.13").write_text(script)
-    (bin_dir / "python3.13").chmod(0o755)
+    fake_command(bin_dir, "python3.13", script)
     return {**os.environ, "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}"}
 
 
 def env_with_python313_on_path(tmp_path):
-    return env_with_fake_python313_on_path(tmp_path, f'#!/bin/sh\nexec "{sys.executable}" "$@"\n')
+    return env_with_fake_python313_on_path(tmp_path, f'exec "{sys.executable}" "$@"')
 
 
 def test_update_drive_leaves_unchecked_hash_bytecode_next_to_every_module_in_the_drive_app(tmp_path):
@@ -111,9 +112,7 @@ def test_update_drive_writes_the_repo_last_commit_as_short_hash_and_subject_to_t
 
 def test_update_drive_writes_unknown_to_the_drive_app_version_when_git_log_fails(tmp_path):
     env = env_with_python313_on_path(tmp_path)
-    failing_git = tmp_path / "bin" / "git"
-    failing_git.write_text("#!/bin/sh\nexit 128\n")
-    failing_git.chmod(0o755)
+    fake_command(tmp_path / "bin", "git", "exit 128")
     drive = empty_drive(tmp_path)
 
     update_drive(drive, env=env)
@@ -246,7 +245,7 @@ def test_update_drive_from_a_repo_copy_that_is_not_a_git_checkout_writes_unknown
 
 
 def test_update_drive_fails_and_copies_no_scripts_onto_the_drive_when_precompiling_the_app_fails(tmp_path):
-    env = env_with_fake_python313_on_path(tmp_path, "#!/bin/sh\necho 'compileall: boom' >&2\nexit 1\n")
+    env = env_with_fake_python313_on_path(tmp_path, "echo 'compileall: boom' >&2\nexit 1")
     drive = empty_drive(tmp_path)
 
     result = subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], env=env, capture_output=True, text=True)
@@ -260,17 +259,15 @@ def test_update_drive_fails_and_copies_no_scripts_onto_the_drive_when_precompili
 
 def test_update_drive_on_a_drive_where_copying_leaves_macos_resource_forks_still_precompiles_every_module_and_leaves_no_fork(tmp_path):
     env = env_with_python313_on_path(tmp_path)
-    forking_cp = tmp_path / "bin" / "cp"
-    forking_cp.write_text(
-        "#!/bin/sh\n"
+    fake_command(
+        tmp_path / "bin", "cp",
         '/bin/cp "$@" || exit $?\n'
         "for dest; do :; done\n"
         "for src; do\n"
         '  [ "$src" = "$dest" ] && break\n'
         "  printf '\\000\\005\\026\\007\\000\\000' > \"$dest/._$(basename \"$src\")\"\n"
-        "done\n"
+        "done",
     )
-    forking_cp.chmod(0o755)
     drive = empty_drive(tmp_path)
 
     result = subprocess.run(["sh", str(UPDATE_DRIVE), str(drive)], env=env, capture_output=True, text=True)
