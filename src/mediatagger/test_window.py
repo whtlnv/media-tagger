@@ -414,11 +414,16 @@ def test_pressing_o_while_the_windows_grid_tag_prompt_has_focus_types_an_o_into_
     assert picked == []
 
 
-def test_choosing_a_folder_of_another_drive_with_o_from_the_windows_grid_then_esc_shows_that_folders_grid_with_the_new_drives_tag_badges(qtbot, tmp_path):
+def a_second_drive_with_a_folder_holding_one_blue_image(tmp_path):
     first_drive, viewed = drive_with_a_tag_library_holding_one_image(tmp_path)
     second_drive = make_tag_library_drive(tmp_path / "ELSEWHERE")
     [chosen] = make_folders(second_drive, "Videos")
     make_image(chosen / "x.png", "blue")
+    return first_drive, viewed, second_drive, chosen
+
+
+def test_choosing_a_folder_of_another_drive_with_o_from_the_windows_grid_then_esc_shows_that_folders_grid_with_the_new_drives_tag_badges(qtbot, tmp_path):
+    first_drive, viewed, second_drive, chosen = a_second_drive_with_a_folder_holding_one_blue_image(tmp_path)
     Library.open(second_drive).enter(chosen / "x.png", "beach family")
     window = Window(viewed, player_options=SILENT, folder_picker=lambda: chosen, is_mount_point=lambda path: path in (first_drive, second_drive),
                     ask_to_create_library=lambda question: False)
@@ -436,10 +441,7 @@ def test_choosing_a_folder_of_another_drive_with_o_from_the_windows_grid_then_es
 
 
 def test_choosing_a_folder_of_another_drive_with_o_from_the_windows_grid_then_esc_shows_thumbnails_from_the_new_drives_thumbnail_cache(qtbot, tmp_path):
-    first_drive, viewed = drive_with_a_tag_library_holding_one_image(tmp_path)
-    second_drive = make_tag_library_drive(tmp_path / "ELSEWHERE")
-    [chosen] = make_folders(second_drive, "Videos")
-    make_image(chosen / "x.png", "blue")
+    first_drive, viewed, second_drive, chosen = a_second_drive_with_a_folder_holding_one_blue_image(tmp_path)
     cached = cache_file(Library.open(second_drive).drive_id, Path.home())
     cached.parent.mkdir(parents=True)
     stat = (chosen / "x.png").stat()
@@ -818,10 +820,7 @@ def test_the_windows_grid_tag_prompt_sits_at_the_bottom_centre_just_above_the_st
 
 
 def test_choosing_a_folder_of_another_read_only_drive_with_o_from_the_windows_viewer_shows_the_read_only_banner(qtbot, tmp_path):
-    first_drive, viewed = drive_with_a_tag_library_holding_one_image(tmp_path)
-    second_drive = make_tag_library_drive(tmp_path / "ELSEWHERE")
-    [chosen] = make_folders(second_drive, "Videos")
-    make_image(chosen / "x.png", "blue")
+    first_drive, viewed, second_drive, chosen = a_second_drive_with_a_folder_holding_one_blue_image(tmp_path)
     window = Window(viewed, player_options=SILENT, folder_picker=lambda: chosen, is_mount_point=lambda path: path in (first_drive, second_drive),
                     ask_to_create_library=lambda question: False)
     qtbot.addWidget(window)
