@@ -69,12 +69,20 @@ class _Tile:
     duration: float = None
 
 
-def _tiles(folder, tag_counts):
+def _tiles(folder):
     """Built from names: a folder of thousands of files must open fast on a Pi, and parsing a Path per file doesn't."""
-    counts_by_name = {path.name: count for path, count in tag_counts.items()}
     subfolders, media = subfolder_and_media_names(folder)
     kinds = [_Kind.FOLDER] * len(subfolders) + [_Kind.VIDEO if is_video_name(name) else _Kind.IMAGE for name in media]
-    return [_Tile(folder / name, name, kind, counts_by_name.get(name, 0)) for name, kind in zip(subfolders + media, kinds)]
+    return [_Tile(folder / name, name, kind) for name, kind in zip(subfolders + media, kinds)]
+
+
+def _own_tag_counts(tiles, folder, library, results):
+    """Each tile's own-tag count, read in bulk: results by their full path, a folder's items by their name."""
+    if results:
+        counts = library.own_tag_counts()
+        return [counts.get(str(tile.path), 0) for tile in tiles]
+    counts = {path.name: count for path, count in library.tag_counts(folder).items()}
+    return [counts.get(tile.name, 0) for tile in tiles]
 
 
 def _effective_tags(tiles, folder, library, results):
@@ -115,9 +123,8 @@ def _result_kind(path):
     return _Kind.VIDEO if is_video_name(path.name) else _Kind.IMAGE
 
 
-def _result_tiles(paths, library):
-    counts = library.own_tag_counts()
-    return [_Tile(path, path.name, _result_kind(path), counts.get(str(path), 0)) for path in paths]
+def _result_tiles(paths):
+    return [_Tile(path, path.name, _result_kind(path)) for path in paths]
 
 
 class _FolderModel(QAbstractListModel):
@@ -247,11 +254,11 @@ class Grid(QListView):
         self.setGridSize(TILE_SIZE)
         self.setUniformItemSizes(True)  # lays out thousands of tiles without asking each one its size
         self.setVerticalScrollMode(QListView.ScrollMode.ScrollPerPixel)
-        tiles = _result_tiles(paths, library) if paths is not None else _tiles(folder, library.tag_counts(folder) if library else {})
+        tiles = _result_tiles(paths) if paths is not None else _tiles(folder)
         self._required_roots, self._results = required_roots, paths is not None
-        if library and required_roots:
-            _mark_missing(tiles, _effective_tags(tiles, folder, library, self._results), required_roots)
         self.setModel(_FolderModel(tiles, self))
+        if library:
+            self.show_new_tags(library)
         self.setItemDelegate(_TileDelegate(self))
         self._generate_thumbnails(tiles, thumbnail_cache or ThumbnailCache(":memory:"))
         self.setAcceptDrops(True)
@@ -326,13 +333,7 @@ class Grid(QListView):
         """Every tile shows its own-tag count and missing roots afresh, read in bulk, without listing the folder again:
         tagging one item can change what others inherit."""
         tiles = self.model().tiles
-        if self._results:
-            counts = library.own_tag_counts()
-            new_counts = [counts.get(str(tile.path), 0) for tile in tiles]
-        else:
-            counts = {path.name: count for path, count in library.tag_counts(self.folder).items()}
-            new_counts = [counts.get(tile.name, 0) for tile in tiles]
-        for tile, count in zip(tiles, new_counts):
+        for tile, count in zip(tiles, _own_tag_counts(tiles, self.folder, library, self._results)):
             tile.tag_count = count
         if self._required_roots:
             _mark_missing(tiles, _effective_tags(tiles, self.folder, library, self._results), self._required_roots)
