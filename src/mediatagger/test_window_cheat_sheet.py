@@ -7,7 +7,7 @@ from mediatagger.grid import TILE_ROLE
 from mediatagger.image_fit import fitted_rect
 from mediatagger.library import Library
 from mediatagger.test_viewer import SILENT, make_image
-from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image
+from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, visible_tag_prompts
 from mediatagger.test_window import window_showing_the_grid_with_its_cursor_on_its_first_tile
 from mediatagger.test_window_search import search_for
 from mediatagger.test_window_state import state_file_path
@@ -220,3 +220,15 @@ def test_toggling_the_sheet_while_the_state_file_would_lie_on_the_drive_being_vi
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_H)
 
     assert not state_file_path().exists()
+
+
+def test_typing_h_into_the_grids_tag_prompt_puts_an_h_in_the_prompt_and_leaves_the_sheet_as_it_was(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_T)
+    [prompt] = visible_tag_prompts(window)
+
+    qtbot.keyClick(prompt, Qt.Key.Key_H)
+
+    assert prompt.text() == "h"
+    assert not grid_background_shows_text(stack.currentWidget())
