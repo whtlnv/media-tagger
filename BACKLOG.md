@@ -2,8 +2,8 @@
 
 ## Out of Scope
 
-- **[src/mediatagger/test_video_controls.py:335] Window staging (`Window(…, player_options=SILENT)`, `addWidget`, `show_exposed`) is repeated with no shared helper** (added: 2026-10-14)
-  This file now repeats it three times, but the same three lines show up 18 times in total, mostly in test files outside 76e644f..HEAD. A helper beside `show_exposed` in `test_viewer.py` would only be partly adopted if this range's sites used it alone. Hoist it when those other files are touched.
+- **[src/mediatagger/test_video_controls.py:335] Window staging (`Window(…, player_options=SILENT)`, `addWidget`, `show_exposed`) is repeated with no shared helper** (added: 2026-10-14; location corrected 2026-10-14)
+  This file now repeats it five times, but the same three lines show up 32 times in total, mostly in test files outside 76e644f..HEAD. A helper beside `show_exposed` in `test_viewer.py` would only be partly adopted if this range's sites used it alone. Hoist it when those other files are touched.
 
 - **[src/mediatagger/test_window.py] The 854-line window test file still mixes navigation, grid tagging and backup tests** (added: 2026-10-14; location corrected 2026-10-14)
   The grid tag-prompt cluster (`test_pressing_t_in_the_windows_grid_…` through the prompt-placement test) could move to its own `test_window_tags.py`, but its helpers `window_showing_the_grid_with_its_cursor_on_its_first_tile`, `enter_in_the_grids_tag_prompt` and `shown_status_bar_texts` are imported by `test_search_bar.py`, `test_window_search.py`, `test_window_search_opening_results.py`, `test_window_state.py` and `test_window_thumbnails.py`, outside the ca048de..HEAD range, so moving the cluster with them needs edits there.
@@ -38,8 +38,8 @@
 - **[src/mediatagger/grid.py:_result_kind] Each result stats its path twice when the results grid opens** (added: 2026-10-13)
   `exists()` then `is_dir()` per result; 5,000 results open in ~80 ms on the Mac. On a Pi's USB stick this may be several times slower; one `os.stat` per path (or trusting the library's recorded kind for folders) would halve it. Measure on the Pi first.
 
-- **[src/mediatagger/test_video_controls.py:186] The `↑`-on-hidden-bar seek test fails under machine load** (added: 2026-10-13)
-  `test_up_on_a_playing_video_whose_progress_bar_is_hidden_shows_the_bar_at_once_at_the_new_position` read `0:00 / 1:05` instead of `0:10 / 1:05` several times during Phase 11 while another project's test suite ran on the Mac; it passes on an idle machine. It reads mpv's position right after the seek; waiting for the seek to land (as other video tests do) would remove the timing dependence.
+- **[src/mediatagger/test_video_controls.py:197] The `↑`-on-hidden-bar seek test fails under machine load** (added: 2026-10-13; location corrected 2026-10-14)
+  The `up shows the bar at the new position` case of `test_a_key_on_a_playing_video_whose_progress_bar_is_hidden_shows_the_bar_at_once_reading_any_change` read `0:00 / 1:05` instead of `0:10 / 1:05` several times during Phase 11 while another project's test suite ran on the Mac; it passes on an idle machine. It reads mpv's position right after the seek; waiting for the seek to land (as other video tests do) would remove the timing dependence.
 
 - **[drive/build-drive.sh] The drive's `debs/` holds libmpv2's whole dependency closure, not only what the Pi lacks** (added: 2026-10-13)
   `~/aptpi` in the VM is an apt root with an empty dpkg status, so its archive holds 389 `.deb`s (~255 MB) and `build-drive.sh` copies them all; apt on the Pi installs only the missing ones (6 on the 2026-10-08 run). Trimming needs the Pi's package list (e.g. a `dpkg --get-selections` copied from the Pi into the Pi-like apt root's status) — only worth it if stick space matters.
