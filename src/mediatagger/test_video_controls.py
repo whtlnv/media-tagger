@@ -136,36 +136,22 @@ def test_half_way_through_a_video_the_progress_bar_is_filled_up_to_its_middle(qt
     assert image.pixelColor(110, row) == empty
 
 
-def test_a_video_shorter_than_an_hour_shows_its_times_as_minutes_and_seconds(qtbot):
+@pytest.mark.parametrize("engine, text", [
+    pytest.param(fake_engine(duration=4 * 60 + 56, time_pos=60 + 23), "1:23 / 4:56",
+                 id="a video shorter than an hour shows its times as minutes and seconds"),
+    pytest.param(fake_engine(duration=60 * 60 + 2 * 60 + 3, time_pos=5), "0:00:05 / 1:02:03",
+                 id="a video of an hour or more shows its times as hours, minutes and seconds"),
+    pytest.param(fake_engine(duration=30, time_pos=0, speed=2), "0:00 / 0:30 · 2×",
+                 id="a video playing at 2x shows its times followed by its speed"),
+    pytest.param(fake_engine(duration=30, time_pos=0, speed=0.25), "0:00 / 0:30 · 0.25×",
+                 id="a video playing at a quarter speed shows its times followed by 0.25x"),
+])
+def test_the_progress_bar_reads_a_videos_times_and_any_speed_other_than_1x(qtbot, engine, text):
     parent, bar = shown_progress_bar(qtbot)
 
-    bar.start(fake_engine(duration=4 * 60 + 56, time_pos=60 + 23))
+    bar.start(engine)
 
-    qtbot.waitUntil(lambda: bar.text() == "1:23 / 4:56")
-
-
-def test_a_video_of_an_hour_or_more_shows_its_times_as_hours_minutes_and_seconds(qtbot):
-    parent, bar = shown_progress_bar(qtbot)
-
-    bar.start(fake_engine(duration=60 * 60 + 2 * 60 + 3, time_pos=5))
-
-    qtbot.waitUntil(lambda: bar.text() == "0:00:05 / 1:02:03")
-
-
-def test_a_video_playing_at_2x_shows_its_times_followed_by_its_speed(qtbot):
-    parent, bar = shown_progress_bar(qtbot)
-
-    bar.start(fake_engine(duration=30, time_pos=0, speed=2))
-
-    qtbot.waitUntil(lambda: bar.text() == "0:00 / 0:30 · 2×")
-
-
-def test_a_video_playing_at_a_quarter_speed_shows_its_times_followed_by_0_25x(qtbot):
-    parent, bar = shown_progress_bar(qtbot)
-
-    bar.start(fake_engine(duration=30, time_pos=0, speed=0.25))
-
-    qtbot.waitUntil(lambda: bar.text() == "0:00 / 0:30 · 0.25×")
+    qtbot.waitUntil(lambda: bar.text() == text)
 
 
 def test_destroying_a_shown_progress_bar_whose_attributes_the_garbage_collector_already_cleared_raises_nothing(qtbot):
