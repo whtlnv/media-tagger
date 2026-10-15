@@ -240,6 +240,16 @@ def test_left_bracket_on_a_playing_video_shows_the_bar_reading_its_slower_speed(
     assert bar.text().endswith(" · 0.75×")
 
 
+def test_v_on_a_playing_video_whose_progress_bar_is_hidden_shows_the_bar(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
+    viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
+    bar.hide()  # as when the hide delay runs out
+
+    qtbot.keyClick(viewer, Qt.Key.Key_V)
+
+    assert bar.isVisible()
+
+
 def test_five_on_a_playing_video_whose_progress_bar_is_hidden_seeks_to_half_its_length_and_shows_the_bar(qtbot, tmp_path):
     clip = make_clip(tmp_path / "IMG_1.mp4", duration=64)
     viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
