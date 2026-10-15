@@ -11,7 +11,8 @@ from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
 from mediatagger.search import search
 from mediatagger.search_bar import SearchBar
 from mediatagger.slideshow import Slideshow
-from mediatagger.state import remember, remember_geometry, remember_search, remembered_folder, remembered_geometry, state_file
+from mediatagger.state import (remember, remember_cheat_sheet, remember_geometry, remember_search, remembered_cheat_sheet, remembered_folder,
+    remembered_geometry, state_file)
 from mediatagger.status_bar import StatusBar, overlay_label
 from mediatagger.tag_prompt import TagPrompt
 from mediatagger.viewer import Viewer
@@ -34,7 +35,7 @@ class Window(QWidget):
         self._state_file = state_file(home or Path.home())
         remembered = remembered_folder(self._state_file) if path is None else None
         collect_garbage_on_the_gui_thread()
-        self.cheat_sheet = CheatSheet()
+        self.cheat_sheet = CheatSheet(shown=remembered_cheat_sheet(self._state_file), on_toggle=self._record_cheat_sheet)
         self.stack = QStackedWidget(self)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -168,6 +169,10 @@ class Window(QWidget):
     def _record_state(self, folder):
         if self._may_write_state():
             remember(self._state_file, folder, self.session.drive)
+
+    def _record_cheat_sheet(self, shown):
+        if self._may_write_state():
+            remember_cheat_sheet(self._state_file, shown)
 
     def _record_geometry(self):
         """The normal size and position, also when fullscreen, so the next launch opens as a normal window there."""

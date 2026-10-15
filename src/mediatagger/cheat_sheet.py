@@ -51,9 +51,10 @@ _KEY_GAP = 16
 class CheatSheet(QObject):
     """The list of keys drawn as a screen's background, toggled by `h` on any widget it watches."""
 
-    def __init__(self, shown=False):
+    def __init__(self, shown=False, on_toggle=lambda shown: None):
         super().__init__()
         self.shown = shown
+        self.on_toggle = on_toggle
 
     def watch(self, widget):
         widget.installEventFilter(self)
@@ -61,6 +62,7 @@ class CheatSheet(QObject):
     def eventFilter(self, watched, event):
         if event.type() == QEvent.Type.KeyPress and event.key() == Qt.Key.Key_H and not event.modifiers():
             self.shown = not self.shown
+            self.on_toggle(self.shown)
             (watched.viewport() if hasattr(watched, "viewport") else watched).update()
             return True
         return False

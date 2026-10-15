@@ -6,7 +6,7 @@ MOST_SEARCHES_REMEMBERED = 50
 
 
 def state_file(home):
-    """Where the last folder, the window geometry and the recent searches are remembered: under $XDG_CONFIG_HOME, else <home>/.config (the Pi's home, never a drive)."""
+    """Where the last folder, the window geometry, the recent searches and the cheat sheet are remembered: under $XDG_CONFIG_HOME, else <home>/.config (the Pi's home, never a drive)."""
     config_home = os.environ.get("XDG_CONFIG_HOME", home / ".config")
     return Path(config_home) / "mediatagger" / "state.json"
 
@@ -40,6 +40,20 @@ def remember_search(state, query):
         _write(state, remembering)
     except OSError:
         pass  # the search still runs; it just isn't offered by ↑ next time
+
+
+def remember_cheat_sheet(state, shown):
+    remembering = _read(state)
+    remembering["cheat_sheet"] = shown
+    try:
+        _write(state, remembering)
+    except OSError:
+        pass  # the sheet still toggles; next time it starts as it was before
+
+
+def remembered_cheat_sheet(state):
+    """Whether the key cheat sheet was showing; hidden if nothing is remembered."""
+    return _remembered(state, "cheat_sheet") is True
 
 
 def remembered_searches(state):

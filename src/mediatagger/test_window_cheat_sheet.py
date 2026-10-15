@@ -179,3 +179,19 @@ def test_scrolling_a_grid_of_many_tiles_with_the_sheet_shown_leaves_the_sheet_wh
     viewport = grid.viewport()
     at = viewport.mapTo(window, viewport.rect().topLeft())
     assert on_screen.copy(at.x(), at.y(), viewport.width(), viewport.height()) == viewport.grab().toImage()
+
+
+def grid_background_shows_text(grid):
+    tile = grid.visualRect(grid.model().index(0, 0))
+    return len(set(pixels_outside(grid.viewport().grab().toImage(), tile))) > 1
+
+
+def test_after_pressing_h_a_window_started_next_time_with_the_same_home_shows_the_sheet_from_the_start(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_H)
+    window.close()
+
+    next_window, next_stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+
+    assert grid_background_shows_text(next_stack.currentWidget())
