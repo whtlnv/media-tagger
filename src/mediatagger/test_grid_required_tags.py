@@ -1,11 +1,11 @@
-from PySide6.QtCore import QRect
-from PySide6.QtGui import QImage, QPainter
+from PySide6.QtCore import QRect, Qt
+from PySide6.QtGui import QFontMetrics, QGuiApplication, QImage, QPainter
 from PySide6.QtWidgets import QStyleOptionViewItem
 
-from mediatagger.grid import MISSING_BADGE, TAG_BADGE, Grid
+from mediatagger.grid import MISSING_BADGE, TAG_BADGE, TILE_ROLE, Grid
 from mediatagger.library import Library
 from mediatagger.test_folder import touch
-from mediatagger.test_grid import painted_texts
+from mediatagger.test_grid import painted_texts, painted_tile
 
 ROOTS = ("type:", "size:")
 
@@ -87,3 +87,24 @@ def test_on_a_tile_with_both_badges_the_missing_badge_sits_left_of_the_tag_badge
     missing, tags = painter.placed[f"{MISSING_BADGE}2"], painter.placed[f"{TAG_BADGE}2"]
 
     assert (missing.right() < tags.left(), missing.top() == tags.top(), tags.right() > 160) == (True, True, True)
+
+
+def test_the_missing_badge_contrasts_with_its_surroundings_over_both_a_white_and_a_black_thumbnail(qtbot, tmp_path):
+    library = Library.create(tmp_path)
+    touch(tmp_path, "photo.jpg")
+    grid = Grid(tmp_path, library=library, required_roots=ROOTS)
+    qtbot.addWidget(grid)
+    tile = grid.model().index(0, 0).data(TILE_ROLE)
+    metrics = QFontMetrics(QGuiApplication.font())
+    badge_area = QRect(100, 0, 100, 2 * metrics.height())  # with no tag badge, it sits in the tile's top-right corner
+
+    for color in (Qt.GlobalColor.white, Qt.GlobalColor.black):
+        thumbnail = QImage(200, 200 - metrics.height(), QImage.Format.Format_RGB32)  # fills the tile's picture area
+        thumbnail.fill(color)
+        tile.thumbnail = thumbnail
+        image = painted_tile(grid, 0, selected=False)
+        lightnesses = [image.pixelColor(x, y).lightness()
+                       for y in range(badge_area.top(), badge_area.bottom() + 1)
+                       for x in range(badge_area.left(), badge_area.right() + 1)]
+
+        assert max(lightnesses) - min(lightnesses) > 128, f"missing badge unreadable over a {color.name} thumbnail"
