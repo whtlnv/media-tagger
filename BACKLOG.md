@@ -2,6 +2,9 @@
 
 ## Out of Scope
 
+- **[src/mediatagger/test_video_controls.py:335] Window staging (`Window(…, player_options=SILENT)`, `addWidget`, `show_exposed`) is repeated with no shared helper** (added: 2026-10-14)
+  This file now repeats it three times, but the same three lines show up 18 times in total, mostly in test files outside 76e644f..HEAD. A helper beside `show_exposed` in `test_viewer.py` would only be partly adopted if this range's sites used it alone. Hoist it when those other files are touched.
+
 - **[src/mediatagger/test_window.py] The 854-line window test file still mixes navigation, grid tagging and backup tests** (added: 2026-10-14; location corrected 2026-10-14)
   The grid tag-prompt cluster (`test_pressing_t_in_the_windows_grid_…` through the prompt-placement test) could move to its own `test_window_tags.py`, but its helpers `window_showing_the_grid_with_its_cursor_on_its_first_tile`, `enter_in_the_grids_tag_prompt` and `shown_status_bar_texts` are imported by `test_search_bar.py`, `test_window_search.py`, `test_window_search_opening_results.py`, `test_window_state.py` and `test_window_thumbnails.py`, outside the ca048de..HEAD range, so moving the cluster with them needs edits there.
 
