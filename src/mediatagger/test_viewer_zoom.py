@@ -60,3 +60,21 @@ def test_scrolling_the_mouse_wheel_down_one_notch_over_a_zoomed_in_image_shows_i
     scroll(viewer, -1, at=centre)
 
     assert fitted < shown_height(viewer, centre.x()) < zoomed_in
+
+
+def test_scrolling_the_mouse_wheel_up_many_notches_over_an_image_stops_at_three_times_its_fitted_size(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red", width=200, height=20)
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    viewer.resize(300, 300)
+    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    centre = viewer.rect().center()
+
+    def picture_rows():  # rows of the centre column above the overlays (from y 250 down) showing the picture
+        frame = viewer.grab().toImage()
+        return sum(1 for y in range(250) if frame.pixelColor(centre.x(), y).red() > 128)
+
+    fitted = picture_rows()  # fitted 300x30 at y 135..164, so 3x is 90 rows at y 105..194
+
+    scroll(viewer, 20, at=centre)
+
+    assert picture_rows() == 3 * fitted

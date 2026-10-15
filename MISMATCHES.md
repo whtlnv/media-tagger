@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-14 23:21 · `src/mediatagger/test_viewer_zoom.py::test_scrolling_the_mouse_wheel_up_many_notches_over_an_image_stops_at_three_times_its_fitted_size`
+- Behavior: Scrolling the mouse wheel up many notches over an image stops at three times its fitted size
+- Predicted: AssertionError — uncapped 1.25-per-notch zoom fills the centre column (~270 rows) instead of 3 × 30 fitted rows
+- Actual: AssertionError 268 == 3 * 36 — right reason, but the fitted baseline was 36, not 30: `shown_height` also counts 6 rows of light overlay text at y 262..271
+- Type: right-reason mismatch
+- Resolution: the existing `shown_height` helper over-counts by the overlay rows, so "3 × fitted" would be wrong; the test now counts only rows above y 250 (fitted 30, so the cap is 90) and fails 246 == 90.
+
 ## 2026-10-14 23:06 · `src/mediatagger/test_viewer_zoom.py::test_scrolling_the_mouse_wheel_up_many_notches_over_an_image_stops_at_three_times_its_fitted_size`
 - Behavior: Scrolling the mouse wheel up many notches over an image stops at three times its fitted size
 - Predicted: AssertionError — unbounded zoom (1.25^20) makes the blue marker fill the whole 300-row centre column, 300 vs ~90
