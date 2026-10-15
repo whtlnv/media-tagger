@@ -129,3 +129,29 @@ def test_a_results_grid_marks_result_files_by_their_effective_tags_and_never_a_r
     qtbot.addWidget(grid)
 
     assert [missing_badge(grid, row) for row in range(4)] == [None, f"{MISSING_BADGE}1", f"{MISSING_BADGE}2", None]
+
+
+def test_after_a_first_grid_has_been_shown_opening_the_grid_of_5000_files_half_tagged_with_two_required_roots_takes_under_150_ms(qtbot, tmp_path):
+    from mediatagger.test_grid import fastest_of_three
+
+    library = Library.create(tmp_path)
+    (tmp_path / "warm-up").mkdir()
+    touch(tmp_path / "warm-up", "a.jpg")
+    warm_up = Grid(tmp_path / "warm-up", library=library, required_roots=ROOTS)  # the first widget shown loads Qt's fonts
+    qtbot.addWidget(warm_up)
+    warm_up.show()
+    (tmp_path / "big").mkdir()
+    names = [f"IMG_{i}.jpg" for i in range(5000)]
+    touch(tmp_path / "big", *names)
+    library.enter(tmp_path / "big", "place:beach")
+    for name in names[::2]:
+        library.enter(tmp_path / "big" / name, "type:photo people:ana")
+
+    def open_and_show():
+        grid = Grid(tmp_path / "big", library=library, required_roots=ROOTS)
+        grid.show()
+        return grid
+
+    elapsed, grid = fastest_of_three(qtbot, open_and_show)
+
+    assert (elapsed < 0.150, missing_badge(grid, 0), missing_badge(grid, 1)) == (True, f"{MISSING_BADGE}1", f"{MISSING_BADGE}2")

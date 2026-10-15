@@ -24,7 +24,7 @@ Phase 16 notes for every cycle (Phases 1–15 are delivered — see DONE.md; Pha
 - [x] On a tile with both badges, the `✗` badge sits in the top row to the left of the tag-count badge, the two not overlapping, the tag-count badge still in the top-right corner
 - [x] The `✗` badge reads white on a dark backing over both a white and a black thumbnail, like the tag-count badge
 - [x] A results grid given required roots marks each result file by its effective tags (own tags and those of its ancestor folders in the library), and never marks a result folder or a missing result
-- [ ] After a first grid has been shown, opening and showing the grid of a folder of 5,000 files in a library where half are tagged, with two required roots, takes under 150 ms
+- [x] After a first grid has been shown, opening and showing the grid of a folder of 5,000 files in a library where half are tagged, with two required roots, takes under 150 ms
 - [ ] In the window, opening a folder on a fake drive whose root holds a config naming `type:` and `size:` shows the grid with its untagged file's tile marked `✗2`
 - [ ] In the window, opening a folder on a fake drive with no config shows no `✗` badge on any tile
 - [ ] In the window, opening a drive whose config isn't valid JSON shows the "can't be read" text in the status bar and no `✗` badge on any tile, and the app keeps working (the grid opens)
