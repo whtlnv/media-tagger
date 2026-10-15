@@ -372,7 +372,7 @@ def test_the_filled_track_is_a_thin_strip_along_the_bottom_of_the_progress_bar_s
 
     image = parent.grab(bar.geometry()).toImage()
 
-    assert image.pixelColor(5, 2).lightness() < 128  # the filled half's top: still the dark backdrop
+    assert image.pixelColor(5, 2).lightness() < 128  # the filled half's top: still the black frame
     assert image.pixelColor(5, 22).lightness() > 200  # the filled half's bottom edge: the light track
 
 
