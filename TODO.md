@@ -38,4 +38,4 @@ Phase 14 notes for every cycle (Phases 1–13 are delivered — see DONE.md; Pha
 - [x] Zooming in on a video turned 90° with `r`, with the mouse off its centre, keeps the video point under the mouse under the mouse
 - [x] Pressing `r` on a zoomed-in video turns it and keeps it zoomed in
 - [x] Moving to the next video after zooming in on a video shows the next video fitted
-- [ ] In the window the `mediatagger` command builds, scrolling the mouse wheel up over a playing video in the viewer shows it larger than fitted
+- [x] In the window the `mediatagger` command builds, scrolling the mouse wheel up over a playing video in the viewer shows it larger than fitted

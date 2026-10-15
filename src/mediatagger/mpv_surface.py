@@ -32,6 +32,7 @@ class MpvSurface(QOpenGLWidget):
         self.render_context = None
         self._ready = False
         self._pending = None
+        self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)  # so the wheel over a video reaches the viewer
         self.frame_ready.connect(self.update, Qt.ConnectionType.QueuedConnection)
 
     def initializeGL(self):

@@ -4,8 +4,9 @@ import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 
-from PySide6.QtCore import QCoreApplication, QEvent, Qt
-from PySide6.QtWidgets import QLabel, QStackedWidget
+from PySide6.QtCore import QCoreApplication, QEvent, QPoint, QPointF, Qt
+from PySide6.QtGui import QWheelEvent
+from PySide6.QtWidgets import QApplication, QLabel, QStackedWidget
 
 from mediatagger.backup import back_up
 from mediatagger.drive_session import BACKUP_FAILED_TEXT, CREATE_LIBRARY_QUESTION, RESTORE_LIBRARY_QUESTION
@@ -15,7 +16,7 @@ from mediatagger.state import remember, state_file
 from mediatagger.status_bar import READ_ONLY_STATUS_TEXT, TAGS_CANT_BE_SAVED_HERE_TEXT, StatusBar
 from mediatagger.test_grid import painted_texts
 from mediatagger.test_tag_prompt import listed
-from mediatagger.test_video import make_clip
+from mediatagger.test_video import make_clip, wait_until_playing
 from mediatagger.test_viewer_backup import tags_in_newest_backup
 from mediatagger.test_viewer import SILENT, make_image, make_surface_ready, show_exposed, shown_texts, wait_until_loaded
 from mediatagger.test_viewer_library import (
@@ -852,3 +853,20 @@ def test_pressing_esc_in_the_windows_viewer_on_a_file_tagged_beach_family_shows_
 
     assert stack.currentWidget().currentIndex().data(TILE_ROLE).path == folder / "IMG_1.png"
     assert "beach family" in shown_status_bar_texts(window)
+
+
+def test_in_the_window_the_mediatagger_command_builds_scrolling_the_wheel_up_over_a_playing_video_zooms_it_in(qtbot, tmp_path):
+    make_clip(tmp_path / "a.mp4", duration=30)
+    window = Window(tmp_path, player_options=SILENT)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    viewer = window.findChild(QStackedWidget).currentWidget()
+    make_surface_ready(viewer)
+    wait_until_playing(viewer.video_player.engine)
+    at = QPointF(window.rect().center())
+    wheel = QWheelEvent(at, QPointF(window.mapToGlobal(at)), QPoint(0, 0), QPoint(0, 120), Qt.MouseButton.NoButton,
+                        Qt.KeyboardModifier.NoModifier, Qt.ScrollPhase.NoScrollPhase, False)
+
+    QApplication.sendEvent(window.windowHandle(), wheel)  # as the system does: Qt hands it to the widget under the mouse
+
+    assert viewer.video_player.engine.video_zoom > 0
