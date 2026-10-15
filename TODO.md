@@ -8,7 +8,7 @@ Phase 15 follow-up notes for every cycle (the user's decision of 2026-10-15 afte
 - Shown/hidden stays remembered in `state.json` exactly as now. The background painting in the grid and viewer, and the grid's full repaint on scroll, go.
 
 - [x] In the window's grid, pressing `h` draws a panel of the grid's keys over the middle of the window, on top of the tiles
-- [ ] The tiles stay visible through the panel: a red tile under it still shows red, darkened
+- [x] The tiles stay visible through the panel: a red tile under it still shows red, darkened
 - [ ] In the window's grid, pressing `h` a second time removes the panel, leaving the window as it was before
 - [ ] In the window's viewer showing an image, pressing `h` draws a panel of the viewer's keys over the middle of the window, on top of the picture
 - [ ] On the window's empty launch screen, pressing `h` draws a panel of the launch screen's keys

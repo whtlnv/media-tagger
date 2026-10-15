@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QPainter
+from PySide6.QtGui import QPainter, qGreen, qRed
 from PySide6.QtWidgets import QStackedWidget
 
 from mediatagger.cheat_sheet import GRID_KEYS, VIEWER_KEYS, draw_sheet
@@ -144,3 +144,22 @@ def test_typing_h_into_the_search_bar_puts_an_h_in_the_search_and_leaves_the_she
     assert window.search_bar.text() == "h"
     assert not sheet_is_shown(window)
 
+
+
+def test_the_tiles_stay_visible_through_the_panel_a_red_tile_under_it_still_shows_red_darkened(qtbot, tmp_path):
+    for number in range(1, 30):
+        make_image(tmp_path / f"IMG_{number:02}.png", "red")
+    grid, _ = grid_of_one_red_image(qtbot, tmp_path)
+    window = grid.window()
+    centre = window.rect().center()
+    qtbot.waitUntil(lambda: qRed(window.grab().toImage().pixel(centre)) > 200)  # the middle tile's thumbnail has arrived
+    before = window.grab().toImage()
+    red = [(x, y) for y in range(centre.y() - 20, centre.y() + 20) for x in range(centre.x() - 50, centre.x() + 50)
+        if qRed(before.pixel(x, y)) > 200 and qGreen(before.pixel(x, y)) < 60]
+    assert len(red) > 1000
+
+    qtbot.keyClick(grid, Qt.Key.Key_H)
+
+    after = window.grab().toImage()
+    darkened_red = [(x, y) for x, y in red if 40 < qRed(after.pixel(x, y)) < qRed(before.pixel(x, y)) and qGreen(after.pixel(x, y)) < 40]
+    assert len(darkened_red) > len(red) / 2
