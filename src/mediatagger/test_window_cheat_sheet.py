@@ -232,3 +232,19 @@ def test_typing_h_into_the_grids_tag_prompt_puts_an_h_in_the_prompt_and_leaves_t
 
     assert prompt.text() == "h"
     assert not grid_background_shows_text(stack.currentWidget())
+
+
+def test_typing_h_into_the_viewers_tag_prompt_puts_an_h_in_the_prompt_and_leaves_the_sheet_as_it_was(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    window.resize(1000, 600)
+    window.show()
+    qtbot.waitExposed(window)
+    qtbot.keyClick(window.viewer, Qt.Key.Key_T)
+    [prompt] = visible_tag_prompts(window)
+
+    qtbot.keyClick(prompt, Qt.Key.Key_H)
+
+    assert prompt.text() == "h"
+    assert window.viewer.cheat_sheet.shown is False
