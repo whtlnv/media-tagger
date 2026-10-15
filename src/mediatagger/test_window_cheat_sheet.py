@@ -22,6 +22,11 @@ def is_red(pixel):
     return qRed(pixel) > 200 and qGreen(pixel) < 60 and qBlue(pixel) < 60
 
 
+def grid_background_shows_text(grid):
+    tile = grid.visualRect(grid.model().index(0, 0))
+    return len(set(pixels_outside(grid.viewport().grab().toImage(), tile))) > 1
+
+
 def grid_of_one_red_image(qtbot, folder):
     """The window's folder grid of one red image, reached from its viewer, and the tile's rectangle."""
     make_image(folder / "a.jpg", "red")
@@ -48,12 +53,12 @@ def test_in_the_windows_folder_grid_pressing_h_draws_text_over_the_empty_backgro
 
 
 def test_in_the_windows_folder_grid_pressing_h_a_second_time_leaves_the_empty_background_plain_again(qtbot, tmp_path):
-    grid, tile = grid_of_one_red_image(qtbot, tmp_path)
+    grid, _ = grid_of_one_red_image(qtbot, tmp_path)
     qtbot.keyClick(grid, Qt.Key.Key_H)
 
     qtbot.keyClick(grid, Qt.Key.Key_H)
 
-    assert len(set(pixels_outside(grid.viewport().grab().toImage(), tile))) == 1
+    assert not grid_background_shows_text(grid)
 
 
 def test_pressing_h_in_the_windows_folder_grid_leaves_its_tiles_pictures_as_they_were_drawn_without_the_sheet(qtbot, tmp_path):
@@ -131,7 +136,7 @@ def test_on_the_windows_empty_launch_screen_pressing_h_shows_the_launch_screens_
 
 
 def test_with_the_sheet_shown_in_the_grid_opening_an_image_shows_it_in_the_viewer_and_esc_back_to_the_grid_still_shows_it(qtbot, tmp_path):
-    grid, tile = grid_of_one_red_image(qtbot, tmp_path)
+    grid, _ = grid_of_one_red_image(qtbot, tmp_path)
     qtbot.keyClick(grid, Qt.Key.Key_H)
     viewer = grid.window().viewer
 
@@ -141,7 +146,7 @@ def test_with_the_sheet_shown_in_the_grid_opening_an_image_shows_it_in_the_viewe
     qtbot.keyClick(viewer, Qt.Key.Key_Escape)
     grid_again = grid.window().findChild(QStackedWidget).currentWidget()
     assert grid_again is not viewer
-    assert len(set(pixels_outside(grid_again.viewport().grab().toImage(), tile))) > 1
+    assert grid_background_shows_text(grid_again)
 
 
 def test_a_results_grid_shows_the_cheat_sheet_when_it_is_on_and_h_there_hides_it(qtbot, tmp_path):
@@ -153,10 +158,9 @@ def test_a_results_grid_shows_the_cheat_sheet_when_it_is_on_and_h_there_hides_it
     search_for(qtbot, window, stack, "beach")
 
     results = stack.currentWidget()
-    tile = results.visualRect(results.model().index(0, 0))
-    assert len(set(pixels_outside(results.viewport().grab().toImage(), tile))) > 1
+    assert grid_background_shows_text(results)
     qtbot.keyClick(results, Qt.Key.Key_H)
-    assert len(set(pixels_outside(results.viewport().grab().toImage(), tile))) == 1
+    assert not grid_background_shows_text(results)
 
 
 def test_scrolling_a_grid_of_many_tiles_with_the_sheet_shown_leaves_the_sheet_where_it_was_drawn_whole(qtbot, tmp_path):
@@ -180,11 +184,6 @@ def test_scrolling_a_grid_of_many_tiles_with_the_sheet_shown_leaves_the_sheet_wh
     viewport = grid.viewport()
     at = viewport.mapTo(window, viewport.rect().topLeft())
     assert on_screen.copy(at.x(), at.y(), viewport.width(), viewport.height()) == viewport.grab().toImage()
-
-
-def grid_background_shows_text(grid):
-    tile = grid.visualRect(grid.model().index(0, 0))
-    return len(set(pixels_outside(grid.viewport().grab().toImage(), tile))) > 1
 
 
 def test_after_pressing_h_a_window_started_next_time_with_the_same_home_shows_the_sheet_from_the_start(qtbot, tmp_path):
