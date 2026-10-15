@@ -123,3 +123,20 @@ def test_zooming_in_on_a_playing_video_with_the_mouse_off_its_centre_keeps_the_v
 
         # 110 % about x 100: 220 wide from x 45, so the point 50 pixels in from the left edge stays at x 100
         assert settled_box(drawn_box, (45, 0, 264, 149)) == (45, 0, 264, 149)
+
+
+def test_zooming_in_on_a_video_turned_90_degrees_with_the_mouse_off_its_centre_keeps_the_video_point_under_the_mouse_under_the_mouse(tmp_path):
+    clip = make_clip(tmp_path / "clip.mp4", duration=30)  # turned, 48x64: on a 150x300 surface, fitted 150x200 at y 50..249
+    window = QRect(0, 0, 150, 300)
+    with player_drawing_into(150, 300) as (player, drawn_box):
+        player.show(clip)
+        wait_until_playing(player.engine)
+        player.press("r")
+        assert settled_box(drawn_box, (0, 50, 149, 249)) == (0, 50, 149, 249)
+        zoom = Zoom()
+
+        zoom.wheel(120, QPointF(75, 100), video_fitted(player.engine, window), window)
+        zoom.apply_to(player.engine)
+
+        # 110 % about y 100: 220 high from y 45, so the point 50 pixels down from the top edge stays at y 100
+        assert settled_box(drawn_box, (0, 45, 149, 264)) == (0, 45, 149, 264)
