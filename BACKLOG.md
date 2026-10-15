@@ -2,8 +2,8 @@
 
 ## Out of Scope
 
-- **[src/mediatagger/test_window.py] The 854-line window test file still mixes navigation, grid tagging and backup tests** (added: 2026-10-14)
-  The grid tag-prompt cluster (`test_pressing_t_in_the_windows_grid_…` through the prompt-placement test) could move to its own `test_window_tags.py`, but its helpers `window_showing_the_grid_with_its_cursor_on_its_first_tile`, `enter_in_the_grids_tag_prompt` and `shown_status_bar_texts` are imported by `test_search_bar.py` and `test_window_search_opening_results.py`, outside the ca048de..HEAD range, so moving the cluster with them needs edits there.
+- **[src/mediatagger/test_window.py] The 854-line window test file still mixes navigation, grid tagging and backup tests** (added: 2026-10-14; location corrected 2026-10-14)
+  The grid tag-prompt cluster (`test_pressing_t_in_the_windows_grid_…` through the prompt-placement test) could move to its own `test_window_tags.py`, but its helpers `window_showing_the_grid_with_its_cursor_on_its_first_tile`, `enter_in_the_grids_tag_prompt` and `shown_status_bar_texts` are imported by `test_search_bar.py`, `test_window_search.py`, `test_window_search_opening_results.py`, `test_window_state.py` and `test_window_thumbnails.py`, outside the ca048de..HEAD range, so moving the cluster with them needs edits there.
 
 - **[src/mediatagger/folder.py:39] The video and media extension rules are defined twice, once on Paths and once on names** (added: 2026-10-10)
   `is_video`/`_has_media_extension` use `Path.suffix` while `is_video_name` and `subfolder_and_media_names` use `os.path.splitext`; unifying them changes how a name such as `..mp4` is classified (`Path.suffix` gives `.mp4`, `splitext` gives none), a behavior change a refactor may not make.
