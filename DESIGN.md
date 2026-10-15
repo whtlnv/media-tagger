@@ -100,6 +100,7 @@ Results show under a `Search: <query>` breadcrumb; a result whose path no longer
 - If the drive from last session is mounted: reopen the last folder in the grid. The last folder shown is remembered in `$XDG_CONFIG_HOME/mediatagger/state.json` (default `~/.config/mediatagger/`), never written to the app's own drive or the drive being viewed.
 - The window opens at the size and position remembered in `state.json` when it last closed; with none remembered, not fullscreen, at about 80 % of the available screen, centred.
 - The key cheat sheet (`h`) starts shown or hidden as remembered in `state.json`; with nothing remembered, hidden.
+- Cheat sheet (all screens): a centred panel over everything — grid, picture, playing video, launch screen — light text on a dark translucent backing, one key and its meaning per line, listing the keys of the screen shown and changing as you move between grid and viewer. `h` again or `Esc` hides it (that `Esc` does nothing else; in the tag prompt `Esc` still closes the prompt). It never takes the focus or the mouse: every other key, the wheel and drops work as without it. `h` typed into the tag prompt or the search bar types an `h`.
 - Otherwise: empty screen "Drop a folder or file here, or press o to open".
 
 | Key | Action |
@@ -107,7 +108,7 @@ Results show under a `Search: <query>` breadcrumb; a result whose path no longer
 | `o` | open a folder (picker), as if dropped |
 | `f` | toggle fullscreen |
 | `Esc` | quit |
-| `h` | show / hide the key cheat sheet behind the message |
+| `h` | show / hide the key cheat sheet |
 
 ### Drag & drop
 
@@ -134,10 +135,9 @@ Results show under a `Search: <query>` breadcrumb; a result whose path no longer
 | `v` | show the progress bar (video), nothing else |
 | `o` | open a folder (picker), as if dropped |
 | mouse wheel | zoom in (up) / out (down) about the point under the mouse: 100 %–300 % in steps of 10 points (images and videos) |
-| `h` | show / hide the key cheat sheet behind the picture |
+| `h` | show / hide the key cheat sheet |
 
 - Images fit to screen.
-- The key cheat sheet (`h`) is drawn dimly in the black behind the picture; a video covers it, so over a video it shows nowhere.
 - Zoom: the picture point under the mouse stays under it, except that a picture bigger than the window always covers it and a smaller one stays inside it (no black between picture and edge). Back at 100 % it is centred again. Every item opens at 100 %; `r` keeps the zoom. No zoom indicator.
 - Video autoplays **with sound**, loops, at 1× and unrotated. Space never pauses.
 - While a video plays, a progress bar (`1:23 / 4:56`, `0:00:05 / 1:02:03` from an hour, `1:23 / 4:56 · 1.25×` when not at 1×) sits along its bottom above the status bar; any key shows it, and it hides after 3 s without input.
@@ -157,7 +157,7 @@ Results show under a `Search: <query>` breadcrumb; a result whose path no longer
 | `Esc` | quit; (in search) clear search, back to the folder |
 | `f` | toggle fullscreen |
 | `o` | open a folder (picker), as if dropped |
-| `h` | show / hide the key cheat sheet behind the tiles |
+| `h` | show / hide the key cheat sheet |
 
 - Tiles ~200 px: thumbnail (a large type glyph until it arrives, or when there is none), truncated filename, tag-count badge when the item has own tags.
 - Video tiles: frame at ~10%, ▶ badge, duration.
