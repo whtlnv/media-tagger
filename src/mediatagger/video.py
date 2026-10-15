@@ -31,6 +31,7 @@ class VideoPlayer:
             return False
         self.engine.pause = False
         self.engine.mute = False
+        self.engine.speed = 1
         return outcome.result() == mpv.MpvEventID.FILE_LOADED
 
     def press(self, key):

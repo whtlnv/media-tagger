@@ -151,6 +151,15 @@ def test_pressing_left_bracket_on_a_video_playing_at_0_25x_leaves_it_at_0_25x(pl
     assert engine.speed == 0.25
 
 
+def test_a_video_shown_after_one_that_was_sped_up_starts_playing_at_1x(playing_video, tmp_path):
+    player, engine = playing_video
+    player.press("]")
+
+    player.show(make_clip(tmp_path / "next.mp4"))
+
+    assert engine.speed == 1
+
+
 def test_pressing_i_f_right_or_left_on_a_playing_video_does_not_pause_it(playing_video):
     player, engine = playing_video
 
