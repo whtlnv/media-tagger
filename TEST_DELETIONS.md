@@ -59,3 +59,8 @@ Append-only record of tests removed because a delivered change retired the behav
 - Asserted the sheet's shown/hidden state through the grid's background pixels (`grid_background_shows_the_grids_keys` / `grid_background_is_plain`) or `viewer.cheat_sheet.shown`.
 - Retired by: the same decision — the grid and viewer no longer draw the sheet.
 - Migrated to: the same tests asserting `sheet_is_shown(window)` (the window's overlay is visible); setups unchanged.
+
+## 2026-10-15 · migrated · `src/mediatagger/test_window_cheat_sheet.py` — tests that pressed `Esc` with the sheet shown
+- `test_after_pressing_h_…shows_the_sheet_from_the_start` and `test_with_the_sheet_remembered_as_shown_pressing_h_…start_without_it` reached the grid with `Esc` from the viewer, which now hides a shown sheet instead; they now start the window on the drive's folder and press `h` in the viewer (same assertions).
+- `test_with_the_panel_shown_in_the_grid_opening_an_image_shows_the_viewers_keys_and_esc_back_to_the_grid_shows_the_grids_keys` → `…and_back_in_the_grid_it_shows_the_grids_keys`: `Esc` in the viewer now hides the panel first, so the test presses `Esc` twice and `h` in the grid before checking the grid's keys.
+- Retired by: follow-up item "Pressing `Esc` while the panel is shown in the grid hides it and leaves the window open on the grid".

@@ -95,13 +95,21 @@ class CheatSheet(QWidget):
         if watched is self.parent() and event.type() == QEvent.Type.Resize:
             self.setGeometry(watched.rect())
             return False
-        if event.type() == QEvent.Type.KeyPress and event.key() == Qt.Key.Key_H and not event.modifiers():
-            self.shown = not self.shown
-            self.setVisible(self.shown)
-            self.raise_()
-            self.on_toggle(self.shown)
+        if event.type() != QEvent.Type.KeyPress:
+            return False
+        if event.key() == Qt.Key.Key_H and not event.modifiers():
+            self._show(not self.shown)
+            return True
+        if event.key() == Qt.Key.Key_Escape and self.shown:  # hides the sheet rather than quitting or going back
+            self._show(False)
             return True
         return False
+
+    def _show(self, shown):
+        self.shown = shown
+        self.setVisible(shown)
+        self.raise_()
+        self.on_toggle(shown)
 
     def paintEvent(self, event):
         painter = QPainter(self)

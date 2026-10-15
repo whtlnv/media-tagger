@@ -72,27 +72,32 @@ def test_a_results_grid_shows_the_cheat_sheet_when_it_is_on_and_h_there_hides_it
     assert not sheet_is_shown(window)
 
 
+def window_on_the_drive(qtbot, drive, folder):
+    """A window started on a folder of a drive whose library it opens, showing the folder's first item."""
+    return window_on(qtbot, folder, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+
+
 def test_after_pressing_h_a_window_started_next_time_with_the_same_home_shows_the_sheet_from_the_start(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_H)
+    window = window_on_the_drive(qtbot, drive, folder)
+    qtbot.keyClick(window.viewer, Qt.Key.Key_H)
     window.close()
 
-    next_window, _ = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    next_window = window_on_the_drive(qtbot, drive, folder)
 
     assert sheet_is_shown(next_window)
 
 
 def test_with_the_sheet_remembered_as_shown_pressing_h_makes_a_window_started_next_time_with_the_same_home_start_without_it(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
-    first, first_stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(first_stack.currentWidget(), Qt.Key.Key_H)
+    first = window_on_the_drive(qtbot, drive, folder)
+    qtbot.keyClick(first.viewer, Qt.Key.Key_H)
     first.close()
-    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_H)
+    window = window_on_the_drive(qtbot, drive, folder)
+    qtbot.keyClick(window.viewer, Qt.Key.Key_H)
     window.close()
 
-    next_window, _ = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    next_window = window_on_the_drive(qtbot, drive, folder)
 
     assert not sheet_is_shown(next_window)
 
@@ -220,7 +225,7 @@ def panel_lists(window, keys):
     return drawn == expected
 
 
-def test_with_the_panel_shown_in_the_grid_opening_an_image_shows_the_viewers_keys_and_esc_back_to_the_grid_shows_the_grids_keys(qtbot, tmp_path):
+def test_with_the_panel_shown_in_the_grid_opening_an_image_shows_the_viewers_keys_and_back_in_the_grid_it_shows_the_grids_keys(qtbot, tmp_path):
     grid, _ = grid_of_one_red_image(qtbot, tmp_path)
     window = grid.window()
     qtbot.keyClick(grid, Qt.Key.Key_H)
@@ -229,7 +234,9 @@ def test_with_the_panel_shown_in_the_grid_opening_an_image_shows_the_viewers_key
     qtbot.keyClick(grid, Qt.Key.Key_Return)
 
     assert panel_lists(window, VIEWER_KEYS)
-    qtbot.keyClick(window.viewer, Qt.Key.Key_Escape)
+    qtbot.keyClick(window.viewer, Qt.Key.Key_Escape)  # hides the panel
+    qtbot.keyClick(window.viewer, Qt.Key.Key_Escape)  # back to the grid
+    qtbot.keyClick(window.stack.currentWidget(), Qt.Key.Key_H)
     assert panel_lists(window, GRID_KEYS)
 
 
@@ -244,3 +251,15 @@ def test_with_a_video_playing_in_the_windows_viewer_the_shown_panel_is_stacked_a
     assert window.viewer.surface.isVisible() and window.stack.isAncestorOf(window.viewer.surface)
     assert stacked_bottom_to_top.index(window.cheat_sheet) > stacked_bottom_to_top.index(window.stack)
     assert sheet_is_shown(window)
+
+
+def test_pressing_esc_while_the_panel_is_shown_in_the_grid_hides_it_and_leaves_the_window_open_on_the_grid(qtbot, tmp_path):
+    grid, _ = grid_of_one_red_image(qtbot, tmp_path)
+    window = grid.window()
+    qtbot.keyClick(grid, Qt.Key.Key_H)
+
+    qtbot.keyClick(grid, Qt.Key.Key_Escape)
+
+    assert not sheet_is_shown(window)
+    assert window.isVisible()
+    assert window.stack.currentWidget() is grid
