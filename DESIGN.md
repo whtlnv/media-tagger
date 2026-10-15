@@ -147,6 +147,7 @@ Results show under a `Search: <query>` breadcrumb; a result whose path no longer
 | `Esc` | quit; (in search) clear search, back to the folder |
 | `f` | toggle fullscreen |
 | `o` | open a folder (picker), as if dropped |
+| `h` | show / hide the key cheat sheet behind the tiles |
 
 - Tiles ~200 px: thumbnail (a large type glyph until it arrives, or when there is none), truncated filename, tag-count badge when the item has own tags.
 - Video tiles: frame at ~10%, ▶ badge, duration.
