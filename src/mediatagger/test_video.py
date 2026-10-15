@@ -125,6 +125,14 @@ def test_pressing_right_bracket_on_a_video_playing_at_1x_makes_it_play_at_1_25x(
     assert engine.speed == 1.25
 
 
+def test_pressing_left_bracket_on_a_video_playing_at_1x_makes_it_play_at_0_75x(playing_video):
+    player, engine = playing_video
+
+    player.press("[")
+
+    assert engine.speed == 0.75
+
+
 def test_pressing_i_f_right_or_left_on_a_playing_video_does_not_pause_it(playing_video):
     player, engine = playing_video
 
