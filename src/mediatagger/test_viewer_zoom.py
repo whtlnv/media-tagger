@@ -96,3 +96,21 @@ def test_a_photo_larger_than_the_window_zoomed_in_to_300_percent_shows_its_own_f
     frame = viewer.grab().toImage()
     dark_columns = sum(1 for x in range(frame.width()) if frame.pixelColor(x, 100).red() < 128)
     assert dark_columns == 1
+
+
+def test_zooming_in_on_an_image_with_the_mouse_near_its_top_left_corner_keeps_the_image_point_under_the_mouse_under_the_mouse(qtbot, tmp_path):
+    picture = QImage(300, 300, QImage.Format.Format_RGB32)  # the window's aspect, so the zoomed picture always covers it
+    picture.fill(QColor("white"))
+    for y in range(57, 64):
+        for x in range(57, 64):
+            picture.setPixelColor(x, y, QColor("blue"))  # a 7x7 marker around (60, 60)
+    picture.save(str(tmp_path / "IMG_1.png"))
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    viewer.resize(300, 300)
+    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    mouse = QPoint(60, 60)
+    assert viewer.grab().toImage().pixelColor(mouse) == QColor("blue")
+
+    scroll(viewer, 1, at=mouse)
+
+    assert viewer.grab().toImage().pixelColor(mouse) == QColor("blue")

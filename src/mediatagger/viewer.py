@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from PySide6.QtCore import QPoint, Qt
+from PySide6.QtCore import QPoint, QPointF, Qt
 from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import QFileDialog, QWidget
 
@@ -109,7 +109,7 @@ class Viewer(QWidget):
         painter.drawImage(self.zoom.shown(fitted_rect(image.size(), self.rect())), image)
 
     def wheelEvent(self, event):
-        self.zoom.wheel(event.angleDelta().y())
+        self.zoom.wheel(event.angleDelta().y(), event.position() - QPointF(self.rect().center()))
         self.update()
 
     def dragEnterEvent(self, event):
