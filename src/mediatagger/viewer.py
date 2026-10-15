@@ -18,7 +18,7 @@ from mediatagger.video_controls import ProgressBar
 _PLAYER_OPTIONS = {"vo": "libmpv", "vd_lavc_dr": "no"}  # mpv_surface hands mpv no GL fences, which direct rendering needs
 _VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up", Qt.Key.Key_Down: "Down", Qt.Key.Key_Return: "Enter"}
 _VIDEO_KEYS |= {Qt.Key.Key_0 + digit: str(digit) for digit in range(10)}
-_VIDEO_KEYS |= {Qt.Key.Key_BracketRight: "]", Qt.Key.Key_BracketLeft: "["}
+_VIDEO_KEYS |= {Qt.Key.Key_BracketRight: "]", Qt.Key.Key_BracketLeft: "[", Qt.Key.Key_R: "r"}
 _SLIDESHOW_KEYS = {Qt.Key.Key_Left: "Left", Qt.Key.Key_Right: "Right", Qt.Key.Key_Space: "Space"}
 UNSUPPORTED_TEXT = "Unsupported"
 READ_ONLY_BANNER_TEXT = "This drive is read-only — tags can't be saved"

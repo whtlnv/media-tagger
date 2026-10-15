@@ -332,6 +332,22 @@ def test_in_the_window_the_progress_bar_spans_the_playing_videos_width_just_abov
     assert frame.bottom() == status_top - 1
 
 
+def test_in_the_window_right_bracket_then_r_on_an_opened_video_plays_it_at_1_25x_turned_90_degrees(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "a.mp4", duration=30)
+    window = Window(tmp_path, player_options=SILENT)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    viewer = window.findChild(QStackedWidget).currentWidget()
+    make_surface_ready(viewer)
+    engine = viewer.video_player.engine
+    wait_until_loaded(engine, clip)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_BracketRight)
+    qtbot.keyClick(viewer, Qt.Key.Key_R)
+
+    assert [engine.speed, engine.video_rotate] == [1.25, 90]
+
+
 def test_in_the_window_the_progress_bar_of_a_playing_video_does_not_overlap_the_open_tag_prompt(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=65)
     window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)

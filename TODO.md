@@ -20,4 +20,4 @@ Phase 13 notes for every cycle (Phases 1–12 are delivered — see DONE.md; Pha
 - [x] In the viewer, with the tag prompt open on a video, typing `]`, `[`, `r` and `v` puts them in the prompt and leaves the video's speed and rotation unchanged
 - [ ] In the viewer, pressing `]` and `r` on an image leaves the next video starting at 1× and unrotated
 - [ ] In the grid, pressing `]`, `[`, `r` and `v` leaves the next video opened starting at 1× and unrotated
-- [ ] In the window the shipped `mediatagger` command builds, pressing `]` then `r` on an opened video makes it play at 1.25× turned 90°
+- [x] In the window the shipped `mediatagger` command builds, pressing `]` then `r` on an opened video makes it play at 1.25× turned 90°
