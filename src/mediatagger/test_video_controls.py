@@ -2,12 +2,13 @@ import time
 from types import SimpleNamespace
 
 import mpv
+import pytest
 import shiboken6
 from PySide6.QtCore import QPoint, QRect, Qt
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import QLineEdit, QStackedWidget, QWidget
 
-from mediatagger.test_video import make_clip
+from mediatagger.test_video import make_clip, wait_until_playing
 from mediatagger.test_viewer import (
     make_folder_with_no_media,
     SILENT,
@@ -248,6 +249,24 @@ def test_v_on_a_playing_video_whose_progress_bar_is_hidden_shows_the_bar(qtbot, 
     qtbot.keyClick(viewer, Qt.Key.Key_V)
 
     assert bar.isVisible()
+
+
+def test_v_on_a_playing_video_leaves_its_pause_mute_position_speed_rotation_and_item_as_they_were(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
+    make_image(tmp_path / "IMG_2.png", "red")
+    viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
+    engine = viewer.video_player.engine
+    wait_until_playing(engine)
+    engine.pause, engine.mute, engine.speed, engine.video_rotate = True, True, 2, 90
+    qtbot.wait(300)  # let the pause settle before reading where it stopped
+    position = engine.time_pos
+
+    qtbot.keyClick(viewer, Qt.Key.Key_V)
+    qtbot.wait(300)
+
+    assert (engine.pause, engine.mute, engine.speed, engine.video_rotate) == (True, True, 2, 90)
+    assert engine.time_pos == pytest.approx(position, abs=0.05)
+    assert viewer.slideshow.current == clip
 
 
 def test_five_on_a_playing_video_whose_progress_bar_is_hidden_seeks_to_half_its_length_and_shows_the_bar(qtbot, tmp_path):
