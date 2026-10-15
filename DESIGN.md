@@ -121,11 +121,14 @@ Results show under a `Search: <query>` breadcrumb; a result whose path no longer
 | `↑` / `↓` | seek ±10 s (video) |
 | `0`–`9` | jump to 0 %–90 % of the video |
 | `m` | mute |
+| `]` / `[` | faster / slower (video): 0.25×–8×, stopping at the ends |
+| `r` | turn 90° clockwise (video), still fitted whole to the screen |
+| `v` | show the progress bar (video), nothing else |
 | `o` | open a folder (picker), as if dropped |
 
 - Images fit to screen.
-- Video autoplays **with sound**, loops. Space never pauses.
-- While a video plays, a progress bar (`1:23 / 4:56`, `0:00:05 / 1:02:03` from an hour) sits along its bottom above the status bar; any key shows it, and it hides after 3 s without input.
+- Video autoplays **with sound**, loops, at 1× and unrotated. Space never pauses.
+- While a video plays, a progress bar (`1:23 / 4:56`, `0:00:05 / 1:02:03` from an hour, `1:23 / 4:56 · 1.25×` when not at 1×) sits along its bottom above the status bar; any key shows it, and it hides after 3 s without input.
 - Tag overlay in a corner: own tags normal, inherited tags dimmed.
 - Manual advance only.
 
