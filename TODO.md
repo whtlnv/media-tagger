@@ -17,8 +17,8 @@ Phase 16 notes for every cycle (Phases 1–15 are delivered — see DONE.md; Pha
 - [x] `required_roots` of a drive whose config can't be read (e.g. a folder named `mediatagger_config.json`, or bytes that aren't UTF-8) gives no roots and the problem text
 - [x] `missing_roots` counts the roots that none of the given tags starts with (`["type:photo"]` against `type:`, `size:` → 1)
 - [x] A grid given required roots `type:` and `size:` paints `✗2` on the tile of a file in its folder with no tags at all
-- [ ] A file tile whose own tags start with every required root paints no `✗` badge
-- [ ] A file whose missing root is covered by a tag inherited from its folder or an ancestor folder is not counted as missing it (`✗1` when only `type:` is inherited and `size:` is missing)
+- [x] A file tile whose own tags start with every required root paints no `✗` badge
+- [x] A file whose missing root is covered by a tag inherited from its folder or an ancestor folder is not counted as missing it (`✗1` when only `type:` is inherited and `size:` is missing)
 - [ ] A folder tile, even an untagged one, never paints a `✗` badge
 - [ ] A grid with no required roots, or with no library, paints no `✗` badge on any tile
 - [ ] On a tile with both badges, the `✗` badge sits in the top row to the left of the tag-count badge, the two not overlapping, the tag-count badge still in the top-right corner
