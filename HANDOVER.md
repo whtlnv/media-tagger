@@ -20,6 +20,7 @@ State of the project and how it has been run, for the next session. Read `DESIGN
 | 10 Search | done, validated on the Mac (`c54a2a5`, 695 tests); Pi timing unmeasured — see "Phase 10 — done" |
 | 11 Run from the drive on the Pi | done, validated on the Mac + VM (`abe5ae3`, 738 tests); Pi run pending — see "Phase 11 — done" |
 | 12 Fixes from the second Pi run | done, validated on the Mac (`cf4db51`, 769 tests); Pi run pending — see "Phase 12 — done" |
+| 13 Video speed, rotation, show controls | done, validated on the Mac (`21e6968`, 789 tests); Pi run pending |
 
 Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), `grid.py`, `viewer.py`, `tag_prompt.py` (the `t` prompt, shared by grid and viewer), `status_bar.py`, `drive_session.py` (library open/create/restore/backup), `library.py` (SQLite, schema v2), `backup.py`, `state.py` (last folder, geometry, recent searches; `$XDG_CONFIG_HOME`), `search.py` (query matching), `search_bar.py` (the `/` box and its `↑`/`↓` history), `folder.py`, `slideshow.py`, `thumbnails.py` (image/video/folder thumbnails, `ffmpeg`/`ffprobe`), `thumbnail_cache.py`, `thumbnail_scheduler.py` (3 workers + prefetch), `folder_thumbnails.py` (a folder's thumbnails for its grid), `video.py` + `mpv_surface.py` (libmpv render API), `video_controls.py` (video progress bar), `gui_thread_gc.py`. Tests are co-located (`test_*.py`). Open structural debt is in `BACKLOG.md`.
 
@@ -33,6 +34,10 @@ Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), 
   - send the agent back with a numbered fix list if anything is off.
 - Progress is relayed to the user in chat from a `Monitor` that polls `git log`, `TODO.md` checkbox counts, `~/Library/Logs/DiagnosticReports/Python-*.ips` and `/Volumes/MEDIATAGGER`. Monitors expire every 30 min; re-arm.
 - The user asked for progress to be printed in the conversation and for questions only when a decision is genuinely theirs.
+
+## Phase 13 — done
+
+`]`/`[` step mpv `speed` through `video.SPEEDS` (0.25–8×, shown as ` · 2×` on the bar when not 1×), `r` adds 90° to `video-rotate`, `v` only wakes the bar; each new video starts at 0° and 1×. The rotated fit is pinned by `test_video_fit.py` (headless CGL + libmpv GL render, pixel readback; macOS only). Orchestrator native check: landscape clip rotated fills the height, whole, pillarboxed; speed label and limits; reset on next/back; the keys type into the tag prompt. Pi to check: rotation with hwdec HEVC stays smooth, 4–8× playback, `sync_file` flat while rotated.
 
 ## Phase 12 — done
 

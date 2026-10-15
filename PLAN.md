@@ -4,14 +4,7 @@ Delivery phases, in order. Decisions, key maps and rules live in `DESIGN.md`; ev
 Each phase must end with its behavior reachable from the shipped `mediatagger` command, not only from tests.
 
 
-Phases 1–12 are delivered. Their specs are in git history (`PLAN.md` at `fcd5d3b` for 1–11, at `ca048de` for 12) and their items in `DONE.md`.
-
-## Phase 13 — Video speed, rotation and showing the controls
-
-- **Playback speed.** `]` speeds up and `[` slows down, through 0.25×, 0.5×, 0.75×, 1×, 1.25×, 1.5×, 2×, 3×, 4×, 6×, 8× (stopping at the ends). The current speed shows with the progress bar whenever it isn't 1× (e.g. `1:23 / 4:56 · 2×`), and pressing a speed key shows the bar. Each new video starts at 1×.
-- **Rotate.** `r` turns the shown video 90° clockwise (four presses come back round). Only while viewing it: the next item, or reopening it, starts unrotated. A rotated video is fitted to the screen like an unrotated one: whole and as large as fits (a landscape video turned sideways fills the height, nothing cropped).
-- **Show the controls.** `v` only shows the video's progress bar (it hides again after 3 s like any key); it changes nothing else.
-- The new keys only work while a video is shown; they never reach the grid or the tag prompt.
+Phases 1–13 are delivered. Their specs are in git history (`PLAN.md` at `fcd5d3b` for 1–11, at `ca048de` for 12, at `76e644f` for 13) and their items in `DONE.md`.
 
 ## Phase 14 — Zoom
 
