@@ -22,9 +22,24 @@ def is_red(pixel):
     return qRed(pixel) > 200 and qGreen(pixel) < 60 and qBlue(pixel) < 60
 
 
-def grid_background_shows_text(grid):
-    tile = grid.visualRect(grid.model().index(0, 0))
-    return len(set(pixels_outside(grid.viewport().grab().toImage(), tile))) > 1
+def grid_background(grid):
+    """The grid's viewport as drawn, outside its first tile."""
+    return pixels_outside(grid.viewport().grab().toImage(), grid.visualRect(grid.model().index(0, 0)))
+
+
+def grid_background_is_plain(grid):
+    return len(set(grid_background(grid))) == 1
+
+
+def grid_background_shows_the_grids_keys(grid):
+    """The grid's background, outside its first tile, is exactly the grid's keys drawn on its plain background."""
+    viewport = grid.viewport()
+    image = QImage(viewport.size(), QImage.Format.Format_RGB32)
+    image.fill(viewport.palette().color(viewport.backgroundRole()))
+    painter = QPainter(image)
+    CheatSheet(shown=True).paint(painter, image.rect(), GRID_KEYS, grid.palette().text().color())
+    painter.end()
+    return grid_background(grid) == pixels_outside(image, grid.visualRect(grid.model().index(0, 0)))
 
 
 def grid_of_one_red_image(qtbot, folder):
@@ -42,14 +57,12 @@ def grid_of_one_red_image(qtbot, folder):
 
 
 def test_in_the_windows_folder_grid_pressing_h_draws_text_over_the_empty_background_where_before_it_was_plain(qtbot, tmp_path):
-    grid, tile = grid_of_one_red_image(qtbot, tmp_path)
-    before = pixels_outside(grid.viewport().grab().toImage(), tile)
+    grid, _ = grid_of_one_red_image(qtbot, tmp_path)
+    assert grid_background_is_plain(grid)
 
     qtbot.keyClick(grid, Qt.Key.Key_H)
 
-    after = pixels_outside(grid.viewport().grab().toImage(), tile)
-    assert len(set(before)) == 1
-    assert len(set(after)) > 1
+    assert grid_background_shows_the_grids_keys(grid)
 
 
 def test_in_the_windows_folder_grid_pressing_h_a_second_time_leaves_the_empty_background_plain_again(qtbot, tmp_path):
@@ -58,7 +71,7 @@ def test_in_the_windows_folder_grid_pressing_h_a_second_time_leaves_the_empty_ba
 
     qtbot.keyClick(grid, Qt.Key.Key_H)
 
-    assert not grid_background_shows_text(grid)
+    assert grid_background_is_plain(grid)
 
 
 def test_pressing_h_in_the_windows_folder_grid_leaves_its_tiles_pictures_as_they_were_drawn_without_the_sheet(qtbot, tmp_path):
@@ -142,11 +155,12 @@ def test_with_the_sheet_shown_in_the_grid_opening_an_image_shows_it_in_the_viewe
 
     qtbot.keyClick(grid, Qt.Key.Key_Return)
 
-    assert len(set(pixels_outside(viewer.grab().toImage(), fitted_rect(QSize(64, 48), viewer.rect())))) > 1
+    picture = fitted_rect(QSize(64, 48), viewer.rect())
+    assert pixels_outside(viewer.grab().toImage(), picture) == pixels_outside(sheet_on_black(viewer.size(), VIEWER_KEYS), picture)
     qtbot.keyClick(viewer, Qt.Key.Key_Escape)
     grid_again = grid.window().findChild(QStackedWidget).currentWidget()
     assert grid_again is not viewer
-    assert grid_background_shows_text(grid_again)
+    assert grid_background_shows_the_grids_keys(grid_again)
 
 
 def test_a_results_grid_shows_the_cheat_sheet_when_it_is_on_and_h_there_hides_it(qtbot, tmp_path):
@@ -158,9 +172,9 @@ def test_a_results_grid_shows_the_cheat_sheet_when_it_is_on_and_h_there_hides_it
     search_for(qtbot, window, stack, "beach")
 
     results = stack.currentWidget()
-    assert grid_background_shows_text(results)
+    assert grid_background_shows_the_grids_keys(results)
     qtbot.keyClick(results, Qt.Key.Key_H)
-    assert not grid_background_shows_text(results)
+    assert grid_background_is_plain(results)
 
 
 def test_scrolling_a_grid_of_many_tiles_with_the_sheet_shown_leaves_the_sheet_where_it_was_drawn_whole(qtbot, tmp_path):
@@ -194,7 +208,7 @@ def test_after_pressing_h_a_window_started_next_time_with_the_same_home_shows_th
 
     next_window, next_stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
 
-    assert grid_background_shows_text(next_stack.currentWidget())
+    assert grid_background_shows_the_grids_keys(next_stack.currentWidget())
 
 
 def test_with_the_sheet_remembered_as_shown_pressing_h_makes_a_window_started_next_time_with_the_same_home_start_without_it(qtbot, tmp_path):
@@ -208,7 +222,7 @@ def test_with_the_sheet_remembered_as_shown_pressing_h_makes_a_window_started_ne
 
     next_window, next_stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
 
-    assert not grid_background_shows_text(next_stack.currentWidget())
+    assert grid_background_is_plain(next_stack.currentWidget())
 
 
 def test_toggling_the_sheet_while_the_state_file_would_lie_on_the_drive_being_viewed_writes_no_state_file(qtbot, tmp_path, monkeypatch):
@@ -230,7 +244,7 @@ def test_typing_h_into_the_grids_tag_prompt_puts_an_h_in_the_prompt_and_leaves_t
     qtbot.keyClick(prompt, Qt.Key.Key_H)
 
     assert prompt.text() == "h"
-    assert not grid_background_shows_text(stack.currentWidget())
+    assert grid_background_is_plain(stack.currentWidget())
 
 
 def test_typing_h_into_the_viewers_tag_prompt_puts_an_h_in_the_prompt_and_leaves_the_sheet_as_it_was(qtbot, tmp_path):
@@ -257,4 +271,4 @@ def test_typing_h_into_the_search_bar_puts_an_h_in_the_search_and_leaves_the_she
     qtbot.keyClick(window.search_bar, Qt.Key.Key_H)
 
     assert window.search_bar.text() == "h"
-    assert not grid_background_shows_text(stack.currentWidget())
+    assert grid_background_is_plain(stack.currentWidget())

@@ -2,11 +2,6 @@
 
 ## Out of Scope
 
-- **[src/mediatagger/test_window_cheat_sheet.py:27] Grid cheat-sheet tests assert only that the background is not plain** (added: 2026-10-15)
-  The positive uses of `grid_background_shows_text` (lines 52, 149, 161, 197) pass for any non-uniform background, not specifically the grid's keys; a helper that compares the pixels around the first tile against `CheatSheet(shown=True)` painted with `GRID_KEYS` in the grid's text colour on its plain background passed the line 52 test and went red against `VIEWER_KEYS`. It was reverted only because the gate was already red at HEAD: `test_main.py::test_pressing_esc_to_quit_the_mediatagger_command_from_a_grid_whose_thumbnails_are_still_generating_ends_the_process_within_3_s` failed on timing (3.06–9.4 s against a 3 s limit) with no test change applied. Re-apply once that test is stable.
-- **[src/mediatagger/test_window_cheat_sheet.py:145] Sheet carried into the viewer is checked only as "not plain black"** (added: 2026-10-15)
-  `len(set(...)) > 1` around the picture should instead equal `pixels_outside(sheet_on_black(viewer.size(), VIEWER_KEYS), ...)`, as line 120 does. Not applied because the commit gate was red at HEAD from the same flaky `test_main.py` 3 s quit-timing test.
-
 - **[src/mediatagger/zoom.py:37] A zoom's pan is clamped only when the wheel turns, not when the window resizes or `r` turns a video** (added: 2026-10-15)
   `Zoom.pan` is kept in fractions of the shown picture, so a zoom survives `f`/a resize/`r` centred where it was, but the no-black-edge clamp in `Zoom.wheel` is not re-run against the new fitted rect until the next wheel turn, so a zoomed picture panned to an edge can show black there after a resize or a turn. Fixing it needs the viewer to re-clamp on resize and on `r` (a `Zoom.reclamp(fitted, window)` called from `resizeEvent` and the `r` key), lines `viewer.py` has no room for under its 270-line budget.
 
