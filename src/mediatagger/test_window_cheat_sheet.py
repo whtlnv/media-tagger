@@ -5,7 +5,11 @@ from PySide6.QtWidgets import QStackedWidget
 from mediatagger.cheat_sheet import GRID_KEYS, LAUNCH_KEYS, VIEWER_KEYS, CheatSheet
 from mediatagger.grid import TILE_ROLE
 from mediatagger.image_fit import fitted_rect
+from mediatagger.library import Library
 from mediatagger.test_viewer import SILENT, make_image
+from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image
+from mediatagger.test_window import window_showing_the_grid_with_its_cursor_on_its_first_tile
+from mediatagger.test_window_search import search_for
 from mediatagger.window import Window
 
 
@@ -137,3 +141,18 @@ def test_with_the_sheet_shown_in_the_grid_opening_an_image_shows_it_in_the_viewe
     grid_again = grid.window().findChild(QStackedWidget).currentWidget()
     assert grid_again is not viewer
     assert len(set(pixels_outside(grid_again.viewport().grab().toImage(), tile))) > 1
+
+
+def test_a_results_grid_shows_the_cheat_sheet_when_it_is_on_and_h_there_hides_it(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_H)
+
+    search_for(qtbot, window, stack, "beach")
+
+    results = stack.currentWidget()
+    tile = results.visualRect(results.model().index(0, 0))
+    assert len(set(pixels_outside(results.viewport().grab().toImage(), tile))) > 1
+    qtbot.keyClick(results, Qt.Key.Key_H)
+    assert len(set(pixels_outside(results.viewport().grab().toImage(), tile))) == 1

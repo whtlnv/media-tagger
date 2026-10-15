@@ -195,7 +195,9 @@ class Window(QWidget):
         if shown is not searched_from:
             self._drop_results(shown)
         paths = search(self.session.library, query)
-        grid = Grid(self.session.drive, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache(), paths=paths)
+        grid = Grid(self.session.drive, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache(), paths=paths,
+            cheat_sheet=self.cheat_sheet)
+        self.cheat_sheet.watch(grid)
         grid.searched_from = searched_from
         grid.activated.connect(lambda index: self._open_result(index, paths, grid))
         grid.escaped.connect(lambda: self._end_search(searched_from))
