@@ -94,3 +94,14 @@ def test_an_unrotated_landscape_video_is_drawn_whole_across_the_full_width_of_a_
         wait_until_playing(player.engine)
 
         assert settled_box(drawn_box, (0, 25, 199, 174)) == (0, 25, 199, 174)
+
+
+def test_a_landscape_video_turned_90_degrees_is_drawn_whole_across_the_full_height_of_a_square_surface(tmp_path):
+    clip = make_clip(tmp_path / "clip.mp4", duration=30)  # turned, 48x64: on a 200x200 surface, 150x200 with 25 black each side
+    with player_drawing_into(200, 200) as (player, drawn_box):
+        player.show(clip)
+        wait_until_playing(player.engine)
+
+        player.press("r")
+
+        assert settled_box(drawn_box, (25, 0, 174, 199)) == (25, 0, 174, 199)
