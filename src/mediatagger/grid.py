@@ -64,7 +64,7 @@ class _Tile:
     name: str
     kind: _Kind
     tag_count: int = 0
-    missing: int = 0  # how many of the drive's required tag roots a file's effective tags lack
+    missing_roots: int = 0  # of the drive's required roots, by the file's effective tags (inherited ones included)
     thumbnail: object = None
     duration: float = None
 
@@ -108,11 +108,11 @@ def _is_file(tile):
     return tile.kind in (_Kind.IMAGE, _Kind.VIDEO)
 
 
-def _mark_missing(tiles, effective_tags, roots):
+def _mark_missing_roots(tiles, effective_tags, roots):
     """Each file tile counts the required roots its effective tags lack; folders and missing results are never marked."""
     for tile, tags in zip(tiles, effective_tags):
         if tags is not None:
-            tile.missing = missing_roots(tags, roots)
+            tile.missing_roots = missing_roots(tags, roots)
 
 
 def _result_kind(path):
@@ -179,8 +179,8 @@ class _TileDelegate(QStyledItemDelegate):
         if tile.tag_count:
             tag_badge = _draw_backed_badge(painter, top_right, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{TAG_BADGE}{tile.tag_count}")
             top_right = top_right.adjusted(0, 0, tag_badge.left() - top_right.right(), 0)  # a badge's padding apart
-        if tile.missing:
-            _draw_backed_badge(painter, top_right, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{MISSING_BADGE}{tile.missing}")
+        if tile.missing_roots:
+            _draw_backed_badge(painter, top_right, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{MISSING_BADGE}{tile.missing_roots}")
         if tile.kind is _Kind.FOLDER and tile.thumbnail is not None:  # its first image: marked so it can't pass for one
             _draw_backed_badge(painter, picture_area, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft, FOLDER_GLYPH)
 
@@ -336,7 +336,7 @@ class Grid(QListView):
         for tile, count in zip(tiles, _own_tag_counts(tiles, self.folder, library, self._results)):
             tile.tag_count = count
         if self._required_roots:
-            _mark_missing(tiles, _effective_tags(tiles, self.folder, library, self._results), self._required_roots)
+            _mark_missing_roots(tiles, _effective_tags(tiles, self.folder, library, self._results), self._required_roots)
         self.viewport().update()
 
     def keep_clear_at_the_bottom(self, height):
