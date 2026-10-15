@@ -4,8 +4,8 @@ Phase 13 notes for every cycle (Phases 1–12 are delivered — see DONE.md; Pha
 
 - [x] Pressing `]` on a video playing at 1× makes it play at 1.25×
 - [x] Pressing `[` on a video playing at 1× makes it play at 0.75×
-- [ ] Pressing `]` on a video playing at 8× leaves it at 8×
-- [ ] Pressing `[` on a video playing at 0.25× leaves it at 0.25×
+- [x] Pressing `]` on a video playing at 8× leaves it at 8×
+- [x] Pressing `[` on a video playing at 0.25× leaves it at 0.25×
 - [ ] A video shown after one that was sped up starts playing at 1×
 - [ ] The progress bar of a video playing at 2× reads its time followed by ` · 2×` (e.g. `0:00 / 0:30 · 2×`), and at 0.25× by ` · 0.25×`
 - [ ] The progress bar of a video playing at 1× reads its time with no speed (e.g. `0:00 / 0:30`)
