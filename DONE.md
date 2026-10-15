@@ -1,3 +1,34 @@
+- [x] 2026-10-14 · `o` in a folder grid opens the folder picker, and choosing a folder shows that folder's slideshow from its first item
+- [x] 2026-10-14 · `o` in a folder grid whose folder picker is cancelled leaves the same grid shown, cursor unchanged
+- [x] 2026-10-14 · `o` in a results grid opens the folder picker, and choosing a folder shows that folder's slideshow from its first item
+- [x] 2026-10-14 · `o` in the viewer while an image of a slideshow is shown opens the folder picker, and choosing a folder shows that folder's slideshow from its first item
+- [x] 2026-10-14 · `o` in the viewer while a video plays opens the folder picker, and choosing a folder shows that folder's slideshow from its first item
+- [x] 2026-10-14 · `o` in the viewer whose folder picker is cancelled leaves the same item shown
+- [x] 2026-10-14 · `o` in the viewer while a video plays, choosing a folder of images, leaves the player stopped (inserted by the deliverer: the video kept playing unseen)
+- [x] 2026-10-14 · `o` while the tag prompt has focus types an `o` into the prompt and opens no folder picker
+- [x] 2026-10-14 · A folder of another drive chosen with `o` from a grid, then `Esc`, shows that folder's grid with the new drive's tag badges
+- [x] 2026-10-14 · A folder of another drive chosen with `o` from a grid, then `Esc`, shows thumbnails from the new drive's thumbnail cache
+- [x] 2026-10-14 · A folder of another read-only drive chosen with `o` from the viewer shows the read-only banner
+- [x] 2026-10-14 · A folder chosen with `o` from a grid is recorded as the last folder in `state.json`
+- [x] 2026-10-14 · In the window the `mediatagger` command builds, `o` in the grid opens the folder picker the window was given
+- [x] 2026-10-14 · A drag of local files entering and moving over the grid's viewport is accepted
+- [x] 2026-10-14 · A drag of plain text moving over the grid's viewport is refused
+- [x] 2026-10-14 · A drag of a web link moving over the grid's viewport is refused
+- [x] 2026-10-14 · Dropping a folder onto the grid's viewport shows that folder's slideshow from its first item
+- [x] 2026-10-14 · Dropping a folder of another drive onto the grid's viewport shows it with that drive's tags
+- [x] 2026-10-14 · Dropping a folder of another drive onto the viewer while a video plays (drag moving over the video surface) shows that folder's slideshow from its first item
+- [x] 2026-10-14 · Closing the window stops thumbnail generation of its folder grid: a thumbnail still being generated is delivered to no tile
+- [x] 2026-10-14 · Closing the window stops thumbnail generation of its results grid: a thumbnail still being generated is delivered to no tile
+- [x] 2026-10-14 · Pressing `Esc` to quit the real `mediatagger` command from a grid whose thumbnails are still generating ends the process within 3 s
+- [x] 2026-10-14 · Quitting the app while a video plays ends the process within 3 s
+- [x] 2026-10-14 · Quitting the app with a library whose backup is due ends the process within 3 s
+- [x] 2026-10-14 · The real `mediatagger` command starts with `qt.qpa.wayland.textinput` warnings disabled
+- [x] 2026-10-14 · The real `mediatagger` command leaves `qt.qpa.wayland` warnings enabled
+- [x] 2026-10-14 · The real `mediatagger` command started with `QT_LOGGING_RULES=qt.qpa.wayland.textinput=true` keeps `qt.qpa.wayland.textinput` warnings enabled
+- [x] 2026-10-14 · Over a white video frame, the progress bar outside its text and track leaves the frame white
+- [x] 2026-10-14 · Over a black video frame, the progress bar outside its text and track leaves the frame black
+- [x] 2026-10-14 · Over a white video frame, the light `elapsed / total` text is edged with dark pixels so it stays readable
+- [x] 2026-10-14 · Over a white video frame, the light filled part of the track is edged with dark pixels so it stays readable
 - [x] 2026-10-14 · `sh drive/update-drive.sh <drive>` puts every non-test module of the `mediatagger` package into `<drive>/mediatagger/app/mediatagger/`
 - [x] 2026-10-14 · `sh drive/update-drive.sh <drive>` leaves `test_*.py` and `conftest.py` out of the drive's `app/`
 - [x] 2026-10-14 · After `sh drive/update-drive.sh <drive>`, every module in the drive's `app/` has unchecked-hash precompiled bytecode next to it
