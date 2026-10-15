@@ -202,6 +202,7 @@ class Grid(QListView):
         super().__init__()
         self.folder = folder
         self.cheat_sheet = cheat_sheet or CheatSheet()
+        self.cheat_sheet.watch(self)  # `h` toggles it here, before the list's keyboard search could take it
         self.setFlow(QListView.Flow.LeftToRight)
         self.setWrapping(True)
         self.setGridSize(TILE_SIZE)

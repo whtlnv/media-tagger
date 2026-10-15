@@ -131,9 +131,7 @@ class Window(QWidget):
         self._show_parent_of(self.viewer.slideshow.current)
 
     def _grid_of(self, folder, at=None):
-        grid = Grid(folder, at=at, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache(), cheat_sheet=self.cheat_sheet)
-        self.cheat_sheet.watch(grid)
-        return grid
+        return Grid(folder, at=at, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache(), cheat_sheet=self.cheat_sheet)
 
     def _show(self, grid):
         grid.activated.connect(self._open_tile)
@@ -197,7 +195,6 @@ class Window(QWidget):
         paths = search(self.session.library, query)
         grid = Grid(self.session.drive, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache(), paths=paths,
             cheat_sheet=self.cheat_sheet)
-        self.cheat_sheet.watch(grid)
         grid.searched_from = searched_from
         grid.activated.connect(lambda index: self._open_result(index, paths, grid))
         grid.escaped.connect(lambda: self._end_search(searched_from))
