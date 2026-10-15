@@ -13,7 +13,7 @@ Phase 16 notes for every cycle (Phases 1–15 are delivered — see DONE.md; Pha
 - [x] `required_roots` of a drive whose root holds `mediatagger_config.json` with `{"requiredRoots": ["type:", "size:"]}` gives those two roots and no problem
 - [x] `required_roots` of a drive with no config file, or one with no `requiredRoots`, gives no roots and no problem, and leaves the drive's file list unchanged
 - [x] `required_roots` of a drive whose config isn't valid JSON gives no roots and the "can't be read" problem text
-- [ ] `required_roots` of a drive whose config is JSON but whose `requiredRoots` isn't a list of strings (or which isn't an object) gives no roots and the problem text
+- [x] `required_roots` of a drive whose config is JSON but whose `requiredRoots` isn't a list of strings (or which isn't an object) gives no roots and the problem text
 - [ ] `required_roots` of a drive whose config can't be read (e.g. a folder named `mediatagger_config.json`, or bytes that aren't UTF-8) gives no roots and the problem text
 - [ ] `missing_roots` counts the roots that none of the given tags starts with (`["type:photo"]` against `type:`, `size:` → 1)
 - [ ] A grid given required roots `type:` and `size:` paints `✗2` on the tile of a file in its folder with no tags at all
