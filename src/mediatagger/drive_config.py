@@ -1,7 +1,7 @@
 import json
 
 CONFIG_FILE = "mediatagger_config.json"
-CONFIG_CANT_BE_READ_TEXT = "mediatagger_config.json can't be read — no tiles marked"
+CONFIG_CANT_BE_READ_TEXT = f"{CONFIG_FILE} can't be read — no tiles marked"
 
 
 def required_roots(drive):
