@@ -151,6 +151,22 @@ def test_a_video_of_an_hour_or_more_shows_its_times_as_hours_minutes_and_seconds
     qtbot.waitUntil(lambda: bar.text() == "0:00:05 / 1:02:03")
 
 
+def test_a_video_playing_at_2x_shows_its_times_followed_by_its_speed(qtbot):
+    parent, bar = shown_progress_bar(qtbot)
+
+    bar.start(fake_engine(duration=30, time_pos=0, speed=2))
+
+    qtbot.waitUntil(lambda: bar.text() == "0:00 / 0:30 · 2×")
+
+
+def test_a_video_playing_at_a_quarter_speed_shows_its_times_followed_by_0_25x(qtbot):
+    parent, bar = shown_progress_bar(qtbot)
+
+    bar.start(fake_engine(duration=30, time_pos=0, speed=0.25))
+
+    qtbot.waitUntil(lambda: bar.text() == "0:00 / 0:30 · 0.25×")
+
+
 def test_destroying_a_shown_progress_bar_whose_attributes_the_garbage_collector_already_cleared_raises_nothing(qtbot):
     parent = QWidget()
     bar = ProgressBar(parent)

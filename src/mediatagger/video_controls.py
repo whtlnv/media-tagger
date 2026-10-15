@@ -89,7 +89,9 @@ class ProgressBar(QLabel):
         duration = self._engine.duration
         self._fraction = seconds / duration
         with_hours = duration >= 60 * 60
-        self.setText(f"{_clock(seconds, with_hours)} / {_clock(duration, with_hours)}")
+        speed = self._engine.speed
+        shown_speed = "" if speed == 1 else f" · {speed:g}×"
+        self.setText(f"{_clock(seconds, with_hours)} / {_clock(duration, with_hours)}{shown_speed}")
 
     def paintEvent(self, event):
         with QPainter(self) as painter:
