@@ -242,9 +242,9 @@ class Viewer(QWidget):
 
     def _current_image(self):
         """The current item decoded to fit the window: once per item and window size, not on every paint."""
-        key = (self.slideshow.current, self.size())
+        key = (self.slideshow.current, self.size(), self.zoom.level)
         if self._decoded_key != key:
-            self._decoded_key, self._decoded = key, decode_fitted(self.slideshow.current, self.size())
+            self._decoded_key, self._decoded = key, decode_fitted(self.slideshow.current, self.size() * self.zoom.level)
         return self._decoded
 
     def _play(self, clip):
