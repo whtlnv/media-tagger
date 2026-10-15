@@ -20,6 +20,11 @@ class Zoom:
         shown.moveCenter(QRectF(window).center() + QPointF(self.pan.x() * shown.width(), self.pan.y() * shown.height()))
         return shown
 
+    def detail(self):
+        """How many times the window's size a picture must be decoded at to stay sharp at this zoom: fitted needs no
+        more than the window; once zoomed in, enough for the closest zoom, so zooming further needs no new decode."""
+        return _MAX_ZOOM if self.level > 1 else 1
+
     def wheel(self, angle_delta, at, fitted, window):
         """Turn the mouse wheel by angle_delta (eighths of a degree; positive is up, which zooms in) with the mouse at at:
         the picture point under the mouse stays under it, unless that would leave black between the picture and a window

@@ -2,6 +2,7 @@ from PySide6.QtCore import QPoint, QPointF, Qt
 from PySide6.QtGui import QColor, QImage, QWheelEvent
 from PySide6.QtWidgets import QApplication
 
+from mediatagger.image_fit import decode_fitted
 from mediatagger.test_viewer import make_image, shown_viewer_on
 
 NOTCH = 120
@@ -216,3 +217,25 @@ def test_one_wheel_notch_up_from_fitted_shows_an_image_at_110_percent_of_its_fit
     scroll(viewer, 1, at=centre)
 
     assert picture_rows() == 33
+
+
+def test_scrolling_several_notches_over_a_zoomed_in_photo_larger_than_the_window_decodes_it_at_most_once_more(qtbot, tmp_path, monkeypatch):
+    make_image(tmp_path / "IMG_1.png", "red", width=900, height=900)
+    decodes = []
+
+    def counted_decode_fitted(path, bounds):
+        decodes.append(bounds)
+        return decode_fitted(path, bounds)
+
+    monkeypatch.setattr("mediatagger.viewer.decode_fitted", counted_decode_fitted)
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    viewer.resize(300, 300)
+    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    viewer.grab()
+    decodes.clear()
+
+    for _ in range(5):
+        scroll(viewer, 1, at=viewer.rect().center())
+        viewer.grab()
+
+    assert len(decodes) <= 1
