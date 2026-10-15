@@ -26,6 +26,11 @@ from mediatagger.viewer import UNSUPPORTED_TEXT
 from mediatagger.window import Window
 
 
+def fake_engine(duration, time_pos, speed=1):
+    """What the bar reads of an mpv player: its length, position and playback speed."""
+    return SimpleNamespace(duration=duration, time_pos=time_pos, speed=speed)
+
+
 def viewer_playing_with_its_progress_bar(qtbot, folder, clip):
     viewer = shown_viewer_on(qtbot, folder)
     wait_until_loaded(viewer.video_player.engine, clip)
@@ -103,7 +108,7 @@ def test_while_a_video_plays_the_progress_bar_elapsed_time_advances(qtbot, tmp_p
 
 def test_while_mpv_reports_no_position_or_length_between_clips_the_progress_bar_keeps_its_text_and_raises_nothing(qtbot):
     parent, bar = shown_progress_bar(qtbot)
-    engine = SimpleNamespace(duration=65, time_pos=0)
+    engine = fake_engine(duration=65, time_pos=0)
     bar.start(engine)
 
     engine.duration = engine.time_pos = None  # what a stopped mpv reports
@@ -117,7 +122,7 @@ def test_half_way_through_a_video_the_progress_bar_is_filled_up_to_its_middle(qt
     qtbot.addWidget(parent)
     bar = ProgressBar(parent)
     bar.resize(200, 20)
-    bar.start(SimpleNamespace(duration=60, time_pos=30))
+    bar.start(fake_engine(duration=60, time_pos=30))
     parent.show()
     qtbot.waitUntil(lambda: bar.text().startswith("0:30"))
 
@@ -133,7 +138,7 @@ def test_half_way_through_a_video_the_progress_bar_is_filled_up_to_its_middle(qt
 def test_a_video_shorter_than_an_hour_shows_its_times_as_minutes_and_seconds(qtbot):
     parent, bar = shown_progress_bar(qtbot)
 
-    bar.start(SimpleNamespace(duration=4 * 60 + 56, time_pos=60 + 23))
+    bar.start(fake_engine(duration=4 * 60 + 56, time_pos=60 + 23))
 
     qtbot.waitUntil(lambda: bar.text() == "1:23 / 4:56")
 
@@ -141,7 +146,7 @@ def test_a_video_shorter_than_an_hour_shows_its_times_as_minutes_and_seconds(qtb
 def test_a_video_of_an_hour_or_more_shows_its_times_as_hours_minutes_and_seconds(qtbot):
     parent, bar = shown_progress_bar(qtbot)
 
-    bar.start(SimpleNamespace(duration=60 * 60 + 2 * 60 + 3, time_pos=5))
+    bar.start(fake_engine(duration=60 * 60 + 2 * 60 + 3, time_pos=5))
 
     qtbot.waitUntil(lambda: bar.text() == "0:00:05 / 1:02:03")
 
@@ -160,7 +165,7 @@ def test_destroying_a_shown_progress_bar_whose_attributes_the_garbage_collector_
 def test_with_no_input_for_the_hide_delay_the_progress_bar_hides(qtbot):
     parent, bar = shown_progress_bar(qtbot, hide_delay=100)
 
-    bar.start(SimpleNamespace(duration=65, time_pos=0))
+    bar.start(fake_engine(duration=65, time_pos=0))
 
     assert bar.isVisible()
     qtbot.waitUntil(lambda: not bar.isVisible(), timeout=2000)
@@ -223,7 +228,7 @@ def test_zero_on_a_playing_video_seeks_back_to_the_start(qtbot, tmp_path):
 
 def test_waking_the_progress_bar_while_it_shows_keeps_it_visible_for_the_full_hide_delay_after_the_latest_wake(qtbot):
     parent, bar = shown_progress_bar(qtbot, hide_delay=1500)
-    bar.start(SimpleNamespace(duration=65, time_pos=0))
+    bar.start(fake_engine(duration=65, time_pos=0))
     qtbot.wait(1000)
 
     bar.wake()  # what the viewer does on every key
@@ -283,7 +288,7 @@ def test_in_the_window_the_progress_bar_of_a_playing_video_does_not_overlap_the_
 
 
 def test_the_progress_bar_shows_light_text_and_a_light_filled_track_over_a_black_frame(qtbot):
-    engine = SimpleNamespace(duration=60, time_pos=0)
+    engine = fake_engine(duration=60, time_pos=0)
     frame, bar = progress_bar_over(qtbot, "black", (300, 20), engine)
 
     def lightest(image):
@@ -297,7 +302,7 @@ def test_the_progress_bar_shows_light_text_and_a_light_filled_track_over_a_black
 
 
 def test_over_a_white_video_frame_the_progress_bar_outside_its_text_and_track_leaves_the_frame_white(qtbot):
-    frame, bar = progress_bar_over(qtbot, "white", (300, 20), SimpleNamespace(duration=60, time_pos=0))
+    frame, bar = progress_bar_over(qtbot, "white", (300, 20), fake_engine(duration=60, time_pos=0))
 
     image = frame.grab(bar.geometry()).toImage()
 
@@ -305,7 +310,7 @@ def test_over_a_white_video_frame_the_progress_bar_outside_its_text_and_track_le
 
 
 def test_over_a_white_video_frame_the_light_elapsed_and_total_text_is_edged_with_dark_pixels(qtbot):
-    frame, bar = progress_bar_over(qtbot, "white", (300, 20), SimpleNamespace(duration=60, time_pos=0))
+    frame, bar = progress_bar_over(qtbot, "white", (300, 20), fake_engine(duration=60, time_pos=0))
 
     image = frame.grab(bar.geometry()).toImage()
     text_area = [image.pixelColor(x, y).lightness() for x in range(120) for y in range(20 - 3)]  # left of the bar, above its track
@@ -314,7 +319,7 @@ def test_over_a_white_video_frame_the_light_elapsed_and_total_text_is_edged_with
 
 
 def test_over_a_white_video_frame_the_light_filled_part_of_the_track_is_edged_with_dark_pixels(qtbot):
-    frame, bar = progress_bar_over(qtbot, "white", (300, 20), SimpleNamespace(duration=60, time_pos=30))
+    frame, bar = progress_bar_over(qtbot, "white", (300, 20), fake_engine(duration=60, time_pos=30))
     qtbot.waitUntil(lambda: bar.text().startswith("0:30"))
 
     image = frame.grab(bar.geometry()).toImage()
@@ -324,7 +329,7 @@ def test_over_a_white_video_frame_the_light_filled_part_of_the_track_is_edged_wi
 
 
 def test_over_a_black_video_frame_the_progress_bar_outside_its_text_and_track_leaves_the_frame_black(qtbot):
-    frame, bar = progress_bar_over(qtbot, "black", (300, 20), SimpleNamespace(duration=60, time_pos=0))
+    frame, bar = progress_bar_over(qtbot, "black", (300, 20), fake_engine(duration=60, time_pos=0))
 
     image = frame.grab(bar.geometry()).toImage()
 
@@ -332,7 +337,7 @@ def test_over_a_black_video_frame_the_progress_bar_outside_its_text_and_track_le
 
 
 def test_the_filled_track_is_a_thin_strip_along_the_bottom_of_the_progress_bar_so_the_light_text_never_sits_on_it(qtbot):
-    parent, bar = progress_bar_over(qtbot, "black", (300, 24), SimpleNamespace(duration=60, time_pos=30))
+    parent, bar = progress_bar_over(qtbot, "black", (300, 24), fake_engine(duration=60, time_pos=30))
     qtbot.waitUntil(lambda: bar.text().startswith("0:30"))
 
     image = parent.grab(bar.geometry()).toImage()
