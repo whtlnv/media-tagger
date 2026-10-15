@@ -44,6 +44,19 @@ def shown_progress_bar(qtbot, hide_delay=HIDE_DELAY_MS):
     return parent, bar
 
 
+def progress_bar_over(qtbot, background, size, engine):
+    """A bar of this size, started on this engine, in a shown frame of this background colour, which comes back too."""
+    frame = QWidget()
+    frame.setStyleSheet(f"background: {background}")
+    qtbot.addWidget(frame)
+    bar = ProgressBar(frame)
+    bar.resize(*size)
+    bar.start(engine)
+    frame.show()
+    qtbot.waitExposed(frame)
+    return frame, bar
+
+
 def test_a_starting_video_shows_a_progress_bar_at_zero_of_its_length_that_hides_once_a_folder_with_no_media_is_dropped(qtbot, tmp_path):
     clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
     empty = make_folder_with_no_media(tmp_path / "Holidays")
@@ -297,14 +310,7 @@ def test_the_progress_bar_shows_light_text_and_a_light_filled_track_over_a_black
 
 
 def test_over_a_white_video_frame_the_progress_bar_outside_its_text_and_track_leaves_the_frame_white(qtbot):
-    frame = QWidget()
-    frame.setStyleSheet("background: white")
-    qtbot.addWidget(frame)
-    bar = ProgressBar(frame)
-    bar.resize(300, 20)
-    bar.start(SimpleNamespace(duration=60, time_pos=0))
-    frame.show()
-    qtbot.waitExposed(frame)
+    frame, bar = progress_bar_over(qtbot, "white", (300, 20), SimpleNamespace(duration=60, time_pos=0))
 
     image = frame.grab(bar.geometry()).toImage()
 
@@ -312,14 +318,7 @@ def test_over_a_white_video_frame_the_progress_bar_outside_its_text_and_track_le
 
 
 def test_over_a_white_video_frame_the_light_elapsed_and_total_text_is_edged_with_dark_pixels(qtbot):
-    frame = QWidget()
-    frame.setStyleSheet("background: white")
-    qtbot.addWidget(frame)
-    bar = ProgressBar(frame)
-    bar.resize(300, 20)
-    bar.start(SimpleNamespace(duration=60, time_pos=0))
-    frame.show()
-    qtbot.waitExposed(frame)
+    frame, bar = progress_bar_over(qtbot, "white", (300, 20), SimpleNamespace(duration=60, time_pos=0))
 
     image = frame.grab(bar.geometry()).toImage()
     text_area = [image.pixelColor(x, y).lightness() for x in range(120) for y in range(20 - 3)]  # left of the bar, above its track
@@ -328,14 +327,7 @@ def test_over_a_white_video_frame_the_light_elapsed_and_total_text_is_edged_with
 
 
 def test_over_a_white_video_frame_the_light_filled_part_of_the_track_is_edged_with_dark_pixels(qtbot):
-    frame = QWidget()
-    frame.setStyleSheet("background: white")
-    qtbot.addWidget(frame)
-    bar = ProgressBar(frame)
-    bar.resize(300, 20)
-    bar.start(SimpleNamespace(duration=60, time_pos=30))
-    frame.show()
-    qtbot.waitExposed(frame)
+    frame, bar = progress_bar_over(qtbot, "white", (300, 20), SimpleNamespace(duration=60, time_pos=30))
     qtbot.waitUntil(lambda: bar.text().startswith("0:30"))
 
     image = frame.grab(bar.geometry()).toImage()
@@ -345,14 +337,7 @@ def test_over_a_white_video_frame_the_light_filled_part_of_the_track_is_edged_wi
 
 
 def test_over_a_black_video_frame_the_progress_bar_outside_its_text_and_track_leaves_the_frame_black(qtbot):
-    frame = QWidget()
-    frame.setStyleSheet("background: black")
-    qtbot.addWidget(frame)
-    bar = ProgressBar(frame)
-    bar.resize(300, 20)
-    bar.start(SimpleNamespace(duration=60, time_pos=0))
-    frame.show()
-    qtbot.waitExposed(frame)
+    frame, bar = progress_bar_over(qtbot, "black", (300, 20), SimpleNamespace(duration=60, time_pos=0))
 
     image = frame.grab(bar.geometry()).toImage()
 
@@ -360,14 +345,7 @@ def test_over_a_black_video_frame_the_progress_bar_outside_its_text_and_track_le
 
 
 def test_the_filled_track_is_a_thin_strip_along_the_bottom_of_the_progress_bar_so_the_light_text_never_sits_on_it(qtbot):
-    parent = QWidget()
-    parent.setStyleSheet("background: black")
-    qtbot.addWidget(parent)
-    bar = ProgressBar(parent)
-    bar.resize(300, 24)
-    bar.start(SimpleNamespace(duration=60, time_pos=30))
-    parent.show()
-    qtbot.waitExposed(parent)
+    parent, bar = progress_bar_over(qtbot, "black", (300, 24), SimpleNamespace(duration=60, time_pos=30))
     qtbot.waitUntil(lambda: bar.text().startswith("0:30"))
 
     image = parent.grab(bar.geometry()).toImage()
