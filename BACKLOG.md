@@ -43,3 +43,9 @@
 
 - **[drive/update-drive.sh] Bytecode on the drive records the path it was compiled at** (added: 2026-10-13)
   `compileall` runs against `/Volumes/MEDIATAGGER/...` (Mac) or the VM's path, so tracebacks on the Pi name that path instead of `/media/<user>/MEDIATAGGER/...`; behaviour is unaffected (unchecked-hash pycs are never revalidated). `compileall -s <drive> -p /media/<user>/MEDIATAGGER` would fix it if the mount path is fixed.
+
+- **[src/mediatagger/thumbnail_scheduler.py:_Work.run] Quitting still waits for each worker's file in progress** (added: 2026-10-14)
+  Closing the window now stops every grid's generation (Phase 12), so the process ends after at most the files the 3 workers are on. Each is bounded by `TOOL_TIMEOUT_S` (15 s) per `ffprobe`/`ffmpeg` call, so a hung tool on a slow stick could still hold the exit for up to ~30 s. Killing the running tool subprocesses on shut-down would remove that; measure on the Pi first.
+
+- **[drive/test_run.py, src/mediatagger/test_main.py] Subprocess timing tests fail under machine load** (added: 2026-10-14)
+  During Phase 12, with another project's suite running (load 10–18), `test_run_with_a_real_python3_starts_the_real_app_from_the_drive_app_and_the_drive_gains_no_files` (8 s to reach `window.pyc`) failed several times, and the 3 s quit tests and `test_zero_on_a_playing_video_seeks_back_to_the_start` failed once each; all pass on rerun and on an idle machine. More slack, or waiting on a printed marker instead of a fixed time, would stop them blocking unattended commits.

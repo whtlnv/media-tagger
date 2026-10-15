@@ -121,6 +121,7 @@ Results show under a `Search: <query>` breadcrumb; a result whose path no longer
 | `↑` / `↓` | seek ±10 s (video) |
 | `0`–`9` | jump to 0 %–90 % of the video |
 | `m` | mute |
+| `o` | open a folder (picker), as if dropped |
 
 - Images fit to screen.
 - Video autoplays **with sound**, loops. Space never pauses.
@@ -140,6 +141,7 @@ Results show under a `Search: <query>` breadcrumb; a result whose path no longer
 | `+` / `-` | tile size |
 | `Esc` | quit; (in search) clear search, back to the folder |
 | `f` | toggle fullscreen |
+| `o` | open a folder (picker), as if dropped |
 
 - Tiles ~200 px: thumbnail (a large type glyph until it arrives, or when there is none), truncated filename, tag-count badge when the item has own tags.
 - Video tiles: frame at ~10%, ▶ badge, duration.
