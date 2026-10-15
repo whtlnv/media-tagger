@@ -1,3 +1,22 @@
+- [x] 2026-10-14 · Pressing `]` on a video playing at 1× makes it play at 1.25×
+- [x] 2026-10-14 · Pressing `[` on a video playing at 1× makes it play at 0.75×
+- [x] 2026-10-14 · Pressing `]` on a video playing at 8× leaves it at 8×
+- [x] 2026-10-14 · Pressing `[` on a video playing at 0.25× leaves it at 0.25×
+- [x] 2026-10-14 · A video shown after one that was sped up starts playing at 1×
+- [x] 2026-10-14 · The progress bar of a video playing at 2× reads its time followed by ` · 2×` (e.g. `0:00 / 0:30 · 2×`), and at 0.25× by ` · 0.25×`
+- [x] 2026-10-14 · The progress bar of a video playing at 1× reads its time with no speed (e.g. `0:00 / 0:30`)
+- [x] 2026-10-14 · In the viewer, pressing `]` on a playing video whose progress bar is hidden shows the bar at once, already reading ` · 1.25×`
+- [x] 2026-10-14 · Pressing `r` on a video turns it 90° clockwise
+- [x] 2026-10-14 · Pressing `r` four times on a video turns it back to unrotated
+- [x] 2026-10-14 · A video shown after one that was rotated starts unrotated
+- [x] 2026-10-14 · An unrotated landscape video is drawn whole across the full width of a square surface, with black above and below it
+- [x] 2026-10-14 · A landscape video turned 90° is drawn whole across the full height of a square surface, with black left and right of it
+- [x] 2026-10-14 · In the viewer, pressing `v` on a playing video whose progress bar is hidden shows the bar
+- [x] 2026-10-14 · In the viewer, pressing `v` on a playing video leaves its pause, mute, position, speed and rotation unchanged and the slideshow on the same item
+- [x] 2026-10-14 · In the viewer, with the tag prompt open on a video, typing `]`, `[`, `r` and `v` puts them in the prompt and leaves the video's speed and rotation unchanged
+- [x] 2026-10-14 · In the viewer, pressing `]` and `r` on an image leaves the next video starting at 1× and unrotated
+- [x] 2026-10-14 · In the grid, pressing `]`, `[`, `r` and `v` leaves the next video opened starting at 1× and unrotated
+- [x] 2026-10-14 · In the window the shipped `mediatagger` command builds, pressing `]` then `r` on an opened video makes it play at 1.25× turned 90°
 - [x] 2026-10-14 · `o` in a folder grid opens the folder picker, and choosing a folder shows that folder's slideshow from its first item
 - [x] 2026-10-14 · `o` in a folder grid whose folder picker is cancelled leaves the same grid shown, cursor unchanged
 - [x] 2026-10-14 · `o` in a results grid opens the folder picker, and choosing a folder shows that folder's slideshow from its first item
