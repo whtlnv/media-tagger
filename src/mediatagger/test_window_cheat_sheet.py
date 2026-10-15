@@ -163,3 +163,15 @@ def test_the_tiles_stay_visible_through_the_panel_a_red_tile_under_it_still_show
     after = window.grab().toImage()
     darkened_red = [(x, y) for x, y in red if 40 < qRed(after.pixel(x, y)) < qRed(before.pixel(x, y)) and qGreen(after.pixel(x, y)) < 40]
     assert len(darkened_red) > len(red) / 2
+
+
+def test_in_the_windows_grid_pressing_h_a_second_time_removes_the_panel_leaving_the_window_as_it_was(qtbot, tmp_path):
+    grid, _ = grid_of_one_red_image(qtbot, tmp_path)
+    qtbot.waitUntil(lambda: grid.model().index(0, 0).data(TILE_ROLE).thumbnail is not None)
+    window = grid.window()
+    before = middle_of(window.grab().toImage())
+    qtbot.keyClick(grid, Qt.Key.Key_H)
+
+    qtbot.keyClick(grid, Qt.Key.Key_H)
+
+    assert middle_of(window.grab().toImage()) == before
