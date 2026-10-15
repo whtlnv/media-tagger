@@ -2,7 +2,7 @@ from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QColor, QImage, QPainter, qBlue, qGreen, qRed
 from PySide6.QtWidgets import QStackedWidget
 
-from mediatagger.cheat_sheet import GRID_KEYS, VIEWER_KEYS, CheatSheet
+from mediatagger.cheat_sheet import GRID_KEYS, LAUNCH_KEYS, VIEWER_KEYS, CheatSheet
 from mediatagger.grid import TILE_ROLE
 from mediatagger.image_fit import fitted_rect
 from mediatagger.test_viewer import SILENT, make_image
@@ -109,3 +109,17 @@ def test_the_windows_viewer_shows_the_viewers_keys_around_the_picture_rather_tha
     around = pixels_outside(viewer.grab().toImage(), picture)
     assert around == pixels_outside(sheet_on_black(viewer.size(), VIEWER_KEYS), picture)
     assert around != pixels_outside(sheet_on_black(viewer.size(), GRID_KEYS), picture)
+
+
+def test_on_the_windows_empty_launch_screen_pressing_h_shows_the_launch_screens_keys(qtbot, tmp_path):
+    window = Window(player_options=SILENT, home=tmp_path)
+    qtbot.addWidget(window)
+    window.resize(1000, 600)
+    window.show()
+    qtbot.waitExposed(window)
+    message = window.viewer.placeholder.geometry()
+
+    qtbot.keyClick(window.viewer, Qt.Key.Key_H)
+
+    around = pixels_outside(window.viewer.grab().toImage(), message)
+    assert around == pixels_outside(sheet_on_black(window.viewer.size(), LAUNCH_KEYS), message)

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from mediatagger.cheat_sheet import GRID_KEYS, VIEWER_KEYS
+from mediatagger.cheat_sheet import GRID_KEYS, LAUNCH_KEYS, VIEWER_KEYS
 
 DESIGN = Path(__file__).parents[2] / "DESIGN.md"
 
@@ -23,4 +23,11 @@ def test_the_viewers_cheat_sheet_lists_exactly_the_keys_of_designs_viewer_table_
     keys = [key for key, _ in VIEWER_KEYS]
 
     assert keys == design_table_keys("Viewer")
+    assert "h" in keys
+
+
+def test_the_launch_screens_cheat_sheet_lists_exactly_the_keys_of_designs_launch_table_in_order_h_included():
+    keys = [key for key, _ in LAUNCH_KEYS]
+
+    assert keys == design_table_keys("Launch")
     assert "h" in keys

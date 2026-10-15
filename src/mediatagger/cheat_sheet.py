@@ -35,6 +35,13 @@ VIEWER_KEYS = [
     ("h", "show / hide this list of keys"),
 ]
 
+LAUNCH_KEYS = [
+    ("o", "open a folder"),
+    ("f", "fullscreen"),
+    ("Esc", "quit"),
+    ("h", "show / hide this list of keys"),
+]
+
 TEXT_PIXEL_SIZE = 18
 OPACITY = 0.3
 _COLUMN_GAP = 48

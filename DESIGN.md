@@ -101,6 +101,13 @@ Results show under a `Search: <query>` breadcrumb; a result whose path no longer
 - The window opens at the size and position remembered in `state.json` when it last closed; with none remembered, not fullscreen, at about 80 % of the available screen, centred.
 - Otherwise: empty screen "Drop a folder or file here, or press o to open".
 
+| Key | Action |
+|---|---|
+| `o` | open a folder (picker), as if dropped |
+| `f` | toggle fullscreen |
+| `Esc` | quit |
+| `h` | show / hide the key cheat sheet behind the message |
+
 ### Drag & drop
 
 - Drop a folder: start the slideshow of that folder.

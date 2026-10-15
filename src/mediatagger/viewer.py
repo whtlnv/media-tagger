@@ -4,7 +4,7 @@ from PySide6.QtCore import QPoint, Qt
 from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import QFileDialog, QWidget
 
-from mediatagger.cheat_sheet import VIEWER_KEYS, CheatSheet
+from mediatagger.cheat_sheet import LAUNCH_KEYS, VIEWER_KEYS, CheatSheet
 from mediatagger.drive_session import DriveSession
 from mediatagger.folder import is_openable, is_video
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
@@ -93,7 +93,7 @@ class Viewer(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.fillRect(self.rect(), Qt.GlobalColor.black)
-        self.cheat_sheet.paint(painter, self.rect(), VIEWER_KEYS, Qt.GlobalColor.white)
+        self.cheat_sheet.paint(painter, self.rect(), LAUNCH_KEYS if self.slideshow is None else VIEWER_KEYS, Qt.GlobalColor.white)
         if self.slideshow is None:
             return
         image = self._current_image()
