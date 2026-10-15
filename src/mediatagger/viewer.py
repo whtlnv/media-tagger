@@ -14,7 +14,7 @@ from mediatagger.slideshow import Slideshow
 from mediatagger.tag_prompt import TagPrompt
 from mediatagger.video import VideoPlayer, new_engine
 from mediatagger.video_controls import ProgressBar
-from mediatagger.zoom import Zoom
+from mediatagger.zoom import Zoom, video_fitted
 
 _PLAYER_OPTIONS = {"vo": "libmpv", "vd_lavc_dr": "no"}  # mpv_surface hands mpv no GL fences, which direct rendering needs
 _VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up", Qt.Key.Key_Down: "Down", Qt.Key.Key_Return: "Enter"}
@@ -109,9 +109,14 @@ class Viewer(QWidget):
         painter.drawImage(self.zoom.shown(fitted_rect(image.size(), self.rect()), self.rect()), image)
 
     def wheelEvent(self, event):
-        if self.slideshow is not None:
-            self.zoom.wheel(event.angleDelta().y(), event.position(), fitted_rect(self._current_image().size(), self.rect()), self.rect())
-            self.update()
+        if self.slideshow is None:
+            return
+        video, engine = is_video(self.slideshow.current), self.video_player.engine
+        fitted = video_fitted(engine, self.rect()) if video else fitted_rect(self._current_image().size(), self.rect())
+        self.zoom.wheel(event.angleDelta().y(), event.position(), fitted, self.rect())
+        if video:
+            self.zoom.apply_to(engine)
+        self.update()
 
     def dragEnterEvent(self, event):
         if any(url.isLocalFile() for url in event.mimeData().urls()):

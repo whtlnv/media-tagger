@@ -3,6 +3,7 @@ from PySide6.QtGui import QColor, QImage, QWheelEvent
 from PySide6.QtWidgets import QApplication
 
 from mediatagger.image_fit import decode_fitted
+from mediatagger.test_video import make_clip, wait_until_playing
 from mediatagger.test_viewer import make_image, shown_viewer_on
 
 NOTCH = 120
@@ -254,3 +255,14 @@ def test_moving_to_the_next_item_after_zooming_in_on_an_image_then_back_shows_th
     qtbot.keyClick(viewer, Qt.Key.Key_Left)
 
     assert viewer.grab().toImage() == fitted
+
+
+def test_scrolling_the_mouse_wheel_up_one_notch_over_a_playing_video_shows_it_larger_than_fitted(qtbot, tmp_path):
+    make_clip(tmp_path / "IMG_1.mp4", duration=30)
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    engine = viewer.video_player.engine
+    wait_until_playing(engine)
+
+    scroll(viewer, 1, at=viewer.rect().center())
+
+    assert engine.video_zoom > 0  # mpv's zoom is log2 of the scale: 0 is fitted

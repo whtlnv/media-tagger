@@ -1,4 +1,8 @@
-from PySide6.QtCore import QPointF, QRectF
+import math
+
+from PySide6.QtCore import QPointF, QRectF, QSize
+
+from mediatagger.image_fit import fitted_rect
 
 _WHEEL_NOTCH = 120  # angleDelta units per mouse-wheel notch
 _ZOOM_STEP = 0.1  # of the fitted size per notch
@@ -19,6 +23,11 @@ class Zoom:
         shown = QRectF(QPointF(), fitted.size().toSizeF() * self.level)
         shown.moveCenter(QRectF(window).center() + QPointF(self.pan.x() * shown.width(), self.pan.y() * shown.height()))
         return shown
+
+    def apply_to(self, engine):
+        """Show the video an mpv engine plays at this zoom."""
+        engine.video_zoom = math.log2(self.level)
+        engine.video_pan_x, engine.video_pan_y = self.pan.x(), self.pan.y()
 
     def detail(self):
         """How many times the window's size a picture must be decoded at to stay sharp at this zoom: fitted needs no
@@ -47,3 +56,9 @@ class Zoom:
 def _within(edge, first, last):
     """edge kept between first and last, whichever way round they are."""
     return min(max(first, last), max(min(first, last), edge))
+
+
+def video_fitted(engine, window):
+    """Where the video an mpv engine plays is fitted in window, turned as mpv turns it."""
+    size = QSize(engine.dwidth or 0, engine.dheight or 0)
+    return fitted_rect(size.transposed() if engine.video_rotate % 180 else size, window)
