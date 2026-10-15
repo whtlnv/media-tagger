@@ -1,4 +1,4 @@
-from PySide6.QtCore import QPoint, QPointF, QRect
+from PySide6.QtCore import QPointF, QRectF
 
 _WHEEL_NOTCH = 120  # angleDelta units per mouse-wheel notch
 _ZOOM_STEP = 1.25
@@ -6,29 +6,39 @@ _MAX_ZOOM = 3  # times the fitted size
 
 
 class Zoom:
-    """How far the viewer's picture is zoomed in from its fitted size: 1 is fitted."""
+    """How far the viewer's picture is zoomed in from its fitted size (level 1 is fitted, 3 the most) and where it is
+    panned: pan is the shown picture's centre from the window's centre, in fractions of the shown picture's size —
+    the units of mpv's video-pan-x/y, so a video can be zoomed the same way."""
 
     def __init__(self):
         self.level = 1
-        self.centre = QPointF()  # of the shown picture, from the fitted picture's centre
+        self.pan = QPointF()
 
-    def wheel(self, angle_delta, at):
-        """Turn the mouse wheel by angle_delta (eighths of a degree; positive is up, which zooms in) with the mouse
-        at at, from the fitted picture's centre: the picture point under the mouse stays under it."""
-        zoomed = self.level * _ZOOM_STEP ** (angle_delta / _WHEEL_NOTCH)
-        level = min(_MAX_ZOOM, max(1, zoomed))
-        self.centre = at - (at - self.centre) * (level / self.level) if level > 1 else QPointF()
-        self.level = level
+    def shown(self, fitted, window):
+        """Where the picture, fitted to window at fitted, is shown at this zoom."""
+        shown = QRectF(QPointF(), fitted.size().toSizeF() * self.level)
+        shown.moveCenter(QRectF(window).center() + QPointF(self.pan.x() * shown.width(), self.pan.y() * shown.height()))
+        return shown
 
-    def shown(self, fitted):
-        """Where the picture fitted at fitted is shown at this zoom."""
-        target = QRect(QPoint(), fitted.size() * self.level)
-        slack = QPointF(fitted.width(), fitted.height()) * (self.level - 1) / 2  # how far it can move and still cover fitted
-        centre = QPointF(_clamp(self.centre.x(), slack.x()), _clamp(self.centre.y(), slack.y()))
-        target.moveCenter(fitted.center() + centre.toPoint())
-        return target
+    def wheel(self, angle_delta, at, fitted, window):
+        """Turn the mouse wheel by angle_delta (eighths of a degree; positive is up, which zooms in) with the mouse at at:
+        the picture point under the mouse stays under it, unless that would leave black between the picture and a window
+        edge — a picture bigger than the window always covers it, a smaller one lies inside it."""
+        before = self.shown(fitted, window)
+        level = min(_MAX_ZOOM, max(1, self.level * _ZOOM_STEP ** (angle_delta / _WHEEL_NOTCH)))
+        if level == 1:
+            self.level, self.pan = 1, QPointF()
+            return
+        scale = level / self.level
+        at = QPointF(at)
+        after = QRectF(at + (before.topLeft() - at) * scale, before.size() * scale)
+        window = QRectF(window)
+        after.moveLeft(_within(after.left(), window.left(), window.right() - after.width()))
+        after.moveTop(_within(after.top(), window.top(), window.bottom() - after.height()))
+        offset = after.center() - window.center()
+        self.level, self.pan = level, QPointF(offset.x() / after.width(), offset.y() / after.height())
 
 
-def _clamp(value, limit):
-    """value, kept within limit either side of 0."""
-    return min(limit, max(-limit, value))
+def _within(edge, first, last):
+    """edge kept between first and last, whichever way round they are."""
+    return min(max(first, last), max(min(first, last), edge))

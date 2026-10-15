@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from PySide6.QtCore import QPoint, QPointF, Qt
+from PySide6.QtCore import QPoint, Qt
 from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import QFileDialog, QWidget
 
@@ -106,12 +106,12 @@ class Viewer(QWidget):
         if self.slideshow is None:
             return
         image = self._current_image()
-        painter.drawImage(self.zoom.shown(fitted_rect(image.size(), self.rect())), image)
+        painter.drawImage(self.zoom.shown(fitted_rect(image.size(), self.rect()), self.rect()), image)
 
     def wheelEvent(self, event):
-        mouse = event.position() - QPointF(self.rect().center())
-        self.zoom.wheel(event.angleDelta().y(), mouse)
-        self.update()
+        if self.slideshow is not None:
+            self.zoom.wheel(event.angleDelta().y(), event.position(), fitted_rect(self._current_image().size(), self.rect()), self.rect())
+            self.update()
 
     def dragEnterEvent(self, event):
         if any(url.isLocalFile() for url in event.mimeData().urls()):

@@ -25,7 +25,7 @@ Phase 14 notes for every cycle (Phases 1–13 are delivered — see DONE.md; Pha
 - [x] Zooming out of a zoomed-in image, without reaching fitted, keeps the image point under the mouse under the mouse
 - [x] Zooming an image back out to fitted, after zooming in with the mouse off its centre, shows it exactly where it was fitted
 - [x] Zooming out of an image that covers the window, with the mouse near a window edge, never leaves black between that edge and the image
-- [ ] After zooming out near a window edge pulls a zoomed-in image back to that edge, zooming in again keeps the image point under the mouse under the mouse
+- [x] After zooming out near a window edge pulls a zoomed-in image back to that edge, zooming in again keeps the image point under the mouse under the mouse
 - [ ] A wide image zoomed in with the mouse near the top of the picture, while still shorter than the window, never hangs off the window's top while black shows below it
 - [ ] One wheel notch up from fitted shows an image at 110 % of its fitted size (steps of 10 percentage points)
 - [ ] Scrolling the wheel several notches over a zoomed-in photo larger than the window decodes it at most once more, not once per notch

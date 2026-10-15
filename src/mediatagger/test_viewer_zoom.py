@@ -173,3 +173,18 @@ def test_zooming_out_of_an_image_that_covers_the_window_with_the_mouse_near_a_wi
     scroll(viewer, -1, at=QPoint(40, 150))  # scaling about x 40 would pull that edge in to about x 7
 
     assert viewer.grab().toImage().pixelColor(left_edge) == QColor("red")
+
+
+def test_after_zooming_out_near_a_window_edge_pulls_a_zoomed_in_image_back_to_that_edge_zooming_in_again_keeps_the_image_point_under_the_mouse_under_the_mouse(qtbot, tmp_path):
+    make_marked_picture(tmp_path / "IMG_1.png", around=120)
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    viewer.resize(300, 300)
+    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    scroll(viewer, 2, at=QPoint(0, 0))  # 156 %, the image's top-left corner at the window's
+    scroll(viewer, -1, at=QPoint(40, 40))  # 125 %, pulled back to the top-left corner: the marker now around (150, 150)
+    mouse = QPoint(150, 150)
+    assert viewer.grab().toImage().pixelColor(mouse) == QColor("blue")
+
+    scroll(viewer, 1, at=mouse)
+
+    assert viewer.grab().toImage().pixelColor(mouse) == QColor("blue")
