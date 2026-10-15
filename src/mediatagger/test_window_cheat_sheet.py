@@ -301,3 +301,23 @@ def test_with_the_panel_shown_esc_in_the_viewers_tag_prompt_closes_the_prompt_an
 
     assert visible_tag_prompts(window) == []
     assert sheet_is_shown(window)
+
+
+def top_left_corner_of(image):
+    """Where the old background sheet began, and well clear of the centred panel."""
+    return image.copy(0, 0, 150, 150)
+
+
+def test_with_the_panel_shown_the_grids_and_viewers_top_left_corners_look_as_they_do_with_it_hidden(qtbot, tmp_path):
+    grid, _ = grid_of_one_red_image(qtbot, tmp_path)
+    qtbot.waitUntil(lambda: grid.model().index(0, 0).data(TILE_ROLE).thumbnail is not None)
+    window = grid.window()
+    hidden = top_left_corner_of(window.grab().toImage())
+    qtbot.keyClick(grid, Qt.Key.Key_H)
+    assert top_left_corner_of(window.grab().toImage()) == hidden
+    qtbot.keyClick(grid, Qt.Key.Key_Return)
+    shown_in_the_viewer = top_left_corner_of(window.grab().toImage())
+
+    qtbot.keyClick(window.viewer, Qt.Key.Key_H)
+
+    assert top_left_corner_of(window.grab().toImage()) == shown_in_the_viewer

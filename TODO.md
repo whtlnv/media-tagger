@@ -18,4 +18,4 @@ Phase 15 follow-up notes for every cycle (the user's decision of 2026-10-15 afte
 - [x] Pressing `Esc` while the panel is shown in the viewer hides it and leaves the viewer showing the same item
 - [x] With the panel shown, the arrow keys still move the grid's cursor
 - [x] With the panel shown, `Esc` in the viewer's tag prompt closes the prompt and leaves the panel shown
-- [ ] The grid and viewer no longer draw the sheet behind tiles or pictures: with the panel shown, the window's corners away from the panel look as they do with it hidden
+- [x] The grid and viewer no longer draw the sheet behind tiles or pictures: with the panel shown, the window's corners away from the panel look as they do with it hidden
