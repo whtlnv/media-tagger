@@ -17,7 +17,7 @@ class Zoom:
         at at, from the fitted picture's centre: the picture point under the mouse stays under it."""
         zoomed = self.level * _ZOOM_STEP ** (angle_delta / _WHEEL_NOTCH)
         level = min(_MAX_ZOOM, max(1, zoomed))
-        self.centre = at - (at - self.centre) * (level / self.level)
+        self.centre = at - (at - self.centre) * (level / self.level) if level > 1 else QPointF()
         self.level = level
 
     def shown(self, fitted):

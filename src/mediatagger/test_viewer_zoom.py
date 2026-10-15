@@ -147,3 +147,16 @@ def test_zooming_out_of_a_zoomed_in_image_without_reaching_fitted_keeps_the_imag
     scroll(viewer, -1, at=mouse)  # back to 125 %, not fitted
 
     assert viewer.grab().toImage().pixelColor(mouse) == QColor("blue")
+
+
+def test_zooming_an_image_back_out_to_fitted_after_zooming_in_with_the_mouse_off_its_centre_shows_it_exactly_where_it_was_fitted(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red", width=200, height=100)
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    viewer.resize(300, 300)
+    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    fitted = viewer.grab().toImage()
+    scroll(viewer, 2, at=QPoint(60, 100))
+
+    scroll(viewer, -20, at=viewer.rect().center())  # far past fitted
+
+    assert viewer.grab().toImage() == fitted
