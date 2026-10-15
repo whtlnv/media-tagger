@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QApplication
 
 from mediatagger.image_fit import decode_fitted
 from mediatagger.test_video import make_clip, wait_until_playing
-from mediatagger.test_viewer import make_image, shown_viewer_on
+from mediatagger.test_viewer import make_image, shown_viewer_on, wait_until_loaded
 
 NOTCH = 120
 
@@ -308,3 +308,14 @@ def test_pressing_r_on_a_zoomed_in_video_turns_it_and_keeps_it_zoomed_in(qtbot, 
     qtbot.keyClick(viewer, Qt.Key.Key_R)
 
     assert (engine.video_rotate, engine.video_zoom) == (90, pytest.approx(math.log2(1.2)))
+
+
+def test_moving_to_the_next_video_after_zooming_in_on_a_video_shows_the_next_video_fitted(qtbot, tmp_path):
+    second = make_clip(tmp_path / "IMG_2.mp4", duration=30)
+    viewer, engine = viewer_playing_a_clip_in(qtbot, tmp_path)
+    scroll(viewer, 3, at=QPoint(20, 20))
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Right)
+    wait_until_loaded(engine, second)
+
+    assert (engine.video_zoom, engine.video_pan_x, engine.video_pan_y) == (0, 0, 0)

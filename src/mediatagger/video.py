@@ -21,7 +21,8 @@ class VideoPlayer:
     def show(self, path):
         """Load and play path; True once it has loaded, False if mpv ended it or it didn't load within the timeout."""
         self.engine.loop_file = "inf"
-        self.engine.video_rotate = 0  # before loading, so the new clip's first frame is never drawn turned
+        self.engine.video_rotate = 0  # before loading, so the new clip's first frame is never drawn turned or zoomed
+        self.engine.video_zoom = self.engine.video_pan_x = self.engine.video_pan_y = 0
         try:
             with self.engine.prepare_and_wait_for_event(
                 "start_file", "file_loaded", "end_file", cond=_outcome_of_this_load(), timeout=self.timeout
