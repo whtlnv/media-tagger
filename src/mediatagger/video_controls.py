@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QLabel
 HIDE_DELAY_MS = 3000  # the bar fades after this long without input
 _TRACK = QColor(255, 255, 255, 80)  # the whole length, dimmer than the elapsed part
 _TRACK_HEIGHT = 3  # a thin strip along the bottom edge, clear of the text
-_EDGE = QColor(0, 0, 0, 200)  # around the light text, so it reads over a white frame as well as a black one
+_EDGE = QColor(0, 0, 0, 200)  # around the light text and filled track, so they read over white frames as over black
 _EDGE_OFFSETS = [(dx, dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1) if (dx, dy) != (0, 0)]
 _GEOMETRY_EVENTS = (QEvent.Type.Show, QEvent.Type.Hide, QEvent.Type.Move, QEvent.Type.Resize)
 
@@ -98,7 +98,9 @@ class ProgressBar(QLabel):
         with QPainter(self) as painter:
             top = self.height() - _TRACK_HEIGHT
             painter.fillRect(0, top, self.width(), _TRACK_HEIGHT, _TRACK)
-            painter.fillRect(0, top, int(self.width() * self._fraction), _TRACK_HEIGHT, Qt.GlobalColor.white)
+            filled = int(self.width() * self._fraction)
+            painter.fillRect(0, top - 1, filled, 1, _EDGE)  # so the light line reads over a white frame too
+            painter.fillRect(0, top, filled, _TRACK_HEIGHT, Qt.GlobalColor.white)
             self._draw_edged_text(painter)
 
     def _draw_edged_text(self, painter):

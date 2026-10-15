@@ -327,6 +327,23 @@ def test_over_a_white_video_frame_the_light_elapsed_and_total_text_is_edged_with
     assert min(text_area) < 64  # the text's dark edge shows against the white frame
 
 
+def test_over_a_white_video_frame_the_light_filled_part_of_the_track_is_edged_with_dark_pixels(qtbot):
+    frame = QWidget()
+    frame.setStyleSheet("background: white")
+    qtbot.addWidget(frame)
+    bar = ProgressBar(frame)
+    bar.resize(300, 20)
+    bar.start(SimpleNamespace(duration=60, time_pos=30))
+    frame.show()
+    qtbot.waitExposed(frame)
+    qtbot.waitUntil(lambda: bar.text().startswith("0:30"))
+
+    image = frame.grab(bar.geometry()).toImage()
+
+    assert image.pixelColor(5, 18).lightness() > 200  # the filled part of the track, along the bottom: light
+    assert image.pixelColor(5, 16).lightness() < 64  # just above it: its dark edge against the white frame
+
+
 def test_over_a_black_video_frame_the_progress_bar_outside_its_text_and_track_leaves_the_frame_black(qtbot):
     frame = QWidget()
     frame.setStyleSheet("background: black")

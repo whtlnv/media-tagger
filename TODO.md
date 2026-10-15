@@ -32,4 +32,4 @@ Phase 12 notes for every cycle (Phases 1–11 are delivered — see DONE.md; Pha
 - [x] Over a white video frame, the progress bar outside its text and track leaves the frame white
 - [x] Over a black video frame, the progress bar outside its text and track leaves the frame black
 - [x] Over a white video frame, the light `elapsed / total` text is edged with dark pixels so it stays readable
-- [ ] Over a white video frame, the light filled part of the track is edged with dark pixels so it stays readable
+- [x] Over a white video frame, the light filled part of the track is edged with dark pixels so it stays readable
