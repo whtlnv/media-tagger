@@ -275,3 +275,16 @@ def test_pressing_esc_while_the_panel_is_shown_in_the_viewer_hides_it_and_leaves
     assert not sheet_is_shown(window)
     assert window.stack.currentWidget() is window.viewer
     assert window.viewer.slideshow.current == image
+
+
+def test_with_the_panel_shown_the_arrow_keys_still_move_the_grids_cursor_and_the_grid_keeps_the_focus(qtbot, tmp_path):
+    make_image(tmp_path / "b.png", "red")
+    grid, _ = grid_of_one_red_image(qtbot, tmp_path)
+    grid.setCurrentIndex(grid.model().index(0, 0))
+    qtbot.keyClick(grid, Qt.Key.Key_H)
+
+    qtbot.keyClick(grid, Qt.Key.Key_Right)
+
+    assert grid.currentIndex().row() == 1
+    assert grid.window().focusWidget() is grid
+    assert sheet_is_shown(grid.window())
