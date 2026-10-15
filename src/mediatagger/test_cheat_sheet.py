@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from mediatagger.cheat_sheet import GRID_KEYS
+from mediatagger.cheat_sheet import GRID_KEYS, VIEWER_KEYS
 
 DESIGN = Path(__file__).parents[2] / "DESIGN.md"
 
@@ -16,4 +16,11 @@ def test_the_grids_cheat_sheet_lists_exactly_the_keys_of_designs_grid_table_in_o
     keys = [key for key, _ in GRID_KEYS]
 
     assert keys == design_table_keys("Grid")
+    assert "h" in keys
+
+
+def test_the_viewers_cheat_sheet_lists_exactly_the_keys_of_designs_viewer_table_in_order_h_included():
+    keys = [key for key, _ in VIEWER_KEYS]
+
+    assert keys == design_table_keys("Viewer")
     assert "h" in keys

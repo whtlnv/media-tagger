@@ -1,7 +1,8 @@
 from PySide6.QtCore import QSize, Qt
-from PySide6.QtGui import QColor, qBlue, qGreen, qRed
+from PySide6.QtGui import QColor, QImage, QPainter, qBlue, qGreen, qRed
 from PySide6.QtWidgets import QStackedWidget
 
+from mediatagger.cheat_sheet import GRID_KEYS, VIEWER_KEYS, CheatSheet
 from mediatagger.grid import TILE_ROLE
 from mediatagger.image_fit import fitted_rect
 from mediatagger.test_viewer import SILENT, make_image
@@ -88,3 +89,23 @@ def test_in_the_windows_viewer_pressing_h_draws_dim_text_in_the_black_around_the
     assert 40 <= brightest <= 128
     inside = [(x, y) for y in range(picture.top(), picture.bottom() + 1) for x in range(picture.left(), picture.right() + 1)]
     assert all(after.pixel(x, y) == before.pixel(x, y) for x, y in inside)
+
+
+def sheet_on_black(size, keys):
+    """What a shown cheat sheet of these keys looks like alone on black, at this size."""
+    image = QImage(size, QImage.Format.Format_RGB32)
+    image.fill(QColor("black"))
+    painter = QPainter(image)
+    CheatSheet(shown=True).paint(painter, image.rect(), keys, QColor("white"))
+    painter.end()
+    return image
+
+
+def test_the_windows_viewer_shows_the_viewers_keys_around_the_picture_rather_than_the_grids(qtbot, tmp_path):
+    viewer, picture = viewer_of_one_red_image(qtbot, tmp_path)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_H)
+
+    around = pixels_outside(viewer.grab().toImage(), picture)
+    assert around == pixels_outside(sheet_on_black(viewer.size(), VIEWER_KEYS), picture)
+    assert around != pixels_outside(sheet_on_black(viewer.size(), GRID_KEYS), picture)

@@ -126,6 +126,7 @@ Results show under a `Search: <query>` breadcrumb; a result whose path no longer
 | `v` | show the progress bar (video), nothing else |
 | `o` | open a folder (picker), as if dropped |
 | mouse wheel | zoom in (up) / out (down) about the point under the mouse: 100 %–300 % in steps of 10 points (images and videos) |
+| `h` | show / hide the key cheat sheet behind the picture |
 
 - Images fit to screen.
 - Zoom: the picture point under the mouse stays under it, except that a picture bigger than the window always covers it and a smaller one stays inside it (no black between picture and edge). Back at 100 % it is centred again. Every item opens at 100 %; `r` keeps the zoom. No zoom indicator.
