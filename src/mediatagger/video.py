@@ -57,6 +57,9 @@ class VideoPlayer:
         if key == "[":
             self._step_speed(-1)
             return
+        if key == "r":
+            self.engine.video_rotate = self.engine.video_rotate + 90
+            return
         if key == "m":
             self.engine.mute = not self.engine.mute
             return

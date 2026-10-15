@@ -160,6 +160,14 @@ def test_a_video_shown_after_one_that_was_sped_up_starts_playing_at_1x(playing_v
     assert engine.speed == 1
 
 
+def test_pressing_r_on_a_video_turns_it_90_degrees_clockwise(playing_video):
+    player, engine = playing_video
+
+    player.press("r")
+
+    assert engine.video_rotate == 90
+
+
 def test_pressing_i_f_right_or_left_on_a_playing_video_does_not_pause_it(playing_video):
     player, engine = playing_video
 
