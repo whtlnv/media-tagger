@@ -168,6 +168,15 @@ def test_pressing_r_on_a_video_turns_it_90_degrees_clockwise(playing_video):
     assert engine.video_rotate == 90
 
 
+def test_pressing_r_four_times_on_a_video_turns_it_back_to_unrotated(playing_video):
+    player, engine = playing_video
+
+    for _ in range(4):
+        player.press("r")
+
+    assert engine.video_rotate == 0
+
+
 def test_pressing_i_f_right_or_left_on_a_playing_video_does_not_pause_it(playing_video):
     player, engine = playing_video
 

@@ -11,7 +11,7 @@ Phase 13 notes for every cycle (Phases 1–12 are delivered — see DONE.md; Pha
 - [x] The progress bar of a video playing at 1× reads its time with no speed (e.g. `0:00 / 0:30`)
 - [x] In the viewer, pressing `]` on a playing video whose progress bar is hidden shows the bar at once, already reading ` · 1.25×`
 - [x] Pressing `r` on a video turns it 90° clockwise
-- [ ] Pressing `r` four times on a video turns it back to unrotated
+- [x] Pressing `r` four times on a video turns it back to unrotated
 - [ ] A video shown after one that was rotated starts unrotated
 - [ ] An unrotated landscape video is drawn whole across the full width of a square surface, with black above and below it
 - [ ] A landscape video turned 90° is drawn whole across the full height of a square surface, with black left and right of it
