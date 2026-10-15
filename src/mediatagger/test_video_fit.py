@@ -5,10 +5,12 @@ from contextlib import contextmanager
 
 import mpv
 import pytest
+from PySide6.QtCore import QPointF, QRect
 
 from mediatagger.mpv_surface import fence_free_lookup
 from mediatagger.test_video import make_clip, wait_until_playing
 from mediatagger.video import VideoPlayer, new_engine
+from mediatagger.zoom import Zoom, video_fitted
 
 pytestmark = pytest.mark.skipif(sys.platform != "darwin", reason="draws through a headless macOS OpenGL context")
 
@@ -105,3 +107,19 @@ def test_a_landscape_video_turned_90_degrees_is_drawn_whole_across_the_full_heig
         player.press("r")
 
         assert settled_box(drawn_box, (25, 0, 174, 199)) == (25, 0, 174, 199)
+
+
+def test_zooming_in_on_a_playing_video_with_the_mouse_off_its_centre_keeps_the_video_point_under_the_mouse_under_the_mouse(tmp_path):
+    clip = make_clip(tmp_path / "clip.mp4", duration=30)  # 64x48: on a 300x150 surface, fitted 200x150 at x 50..249
+    window = QRect(0, 0, 300, 150)
+    with player_drawing_into(300, 150) as (player, drawn_box):
+        player.show(clip)
+        wait_until_playing(player.engine)
+        assert settled_box(drawn_box, (50, 0, 249, 149)) == (50, 0, 249, 149)
+        zoom = Zoom()
+
+        zoom.wheel(120, QPointF(100, 75), video_fitted(player.engine, window), window)
+        zoom.apply_to(player.engine)
+
+        # 110 % about x 100: 220 wide from x 45, so the point 50 pixels in from the left edge stays at x 100
+        assert settled_box(drawn_box, (45, 0, 264, 149)) == (45, 0, 264, 149)

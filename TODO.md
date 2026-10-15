@@ -34,7 +34,7 @@ Phase 14 notes for every cycle (Phases 1–13 are delivered — see DONE.md; Pha
 - [x] Scrolling the mouse wheel down one notch over a fitted playing video leaves it fitted
 - [x] Scrolling the mouse wheel down one notch over a zoomed-in video shows it smaller than before, still no smaller than fitted
 - [x] Scrolling the mouse wheel up many notches over a video stops at three times its fitted size
-- [ ] Zooming in on a playing video with the mouse off its centre keeps the video point under the mouse under the mouse
+- [x] Zooming in on a playing video with the mouse off its centre keeps the video point under the mouse under the mouse
 - [ ] Zooming in on a video turned 90° with `r`, with the mouse off its centre, keeps the video point under the mouse under the mouse
 - [ ] Pressing `r` on a zoomed-in video turns it and keeps it zoomed in
 - [ ] Moving to the next video after zooming in on a video shows the next video fitted
