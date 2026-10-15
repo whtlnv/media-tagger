@@ -125,8 +125,10 @@ Results show under a `Search: <query>` breadcrumb; a result whose path no longer
 | `r` | turn 90° clockwise (video), still fitted whole to the screen |
 | `v` | show the progress bar (video), nothing else |
 | `o` | open a folder (picker), as if dropped |
+| mouse wheel | zoom in (up) / out (down) about the point under the mouse: 100 %–300 % in steps of 10 points (images and videos) |
 
 - Images fit to screen.
+- Zoom: the picture point under the mouse stays under it, except that a picture bigger than the window always covers it and a smaller one stays inside it (no black between picture and edge). Back at 100 % it is centred again. Every item opens at 100 %; `r` keeps the zoom. No zoom indicator.
 - Video autoplays **with sound**, loops, at 1× and unrotated. Space never pauses.
 - While a video plays, a progress bar (`1:23 / 4:56`, `0:00:05 / 1:02:03` from an hour, `1:23 / 4:56 · 1.25×` when not at 1×) sits along its bottom above the status bar; any key shows it, and it hides after 3 s without input.
 - Tag overlay in a corner: own tags normal, inherited tags dimmed.
