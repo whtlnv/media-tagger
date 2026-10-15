@@ -9,7 +9,7 @@ from mediatagger.folder import is_openable, is_video
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
 from mediatagger.image_fit import decode_fitted, fitted_rect
 from mediatagger.mpv_surface import MpvSurface
-from mediatagger.status_bar import CORNER_MARGIN, StatusBar, TagOverlay, overlay_label
+from mediatagger.status_bar import CORNER_MARGIN, StatusBar, TagOverlay, centre_in, overlay_label, pin_top_centre
 from mediatagger.slideshow import Slideshow
 from mediatagger.tag_prompt import TagPrompt
 from mediatagger.video import VideoPlayer, new_engine
@@ -75,22 +75,10 @@ class Viewer(QWidget):
         if self.status_bar.parent() is self:
             self.status_bar.place_along_the_bottom_of(self.rect())
         self.progress_bar.place(self.rect(), clear_at_the_bottom=self.status_bar.sizeHint().height())
-        self._centre(self.placeholder)
-        self._pin_top_centre(self.read_only_banner)
+        centre_in(self.placeholder, self.rect())
+        pin_top_centre(self.read_only_banner, self.rect())
         self.tag_overlay.pin(self._pin_top_right)
         self.tag_prompt.place()
-
-    def _centre(self, label):
-        label.adjustSize()
-        frame = label.geometry()
-        frame.moveCenter(self.rect().center())
-        label.setGeometry(frame)
-
-    def _pin_top_centre(self, label):
-        frame = label.geometry()
-        frame.moveCenter(self.rect().center())
-        frame.moveTop(CORNER_MARGIN)
-        label.setGeometry(frame)
 
     def _pin_top_right(self, label):
         frame = label.geometry()
@@ -227,7 +215,7 @@ class Viewer(QWidget):
 
     def _show_message(self, text):
         self.placeholder.setText(text)
-        self._centre(self.placeholder)
+        centre_in(self.placeholder, self.rect())
         self.placeholder.show()
         self.info.hide()
         self._hide_video()

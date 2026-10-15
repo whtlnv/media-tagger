@@ -19,6 +19,22 @@ def overlay_label(text, parent):
     return label
 
 
+def centre_in(label, bounds):
+    """Size label to its text and centre it in bounds."""
+    label.adjustSize()
+    frame = label.geometry()
+    frame.moveCenter(bounds.center())
+    label.setGeometry(frame)
+
+
+def pin_top_centre(label, bounds):
+    """Centre label across the top of bounds, a corner margin down."""
+    frame = label.geometry()
+    frame.moveCenter(bounds.center())
+    frame.moveTop(CORNER_MARGIN)
+    label.setGeometry(frame)
+
+
 class TagOverlay:
     """A file's own tags and, dimmed to their right, its inherited tags: two labels over the parent's top-right corner."""
 
