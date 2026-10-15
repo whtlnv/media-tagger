@@ -24,4 +24,4 @@ Phase 15 notes for every cycle (Phases 1–14 are delivered — see DONE.md; Pha
 - [x] Toggling the sheet while the state file would lie on the drive being viewed writes no state file
 - [x] Typing `h` into the grid's tag prompt puts an `h` in the prompt and leaves the sheet as it was
 - [x] Typing `h` into the viewer's tag prompt puts an `h` in the prompt and leaves the sheet as it was
-- [ ] Typing `h` into the search bar puts an `h` in the search and leaves the sheet as it was
+- [x] Typing `h` into the search bar puts an `h` in the search and leaves the sheet as it was

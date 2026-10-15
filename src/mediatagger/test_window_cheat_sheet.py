@@ -248,3 +248,14 @@ def test_typing_h_into_the_viewers_tag_prompt_puts_an_h_in_the_prompt_and_leaves
 
     assert prompt.text() == "h"
     assert window.viewer.cheat_sheet.shown is False
+
+
+def test_typing_h_into_the_search_bar_puts_an_h_in_the_search_and_leaves_the_sheet_as_it_was(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+
+    qtbot.keyClick(window.search_bar, Qt.Key.Key_H)
+
+    assert window.search_bar.text() == "h"
+    assert not grid_background_shows_text(stack.currentWidget())
