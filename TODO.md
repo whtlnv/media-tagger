@@ -28,7 +28,7 @@ Phase 16 notes for every cycle (Phases 1–15 are delivered — see DONE.md; Pha
 - [x] In the window, opening a folder on a fake drive whose root holds a config naming `type:` and `size:` shows the grid with its untagged file's tile marked `✗2`
 - [x] In the window, opening a folder on a fake drive with no config shows no `✗` badge on any tile
 - [x] In the window, opening a drive whose config isn't valid JSON shows the "can't be read" text in the status bar and no `✗` badge on any tile, and the app keeps working (the grid opens)
-- [ ] In the window, after opening a drive with an invalid config, switching to another drive (e.g. by a drop) with a valid config clears the status-bar text and marks that drive's tiles by its own config
+- [x] In the window, after opening a drive with an invalid config, switching to another drive (e.g. by a drop) with a valid config clears the status-bar text and marks that drive's tiles by its own config
 - [ ] In the window's grid, tagging the cursor's file `type:photo` with the tag prompt changes its mark from `✗2` to `✗1` at once, and adding `size:big` then removes the mark
 - [ ] In the window's results grid, tagging a result file with a missing root updates its mark at once
 - [ ] In the window, tagging a result file in the viewer opened from a results grid and pressing `Esc` back to the results shows its updated mark (and tag count)
