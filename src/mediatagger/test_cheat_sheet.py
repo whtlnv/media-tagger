@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from mediatagger.cheat_sheet import GRID_KEYS, LAUNCH_KEYS, VIEWER_KEYS
 
 DESIGN = Path(__file__).parents[2] / "DESIGN.md"
@@ -12,22 +14,9 @@ def design_table_keys(screen):
     return [row.split("|")[1].strip().replace("`", "") for row in rows]
 
 
-def test_the_grids_cheat_sheet_lists_exactly_the_keys_of_designs_grid_table_in_order_h_included():
-    keys = [key for key, _ in GRID_KEYS]
+@pytest.mark.parametrize(("sheet", "screen"), [(GRID_KEYS, "Grid"), (VIEWER_KEYS, "Viewer"), (LAUNCH_KEYS, "Launch")])
+def test_a_screens_cheat_sheet_lists_exactly_the_keys_of_designs_table_for_that_screen_in_order_h_included(sheet, screen):
+    keys = [key for key, _ in sheet]
 
-    assert keys == design_table_keys("Grid")
-    assert "h" in keys
-
-
-def test_the_viewers_cheat_sheet_lists_exactly_the_keys_of_designs_viewer_table_in_order_h_included():
-    keys = [key for key, _ in VIEWER_KEYS]
-
-    assert keys == design_table_keys("Viewer")
-    assert "h" in keys
-
-
-def test_the_launch_screens_cheat_sheet_lists_exactly_the_keys_of_designs_launch_table_in_order_h_included():
-    keys = [key for key, _ in LAUNCH_KEYS]
-
-    assert keys == design_table_keys("Launch")
+    assert keys == design_table_keys(screen)
     assert "h" in keys
