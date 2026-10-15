@@ -1,4 +1,8 @@
-from mediatagger.grid import MISSING_BADGE, Grid
+from PySide6.QtCore import QRect
+from PySide6.QtGui import QImage, QPainter
+from PySide6.QtWidgets import QStyleOptionViewItem
+
+from mediatagger.grid import MISSING_BADGE, TAG_BADGE, Grid
 from mediatagger.library import Library
 from mediatagger.test_folder import touch
 from mediatagger.test_grid import painted_texts
@@ -53,3 +57,33 @@ def test_a_grid_with_no_required_roots_or_no_library_has_no_missing_badge(qtbot,
         qtbot.addWidget(grid)
 
     assert [any(MISSING_BADGE in text for text in painted_texts(grid, 0)) for grid in grids] == [False, False]
+
+
+class PlacementRecordingPainter(QPainter):
+    """Records where each text lands: the rectangle it takes up inside the one it was drawn into."""
+
+    def __init__(self, device):
+        super().__init__(device)
+        self.placed = {}
+
+    def drawText(self, *args):
+        if isinstance(args[0], QRect) and len(args) == 3:
+            self.placed[args[2]] = self.boundingRect(*args)
+        super().drawText(*args)
+
+
+def test_on_a_tile_with_both_badges_the_missing_badge_sits_left_of_the_tag_badge_in_the_top_right_corner(qtbot, tmp_path):
+    library = Library.create(tmp_path)
+    touch(tmp_path, "beach.jpg")
+    library.enter(tmp_path / "beach.jpg", "beach family")
+    grid = Grid(tmp_path, library=library, required_roots=ROOTS)
+    qtbot.addWidget(grid)
+    image = QImage(200, 200, QImage.Format.Format_ARGB32)
+    painter = PlacementRecordingPainter(image)
+    option = QStyleOptionViewItem()
+    option.rect = QRect(0, 0, 200, 200)
+    grid.itemDelegate().paint(painter, option, grid.model().index(0, 0))
+    painter.end()
+    missing, tags = painter.placed[f"{MISSING_BADGE}2"], painter.placed[f"{TAG_BADGE}2"]
+
+    assert (missing.right() < tags.left(), missing.top() == tags.top(), tags.right() > 160) == (True, True, True)

@@ -146,10 +146,12 @@ class _TileDelegate(QStyledItemDelegate):
         if tile.kind is _Kind.VIDEO:
             badge = VIDEO_BADGE if tile.duration is None else f"{VIDEO_BADGE} {format_duration(tile.duration)}"
             _draw_backed_badge(painter, picture_area, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignRight, badge)
-        if tile.missing:
-            _draw_backed_badge(painter, picture_area, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{MISSING_BADGE}{tile.missing}")
+        top_right = picture_area  # the top-right badges read, left to right: missing roots, tags
         if tile.tag_count:
-            _draw_backed_badge(painter, picture_area, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{TAG_BADGE}{tile.tag_count}")
+            tag_badge = _draw_backed_badge(painter, top_right, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{TAG_BADGE}{tile.tag_count}")
+            top_right = top_right.adjusted(0, 0, tag_badge.left() - top_right.right(), 0)  # a badge's padding apart
+        if tile.missing:
+            _draw_backed_badge(painter, top_right, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{MISSING_BADGE}{tile.missing}")
         if tile.kind is _Kind.FOLDER and tile.thumbnail is not None:  # its first image: marked so it can't pass for one
             _draw_backed_badge(painter, picture_area, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft, FOLDER_GLYPH)
 
@@ -187,7 +189,8 @@ def _draw_glyph(painter, area, glyph):
 
 
 def _draw_backed_badge(painter, rect, flags, badge):
-    """White text on a dark, rounded backing: reads over a white picture, a black one, and anything between."""
+    """White text on a dark, rounded backing: reads over a white picture, a black one, and anything between. Returns
+    where the backing went."""
     painter.save()
     font = painter.font()
     font.setBold(True)
@@ -201,6 +204,7 @@ def _draw_backed_badge(painter, rect, flags, badge):
     painter.setPen(Qt.GlobalColor.white)
     painter.drawText(inside, flags, badge)
     painter.restore()
+    return backing
 
 
 class Grid(QListView):

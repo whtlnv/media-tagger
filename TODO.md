@@ -21,7 +21,7 @@ Phase 16 notes for every cycle (Phases 1–15 are delivered — see DONE.md; Pha
 - [x] A file whose missing root is covered by a tag inherited from its folder or an ancestor folder is not counted as missing it (`✗1` when only `type:` is inherited and `size:` is missing)
 - [x] A folder tile, even an untagged one, never paints a `✗` badge
 - [x] A grid with no required roots, or with no library, paints no `✗` badge on any tile
-- [ ] On a tile with both badges, the `✗` badge sits in the top row to the left of the tag-count badge, the two not overlapping, the tag-count badge still in the top-right corner
+- [x] On a tile with both badges, the `✗` badge sits in the top row to the left of the tag-count badge, the two not overlapping, the tag-count badge still in the top-right corner
 - [ ] The `✗` badge reads white on a dark backing over both a white and a black thumbnail, like the tag-count badge
 - [ ] A results grid given required roots marks each result file by its effective tags (own tags and those of its ancestor folders in the library), and never marks a result folder or a missing result
 - [ ] After a first grid has been shown, opening and showing the grid of a folder of 5,000 files in a library where half are tagged, with two required roots, takes under 150 ms
