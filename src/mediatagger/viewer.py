@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from PySide6.QtCore import QPoint, QRect, Qt
+from PySide6.QtCore import QPoint, Qt
 from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import QFileDialog, QWidget
 
@@ -14,13 +14,12 @@ from mediatagger.slideshow import Slideshow
 from mediatagger.tag_prompt import TagPrompt
 from mediatagger.video import VideoPlayer, new_engine
 from mediatagger.video_controls import ProgressBar
+from mediatagger.zoom import Zoom
 
 _PLAYER_OPTIONS = {"vo": "libmpv", "vd_lavc_dr": "no"}  # mpv_surface hands mpv no GL fences, which direct rendering needs
 _VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up", Qt.Key.Key_Down: "Down", Qt.Key.Key_Return: "Enter"}
 _VIDEO_KEYS |= {Qt.Key.Key_0 + digit: str(digit) for digit in range(10)}
 _VIDEO_KEYS |= {Qt.Key.Key_BracketRight: "]", Qt.Key.Key_BracketLeft: "[", Qt.Key.Key_R: "r"}
-_WHEEL_NOTCH = 120  # angleDelta units per mouse-wheel notch
-_ZOOM_STEP = 1.25
 _SLIDESHOW_KEYS = {Qt.Key.Key_Left: "Left", Qt.Key.Key_Right: "Right", Qt.Key.Key_Space: "Space"}
 UNSUPPORTED_TEXT = "Unsupported"
 READ_ONLY_BANNER_TEXT = "This drive is read-only — tags can't be saved"
@@ -44,7 +43,7 @@ class Viewer(QWidget):
         self.video_player = VideoPlayer(new_engine(**{**_PLAYER_OPTIONS, **(player_options or {})}))
         self.surface = None
         self._decoded_key = self._decoded = None
-        self._zoom = 1
+        self.zoom = Zoom()
         self.tag_prompt = TagPrompt(self, self.status_bar, on_close=self._show_tag_overlay)
         self.tag_overlay = TagOverlay(self)
         self.info = overlay_label("", self)
@@ -107,14 +106,10 @@ class Viewer(QWidget):
         if self.slideshow is None:
             return
         image = self._current_image()
-        target = fitted_rect(image.size(), self.rect())
-        zoomed = QRect(QPoint(), target.size() * self._zoom)
-        zoomed.moveCenter(target.center())
-        painter.drawImage(zoomed, image)
+        painter.drawImage(self.zoom.shown(fitted_rect(image.size(), self.rect())), image)
 
     def wheelEvent(self, event):
-        notches = event.angleDelta().y() / _WHEEL_NOTCH
-        self._zoom = max(1, self._zoom * _ZOOM_STEP ** notches)
+        self.zoom.wheel(event.angleDelta().y())
         self.update()
 
     def dragEnterEvent(self, event):

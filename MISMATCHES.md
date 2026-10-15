@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-14 23:06 · `src/mediatagger/test_viewer_zoom.py::test_scrolling_the_mouse_wheel_up_many_notches_over_an_image_stops_at_three_times_its_fitted_size`
+- Behavior: Scrolling the mouse wheel up many notches over an image stops at three times its fitted size
+- Predicted: AssertionError — unbounded zoom (1.25^20) makes the blue marker fill the whole 300-row centre column, 300 vs ~90
+- Actual: AssertionError — 268 blue rows vs ~90
+- Type: right-reason mismatch
+- Resolution: Still the missing cap; the ~32 non-blue rows come from the viewer's overlay widgets (status bar / info label) drawn over the centre column, so the marker count can't reach the full viewer height — test kept as is.
+
 ## 2026-10-14 18:37 · `src/mediatagger/test_video_controls.py::test_over_a_black_video_frame_the_progress_bar_outside_its_text_and_track_leaves_the_frame_black`
 - Behavior: Over a black video frame, the progress bar outside its text and track leaves the frame black
 - Predicted: passes on first run (stated up front) — the previous cycle (9e5f433) removed the whole backdrop, and even the old dark backdrop left black pixels black
