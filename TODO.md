@@ -7,15 +7,3 @@ Phase 15 follow-up notes for every cycle (the user's decision of 2026-10-15 afte
 - `h` and `Esc` are caught by `CheatSheet.watch(widget)` (event filter on the viewer and every grid, as now): `h` toggles; `Esc` while shown hides it and is consumed (doesn't quit or go back) — except while a line edit (tag prompt) has focus, where `Esc` keeps closing the prompt. Every other key passes through untouched.
 - Shown/hidden stays remembered in `state.json` exactly as now. The background painting in the grid and viewer, and the grid's full repaint on scroll, go.
 
-- [x] In the window's grid, pressing `h` draws a panel of the grid's keys over the middle of the window, on top of the tiles
-- [x] The tiles stay visible through the panel: a red tile under it still shows red, darkened
-- [x] In the window's grid, pressing `h` a second time removes the panel, leaving the window as it was before
-- [x] In the window's viewer showing an image, pressing `h` draws a panel of the viewer's keys over the middle of the window, on top of the picture
-- [x] On the window's empty launch screen, pressing `h` draws a panel of the launch screen's keys
-- [x] With the panel shown in the grid, opening an image shows the viewer's keys, and `Esc` back to the grid shows the grid's keys again
-- [x] With a video playing in the window's viewer, the shown panel is stacked above the video
-- [x] Pressing `Esc` while the panel is shown in the grid hides it and leaves the window open on the grid
-- [x] Pressing `Esc` while the panel is shown in the viewer hides it and leaves the viewer showing the same item
-- [x] With the panel shown, the arrow keys still move the grid's cursor
-- [x] With the panel shown, `Esc` in the viewer's tag prompt closes the prompt and leaves the panel shown
-- [x] The grid and viewer no longer draw the sheet behind tiles or pictures: with the panel shown, the window's corners away from the panel look as they do with it hidden

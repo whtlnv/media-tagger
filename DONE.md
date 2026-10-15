@@ -1,3 +1,15 @@
+- [x] 2026-10-15 · In the window's grid, pressing `h` draws a panel of the grid's keys over the middle of the window, on top of the tiles
+- [x] 2026-10-15 · The tiles stay visible through the panel: a red tile under it still shows red, darkened
+- [x] 2026-10-15 · In the window's grid, pressing `h` a second time removes the panel, leaving the window as it was before
+- [x] 2026-10-15 · In the window's viewer showing an image, pressing `h` draws a panel of the viewer's keys over the middle of the window, on top of the picture
+- [x] 2026-10-15 · On the window's empty launch screen, pressing `h` draws a panel of the launch screen's keys
+- [x] 2026-10-15 · With the panel shown in the grid, opening an image shows the viewer's keys, and `Esc` back to the grid shows the grid's keys again
+- [x] 2026-10-15 · With a video playing in the window's viewer, the shown panel is stacked above the video
+- [x] 2026-10-15 · Pressing `Esc` while the panel is shown in the grid hides it and leaves the window open on the grid
+- [x] 2026-10-15 · Pressing `Esc` while the panel is shown in the viewer hides it and leaves the viewer showing the same item
+- [x] 2026-10-15 · With the panel shown, the arrow keys still move the grid's cursor
+- [x] 2026-10-15 · With the panel shown, `Esc` in the viewer's tag prompt closes the prompt and leaves the panel shown
+- [x] 2026-10-15 · The grid and viewer no longer draw the sheet behind tiles or pictures: with the panel shown, the window's corners away from the panel look as they do with it hidden
 - [x] 2026-10-15 · In the window's folder grid, pressing `h` draws dim text over the grid's empty background, behind the tiles, where before the background was plain
 - [x] 2026-10-15 · In the window's folder grid, pressing `h` a second time leaves the grid's empty background plain again
 - [x] 2026-10-15 · The grid's cheat sheet lists exactly the keys of DESIGN.md's grid table, in order, `h` included
