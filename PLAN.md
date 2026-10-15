@@ -4,12 +4,7 @@ Delivery phases, in order. Decisions, key maps and rules live in `DESIGN.md`; ev
 Each phase must end with its behavior reachable from the shipped `mediatagger` command, not only from tests.
 
 
-Phases 1–13 are delivered. Their specs are in git history (`PLAN.md` at `fcd5d3b` for 1–11, at `ca048de` for 12, at `76e644f` for 13) and their items in `DONE.md`.
-
-## Phase 14 — Zoom
-
-- **Mouse-wheel zoom on images and videos.** Scrolling up zooms in, scrolling down zooms out, from 100 % (fitted, as today) to 300 %, in small steps. The point under the mouse stays under the mouse while zooming. Never below 100 %.
-- Zoom resets to 100 % when moving to another item. Rotation (Phase 13) and zoom work together.
+Phases 1–14 are delivered. Their specs are in git history (`PLAN.md` at `fcd5d3b` for 1–11, at `ca048de` for 12, at `76e644f` for 13, at `5ba4a0a` for 14) and their items in `DONE.md`.
 
 ## Phase 15 — Key cheat sheet
 
