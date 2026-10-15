@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-15 01:26 · `src/mediatagger/test_viewer_zoom.py::test_zooming_in_on_an_image_with_the_mouse_near_its_bottom_right_corner_keeps_the_image_point_under_the_mouse_under_the_mouse`
+- Behavior: Zooming in on an image with the mouse near its bottom-right corner keeps the image point under the mouse under the mouse
+- Predicted: passes on first run — the top-left cycle's `Zoom.wheel` already scales about any cursor point (`centre = at - (at - centre) * ratio`)
+- Actual: passes (1 passed)
+- Type: passed unexpectedly (relative to the TODO plan, which expected a separate cycle; predicted by /red)
+- Resolution: The test still tells the two cases apart: if the zoom kept the window centre fixed, the mouse at (230, 230) would land on picture pixel ≈214 (white, outside the 227..233 marker). No tighter test fits the spec's "within a pixel or two" tolerance, so I kept it as a regression pin. The item was already delivered by the top-left cycle and needs no /green.
+
 ## 2026-10-14 23:21 · `src/mediatagger/test_viewer_zoom.py::test_scrolling_the_mouse_wheel_up_many_notches_over_an_image_stops_at_three_times_its_fitted_size`
 - Behavior: Scrolling the mouse wheel up many notches over an image stops at three times its fitted size
 - Predicted: AssertionError — uncapped 1.25-per-notch zoom fills the centre column (~270 rows) instead of 3 × 30 fitted rows

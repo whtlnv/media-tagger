@@ -114,3 +114,21 @@ def test_zooming_in_on_an_image_with_the_mouse_near_its_top_left_corner_keeps_th
     scroll(viewer, 1, at=mouse)
 
     assert viewer.grab().toImage().pixelColor(mouse) == QColor("blue")
+
+
+def test_zooming_in_on_an_image_with_the_mouse_near_its_bottom_right_corner_keeps_the_image_point_under_the_mouse_under_the_mouse(qtbot, tmp_path):
+    picture = QImage(300, 300, QImage.Format.Format_RGB32)  # the window's aspect, so the zoomed picture always covers it
+    picture.fill(QColor("white"))
+    for y in range(227, 234):
+        for x in range(227, 234):
+            picture.setPixelColor(x, y, QColor("blue"))  # a 7x7 marker around (230, 230), clear of the status bar
+    picture.save(str(tmp_path / "IMG_1.png"))
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    viewer.resize(300, 300)
+    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    mouse = QPoint(230, 230)
+    assert viewer.grab().toImage().pixelColor(mouse) == QColor("blue")
+
+    scroll(viewer, 1, at=mouse)
+
+    assert viewer.grab().toImage().pixelColor(mouse) == QColor("blue")
