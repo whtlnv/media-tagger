@@ -294,7 +294,7 @@ class Window(QWidget):
             self._open(folder)
 
     def _open(self, path):
-        if isinstance(self.stack.currentWidget(), Grid):  # a tile's Enter, or a drop onto the grid
+        if isinstance(self.stack.currentWidget(), Grid):  # a tile's Enter, a drop onto the grid, or a folder picked from it
             self._stop_thumbnails_of(self.stack.currentWidget())
         self.viewer.open(path)
         self.stack.setCurrentWidget(self.viewer)
