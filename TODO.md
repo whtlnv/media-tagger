@@ -13,7 +13,7 @@ Phase 15 follow-up notes for every cycle (the user's decision of 2026-10-15 afte
 - [x] In the window's viewer showing an image, pressing `h` draws a panel of the viewer's keys over the middle of the window, on top of the picture
 - [x] On the window's empty launch screen, pressing `h` draws a panel of the launch screen's keys
 - [x] With the panel shown in the grid, opening an image shows the viewer's keys, and `Esc` back to the grid shows the grid's keys again
-- [ ] With a video playing in the window's viewer, the shown panel is stacked above the video
+- [x] With a video playing in the window's viewer, the shown panel is stacked above the video
 - [ ] Pressing `Esc` while the panel is shown in the grid hides it and leaves the window open on the grid
 - [ ] Pressing `Esc` while the panel is shown in the viewer hides it and leaves the viewer showing the same item
 - [ ] With the panel shown, the arrow keys still move the grid's cursor

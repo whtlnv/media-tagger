@@ -1,11 +1,12 @@
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QImage, QPainter, qGreen, qRed
-from PySide6.QtWidgets import QStackedWidget
+from PySide6.QtWidgets import QStackedWidget, QWidget
 
 from mediatagger.cheat_sheet import GRID_KEYS, LAUNCH_KEYS, VIEWER_KEYS, draw_sheet
 from mediatagger.grid import TILE_ROLE
 from mediatagger.library import Library
-from mediatagger.test_viewer import SILENT, make_image
+from mediatagger.test_video import make_clip
+from mediatagger.test_viewer import SILENT, make_image, make_surface_ready
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, visible_tag_prompts
 from mediatagger.test_window import window_showing_the_grid_with_its_cursor_on_its_first_tile
 from mediatagger.test_window_search import search_for
@@ -230,3 +231,16 @@ def test_with_the_panel_shown_in_the_grid_opening_an_image_shows_the_viewers_key
     assert panel_lists(window, VIEWER_KEYS)
     qtbot.keyClick(window.viewer, Qt.Key.Key_Escape)
     assert panel_lists(window, GRID_KEYS)
+
+
+def test_with_a_video_playing_in_the_windows_viewer_the_shown_panel_is_stacked_above_the_video(qtbot, tmp_path):
+    window = window_on(qtbot, make_clip(tmp_path / "IMG_1.mp4"))
+    make_surface_ready(window.viewer)
+    qtbot.waitUntil(window.viewer.progress_bar.isVisible, timeout=5000)  # playing
+
+    qtbot.keyClick(window.viewer, Qt.Key.Key_H)
+
+    stacked_bottom_to_top = [child for child in window.children() if isinstance(child, QWidget)]  # Qt keeps siblings in stacking order
+    assert window.viewer.surface.isVisible() and window.stack.isAncestorOf(window.viewer.surface)
+    assert stacked_bottom_to_top.index(window.cheat_sheet) > stacked_bottom_to_top.index(window.stack)
+    assert sheet_is_shown(window)
