@@ -239,3 +239,18 @@ def test_scrolling_several_notches_over_a_zoomed_in_photo_larger_than_the_window
         viewer.grab()
 
     assert len(decodes) <= 1
+
+
+def test_moving_to_the_next_item_after_zooming_in_on_an_image_then_back_shows_that_image_fitted_again(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red", width=200, height=100)
+    make_image(tmp_path / "IMG_2.png", "blue")
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    viewer.resize(300, 300)
+    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    fitted = viewer.grab().toImage()
+    scroll(viewer, 3, at=QPoint(60, 100))
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Right)
+    qtbot.keyClick(viewer, Qt.Key.Key_Left)
+
+    assert viewer.grab().toImage() == fitted

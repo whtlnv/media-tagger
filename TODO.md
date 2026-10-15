@@ -29,7 +29,7 @@ Phase 14 notes for every cycle (Phases 1–13 are delivered — see DONE.md; Pha
 - [x] A wide image zoomed in with the mouse near the top of the picture, while still shorter than the window, never hangs off the window's top while black shows below it
 - [x] One wheel notch up from fitted shows an image at 110 % of its fitted size (steps of 10 percentage points)
 - [x] Scrolling the wheel several notches over a zoomed-in photo larger than the window decodes it at most once more, not once per notch
-- [ ] Moving to the next item after zooming in on an image, then back, shows that image fitted again
+- [x] Moving to the next item after zooming in on an image, then back, shows that image fitted again
 - [ ] Scrolling the mouse wheel up one notch over a playing video shows it larger than fitted
 - [ ] Scrolling the mouse wheel down one notch over a fitted playing video leaves it fitted
 - [ ] Scrolling the mouse wheel down one notch over a zoomed-in video shows it smaller than before, still no smaller than fitted
