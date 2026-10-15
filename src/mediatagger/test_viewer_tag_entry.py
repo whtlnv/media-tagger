@@ -164,6 +164,20 @@ def test_typing_p_and_m_in_the_tag_prompt_open_over_a_playing_video_neither_paus
     assert [engine.pause, engine.mute] == [False, False]
 
 
+def test_typing_brackets_r_and_v_in_the_tag_prompt_open_over_a_playing_video_types_them_and_neither_speeds_nor_turns_it(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=30)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    make_surface_ready(viewer)
+    engine = viewer.video_player.engine
+    wait_until_playing(engine)
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    qtbot.keyClicks(viewer.tag_prompt.input, "][rv")
+
+    assert visible_tag_prompt_texts(viewer) == ["][rv"]
+    assert [engine.speed, engine.video_rotate] == [1, 0]
+
+
 def test_pressing_enter_in_the_tag_prompt_over_a_playing_video_saves_the_tags_without_pausing_it(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=30)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
