@@ -144,6 +144,25 @@ class Library:
         connection.close()
         return counts
 
+    def own_tags_in(self, folder):
+        """The own tags of the folder's direct items, read in one query that looks only at that folder's rows."""
+        if not self._has_tag_tables:
+            return {}
+        prefix = "" if folder == self.root else f"{self._key(folder)}/"
+        connection = sqlite3.connect(self._tags_db)
+        rows = connection.execute(
+            "SELECT items.rel_path, tags.name FROM item_tags"
+            " JOIN items ON items.id = item_tags.item_id"
+            " JOIN tags ON tags.id = item_tags.tag_id"
+            " WHERE substr(items.rel_path, 1, ?) = ? AND instr(substr(items.rel_path, ?), '/') = 0",
+            (len(prefix), prefix, len(prefix) + 1),
+        )
+        tags = {}
+        for rel_path, tag in rows:
+            tags.setdefault(self.root / rel_path, set()).add(tag)
+        connection.close()
+        return tags
+
     def tagged_items(self):
         """Every tagged item's kind and own tags, keyed by its path relative to the root, read in one query."""
         if not self._has_tag_tables:

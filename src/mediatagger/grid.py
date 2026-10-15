@@ -7,6 +7,7 @@ from PySide6.QtCore import QAbstractListModel, QModelIndex, QRect, QSize, Qt, QT
 from PySide6.QtGui import QColor, QPainter, QPen
 from PySide6.QtWidgets import QListView, QStyle, QStyledItemDelegate
 
+from mediatagger.drive_config import missing_roots
 from mediatagger.folder import is_video_name, subfolder_and_media_names
 from mediatagger.folder_thumbnails import FolderThumbnails
 from mediatagger.thumbnail_cache import ThumbnailCache
@@ -23,6 +24,8 @@ MISSING_GLYPH = "❓"
 VIDEO_BADGE = "▶"
 
 TAG_BADGE = "🏷"
+
+MISSING_BADGE = "✗"
 
 TILE_SIZE = QSize(200, 200)
 
@@ -61,6 +64,7 @@ class _Tile:
     name: str
     kind: _Kind
     tag_count: int = 0
+    missing: int = 0  # how many of the drive's required tag roots a file's effective tags lack
     thumbnail: object = None
     duration: float = None
 
@@ -71,6 +75,13 @@ def _tiles(folder, tag_counts):
     subfolders, media = subfolder_and_media_names(folder)
     kinds = [_Kind.FOLDER] * len(subfolders) + [_Kind.VIDEO if is_video_name(name) else _Kind.IMAGE for name in media]
     return [_Tile(folder / name, name, kind, counts_by_name.get(name, 0)) for name, kind in zip(subfolders + media, kinds)]
+
+
+def _mark_missing(tiles, own_tags, roots):
+    """Each file tile counts the required roots its tags lack; folder tiles are never marked."""
+    for tile in tiles:
+        if tile.kind is not _Kind.FOLDER:
+            tile.missing = missing_roots(own_tags.get(tile.path, ()), roots)
 
 
 def _result_kind(path):
@@ -134,6 +145,8 @@ class _TileDelegate(QStyledItemDelegate):
         if tile.kind is _Kind.VIDEO:
             badge = VIDEO_BADGE if tile.duration is None else f"{VIDEO_BADGE} {format_duration(tile.duration)}"
             _draw_backed_badge(painter, picture_area, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignRight, badge)
+        if tile.missing:
+            _draw_backed_badge(painter, picture_area, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{MISSING_BADGE}{tile.missing}")
         if tile.tag_count:
             _draw_backed_badge(painter, picture_area, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{TAG_BADGE}{tile.tag_count}")
         if tile.kind is _Kind.FOLDER and tile.thumbnail is not None:  # its first image: marked so it can't pass for one
@@ -197,7 +210,7 @@ class Grid(QListView):
     pick_folder = Signal()
     dropped = Signal(Path)
 
-    def __init__(self, folder, at=None, library=None, thumbnail_cache=None, paths=None, cheat_sheet=None):
+    def __init__(self, folder, at=None, library=None, thumbnail_cache=None, paths=None, cheat_sheet=None, required_roots=()):
         super().__init__()
         self.folder = folder
         if cheat_sheet is not None:
@@ -208,6 +221,8 @@ class Grid(QListView):
         self.setUniformItemSizes(True)  # lays out thousands of tiles without asking each one its size
         self.setVerticalScrollMode(QListView.ScrollMode.ScrollPerPixel)
         tiles = _result_tiles(paths, library) if paths is not None else _tiles(folder, library.tag_counts(folder) if library else {})
+        if library and required_roots:
+            _mark_missing(tiles, library.own_tags_in(folder), required_roots)
         self.setModel(_FolderModel(tiles, self))
         self.setItemDelegate(_TileDelegate(self))
         self._generate_thumbnails(tiles, thumbnail_cache or ThumbnailCache(":memory:"))
