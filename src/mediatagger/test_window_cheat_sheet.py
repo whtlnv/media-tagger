@@ -2,7 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPainter, qGreen, qRed
 from PySide6.QtWidgets import QStackedWidget
 
-from mediatagger.cheat_sheet import GRID_KEYS, VIEWER_KEYS, draw_sheet
+from mediatagger.cheat_sheet import GRID_KEYS, LAUNCH_KEYS, VIEWER_KEYS, draw_sheet
 from mediatagger.grid import TILE_ROLE
 from mediatagger.library import Library
 from mediatagger.test_viewer import SILENT, make_image
@@ -195,3 +195,14 @@ def test_in_the_windows_viewer_showing_an_image_pressing_h_draws_a_panel_of_the_
     after = middle_of(window.grab().toImage())
     assert after == middle_of(with_the_panel(before, VIEWER_KEYS))
     assert after != middle_of(with_the_panel(before, GRID_KEYS))
+
+
+def test_on_the_windows_empty_launch_screen_pressing_h_draws_a_panel_of_the_launch_screens_keys(qtbot, tmp_path):
+    window = window_on(qtbot, home=tmp_path)
+    before = window.grab().toImage()
+
+    qtbot.keyClick(window.viewer, Qt.Key.Key_H)
+
+    after = middle_of(window.grab().toImage())
+    assert after == middle_of(with_the_panel(before, LAUNCH_KEYS))
+    assert after != middle_of(with_the_panel(before, VIEWER_KEYS))
