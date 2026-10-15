@@ -78,22 +78,33 @@ def _tiles(folder, tag_counts):
 
 
 def _effective_tags(tiles, folder, library, results):
-    """Each file tile's effective tags (its own and those it inherits), from bulk reads, never one query per tile: a
-    folder's files share what they inherit from it; results look their ancestors up among every tagged item."""
-    files = [tile.path for tile in tiles if tile.kind in (_Kind.IMAGE, _Kind.VIDEO)]
+    """Each file tile's effective tags (its own and those it inherits), None for the others, from bulk reads and never
+    one query per tile: a folder's files share what they inherit from it; results look their ancestors up among every
+    tagged item. Worked out on names: hashing a Path per file is too slow for a folder of thousands on a Pi."""
     if results:
-        tags = {library.root / rel_path: own for rel_path, (_kind, own) in library.tagged_items().items()}
-        return {path: set().union(*(tags.get(item, ()) for item in (path, *path.parents))) for path in files}
+        tagged = {rel_path: own for rel_path, (_kind, own) in library.tagged_items().items()}
+        root = f"{library.root}/"
+        return [_with_ancestors_tags(str(tile.path).removeprefix(root), tagged) if _is_file(tile) else None for tile in tiles]
     shared = library.effective_tags(folder)
+    shared = {*shared.own, *shared.inherited}
     own = library.own_tags_in(folder)
-    return {path: {*own.get(path, ()), *shared.own, *shared.inherited} for path in files}
+    return [own.get(tile.name, set()) | shared if _is_file(tile) else None for tile in tiles]
+
+
+def _with_ancestors_tags(rel_path, tagged):
+    parts = rel_path.split("/")
+    return set().union(*(tagged.get("/".join(parts[:end]), ()) for end in range(1, len(parts) + 1)))
+
+
+def _is_file(tile):
+    return tile.kind in (_Kind.IMAGE, _Kind.VIDEO)
 
 
 def _mark_missing(tiles, effective_tags, roots):
     """Each file tile counts the required roots its effective tags lack; folders and missing results are never marked."""
-    for tile in tiles:
-        if tile.path in effective_tags:
-            tile.missing = missing_roots(effective_tags[tile.path], roots)
+    for tile, tags in zip(tiles, effective_tags):
+        if tags is not None:
+            tile.missing = missing_roots(tags, roots)
 
 
 def _result_kind(path):

@@ -145,7 +145,7 @@ class Library:
         return counts
 
     def own_tags_in(self, folder):
-        """The own tags of the folder's direct items, read in one query that looks only at that folder's rows."""
+        """The own tags of the folder's direct items, keyed by name, read in one query that looks only at that folder's rows."""
         if not self._has_tag_tables:
             return {}
         prefix = "" if folder == self.root else f"{self._key(folder)}/"
@@ -159,7 +159,7 @@ class Library:
         )
         tags = {}
         for rel_path, tag in rows:
-            tags.setdefault(self.root / rel_path, set()).add(tag)
+            tags.setdefault(rel_path[len(prefix):], set()).add(tag)
         connection.close()
         return tags
 
