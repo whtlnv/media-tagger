@@ -34,6 +34,7 @@ Why not web/Electron/Wails: browsers can't play AVI/MPEG-2/DivX, and dropped fol
 - Each library has a unique `drive_id` stored in its DB. One drive at a time.
 - **Only tagged items are stored.** Untagged directories are never indexed. Browsing reads the filesystem live.
 - A tagged path that no longer exists shows as a **missing** tile in results; its tags can be removed from there. No rename/move tracking.
+- **Required tags:** `mediatagger_config.json` at the drive's root may hold `{"requiredRoots": ["type:", "size:"]}`, the tag roots every file on that drive should have. It is read (only read, never written) whenever the app opens the drive — at launch, on `o` and on a drop — and only while that drive has a library open are tiles marked (see Grid). Roots are matched as written, so they should be lowercase like tags.
 
 ### Backups
 
@@ -160,6 +161,7 @@ Results show under a `Search: <query>` breadcrumb; a result whose path no longer
 | `h` | show / hide the key cheat sheet |
 
 - Tiles ~200 px: thumbnail (a large type glyph until it arrives, or when there is none), truncated filename, tag-count badge when the item has own tags.
+- A file missing required roots (none of its effective tags — own and inherited — starts with the root) shows `✗<n>`, the number of roots it lacks, styled like the tag-count badge, in the top-right corner just left of it (left to right: missing, tags). A file missing none, and every folder tile, shows nothing. Marks show in folder grids and search results, and change at once when tagging changes them (back from a results slideshow too).
 - Video tiles: frame at ~10%, ▶ badge, duration.
 - Folder tiles: first image directly inside (natural order); none there, no thumbnail.
 - Selected item's own tags shown in the status bar, followed by its inherited tags dimmed.
@@ -167,6 +169,8 @@ Results show under a `Search: <query>` breadcrumb; a result whose path no longer
 ### Status bar (always visible)
 
 It says when there is no library (viewing only), says `Library on <drive> can't be opened — viewing only` when the drive's `tags.db` can't be opened, and on a read-only drive adds `Read-only — tags can't be saved`.
+
+A drive whose `mediatagger_config.json` can't be read or isn't valid (not JSON, not an object, `requiredRoots` not a list of strings) shows `mediatagger_config.json can't be read — no tiles marked` while that drive is open, and no tile is marked; the app otherwise works as usual.
 
 Pressing `t` where tags can't be saved (no library, declined, can't be opened, read-only, system disk, the app's own drive) briefly shows `Tags can't be saved here`.
 
