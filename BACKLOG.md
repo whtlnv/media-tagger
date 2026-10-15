@@ -58,3 +58,6 @@
 
 - **[drive/test_run.py, src/mediatagger/test_main.py] Subprocess timing tests fail under machine load** (added: 2026-10-14)
   During Phase 12, with another project's suite running (load 10–18), `test_run_with_a_real_python3_starts_the_real_app_from_the_drive_app_and_the_drive_gains_no_files` (8 s to reach `window.pyc`) failed several times, and the 3 s quit tests and `test_zero_on_a_playing_video_seeks_back_to_the_start` failed once each; all pass on rerun and on an idle machine. More slack, or waiting on a printed marker instead of a fixed time, would stop them blocking unattended commits.
+
+- **[src/mediatagger/grid.py:Grid.show_new_tags] Every tag save re-reads the whole grid's tag counts and marks** (added: 2026-10-15)
+  So that a change one item's tags make to what others inherit shows at once, each save from the tag prompt re-reads the shown folder's counts, own tags and inherited tags (three bulk queries), or for results every tagged item; with required roots a 5,000-file folder opens in ~70 ms on the Mac against ~60 ms without them. Unmeasured on the Pi; if saving a tag lags there in a big folder, update only the saved item's tile when it is a file.
