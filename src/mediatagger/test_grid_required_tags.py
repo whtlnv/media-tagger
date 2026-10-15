@@ -2,7 +2,7 @@ from PySide6.QtCore import QRect, Qt
 from PySide6.QtGui import QFontMetrics, QGuiApplication, QImage, QPainter
 from PySide6.QtWidgets import QStyleOptionViewItem
 
-from mediatagger.grid import MISSING_BADGE, TAG_BADGE, TILE_ROLE, Grid
+from mediatagger.grid import MISSING_ROOTS_BADGE, TAG_BADGE, TILE_ROLE, Grid
 from mediatagger.library import Library
 from mediatagger.test_folder import touch
 from mediatagger.test_grid import painted_texts, painted_tile
@@ -11,7 +11,7 @@ ROOTS = ("type:", "size:")
 
 
 def missing_badge(grid, row):
-    return next((text for text in painted_texts(grid, row) if MISSING_BADGE in text), None)
+    return next((text for text in painted_texts(grid, row) if MISSING_ROOTS_BADGE in text), None)
 
 
 def test_a_grid_given_two_required_roots_marks_an_untagged_files_tile_as_missing_both(qtbot, tmp_path):
@@ -20,7 +20,7 @@ def test_a_grid_given_two_required_roots_marks_an_untagged_files_tile_as_missing
     grid = Grid(tmp_path, library=library, required_roots=ROOTS)
     qtbot.addWidget(grid)
 
-    assert f"{MISSING_BADGE}2" in painted_texts(grid, 0)
+    assert f"{MISSING_ROOTS_BADGE}2" in painted_texts(grid, 0)
 
 
 def test_a_file_whose_own_tags_start_with_every_required_root_has_no_missing_badge(qtbot, tmp_path):
@@ -30,7 +30,7 @@ def test_a_file_whose_own_tags_start_with_every_required_root_has_no_missing_bad
     grid = Grid(tmp_path, library=library, required_roots=ROOTS)
     qtbot.addWidget(grid)
 
-    assert not any(MISSING_BADGE in text for text in painted_texts(grid, 0))
+    assert not any(MISSING_ROOTS_BADGE in text for text in painted_texts(grid, 0))
 
 
 def test_a_root_covered_by_a_tag_inherited_from_an_ancestor_folder_is_not_missing(qtbot, tmp_path):
@@ -41,7 +41,7 @@ def test_a_root_covered_by_a_tag_inherited_from_an_ancestor_folder_is_not_missin
     grid = Grid(tmp_path / "trip" / "day1", library=library, required_roots=ROOTS)
     qtbot.addWidget(grid)
 
-    assert f"{MISSING_BADGE}1" in painted_texts(grid, 0)
+    assert f"{MISSING_ROOTS_BADGE}1" in painted_texts(grid, 0)
 
 
 def test_a_folder_tile_even_an_untagged_one_has_no_missing_badge(qtbot, tmp_path):
@@ -50,7 +50,7 @@ def test_a_folder_tile_even_an_untagged_one_has_no_missing_badge(qtbot, tmp_path
     grid = Grid(tmp_path, library=library, required_roots=ROOTS)
     qtbot.addWidget(grid)
 
-    assert not any(MISSING_BADGE in text for text in painted_texts(grid, 0))
+    assert not any(MISSING_ROOTS_BADGE in text for text in painted_texts(grid, 0))
 
 
 def test_a_grid_with_no_required_roots_or_no_library_has_no_missing_badge(qtbot, tmp_path):
@@ -60,7 +60,7 @@ def test_a_grid_with_no_required_roots_or_no_library_has_no_missing_badge(qtbot,
     for grid in grids:
         qtbot.addWidget(grid)
 
-    assert [any(MISSING_BADGE in text for text in painted_texts(grid, 0)) for grid in grids] == [False, False]
+    assert [any(MISSING_ROOTS_BADGE in text for text in painted_texts(grid, 0)) for grid in grids] == [False, False]
 
 
 class PlacementRecordingPainter(QPainter):
@@ -88,7 +88,7 @@ def test_on_a_tile_with_both_badges_the_missing_badge_sits_left_of_the_tag_badge
     option.rect = QRect(0, 0, 200, 200)
     grid.itemDelegate().paint(painter, option, grid.model().index(0, 0))
     painter.end()
-    missing, tags = painter.placed[f"{MISSING_BADGE}2"], painter.placed[f"{TAG_BADGE}2"]
+    missing, tags = painter.placed[f"{MISSING_ROOTS_BADGE}2"], painter.placed[f"{TAG_BADGE}2"]
 
     assert (missing.right() < tags.left(), missing.top() == tags.top(), tags.right() > 160) == (True, True, True)
 
@@ -128,7 +128,7 @@ def test_a_results_grid_marks_result_files_by_their_effective_tags_and_never_a_r
     grid = Grid(tmp_path, library=library, paths=paths, required_roots=ROOTS)
     qtbot.addWidget(grid)
 
-    assert [missing_badge(grid, row) for row in range(4)] == [None, f"{MISSING_BADGE}1", f"{MISSING_BADGE}2", None]
+    assert [missing_badge(grid, row) for row in range(4)] == [None, f"{MISSING_ROOTS_BADGE}1", f"{MISSING_ROOTS_BADGE}2", None]
 
 
 def test_after_a_first_grid_has_been_shown_opening_the_grid_of_5000_files_half_tagged_with_two_required_roots_takes_under_150_ms(qtbot, tmp_path):
@@ -154,4 +154,4 @@ def test_after_a_first_grid_has_been_shown_opening_the_grid_of_5000_files_half_t
 
     elapsed, grid = fastest_of_three(qtbot, open_and_show)
 
-    assert (elapsed < 0.150, missing_badge(grid, 0), missing_badge(grid, 1)) == (True, f"{MISSING_BADGE}1", f"{MISSING_BADGE}2")
+    assert (elapsed < 0.150, missing_badge(grid, 0), missing_badge(grid, 1)) == (True, f"{MISSING_ROOTS_BADGE}1", f"{MISSING_ROOTS_BADGE}2")

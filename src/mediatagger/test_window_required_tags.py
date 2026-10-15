@@ -4,7 +4,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QStackedWidget
 
 from mediatagger.drive_config import CONFIG_CANT_BE_READ_TEXT, CONFIG_FILE
-from mediatagger.grid import MISSING_BADGE, TAG_BADGE, Grid
+from mediatagger.grid import MISSING_ROOTS_BADGE, TAG_BADGE, Grid
 from mediatagger.library import Library
 from mediatagger.test_grid import painted_texts
 from mediatagger.test_grid_required_tags import missing_badge
@@ -26,7 +26,7 @@ def test_opening_a_folder_on_a_drive_whose_config_names_two_roots_marks_its_unta
 
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
 
-    assert missing_badge(stack.currentWidget(), 0) == f"{MISSING_BADGE}2"
+    assert missing_badge(stack.currentWidget(), 0) == f"{MISSING_ROOTS_BADGE}2"
 
 
 def test_opening_a_folder_on_a_drive_with_no_config_marks_no_tile(qtbot, tmp_path):
@@ -63,7 +63,7 @@ def test_after_a_drive_with_an_invalid_config_dropping_a_folder_of_a_drive_with_
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
 
     assert CONFIG_CANT_BE_READ_TEXT not in shown_status_bar_texts(window)
-    assert (stack.currentWidget().folder, missing_badge(stack.currentWidget(), 0)) == (second_folder, f"{MISSING_BADGE}1")
+    assert (stack.currentWidget().folder, missing_badge(stack.currentWidget(), 0)) == (second_folder, f"{MISSING_ROOTS_BADGE}1")
 
 
 def test_tagging_the_grid_cursors_file_with_a_missing_root_updates_its_mark_at_once(qtbot, tmp_path):
@@ -75,7 +75,7 @@ def test_tagging_the_grid_cursors_file_with_a_missing_root_updates_its_mark_at_o
     after_type = missing_badge(stack.currentWidget(), 0)
     enter_in_the_grids_tag_prompt(qtbot, window, stack, "size:big")
 
-    assert (after_type, missing_badge(stack.currentWidget(), 0)) == (f"{MISSING_BADGE}1", None)
+    assert (after_type, missing_badge(stack.currentWidget(), 0)) == (f"{MISSING_ROOTS_BADGE}1", None)
 
 
 def test_tagging_a_result_file_with_a_missing_root_in_the_results_grid_updates_its_mark_at_once(qtbot, tmp_path):
@@ -88,7 +88,7 @@ def test_tagging_a_result_file_with_a_missing_root_in_the_results_grid_updates_i
 
     enter_in_the_grids_tag_prompt(qtbot, window, stack, "type:photo")
 
-    assert (before, missing_badge(stack.currentWidget(), 0)) == (f"{MISSING_BADGE}2", f"{MISSING_BADGE}1")
+    assert (before, missing_badge(stack.currentWidget(), 0)) == (f"{MISSING_ROOTS_BADGE}2", f"{MISSING_ROOTS_BADGE}1")
 
 
 def test_tagging_a_file_in_a_slideshow_opened_from_results_then_esc_back_to_them_shows_its_new_mark_and_tag_count(qtbot, tmp_path):
@@ -104,7 +104,7 @@ def test_tagging_a_file_in_a_slideshow_opened_from_results_then_esc_back_to_them
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
 
     assert stack.currentWidget() is results
-    assert (missing_badge(results, 0), f"{TAG_BADGE}2" in painted_texts(results, 0)) == (f"{MISSING_BADGE}1", True)
+    assert (missing_badge(results, 0), f"{TAG_BADGE}2" in painted_texts(results, 0)) == (f"{MISSING_ROOTS_BADGE}1", True)
 
 
 def test_opening_and_browsing_a_drive_with_a_config_leaves_its_root_and_its_config_untouched(qtbot, tmp_path):

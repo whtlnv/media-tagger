@@ -25,7 +25,7 @@ VIDEO_BADGE = "▶"
 
 TAG_BADGE = "🏷"
 
-MISSING_BADGE = "✗"
+MISSING_ROOTS_BADGE = "✗"
 
 TILE_SIZE = QSize(200, 200)
 
@@ -180,7 +180,7 @@ class _TileDelegate(QStyledItemDelegate):
             tag_badge = _draw_backed_badge(painter, top_right, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{TAG_BADGE}{tile.tag_count}")
             top_right = top_right.adjusted(0, 0, tag_badge.left() - top_right.right(), 0)  # a badge's padding apart
         if tile.missing_roots:
-            _draw_backed_badge(painter, top_right, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{MISSING_BADGE}{tile.missing_roots}")
+            _draw_backed_badge(painter, top_right, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{MISSING_ROOTS_BADGE}{tile.missing_roots}")
         if tile.kind is _Kind.FOLDER and tile.thumbnail is not None:  # its first image: marked so it can't pass for one
             _draw_backed_badge(painter, picture_area, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft, FOLDER_GLYPH)
 
