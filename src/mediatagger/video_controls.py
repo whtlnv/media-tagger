@@ -1,5 +1,5 @@
 from PySide6.QtCore import QEvent, Qt, QTimer
-from PySide6.QtGui import QColor, QPainter, QPalette
+from PySide6.QtGui import QColor, QPainter
 from PySide6.QtWidgets import QLabel
 
 
@@ -22,9 +22,6 @@ class ProgressBar(QLabel):
 
     def __init__(self, parent, hide_delay=HIDE_DELAY_MS):
         super().__init__(parent)
-        palette = self.palette()
-        palette.setColor(QPalette.ColorRole.WindowText, Qt.GlobalColor.white)
-        self.setPalette(palette)
         self.setContentsMargins(8, 2, 8, 2 + _TRACK_HEIGHT)  # the text ends above the track
         self._ticker = QTimer(self, interval=250, timeout=self._tick)
         self._hide_timer = QTimer(self, interval=hide_delay, singleShot=True, timeout=self.hide)
