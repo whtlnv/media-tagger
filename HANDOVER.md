@@ -19,6 +19,7 @@ State of the project and how it has been run, for the next session. Read `DESIGN
 | 9b Video playback never leaks | done, validated on the Mac (`946d17b`, 611 tests); Pi run pending — see "Video crash on the Pi" |
 | 10 Search | done, validated on the Mac (`c54a2a5`, 695 tests); Pi timing unmeasured — see "Phase 10 — done" |
 | 11 Run from the drive on the Pi | done, validated on the Mac + VM (`abe5ae3`, 738 tests); Pi run pending — see "Phase 11 — done" |
+| 12 Fixes from the second Pi run | done, validated on the Mac (`cf4db51`, 769 tests); Pi run pending — see "Phase 12 — done" |
 
 Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), `grid.py`, `viewer.py`, `tag_prompt.py` (the `t` prompt, shared by grid and viewer), `status_bar.py`, `drive_session.py` (library open/create/restore/backup), `library.py` (SQLite, schema v2), `backup.py`, `state.py` (last folder, geometry, recent searches; `$XDG_CONFIG_HOME`), `search.py` (query matching), `search_bar.py` (the `/` box and its `↑`/`↓` history), `folder.py`, `slideshow.py`, `thumbnails.py` (image/video/folder thumbnails, `ffmpeg`/`ffprobe`), `thumbnail_cache.py`, `thumbnail_scheduler.py` (3 workers + prefetch), `folder_thumbnails.py` (a folder's thumbnails for its grid), `video.py` + `mpv_surface.py` (libmpv render API), `video_controls.py` (video progress bar), `gui_thread_gc.py`. Tests are co-located (`test_*.py`). Open structural debt is in `BACKLOG.md`.
 
@@ -32,6 +33,14 @@ Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), 
   - send the agent back with a numbered fix list if anything is off.
 - Progress is relayed to the user in chat from a `Monitor` that polls `git log`, `TODO.md` checkbox counts, `~/Library/Logs/DiagnosticReports/Python-*.ips` and `/Volumes/MEDIATAGGER`. Monitors expire every 30 min; re-arm.
 - The user asked for progress to be printed in the conversation and for questions only when a decision is genuinely theirs.
+
+## Phase 12 — done
+
+From the user's Pi run of 3bd9a25 (`spikes/drive/pi-results-2026-10-14/`). Root causes: `o` was only handled on the launch screen (the grid's QListView keyboard search swallowed it); grid drops never arrived on any platform because `QAbstractItemView.dragMoveEvent` refused the move (old tests sent enter+drop without a move); the quit hang was the grid's thumbnail workers (Python waits for ThreadPoolExecutor threads at exit) — `closeEvent` now stops every grid's generation; `qt.qpa.wayland.textinput.warning` silenced in `main()` (a user's `QT_LOGGING_RULES` still wins); progress bar backdrop removed, text white with a 1-px dark edge, a dark hairline above the filled track. Orchestrator check: suite twice (769), diff review, native: bar over black and white video (over white only the hairline and edged text show — user to judge), quit mid-video exits at once.
+
+- **Not checked natively:** a real Finder/file-manager drag (offscreen tests send the full enter→move→drop sequence); the native folder picker.
+- **Known:** quitting still waits for a worker's file in progress (ffmpeg timeout 15 s) — BACKLOG.
+- 2 crash reports (2026-10-14 03:32) were a red test step calling `QTest.keyClick(None, …)`; not the app.
 
 ## Phase 11 — done
 

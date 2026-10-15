@@ -4,17 +4,7 @@ Delivery phases, in order. Decisions, key maps and rules live in `DESIGN.md`; ev
 Each phase must end with its behavior reachable from the shipped `mediatagger` command, not only from tests.
 
 
-Phases 1–11 are delivered (2026-10-14). Their specs are in git history (`PLAN.md` at `fcd5d3b`) and their items in `DONE.md`.
-
-## Phase 12 — Fixes from the second Pi run
-
-From the user's Pi test of build 3bd9a25 (findings and logs in `spikes/drive/pi-results-2026-10-14/`).
-
-- **`o` opens another folder or drive from anywhere.** Today `o` only works on the empty launch screen; after launch reopened the last folder there was no way to open a different drive. `o` in the grid and in the viewer opens the folder picker; choosing a folder on another drive opens it (and that drive's library) as if the app had been started on it.
-- **Dropping a folder from another drive opens it.** On the Pi, dragging a folder onto the app didn't open it. Reproduce first (grid and viewer, same drive and another drive); a drop opens the folder exactly like `o`.
-- **Quitting after a long session returns the terminal promptly.** After a long session, Esc to quit left the terminal unresponsive. Find what keeps the process alive (suspects: thumbnail workers, the video player, the library backup) with a test that quits after a session with work still in flight, and make quitting finish within a couple of seconds.
-- **No flood of Wayland text-input warnings.** `qt.qpa.wayland.textinput … Trying to disable … but 0x0 is focused` is printed many times per session; the app silences that logging category (only it).
-- **The video progress bar is just the bar.** Drop the darker backdrop behind the progress bar; keep the light progress line and the `elapsed / total` text readable over black and white video.
+Phases 1–12 are delivered. Their specs are in git history (`PLAN.md` at `fcd5d3b` for 1–11, at `ca048de` for 12) and their items in `DONE.md`.
 
 ## Phase 13 — Video speed, rotation and showing the controls
 
