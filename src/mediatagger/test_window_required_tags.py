@@ -89,3 +89,19 @@ def test_tagging_a_result_file_with_a_missing_root_in_the_results_grid_updates_i
     enter_in_the_grids_tag_prompt(qtbot, window, stack, "type:photo")
 
     assert (before, missing_badge(stack.currentWidget(), 0)) == (f"{MISSING_BADGE}2", f"{MISSING_BADGE}1")
+
+
+def test_tagging_a_file_in_a_slideshow_opened_from_results_then_esc_back_to_them_shows_its_new_mark_and_tag_count(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    write_config(drive, ["type:", "size:"])
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    search_for(qtbot, window, stack, "beach")
+    results = stack.currentWidget()
+    qtbot.keyClick(results, Qt.Key.Key_Return)
+
+    enter_in_tag_prompt(qtbot, stack.currentWidget(), "type:photo")
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    assert stack.currentWidget() is results
+    assert (missing_badge(results, 0), f"{TAG_BADGE}2" in painted_texts(results, 0)) == (f"{MISSING_BADGE}1", True)

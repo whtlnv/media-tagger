@@ -127,6 +127,7 @@ class Window(QWidget):
         grid, paths = self._results
         self.viewer.stop_video()
         grid.setCurrentIndex(grid.model().index(paths.index(self.viewer.slideshow.current), 0))
+        grid.show_new_tags(self.session.library)  # files tagged in the slideshow
         self._return_to(grid)
 
     def _show_grid(self):
