@@ -1,3 +1,26 @@
+- [x] 2026-10-15 · `required_roots` of a drive whose root holds `mediatagger_config.json` with `{"requiredRoots": ["type:", "size:"]}` gives those two roots and no problem
+- [x] 2026-10-15 · `required_roots` of a drive with no config file, or one with no `requiredRoots`, gives no roots and no problem, and leaves the drive's file list unchanged
+- [x] 2026-10-15 · `required_roots` of a drive whose config isn't valid JSON gives no roots and the "can't be read" problem text
+- [x] 2026-10-15 · `required_roots` of a drive whose config is JSON but whose `requiredRoots` isn't a list of strings (or which isn't an object) gives no roots and the problem text
+- [x] 2026-10-15 · `required_roots` of a drive whose config can't be read (e.g. a folder named `mediatagger_config.json`, or bytes that aren't UTF-8) gives no roots and the problem text
+- [x] 2026-10-15 · `missing_roots` counts the roots that none of the given tags starts with (`["type:photo"]` against `type:`, `size:` → 1)
+- [x] 2026-10-15 · A grid given required roots `type:` and `size:` paints `✗2` on the tile of a file in its folder with no tags at all
+- [x] 2026-10-15 · A file tile whose own tags start with every required root paints no `✗` badge
+- [x] 2026-10-15 · A file whose missing root is covered by a tag inherited from its folder or an ancestor folder is not counted as missing it (`✗1` when only `type:` is inherited and `size:` is missing)
+- [x] 2026-10-15 · A folder tile, even an untagged one, never paints a `✗` badge
+- [x] 2026-10-15 · A grid with no required roots, or with no library, paints no `✗` badge on any tile
+- [x] 2026-10-15 · On a tile with both badges, the `✗` badge sits in the top row to the left of the tag-count badge, the two not overlapping, the tag-count badge still in the top-right corner
+- [x] 2026-10-15 · The `✗` badge reads white on a dark backing over both a white and a black thumbnail, like the tag-count badge
+- [x] 2026-10-15 · A results grid given required roots marks each result file by its effective tags (own tags and those of its ancestor folders in the library), and never marks a result folder or a missing result
+- [x] 2026-10-15 · After a first grid has been shown, opening and showing the grid of a folder of 5,000 files in a library where half are tagged, with two required roots, takes under 150 ms
+- [x] 2026-10-15 · In the window, opening a folder on a fake drive whose root holds a config naming `type:` and `size:` shows the grid with its untagged file's tile marked `✗2`
+- [x] 2026-10-15 · In the window, opening a folder on a fake drive with no config shows no `✗` badge on any tile
+- [x] 2026-10-15 · In the window, opening a drive whose config isn't valid JSON shows the "can't be read" text in the status bar and no `✗` badge on any tile, and the app keeps working (the grid opens)
+- [x] 2026-10-15 · In the window, after opening a drive with an invalid config, switching to another drive (e.g. by a drop) with a valid config clears the status-bar text and marks that drive's tiles by its own config
+- [x] 2026-10-15 · In the window's grid, tagging the cursor's file `type:photo` with the tag prompt changes its mark from `✗2` to `✗1` at once, and adding `size:big` then removes the mark
+- [x] 2026-10-15 · In the window's results grid, tagging a result file with a missing root updates its mark at once
+- [x] 2026-10-15 · In the window, tagging a result file in the viewer opened from a results grid and pressing `Esc` back to the results shows its updated mark (and tag count)
+- [x] 2026-10-15 · Running the app opens the drive's config without writing to the drive: after opening a drive with a config and browsing it, the drive root's files and the config's bytes and mtime are unchanged
 - [x] 2026-10-15 · In the window's grid, pressing `h` draws a panel of the grid's keys over the middle of the window, on top of the tiles
 - [x] 2026-10-15 · The tiles stay visible through the panel: a red tile under it still shows red, darkened
 - [x] 2026-10-15 · In the window's grid, pressing `h` a second time removes the panel, leaving the window as it was before
