@@ -160,3 +160,16 @@ def test_zooming_an_image_back_out_to_fitted_after_zooming_in_with_the_mouse_off
     scroll(viewer, -20, at=viewer.rect().center())  # far past fitted
 
     assert viewer.grab().toImage() == fitted
+
+
+def test_zooming_out_of_an_image_that_covers_the_window_with_the_mouse_near_a_window_edge_never_leaves_black_between_that_edge_and_the_image(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red", width=300, height=300)  # the window's aspect: zoomed, it covers the window
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    viewer.resize(300, 300)
+    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    left_edge = QPoint(0, 150)
+    scroll(viewer, 2, at=left_edge)  # the image's left edge stays at the window's left edge
+
+    scroll(viewer, -1, at=QPoint(40, 150))  # scaling about x 40 would pull that edge in to about x 7
+
+    assert viewer.grab().toImage().pixelColor(left_edge) == QColor("red")

@@ -23,5 +23,7 @@ class Zoom:
     def shown(self, fitted):
         """Where the picture fitted at fitted is shown at this zoom."""
         target = QRect(QPoint(), fitted.size() * self.level)
-        target.moveCenter(fitted.center() + self.centre.toPoint())
+        slack = QPointF(fitted.width(), fitted.height()) * (self.level - 1) / 2  # how far it can move and still cover fitted
+        centre = QPointF(min(slack.x(), max(-slack.x(), self.centre.x())), min(slack.y(), max(-slack.y(), self.centre.y())))
+        target.moveCenter(fitted.center() + centre.toPoint())
         return target
