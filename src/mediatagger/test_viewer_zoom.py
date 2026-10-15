@@ -140,11 +140,11 @@ def test_zooming_out_of_a_zoomed_in_image_without_reaching_fitted_keeps_the_imag
     viewer = shown_viewer_on(qtbot, tmp_path)
     viewer.resize(300, 300)
     qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
-    scroll(viewer, 2, at=viewer.rect().center())  # 156 %, the marker now around (72, 72)
-    mouse = QPoint(72, 72)
+    scroll(viewer, 5, at=viewer.rect().center())  # 150 %, the marker now around (75, 75)
+    mouse = QPoint(75, 75)
     assert viewer.grab().toImage().pixelColor(mouse) == QColor("blue")
 
-    scroll(viewer, -1, at=mouse)  # back to 125 %, not fitted
+    scroll(viewer, -1, at=mouse)  # back to 140 %, not fitted
 
     assert viewer.grab().toImage().pixelColor(mouse) == QColor("blue")
 
@@ -170,7 +170,7 @@ def test_zooming_out_of_an_image_that_covers_the_window_with_the_mouse_near_a_wi
     left_edge = QPoint(0, 150)
     scroll(viewer, 2, at=left_edge)  # the image's left edge stays at the window's left edge
 
-    scroll(viewer, -1, at=QPoint(40, 150))  # scaling about x 40 would pull that edge in to about x 7
+    scroll(viewer, -1, at=QPoint(40, 150))  # scaling about x 40 would pull that edge in to about x 3
 
     assert viewer.grab().toImage().pixelColor(left_edge) == QColor("red")
 
@@ -180,9 +180,9 @@ def test_after_zooming_out_near_a_window_edge_pulls_a_zoomed_in_image_back_to_th
     viewer = shown_viewer_on(qtbot, tmp_path)
     viewer.resize(300, 300)
     qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
-    scroll(viewer, 2, at=QPoint(0, 0))  # 156 %, the image's top-left corner at the window's
-    scroll(viewer, -1, at=QPoint(40, 40))  # 125 %, pulled back to the top-left corner: the marker now around (150, 150)
-    mouse = QPoint(150, 150)
+    scroll(viewer, 5, at=QPoint(0, 0))  # 150 %, the image's top-left corner at the window's
+    scroll(viewer, -2, at=QPoint(40, 40))  # 130 %, pulled back to the top-left corner: the marker now around (156, 156)
+    mouse = QPoint(156, 156)
     assert viewer.grab().toImage().pixelColor(mouse) == QColor("blue")
 
     scroll(viewer, 1, at=mouse)
@@ -196,7 +196,23 @@ def test_a_wide_image_zoomed_in_near_the_top_of_the_picture_while_still_shorter_
     viewer.resize(300, 300)
     qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
 
-    scroll(viewer, 3, at=QPoint(150, 76))  # fitted 300x150 at y 75..224; 195 % is 293 rows, which scaling about y 76 would put at y 74..367
+    scroll(viewer, 9, at=QPoint(150, 76))  # fitted 300x150 at y 75..224; 190 % is 285 rows, which scaling about y 76 would put at y 74..359
 
     frame = viewer.grab().toImage()
-    assert (frame.pixelColor(150, 0), frame.pixelColor(150, 12)) == (QColor("black"), QColor("red"))  # pushed up to y 7..299
+    assert (frame.pixelColor(150, 0), frame.pixelColor(150, 20)) == (QColor("black"), QColor("red"))  # pushed up to y 15..299
+
+
+def test_one_wheel_notch_up_from_fitted_shows_an_image_at_110_percent_of_its_fitted_size(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red", width=200, height=20)
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    viewer.resize(300, 300)
+    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    centre = viewer.rect().center()
+
+    def picture_rows():  # rows of the centre column above the overlays showing the picture: fitted 300x30 at y 135..164
+        frame = viewer.grab().toImage()
+        return sum(1 for y in range(250) if frame.pixelColor(centre.x(), y).red() > 128)
+
+    scroll(viewer, 1, at=centre)
+
+    assert picture_rows() == 33

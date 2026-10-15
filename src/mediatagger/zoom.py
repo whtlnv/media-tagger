@@ -1,7 +1,7 @@
 from PySide6.QtCore import QPointF, QRectF
 
 _WHEEL_NOTCH = 120  # angleDelta units per mouse-wheel notch
-_ZOOM_STEP = 1.25
+_ZOOM_STEP = 0.1  # of the fitted size per notch
 _MAX_ZOOM = 3  # times the fitted size
 
 
@@ -25,7 +25,7 @@ class Zoom:
         the picture point under the mouse stays under it, unless that would leave black between the picture and a window
         edge — a picture bigger than the window always covers it, a smaller one lies inside it."""
         before = self.shown(fitted, window)
-        level = min(_MAX_ZOOM, max(1, self.level * _ZOOM_STEP ** (angle_delta / _WHEEL_NOTCH)))
+        level = min(_MAX_ZOOM, max(1, self.level + _ZOOM_STEP * angle_delta / _WHEEL_NOTCH))
         if level == 1:
             self.level, self.pan = 1, QPointF()
             return
