@@ -7,6 +7,7 @@ from PySide6.QtCore import QEventLoop, QTimer
 from PySide6.QtWidgets import QApplication, QMessageBox
 
 from mediatagger.backup import back_up, default_backup_root, failure_reason, newest_backup, restore
+from mediatagger.drive_config import required_roots
 from mediatagger.library import Library, tags_db_path
 from mediatagger.status_bar import NO_LIBRARY_TEXT
 from mediatagger.thumbnail_cache import open_thumbnail_cache
@@ -45,6 +46,7 @@ class DriveSession:
         self.declined_restore_drives = set()
         self.library = None  # the open Library of the current drive, if it has one
         self.drive = None
+        self.required_roots = ()  # the tag roots the current drive's config says every file should have
         self.read_only = False
         self.home = home or Path.home()  # the cache home falls back to its .cache folder
         self._thumbnail_cache = None
@@ -58,6 +60,7 @@ class DriveSession:
             self.back_up_library()
         self.library = None
         self.drive = drive
+        self.required_roots, _problem = required_roots(drive)
         if self._never_holds_a_library(drive):
             self.status_bar.show_library(NO_LIBRARY_VIEWING_ONLY_TEXT, read_only=False)
             return
