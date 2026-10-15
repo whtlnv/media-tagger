@@ -98,13 +98,19 @@ def test_a_photo_larger_than_the_window_zoomed_in_to_300_percent_shows_its_own_f
     assert dark_columns == 1
 
 
-def test_zooming_in_on_an_image_with_the_mouse_near_its_top_left_corner_keeps_the_image_point_under_the_mouse_under_the_mouse(qtbot, tmp_path):
-    picture = QImage(300, 300, QImage.Format.Format_RGB32)  # the window's aspect, so the zoomed picture always covers it
+def make_marked_picture(path, around):
+    """A white 300x300 picture (the window's aspect, so the zoomed picture always covers it)
+    with a 7x7 blue marker centred on (around, around)."""
+    picture = QImage(300, 300, QImage.Format.Format_RGB32)
     picture.fill(QColor("white"))
-    for y in range(57, 64):
-        for x in range(57, 64):
-            picture.setPixelColor(x, y, QColor("blue"))  # a 7x7 marker around (60, 60)
-    picture.save(str(tmp_path / "IMG_1.png"))
+    for y in range(around - 3, around + 4):
+        for x in range(around - 3, around + 4):
+            picture.setPixelColor(x, y, QColor("blue"))
+    picture.save(str(path))
+
+
+def test_zooming_in_on_an_image_with_the_mouse_near_its_top_left_corner_keeps_the_image_point_under_the_mouse_under_the_mouse(qtbot, tmp_path):
+    make_marked_picture(tmp_path / "IMG_1.png", around=60)
     viewer = shown_viewer_on(qtbot, tmp_path)
     viewer.resize(300, 300)
     qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
@@ -117,12 +123,7 @@ def test_zooming_in_on_an_image_with_the_mouse_near_its_top_left_corner_keeps_th
 
 
 def test_zooming_in_on_an_image_with_the_mouse_near_its_bottom_right_corner_keeps_the_image_point_under_the_mouse_under_the_mouse(qtbot, tmp_path):
-    picture = QImage(300, 300, QImage.Format.Format_RGB32)  # the window's aspect, so the zoomed picture always covers it
-    picture.fill(QColor("white"))
-    for y in range(227, 234):
-        for x in range(227, 234):
-            picture.setPixelColor(x, y, QColor("blue"))  # a 7x7 marker around (230, 230), clear of the status bar
-    picture.save(str(tmp_path / "IMG_1.png"))
+    make_marked_picture(tmp_path / "IMG_1.png", around=230)  # clear of the status bar
     viewer = shown_viewer_on(qtbot, tmp_path)
     viewer.resize(300, 300)
     qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
@@ -135,12 +136,7 @@ def test_zooming_in_on_an_image_with_the_mouse_near_its_bottom_right_corner_keep
 
 
 def test_zooming_out_of_a_zoomed_in_image_without_reaching_fitted_keeps_the_image_point_under_the_mouse_under_the_mouse(qtbot, tmp_path):
-    picture = QImage(300, 300, QImage.Format.Format_RGB32)  # the window's aspect, so the zoomed picture always covers it
-    picture.fill(QColor("white"))
-    for y in range(97, 104):
-        for x in range(97, 104):
-            picture.setPixelColor(x, y, QColor("blue"))  # a 7x7 marker around (100, 100)
-    picture.save(str(tmp_path / "IMG_1.png"))
+    make_marked_picture(tmp_path / "IMG_1.png", around=100)
     viewer = shown_viewer_on(qtbot, tmp_path)
     viewer.resize(300, 300)
     qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
