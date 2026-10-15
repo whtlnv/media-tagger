@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-15 01:35 · `src/mediatagger/test_viewer_zoom.py::test_zooming_out_of_a_zoomed_in_image_without_reaching_fitted_keeps_the_image_point_under_the_mouse_under_the_mouse`
+- Behavior: Zooming out of a zoomed-in image, without reaching fitted, keeps the image point under the mouse under the mouse
+- Predicted: passes on first run — `Zoom.wheel`'s anchor formula (`centre = at - (at - centre) * ratio`) does not depend on the zoom direction. This prediction was reasoned through before the run but not written out to the user first.
+- Actual: passes (1 passed)
+- Type: passed unexpectedly (relative to the TODO plan, which expected a separate cycle)
+- Resolution: A temporary mutation that keeps zoom-out centred on the window instead of the mouse makes the test fail (mouse at (72, 72) lands on picture pixel ≈88, white), so the test does tell the two cases apart. I reverted the mutation and kept the test as a regression pin. The top-left cycle already delivered this item, so it needs no /green.
+
 ## 2026-10-15 01:26 · `src/mediatagger/test_viewer_zoom.py::test_zooming_in_on_an_image_with_the_mouse_near_its_bottom_right_corner_keeps_the_image_point_under_the_mouse_under_the_mouse`
 - Behavior: Zooming in on an image with the mouse near its bottom-right corner keeps the image point under the mouse under the mouse
 - Predicted: passes on first run — the top-left cycle's `Zoom.wheel` already scales about any cursor point (`centre = at - (at - centre) * ratio`)

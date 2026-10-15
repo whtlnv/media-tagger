@@ -22,7 +22,7 @@ Phase 14 notes for every cycle (Phases 1–13 are delivered — see DONE.md; Pha
 - [x] A photo larger than the window, zoomed in to 300 %, shows its own fine detail rather than an enlarged copy of its fitted size
 - [x] Zooming in on an image with the mouse near its top-left corner keeps the image point under the mouse under the mouse
 - [x] Zooming in on an image with the mouse near its bottom-right corner keeps the image point under the mouse under the mouse
-- [ ] Zooming out of a zoomed-in image, without reaching fitted, keeps the image point under the mouse under the mouse
+- [x] Zooming out of a zoomed-in image, without reaching fitted, keeps the image point under the mouse under the mouse
 - [ ] Zooming an image back out to fitted, after zooming in with the mouse off its centre, shows it exactly where it was fitted
 - [ ] Zooming out of an image that covers the window, with the mouse near a window edge, never leaves black between that edge and the image
 - [ ] One wheel notch up from fitted shows an image at 110 % of its fitted size (steps of 10 percentage points)

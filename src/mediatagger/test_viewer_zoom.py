@@ -132,3 +132,22 @@ def test_zooming_in_on_an_image_with_the_mouse_near_its_bottom_right_corner_keep
     scroll(viewer, 1, at=mouse)
 
     assert viewer.grab().toImage().pixelColor(mouse) == QColor("blue")
+
+
+def test_zooming_out_of_a_zoomed_in_image_without_reaching_fitted_keeps_the_image_point_under_the_mouse_under_the_mouse(qtbot, tmp_path):
+    picture = QImage(300, 300, QImage.Format.Format_RGB32)  # the window's aspect, so the zoomed picture always covers it
+    picture.fill(QColor("white"))
+    for y in range(97, 104):
+        for x in range(97, 104):
+            picture.setPixelColor(x, y, QColor("blue"))  # a 7x7 marker around (100, 100)
+    picture.save(str(tmp_path / "IMG_1.png"))
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    viewer.resize(300, 300)
+    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    scroll(viewer, 2, at=viewer.rect().center())  # 156 %, the marker now around (72, 72)
+    mouse = QPoint(72, 72)
+    assert viewer.grab().toImage().pixelColor(mouse) == QColor("blue")
+
+    scroll(viewer, -1, at=mouse)  # back to 125 %, not fitted
+
+    assert viewer.grab().toImage().pixelColor(mouse) == QColor("blue")
