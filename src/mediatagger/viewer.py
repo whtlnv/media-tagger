@@ -109,7 +109,8 @@ class Viewer(QWidget):
         painter.drawImage(self.zoom.shown(fitted_rect(image.size(), self.rect())), image)
 
     def wheelEvent(self, event):
-        self.zoom.wheel(event.angleDelta().y(), event.position() - QPointF(self.rect().center()))
+        mouse = event.position() - QPointF(self.rect().center())
+        self.zoom.wheel(event.angleDelta().y(), mouse)
         self.update()
 
     def dragEnterEvent(self, event):
