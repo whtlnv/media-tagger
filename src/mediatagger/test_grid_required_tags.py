@@ -34,3 +34,22 @@ def test_a_root_covered_by_a_tag_inherited_from_an_ancestor_folder_is_not_missin
     qtbot.addWidget(grid)
 
     assert f"{MISSING_BADGE}1" in painted_texts(grid, 0)
+
+
+def test_a_folder_tile_even_an_untagged_one_has_no_missing_badge(qtbot, tmp_path):
+    library = Library.create(tmp_path)
+    (tmp_path / "trip").mkdir()
+    grid = Grid(tmp_path, library=library, required_roots=ROOTS)
+    qtbot.addWidget(grid)
+
+    assert not any(MISSING_BADGE in text for text in painted_texts(grid, 0))
+
+
+def test_a_grid_with_no_required_roots_or_no_library_has_no_missing_badge(qtbot, tmp_path):
+    library = Library.create(tmp_path)
+    touch(tmp_path, "beach.jpg")
+    grids = [Grid(tmp_path, library=library), Grid(tmp_path, required_roots=ROOTS)]
+    for grid in grids:
+        qtbot.addWidget(grid)
+
+    assert [any(MISSING_BADGE in text for text in painted_texts(grid, 0)) for grid in grids] == [False, False]
