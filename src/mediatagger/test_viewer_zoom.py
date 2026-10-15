@@ -257,12 +257,24 @@ def test_moving_to_the_next_item_after_zooming_in_on_an_image_then_back_shows_th
     assert viewer.grab().toImage() == fitted
 
 
+def viewer_playing_a_clip_in(qtbot, folder):
+    make_clip(folder / "IMG_1.mp4", duration=30)
+    viewer = shown_viewer_on(qtbot, folder)
+    wait_until_playing(viewer.video_player.engine)
+    return viewer, viewer.video_player.engine
+
+
 def test_scrolling_the_mouse_wheel_up_one_notch_over_a_playing_video_shows_it_larger_than_fitted(qtbot, tmp_path):
-    make_clip(tmp_path / "IMG_1.mp4", duration=30)
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    engine = viewer.video_player.engine
-    wait_until_playing(engine)
+    viewer, engine = viewer_playing_a_clip_in(qtbot, tmp_path)
 
     scroll(viewer, 1, at=viewer.rect().center())
 
     assert engine.video_zoom > 0  # mpv's zoom is log2 of the scale: 0 is fitted
+
+
+def test_scrolling_the_mouse_wheel_down_one_notch_over_a_fitted_playing_video_leaves_it_fitted(qtbot, tmp_path):
+    viewer, engine = viewer_playing_a_clip_in(qtbot, tmp_path)
+
+    scroll(viewer, -1, at=QPoint(10, 10))
+
+    assert (engine.video_zoom, engine.video_pan_x, engine.video_pan_y) == (0, 0, 0)
