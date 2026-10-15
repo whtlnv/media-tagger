@@ -27,3 +27,9 @@ def test_required_roots_of_a_drive_whose_config_required_roots_isnt_a_list_of_st
     (tmp_path / CONFIG_FILE).write_text(json.dumps({"requiredRoots": "type:"}), encoding="utf-8")
 
     assert required_roots(tmp_path) == ((), CONFIG_CANT_BE_READ_TEXT)
+
+
+def test_required_roots_of_a_drive_whose_config_cant_be_read_gives_no_roots_and_the_cant_be_read_problem(tmp_path):
+    (tmp_path / CONFIG_FILE).mkdir()
+
+    assert required_roots(tmp_path) == ((), CONFIG_CANT_BE_READ_TEXT)

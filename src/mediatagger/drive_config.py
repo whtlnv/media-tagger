@@ -12,7 +12,7 @@ def required_roots(drive):
         return (), None
     try:
         settings = json.loads(config.read_text(encoding="utf-8"))
-    except json.JSONDecodeError:
+    except (OSError, ValueError):  # unreadable, not UTF-8 (UnicodeDecodeError) or not JSON (JSONDecodeError)
         return (), CONFIG_CANT_BE_READ_TEXT
     roots = settings.get("requiredRoots", []) if isinstance(settings, dict) else None
     if not isinstance(roots, list) or not all(isinstance(root, str) for root in roots):
