@@ -99,6 +99,7 @@ Results show under a `Search: <query>` breadcrumb; a result whose path no longer
 
 - If the drive from last session is mounted: reopen the last folder in the grid. The last folder shown is remembered in `$XDG_CONFIG_HOME/mediatagger/state.json` (default `~/.config/mediatagger/`), never written to the app's own drive or the drive being viewed.
 - The window opens at the size and position remembered in `state.json` when it last closed; with none remembered, not fullscreen, at about 80 % of the available screen, centred.
+- The key cheat sheet (`h`) starts shown or hidden as remembered in `state.json`; with nothing remembered, hidden.
 - Otherwise: empty screen "Drop a folder or file here, or press o to open".
 
 | Key | Action |
@@ -136,6 +137,7 @@ Results show under a `Search: <query>` breadcrumb; a result whose path no longer
 | `h` | show / hide the key cheat sheet behind the picture |
 
 - Images fit to screen.
+- The key cheat sheet (`h`) is drawn dimly in the black behind the picture; a video covers it, so over a video it shows nowhere.
 - Zoom: the picture point under the mouse stays under it, except that a picture bigger than the window always covers it and a smaller one stays inside it (no black between picture and edge). Back at 100 % it is centred again. Every item opens at 100 %; `r` keeps the zoom. No zoom indicator.
 - Video autoplays **with sound**, loops, at 1× and unrotated. Space never pauses.
 - While a video plays, a progress bar (`1:23 / 4:56`, `0:00:05 / 1:02:03` from an hour, `1:23 / 4:56 · 1.25×` when not at 1×) sits along its bottom above the status bar; any key shows it, and it hides after 3 s without input.
