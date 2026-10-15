@@ -195,3 +195,17 @@ def test_after_pressing_h_a_window_started_next_time_with_the_same_home_shows_th
     next_window, next_stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
 
     assert grid_background_shows_text(next_stack.currentWidget())
+
+
+def test_with_the_sheet_remembered_as_shown_pressing_h_makes_a_window_started_next_time_with_the_same_home_start_without_it(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    first, first_stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(first_stack.currentWidget(), Qt.Key.Key_H)
+    first.close()
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_H)
+    window.close()
+
+    next_window, next_stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+
+    assert not grid_background_shows_text(next_stack.currentWidget())
