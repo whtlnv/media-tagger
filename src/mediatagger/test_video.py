@@ -117,38 +117,19 @@ def test_pressing_down_on_a_video_seeks_10_seconds_back(playing_video):
     assert engine.time_pos == pytest.approx(before - 10, abs=1)
 
 
-def test_pressing_right_bracket_on_a_video_playing_at_1x_makes_it_play_at_1_25x(playing_video):
+@pytest.mark.parametrize("speed, key, new_speed", [
+    pytest.param(1, "]", 1.25, id="] on a video playing at 1x makes it play at 1.25x"),
+    pytest.param(1, "[", 0.75, id="[ on a video playing at 1x makes it play at 0.75x"),
+    pytest.param(8, "]", 8, id="] on a video playing at 8x leaves it at 8x"),
+    pytest.param(0.25, "[", 0.25, id="[ on a video playing at 0.25x leaves it at 0.25x"),
+])
+def test_pressing_a_speed_key_on_a_playing_video_changes_its_speed_within_0_25x_and_8x(playing_video, speed, key, new_speed):
     player, engine = playing_video
+    engine.speed = speed
 
-    player.press("]")
+    player.press(key)
 
-    assert engine.speed == 1.25
-
-
-def test_pressing_left_bracket_on_a_video_playing_at_1x_makes_it_play_at_0_75x(playing_video):
-    player, engine = playing_video
-
-    player.press("[")
-
-    assert engine.speed == 0.75
-
-
-def test_pressing_right_bracket_on_a_video_playing_at_8x_leaves_it_at_8x(playing_video):
-    player, engine = playing_video
-    engine.speed = 8
-
-    player.press("]")
-
-    assert engine.speed == 8
-
-
-def test_pressing_left_bracket_on_a_video_playing_at_0_25x_leaves_it_at_0_25x(playing_video):
-    player, engine = playing_video
-    engine.speed = 0.25
-
-    player.press("[")
-
-    assert engine.speed == 0.25
+    assert engine.speed == new_speed
 
 
 def test_a_video_shown_after_one_that_was_sped_up_starts_playing_at_1x(playing_video, tmp_path):
