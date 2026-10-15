@@ -278,3 +278,13 @@ def test_scrolling_the_mouse_wheel_down_one_notch_over_a_fitted_playing_video_le
     scroll(viewer, -1, at=QPoint(10, 10))
 
     assert (engine.video_zoom, engine.video_pan_x, engine.video_pan_y) == (0, 0, 0)
+
+
+def test_scrolling_the_mouse_wheel_down_one_notch_over_a_zoomed_in_video_shows_it_smaller_but_no_smaller_than_fitted(qtbot, tmp_path):
+    viewer, engine = viewer_playing_a_clip_in(qtbot, tmp_path)
+    scroll(viewer, 2, at=viewer.rect().center())
+    zoomed_in = engine.video_zoom
+
+    scroll(viewer, -1, at=viewer.rect().center())
+
+    assert 0 < engine.video_zoom < zoomed_in
