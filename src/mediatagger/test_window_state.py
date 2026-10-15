@@ -14,7 +14,8 @@ from mediatagger.test_grid import painted_texts
 from mediatagger.test_viewer import SILENT, show_exposed
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image
 from mediatagger.test_viewer_open import drag_and_drop_onto
-from mediatagger.test_window import a_second_drive_with_a_folder_holding_one_blue_image, shown_status_bar_texts
+from mediatagger.test_window import shown_status_bar_texts
+from mediatagger.test_window_open import a_second_drive_with_a_folder_holding_one_blue_image
 from mediatagger.viewer import Viewer
 from mediatagger.window import Window
 
