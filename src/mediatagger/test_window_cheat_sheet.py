@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QPainter, qGreen, qRed
+from PySide6.QtGui import QImage, QPainter, qGreen, qRed
 from PySide6.QtWidgets import QStackedWidget
 
 from mediatagger.cheat_sheet import GRID_KEYS, LAUNCH_KEYS, VIEWER_KEYS, draw_sheet
@@ -206,3 +206,27 @@ def test_on_the_windows_empty_launch_screen_pressing_h_draws_a_panel_of_the_laun
     after = middle_of(window.grab().toImage())
     assert after == middle_of(with_the_panel(before, LAUNCH_KEYS))
     assert after != middle_of(with_the_panel(before, VIEWER_KEYS))
+
+
+def panel_lists(window, keys):
+    """Whether the window's shown cheat sheet, drawn alone on a plain backdrop, is the panel of these keys."""
+    drawn = window.cheat_sheet.grab().toImage()
+    expected = QImage(drawn.size(), drawn.format())
+    expected.fill(drawn.pixel(0, 0))  # the backdrop, in a corner the panel never reaches
+    painter = QPainter(expected)
+    draw_sheet(painter, expected.rect(), keys)
+    painter.end()
+    return drawn == expected
+
+
+def test_with_the_panel_shown_in_the_grid_opening_an_image_shows_the_viewers_keys_and_esc_back_to_the_grid_shows_the_grids_keys(qtbot, tmp_path):
+    grid, _ = grid_of_one_red_image(qtbot, tmp_path)
+    window = grid.window()
+    qtbot.keyClick(grid, Qt.Key.Key_H)
+    assert panel_lists(window, GRID_KEYS)
+
+    qtbot.keyClick(grid, Qt.Key.Key_Return)
+
+    assert panel_lists(window, VIEWER_KEYS)
+    qtbot.keyClick(window.viewer, Qt.Key.Key_Escape)
+    assert panel_lists(window, GRID_KEYS)
