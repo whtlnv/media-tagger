@@ -19,6 +19,8 @@ _PLAYER_OPTIONS = {"vo": "libmpv", "vd_lavc_dr": "no"}  # mpv_surface hands mpv 
 _VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up", Qt.Key.Key_Down: "Down", Qt.Key.Key_Return: "Enter"}
 _VIDEO_KEYS |= {Qt.Key.Key_0 + digit: str(digit) for digit in range(10)}
 _VIDEO_KEYS |= {Qt.Key.Key_BracketRight: "]", Qt.Key.Key_BracketLeft: "[", Qt.Key.Key_R: "r"}
+_WHEEL_NOTCH = 120  # angleDelta units per mouse-wheel notch
+_ZOOM_STEP = 1.25
 _SLIDESHOW_KEYS = {Qt.Key.Key_Left: "Left", Qt.Key.Key_Right: "Right", Qt.Key.Key_Space: "Space"}
 UNSUPPORTED_TEXT = "Unsupported"
 READ_ONLY_BANNER_TEXT = "This drive is read-only — tags can't be saved"
@@ -111,8 +113,8 @@ class Viewer(QWidget):
         painter.drawImage(zoomed, image)
 
     def wheelEvent(self, event):
-        notches = event.angleDelta().y() / 120
-        self._zoom = max(1, self._zoom * 1.25 ** notches)
+        notches = event.angleDelta().y() / _WHEEL_NOTCH
+        self._zoom = max(1, self._zoom * _ZOOM_STEP ** notches)
         self.update()
 
     def dragEnterEvent(self, event):
