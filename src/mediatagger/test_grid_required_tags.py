@@ -30,7 +30,7 @@ def test_a_file_whose_own_tags_start_with_every_required_root_has_no_missing_bad
     grid = Grid(tmp_path, library=library, required_roots=ROOTS)
     qtbot.addWidget(grid)
 
-    assert not any(MISSING_ROOTS_BADGE in text for text in painted_texts(grid, 0))
+    assert missing_badge(grid, 0) is None
 
 
 def test_a_root_covered_by_a_tag_inherited_from_an_ancestor_folder_is_not_missing(qtbot, tmp_path):
@@ -50,7 +50,7 @@ def test_a_folder_tile_even_an_untagged_one_has_no_missing_badge(qtbot, tmp_path
     grid = Grid(tmp_path, library=library, required_roots=ROOTS)
     qtbot.addWidget(grid)
 
-    assert not any(MISSING_ROOTS_BADGE in text for text in painted_texts(grid, 0))
+    assert missing_badge(grid, 0) is None
 
 
 def test_a_grid_with_no_required_roots_or_no_library_has_no_missing_badge(qtbot, tmp_path):
@@ -60,7 +60,7 @@ def test_a_grid_with_no_required_roots_or_no_library_has_no_missing_badge(qtbot,
     for grid in grids:
         qtbot.addWidget(grid)
 
-    assert [any(MISSING_ROOTS_BADGE in text for text in painted_texts(grid, 0)) for grid in grids] == [False, False]
+    assert [missing_badge(grid, 0) for grid in grids] == [None, None]
 
 
 class PlacementRecordingPainter(QPainter):
