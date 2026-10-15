@@ -21,11 +21,17 @@ def scroll(viewer, notches, at):
     QApplication.sendEvent(viewer, event)
 
 
-def test_scrolling_the_mouse_wheel_up_one_notch_over_a_fitted_image_shows_it_larger_than_fitted(qtbot, tmp_path):
-    make_image(tmp_path / "IMG_1.png", "red", width=200, height=100)
-    viewer = shown_viewer_on(qtbot, tmp_path)
+def square_viewer_on(qtbot, folder):
+    """A viewer on folder, 300x300."""
+    viewer = shown_viewer_on(qtbot, folder)
     viewer.resize(300, 300)
     qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    return viewer
+
+
+def test_scrolling_the_mouse_wheel_up_one_notch_over_a_fitted_image_shows_it_larger_than_fitted(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red", width=200, height=100)
+    viewer = square_viewer_on(qtbot, tmp_path)
     just_above_the_fitted_image = QPoint(150, 70)  # fitted 300x150 at y 75..224
     assert viewer.grab().toImage().pixelColor(just_above_the_fitted_image) == QColor("black")
 
@@ -36,9 +42,7 @@ def test_scrolling_the_mouse_wheel_up_one_notch_over_a_fitted_image_shows_it_lar
 
 def test_scrolling_the_mouse_wheel_down_one_notch_over_a_fitted_image_leaves_it_fitted(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red", width=200, height=100)
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    viewer.resize(300, 300)
-    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    viewer = square_viewer_on(qtbot, tmp_path)
     fitted = viewer.grab().toImage()
 
     scroll(viewer, -1, at=viewer.rect().center())
@@ -54,9 +58,7 @@ def shown_height(viewer, column):
 
 def test_scrolling_the_mouse_wheel_down_one_notch_over_a_zoomed_in_image_shows_it_smaller_but_no_smaller_than_fitted(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red", width=200, height=100)
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    viewer.resize(300, 300)
-    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    viewer = square_viewer_on(qtbot, tmp_path)
     centre = viewer.rect().center()
     fitted = shown_height(viewer, centre.x())
     scroll(viewer, 2, at=centre)
@@ -69,9 +71,7 @@ def test_scrolling_the_mouse_wheel_down_one_notch_over_a_zoomed_in_image_shows_i
 
 def test_scrolling_the_mouse_wheel_up_many_notches_over_an_image_stops_at_three_times_its_fitted_size(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red", width=200, height=20)
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    viewer.resize(300, 300)
-    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    viewer = square_viewer_on(qtbot, tmp_path)
     centre = viewer.rect().center()
 
     def picture_rows():  # rows of the centre column above the overlays (from y 250 down) showing the picture
@@ -91,9 +91,7 @@ def test_a_photo_larger_than_the_window_zoomed_in_to_300_percent_shows_its_own_f
     for y in range(900):
         photo.setPixelColor(450, y, QColor("black"))  # a one-pixel line: a third of a pixel once fitted to 300x300
     photo.save(str(tmp_path / "IMG_1.png"))
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    viewer.resize(300, 300)
-    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    viewer = square_viewer_on(qtbot, tmp_path)
     centre = viewer.rect().center()
 
     scroll(viewer, 20, at=centre)  # 300 %: the photo's middle 300x300 pixels at one window pixel each
@@ -116,9 +114,7 @@ def make_marked_picture(path, around):
 
 def test_zooming_in_on_an_image_with_the_mouse_near_its_top_left_corner_keeps_the_image_point_under_the_mouse_under_the_mouse(qtbot, tmp_path):
     make_marked_picture(tmp_path / "IMG_1.png", around=60)
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    viewer.resize(300, 300)
-    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    viewer = square_viewer_on(qtbot, tmp_path)
     mouse = QPoint(60, 60)
     assert viewer.grab().toImage().pixelColor(mouse) == QColor("blue")
 
@@ -129,9 +125,7 @@ def test_zooming_in_on_an_image_with_the_mouse_near_its_top_left_corner_keeps_th
 
 def test_zooming_in_on_an_image_with_the_mouse_near_its_bottom_right_corner_keeps_the_image_point_under_the_mouse_under_the_mouse(qtbot, tmp_path):
     make_marked_picture(tmp_path / "IMG_1.png", around=230)  # clear of the status bar
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    viewer.resize(300, 300)
-    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    viewer = square_viewer_on(qtbot, tmp_path)
     mouse = QPoint(230, 230)
     assert viewer.grab().toImage().pixelColor(mouse) == QColor("blue")
 
@@ -142,9 +136,7 @@ def test_zooming_in_on_an_image_with_the_mouse_near_its_bottom_right_corner_keep
 
 def test_zooming_out_of_a_zoomed_in_image_without_reaching_fitted_keeps_the_image_point_under_the_mouse_under_the_mouse(qtbot, tmp_path):
     make_marked_picture(tmp_path / "IMG_1.png", around=100)
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    viewer.resize(300, 300)
-    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    viewer = square_viewer_on(qtbot, tmp_path)
     scroll(viewer, 5, at=viewer.rect().center())  # 150 %, the marker now around (75, 75)
     mouse = QPoint(75, 75)
     assert viewer.grab().toImage().pixelColor(mouse) == QColor("blue")
@@ -156,9 +148,7 @@ def test_zooming_out_of_a_zoomed_in_image_without_reaching_fitted_keeps_the_imag
 
 def test_zooming_an_image_back_out_to_fitted_after_zooming_in_with_the_mouse_off_its_centre_shows_it_exactly_where_it_was_fitted(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red", width=200, height=100)
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    viewer.resize(300, 300)
-    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    viewer = square_viewer_on(qtbot, tmp_path)
     fitted = viewer.grab().toImage()
     scroll(viewer, 2, at=QPoint(60, 100))
 
@@ -169,9 +159,7 @@ def test_zooming_an_image_back_out_to_fitted_after_zooming_in_with_the_mouse_off
 
 def test_zooming_out_of_an_image_that_covers_the_window_with_the_mouse_near_a_window_edge_never_leaves_black_between_that_edge_and_the_image(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red", width=300, height=300)  # the window's aspect: zoomed, it covers the window
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    viewer.resize(300, 300)
-    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    viewer = square_viewer_on(qtbot, tmp_path)
     left_edge = QPoint(0, 150)
     scroll(viewer, 2, at=left_edge)  # the image's left edge stays at the window's left edge
 
@@ -182,9 +170,7 @@ def test_zooming_out_of_an_image_that_covers_the_window_with_the_mouse_near_a_wi
 
 def test_after_zooming_out_near_a_window_edge_pulls_a_zoomed_in_image_back_to_that_edge_zooming_in_again_keeps_the_image_point_under_the_mouse_under_the_mouse(qtbot, tmp_path):
     make_marked_picture(tmp_path / "IMG_1.png", around=120)
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    viewer.resize(300, 300)
-    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    viewer = square_viewer_on(qtbot, tmp_path)
     scroll(viewer, 5, at=QPoint(0, 0))  # 150 %, the image's top-left corner at the window's
     scroll(viewer, -2, at=QPoint(40, 40))  # 130 %, pulled back to the top-left corner: the marker now around (156, 156)
     mouse = QPoint(156, 156)
@@ -197,9 +183,7 @@ def test_after_zooming_out_near_a_window_edge_pulls_a_zoomed_in_image_back_to_th
 
 def test_a_wide_image_zoomed_in_near_the_top_of_the_picture_while_still_shorter_than_the_window_stays_inside_the_window(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red", width=200, height=100)
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    viewer.resize(300, 300)
-    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    viewer = square_viewer_on(qtbot, tmp_path)
 
     scroll(viewer, 9, at=QPoint(150, 76))  # fitted 300x150 at y 75..224; 190 % is 285 rows, which scaling about y 76 would put at y 74..359
 
@@ -209,9 +193,7 @@ def test_a_wide_image_zoomed_in_near_the_top_of_the_picture_while_still_shorter_
 
 def test_one_wheel_notch_up_from_fitted_shows_an_image_at_110_percent_of_its_fitted_size(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red", width=200, height=20)
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    viewer.resize(300, 300)
-    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    viewer = square_viewer_on(qtbot, tmp_path)
     centre = viewer.rect().center()
 
     def picture_rows():  # rows of the centre column above the overlays showing the picture: fitted 300x30 at y 135..164
@@ -232,9 +214,7 @@ def test_scrolling_several_notches_over_a_zoomed_in_photo_larger_than_the_window
         return decode_fitted(path, bounds)
 
     monkeypatch.setattr("mediatagger.viewer.decode_fitted", counted_decode_fitted)
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    viewer.resize(300, 300)
-    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    viewer = square_viewer_on(qtbot, tmp_path)
     viewer.grab()
     decodes.clear()
 
@@ -248,9 +228,7 @@ def test_scrolling_several_notches_over_a_zoomed_in_photo_larger_than_the_window
 def test_moving_to_the_next_item_after_zooming_in_on_an_image_then_back_shows_that_image_fitted_again(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red", width=200, height=100)
     make_image(tmp_path / "IMG_2.png", "blue")
-    viewer = shown_viewer_on(qtbot, tmp_path)
-    viewer.resize(300, 300)
-    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    viewer = square_viewer_on(qtbot, tmp_path)
     fitted = viewer.grab().toImage()
     scroll(viewer, 3, at=QPoint(60, 100))
 
