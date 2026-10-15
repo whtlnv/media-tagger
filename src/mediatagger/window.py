@@ -50,7 +50,8 @@ class Window(QWidget):
         self.tag_prompt = TagPrompt(self, self.status_bar, on_close=self._show_saved_tags)
         self.session = DriveSession(self.status_bar, self, home=home or Path.home(), **session_options)
         self.viewer = Viewer(player_options=player_options, folder_picker=folder_picker, on_escape=self._escape, session=self.session,
-            on_drop=self._record_state)
+            on_drop=self._record_state, cheat_sheet=self.cheat_sheet)
+        self.cheat_sheet.watch(self.viewer)
         self.stack.addWidget(self.viewer)
         self._forwarding = False
         self._results = None

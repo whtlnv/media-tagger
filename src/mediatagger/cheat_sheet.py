@@ -16,6 +16,25 @@ GRID_KEYS = [
     ("h", "show / hide this list of keys"),
 ]
 
+VIEWER_KEYS = [
+    ("Space / →", "next"),
+    ("←", "previous"),
+    ("t", "tag"),
+    ("i", "file name and position"),
+    ("Esc", "back to the grid"),
+    ("f", "fullscreen"),
+    ("p / Enter", "play / pause"),
+    ("↑ / ↓", "back / ahead 10 s"),
+    ("0–9", "jump to 0 %–90 %"),
+    ("m", "mute"),
+    ("] / [", "faster / slower"),
+    ("r", "turn 90°"),
+    ("v", "show the progress bar"),
+    ("o", "open a folder"),
+    ("mouse wheel", "zoom in / out"),
+    ("h", "show / hide this list of keys"),
+]
+
 TEXT_PIXEL_SIZE = 18
 OPACITY = 0.3
 _COLUMN_GAP = 48

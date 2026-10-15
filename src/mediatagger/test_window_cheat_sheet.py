@@ -1,8 +1,9 @@
-from PySide6.QtCore import Qt
-from PySide6.QtGui import qBlue, qGreen, qRed
+from PySide6.QtCore import QSize, Qt
+from PySide6.QtGui import QColor, qBlue, qGreen, qRed
 from PySide6.QtWidgets import QStackedWidget
 
 from mediatagger.grid import TILE_ROLE
+from mediatagger.image_fit import fitted_rect
 from mediatagger.test_viewer import SILENT, make_image
 from mediatagger.window import Window
 
@@ -60,3 +61,30 @@ def test_pressing_h_in_the_windows_folder_grid_leaves_its_tiles_pictures_as_they
     after = grid.viewport().grab().toImage()
     assert len(picture) > 1000
     assert all(after.pixel(x, y) == before.pixel(x, y) for x, y in picture)
+
+
+def viewer_of_one_red_image(qtbot, folder):
+    """The window's viewer showing a 64x48 red image, fitted into a wider viewer so black lies either side of it,
+    and the fitted picture's rectangle."""
+    make_image(folder / "a.png", "red")
+    window = Window(folder, player_options=SILENT)
+    qtbot.addWidget(window)
+    window.resize(1000, 600)
+    window.show()
+    qtbot.waitExposed(window)
+    return window.viewer, fitted_rect(QSize(64, 48), window.viewer.rect())
+
+
+def test_in_the_windows_viewer_pressing_h_draws_dim_text_in_the_black_around_the_picture_and_leaves_the_picture_as_it_was(qtbot, tmp_path):
+    viewer, picture = viewer_of_one_red_image(qtbot, tmp_path)
+    before = viewer.grab().toImage()
+    assert set(pixels_outside(before, picture)) == {QColor("black").rgb()}
+
+    qtbot.keyClick(viewer, Qt.Key.Key_H)
+
+    after = viewer.grab().toImage()
+    around = pixels_outside(after, picture)
+    brightest = max(max(qRed(pixel), qGreen(pixel), qBlue(pixel)) for pixel in around)
+    assert 40 <= brightest <= 128
+    inside = [(x, y) for y in range(picture.top(), picture.bottom() + 1) for x in range(picture.left(), picture.right() + 1)]
+    assert all(after.pixel(x, y) == before.pixel(x, y) for x, y in inside)
