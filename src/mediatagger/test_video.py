@@ -117,6 +117,14 @@ def test_pressing_down_on_a_video_seeks_10_seconds_back(playing_video):
     assert engine.time_pos == pytest.approx(before - 10, abs=1)
 
 
+def test_pressing_right_bracket_on_a_video_playing_at_1x_makes_it_play_at_1_25x(playing_video):
+    player, engine = playing_video
+
+    player.press("]")
+
+    assert engine.speed == 1.25
+
+
 def test_pressing_i_f_right_or_left_on_a_playing_video_does_not_pause_it(playing_video):
     player, engine = playing_video
 

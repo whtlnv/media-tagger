@@ -9,6 +9,7 @@ def new_engine(**options):
     return mpv.MPV(**options)
 
 
+SPEEDS = (0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 3, 4, 6, 8)  # ] and [ step through these, stopping at the ends
 WAIT_SECONDS = 5  # longest the UI waits on mpv; a file that takes longer counts as unplayable
 
 
@@ -49,11 +50,18 @@ class VideoPlayer:
         if key.isdigit():  # 0-9 jump to 0 %-90 % of the video
             self._seek(int(key) * 10, reference="absolute-percent")
             return
+        if key == "]":
+            self._step_speed(1)
+            return
         if key == "m":
             self.engine.mute = not self.engine.mute
             return
         if key in ("p", "Enter"):
             self.engine.pause = not self.engine.pause
+
+    def _step_speed(self, step):
+        index = SPEEDS.index(self.engine.speed) + step
+        self.engine.speed = SPEEDS[min(max(index, 0), len(SPEEDS) - 1)]
 
     def _seek(self, amount, reference="relative"):
         try:
