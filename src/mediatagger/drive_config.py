@@ -18,3 +18,8 @@ def required_roots(drive):
     if not isinstance(roots, list) or not all(isinstance(root, str) for root in roots):
         return (), CONFIG_CANT_BE_READ_TEXT
     return tuple(roots), None
+
+
+def missing_roots(tags, roots):
+    """How many of the roots none of the tags starts with."""
+    return sum(not any(tag.startswith(root) for tag in tags) for root in roots)
