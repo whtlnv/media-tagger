@@ -7,7 +7,6 @@ from PySide6.QtCore import QAbstractListModel, QModelIndex, QRect, QSize, Qt, QT
 from PySide6.QtGui import QColor, QPainter, QPen
 from PySide6.QtWidgets import QListView, QStyle, QStyledItemDelegate
 
-from mediatagger.cheat_sheet import GRID_KEYS, CheatSheet
 from mediatagger.folder import is_video_name, subfolder_and_media_names
 from mediatagger.folder_thumbnails import FolderThumbnails
 from mediatagger.thumbnail_cache import ThumbnailCache
@@ -201,8 +200,8 @@ class Grid(QListView):
     def __init__(self, folder, at=None, library=None, thumbnail_cache=None, paths=None, cheat_sheet=None):
         super().__init__()
         self.folder = folder
-        self.cheat_sheet = cheat_sheet or CheatSheet()
-        self.cheat_sheet.watch(self)  # `h` toggles it here, before the list's keyboard search could take it
+        if cheat_sheet is not None:
+            cheat_sheet.watch(self)  # `h` toggles it here, before the list's keyboard search could take it
         self.setFlow(QListView.Flow.LeftToRight)
         self.setWrapping(True)
         self.setGridSize(TILE_SIZE)
@@ -289,19 +288,6 @@ class Grid(QListView):
     def keep_clear_at_the_bottom(self, height):
         """Room below the last row for what lies over the grid's bottom edge (the window's status bar)."""
         self.setViewportMargins(0, 0, 0, height)
-
-    def paintEvent(self, event):
-        """The cheat sheet first, as the background the tiles are drawn over."""
-        painter = QPainter(self.viewport())
-        self.cheat_sheet.paint(painter, self.viewport().rect(), GRID_KEYS, self.palette().text().color())
-        painter.end()
-        super().paintEvent(event)
-
-    def scrollContentsBy(self, dx, dy):
-        """The tiles move but the cheat sheet behind them doesn't: while it shows, the whole view is drawn again, not shifted."""
-        super().scrollContentsBy(dx, dy)
-        if self.cheat_sheet.shown:
-            self.viewport().update()
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Plus:

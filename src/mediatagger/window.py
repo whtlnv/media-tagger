@@ -3,7 +3,7 @@ from pathlib import Path
 from PySide6.QtCore import QRect, Qt
 from PySide6.QtWidgets import QApplication, QStackedWidget, QStyle, QVBoxLayout, QWidget
 
-from mediatagger.cheat_sheet import CheatSheet
+from mediatagger.cheat_sheet import GRID_KEYS, LAUNCH_KEYS, VIEWER_KEYS, CheatSheet
 from mediatagger.drive_session import DriveSession
 from mediatagger.folder_thumbnails import GENERATING_THUMBNAILS_TEXT, progress_text
 from mediatagger.grid import TILE_ROLE, Grid
@@ -35,7 +35,6 @@ class Window(QWidget):
         self._state_file = state_file(home or Path.home())
         remembered = remembered_folder(self._state_file) if path is None else None
         collect_garbage_on_the_gui_thread()
-        self.cheat_sheet = CheatSheet(shown=remembered_cheat_sheet(self._state_file), on_toggle=self._record_cheat_sheet)
         self.stack = QStackedWidget(self)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -51,9 +50,12 @@ class Window(QWidget):
         self.tag_prompt = TagPrompt(self, self.status_bar, on_close=self._show_saved_tags)
         self.session = DriveSession(self.status_bar, self, home=home or Path.home(), **session_options)
         self.viewer = Viewer(player_options=player_options, folder_picker=folder_picker, on_escape=self._escape, session=self.session,
-            on_drop=self._record_state, cheat_sheet=self.cheat_sheet)
-        self.cheat_sheet.watch(self.viewer)
+            on_drop=self._record_state)
         self.stack.addWidget(self.viewer)
+        self.cheat_sheet = CheatSheet(self, shown=remembered_cheat_sheet(self._state_file), on_toggle=self._record_cheat_sheet,
+            keys=self._keys_on_screen)  # made after the stack and the status bar, so it lies over them
+        self.cheat_sheet.watch(self.viewer)
+        self.stack.currentChanged.connect(lambda: self.cheat_sheet.update())  # the keys of the screen now shown
         self._forwarding = False
         self._results = None
         self.setAcceptDrops(True)
@@ -169,6 +171,11 @@ class Window(QWidget):
     def _record_state(self, folder):
         if self._may_write_state():
             remember(self._state_file, folder, self.session.drive)
+
+    def _keys_on_screen(self):
+        if self.stack.currentWidget() is not self.viewer:
+            return GRID_KEYS
+        return LAUNCH_KEYS if self.viewer.slideshow is None else VIEWER_KEYS
 
     def _record_cheat_sheet(self, shown):
         if self._may_write_state():

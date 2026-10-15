@@ -1,7 +1,6 @@
-from PySide6.QtCore import QEvent, QObject, QRect, Qt
-from PySide6.QtGui import QColor
-
-from mediatagger.status_bar import CORNER_MARGIN
+from PySide6.QtCore import QEvent, QRect, Qt
+from PySide6.QtGui import QColor, QPainter
+from PySide6.QtWidgets import QWidget
 
 GRID_KEYS = [
     ("arrows", "move"),
@@ -42,51 +41,68 @@ LAUNCH_KEYS = [
     ("h", "show / hide this list of keys"),
 ]
 
-TEXT_PIXEL_SIZE = 18
-OPACITY = 0.3
-_COLUMN_GAP = 48
+_TEXT_PIXEL_SIZE = 18
+_TEXT = QColor(235, 235, 235)
+_BACKING = QColor(0, 0, 0, 170)  # dark enough to read on, light enough to see the media through
+_PADDING = 24
 _KEY_GAP = 16
 
 
-class CheatSheet(QObject):
-    """The list of keys drawn as a screen's background, toggled by `h` on any widget it watches."""
+def draw_sheet(painter, rect, keys):
+    """A panel centred in rect: each key right-aligned before its meaning, light text on a dark translucent backing."""
+    painter.save()
+    font = painter.font()
+    font.setPixelSize(_TEXT_PIXEL_SIZE)
+    painter.setFont(font)
+    metrics = painter.fontMetrics()
+    key_width = max(metrics.horizontalAdvance(key) for key, _ in keys)
+    action_width = max(metrics.horizontalAdvance(action) for _, action in keys)
+    line = metrics.height()
+    panel = QRect(0, 0, key_width + _KEY_GAP + action_width + 2 * _PADDING, len(keys) * line + 2 * _PADDING)
+    panel.moveCenter(rect.center())
+    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+    painter.setPen(Qt.PenStyle.NoPen)
+    painter.setBrush(_BACKING)
+    painter.drawRoundedRect(panel, _PADDING / 2, _PADDING / 2)
+    painter.setPen(_TEXT)
+    for number, (key, action) in enumerate(keys):
+        top = panel.top() + _PADDING + number * line
+        painter.drawText(QRect(panel.left() + _PADDING, top, key_width, line), Qt.AlignmentFlag.AlignRight, key)
+        painter.drawText(QRect(panel.left() + _PADDING + key_width + _KEY_GAP, top, action_width, line), Qt.AlignmentFlag.AlignLeft, action)
+    painter.restore()
 
-    def __init__(self, shown=False, on_toggle=lambda shown: None):
-        super().__init__()
-        self.shown = shown
+
+class CheatSheet(QWidget):
+    """The keys of the screen shown, in a panel over the whole of its parent, toggled by `h` on any widget it watches.
+    It never takes the mouse or the keyboard focus: everything under it works as without it."""
+
+    def __init__(self, parent=None, shown=False, on_toggle=lambda shown: None, keys=lambda: GRID_KEYS):
+        super().__init__(parent)
+        self.keys = keys
         self.on_toggle = on_toggle
+        self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+        self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        if parent is not None:
+            parent.installEventFilter(self)  # to keep covering it as it resizes
+            self.setGeometry(parent.rect())
+        self.shown = shown
+        self.setVisible(shown)
 
     def watch(self, widget):
         widget.installEventFilter(self)
 
     def eventFilter(self, watched, event):
+        if watched is self.parent() and event.type() == QEvent.Type.Resize:
+            self.setGeometry(watched.rect())
+            return False
         if event.type() == QEvent.Type.KeyPress and event.key() == Qt.Key.Key_H and not event.modifiers():
             self.shown = not self.shown
+            self.setVisible(self.shown)
+            self.raise_()
             self.on_toggle(self.shown)
-            (watched.viewport() if hasattr(watched, "viewport") else watched).update()
             return True
         return False
 
-    def paint(self, painter, rect, keys, colour):
-        """The keys in columns from rect's top-left, keys right-aligned before their actions, in a faint colour."""
-        if not self.shown:
-            return
-        painter.save()
-        font = painter.font()
-        font.setPixelSize(TEXT_PIXEL_SIZE)
-        painter.setFont(font)
-        colour = QColor(colour)
-        colour.setAlphaF(OPACITY)
-        painter.setPen(colour)
-        metrics = painter.fontMetrics()
-        key_width = max(metrics.horizontalAdvance(key) for key, _ in keys)
-        action_width = max(metrics.horizontalAdvance(action) for _, action in keys)
-        line = metrics.height()
-        area = rect.adjusted(CORNER_MARGIN, CORNER_MARGIN, -CORNER_MARGIN, -CORNER_MARGIN)
-        rows = max(1, area.height() // line)
-        for number, (key, action) in enumerate(keys):
-            left = area.left() + (number // rows) * (key_width + _KEY_GAP + action_width + _COLUMN_GAP)
-            top = area.top() + (number % rows) * line
-            painter.drawText(QRect(left, top, key_width, line), Qt.AlignmentFlag.AlignRight, key)
-            painter.drawText(QRect(left + key_width + _KEY_GAP, top, action_width, line), Qt.AlignmentFlag.AlignLeft, action)
-        painter.restore()
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        draw_sheet(painter, self.rect(), self.keys())

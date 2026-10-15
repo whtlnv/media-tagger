@@ -4,7 +4,6 @@ from PySide6.QtCore import QPoint, Qt
 from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import QFileDialog, QWidget
 
-from mediatagger.cheat_sheet import LAUNCH_KEYS, VIEWER_KEYS, CheatSheet
 from mediatagger.drive_session import DriveSession
 from mediatagger.folder import is_openable, is_video
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
@@ -28,7 +27,7 @@ READ_ONLY_BANNER_TEXT = "This drive is read-only — tags can't be saved"
 
 class Viewer(QWidget):
     def __init__(self, path=None, player_options=None, folder_picker=None, on_escape=None, session=None, on_drop=lambda path: None,
-        cheat_sheet=None, **session_options,
+        **session_options,
     ):
         """A viewer on its own makes its own status bar and drive session; inside a window it is handed the window's."""
         super().__init__()
@@ -45,7 +44,6 @@ class Viewer(QWidget):
         self.surface = None
         self._decoded_key = self._decoded = None
         self.zoom = Zoom()
-        self.cheat_sheet = cheat_sheet or CheatSheet()
         self.tag_prompt = TagPrompt(self, self.status_bar, on_close=self._show_tag_overlay)
         self.tag_overlay = TagOverlay(self)
         self.info = overlay_label("", self)
@@ -93,7 +91,6 @@ class Viewer(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.fillRect(self.rect(), Qt.GlobalColor.black)
-        self.cheat_sheet.paint(painter, self.rect(), LAUNCH_KEYS if self.slideshow is None else VIEWER_KEYS, Qt.GlobalColor.white)
         if self.slideshow is None:
             return
         image = self._current_image()

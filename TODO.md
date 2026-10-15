@@ -7,7 +7,7 @@ Phase 15 follow-up notes for every cycle (the user's decision of 2026-10-15 afte
 - `h` and `Esc` are caught by `CheatSheet.watch(widget)` (event filter on the viewer and every grid, as now): `h` toggles; `Esc` while shown hides it and is consumed (doesn't quit or go back) — except while a line edit (tag prompt) has focus, where `Esc` keeps closing the prompt. Every other key passes through untouched.
 - Shown/hidden stays remembered in `state.json` exactly as now. The background painting in the grid and viewer, and the grid's full repaint on scroll, go.
 
-- [ ] In the window's grid, pressing `h` draws a panel of the grid's keys over the middle of the window, on top of the tiles
+- [x] In the window's grid, pressing `h` draws a panel of the grid's keys over the middle of the window, on top of the tiles
 - [ ] The tiles stay visible through the panel: a red tile under it still shows red, darkened
 - [ ] In the window's grid, pressing `h` a second time removes the panel, leaving the window as it was before
 - [ ] In the window's viewer showing an image, pressing `h` draws a panel of the viewer's keys over the middle of the window, on top of the picture

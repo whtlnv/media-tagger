@@ -49,3 +49,13 @@ Append-only record of tests removed because a delivered change retired the behav
 - Now `test_the_progress_bar_shows_light_text_and_a_light_filled_track_over_a_black_frame`.
 - Removed assertion: pixel (295, 10) of the bar over a white frame is darkened by the backdrop (lightness < 128).
 - Why: Phase 12 drops the progress bar's dark backdrop ("Over a white video frame, the progress bar outside its text and track leaves the frame white"). The black-frame checks (light text, light filled track) are unaffected and kept (migrate, not delete).
+
+## 2026-10-15 · deleted · `src/mediatagger/test_window_cheat_sheet.py` — the background cheat-sheet tests
+- Asserted: the cheat sheet is drawn behind the tiles and pictures — grid background shows the grid's keys (`…pressing_h_draws_text_over_the_empty_background…`), `h` again leaves the background plain, tiles' pictures unchanged, dim text in the viewer's black around the picture with the viewer's keys rather than the grid's, the launch screen's keys behind its message, the sheet kept from grid to viewer and back, and a scrolled grid redrawing the sheet in place.
+- Retired by: the user's decision of 2026-10-15 after the native check — the sheet becomes a translucent panel drawn on top of everything (TODO "Phase 15 follow-up"); background painting and the grid's full repaint on scroll are removed.
+- Confirmed: failed with `AttributeError: 'CheatSheet' object has no attribute 'paint'` / pixel mismatches once the overlay landed. Each behaviour that survives is re-driven by a follow-up item (hide on second `h`, viewer keys, launch keys, grid ⇄ viewer).
+
+## 2026-10-15 · migrated · `src/mediatagger/test_window_cheat_sheet.py` — results grid, remembered state, prompts and search bar
+- Asserted the sheet's shown/hidden state through the grid's background pixels (`grid_background_shows_the_grids_keys` / `grid_background_is_plain`) or `viewer.cheat_sheet.shown`.
+- Retired by: the same decision — the grid and viewer no longer draw the sheet.
+- Migrated to: the same tests asserting `sheet_is_shown(window)` (the window's overlay is visible); setups unchanged.
