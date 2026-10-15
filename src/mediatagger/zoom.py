@@ -24,6 +24,11 @@ class Zoom:
         """Where the picture fitted at fitted is shown at this zoom."""
         target = QRect(QPoint(), fitted.size() * self.level)
         slack = QPointF(fitted.width(), fitted.height()) * (self.level - 1) / 2  # how far it can move and still cover fitted
-        centre = QPointF(min(slack.x(), max(-slack.x(), self.centre.x())), min(slack.y(), max(-slack.y(), self.centre.y())))
+        centre = QPointF(_clamp(self.centre.x(), slack.x()), _clamp(self.centre.y(), slack.y()))
         target.moveCenter(fitted.center() + centre.toPoint())
         return target
+
+
+def _clamp(value, limit):
+    """value, kept within limit either side of 0."""
+    return min(limit, max(-limit, value))
