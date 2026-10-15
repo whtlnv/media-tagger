@@ -1,3 +1,6 @@
+import math
+
+import pytest
 from PySide6.QtCore import QPoint, QPointF, Qt
 from PySide6.QtGui import QColor, QImage, QWheelEvent
 from PySide6.QtWidgets import QApplication
@@ -288,3 +291,11 @@ def test_scrolling_the_mouse_wheel_down_one_notch_over_a_zoomed_in_video_shows_i
     scroll(viewer, -1, at=viewer.rect().center())
 
     assert 0 < engine.video_zoom < zoomed_in
+
+
+def test_scrolling_the_mouse_wheel_up_many_notches_over_a_video_stops_at_three_times_its_fitted_size(qtbot, tmp_path):
+    viewer, engine = viewer_playing_a_clip_in(qtbot, tmp_path)
+
+    scroll(viewer, 30, at=viewer.rect().center())
+
+    assert engine.video_zoom == pytest.approx(math.log2(3))
