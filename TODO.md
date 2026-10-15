@@ -13,7 +13,7 @@ Phase 14 notes for every cycle (Phases 1–13 are delivered — see DONE.md; Pha
 - **Reset:** a new item (next/previous, open, drop) starts at 100 %. `VideoPlayer.show` already resets `video_rotate` before loading — reset `video_zoom`/`video_pan_x`/`video_pan_y` there too. `r` keeps the zoom level and recentres the picture (pan 0, re-clamped against the turned fit).
 - No zoom indicator (the spec doesn't ask for one). Wheel with no item shown does nothing.
 
-- [ ] Scrolling the mouse wheel up one notch over a fitted image shows it larger than fitted
+- [x] Scrolling the mouse wheel up one notch over a fitted image shows it larger than fitted
 - [ ] Scrolling the mouse wheel down one notch over a fitted image leaves it fitted
 - [ ] Scrolling the mouse wheel down one notch over a zoomed-in image shows it smaller than before, still no smaller than fitted
 - [ ] Scrolling the mouse wheel up many notches over an image stops at three times its fitted size

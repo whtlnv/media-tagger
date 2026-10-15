@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from PySide6.QtCore import QPoint, Qt
+from PySide6.QtCore import QPoint, QRect, Qt
 from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import QFileDialog, QWidget
 
@@ -42,6 +42,7 @@ class Viewer(QWidget):
         self.video_player = VideoPlayer(new_engine(**{**_PLAYER_OPTIONS, **(player_options or {})}))
         self.surface = None
         self._decoded_key = self._decoded = None
+        self._zoom = 1
         self.tag_prompt = TagPrompt(self, self.status_bar, on_close=self._show_tag_overlay)
         self.tag_overlay = TagOverlay(self)
         self.info = overlay_label("", self)
@@ -104,7 +105,14 @@ class Viewer(QWidget):
         if self.slideshow is None:
             return
         image = self._current_image()
-        painter.drawImage(fitted_rect(image.size(), self.rect()), image)
+        target = fitted_rect(image.size(), self.rect())
+        zoomed = QRect(QPoint(), target.size() * self._zoom)
+        zoomed.moveCenter(target.center())
+        painter.drawImage(zoomed, image)
+
+    def wheelEvent(self, event):
+        self._zoom = 1.25
+        self.update()
 
     def dragEnterEvent(self, event):
         if any(url.isLocalFile() for url in event.mimeData().urls()):
