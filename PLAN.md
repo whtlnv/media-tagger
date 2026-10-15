@@ -4,11 +4,7 @@ Delivery phases, in order. Decisions, key maps and rules live in `DESIGN.md`; ev
 Each phase must end with its behavior reachable from the shipped `mediatagger` command, not only from tests.
 
 
-Phases 1–14 are delivered. Their specs are in git history (`PLAN.md` at `fcd5d3b` for 1–11, at `ca048de` for 12, at `76e644f` for 13, at `5ba4a0a` for 14) and their items in `DONE.md`.
-
-## Phase 15 — Key cheat sheet
-
-- **`h` toggles a cheat sheet of every key and what it does**, drawn as the app's background instead of flat black (grid, viewer and launch screen), dim enough that tiles, images and videos stay on top and readable. It lists the keys of the screen you're on. `h` again hides it; whether it's shown is remembered in `state.json`.
+Phases 1–15 are delivered. Their specs are in git history (`PLAN.md` at `fcd5d3b` for 1–11, at `ca048de` for 12, at `76e644f` for 13, at `5ba4a0a` for 14, at `9a27389` for 15) and their items in `DONE.md`.
 
 ## Phase 16 — Required tags
 

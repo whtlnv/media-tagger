@@ -22,6 +22,7 @@ State of the project and how it has been run, for the next session. Read `DESIGN
 | 12 Fixes from the second Pi run | done, validated on the Mac (`cf4db51`, 769 tests); Pi run pending — see "Phase 12 — done" |
 | 13 Video speed, rotation, show controls | done, validated on the Mac (`21e6968`, 789 tests); Pi run pending |
 | 14 Zoom | done, validated on the Mac (`78f1a39`, 813 tests); Pi run pending |
+| 15 Key cheat sheet | done, validated on the Mac (`83868f5`, 835 tests); Pi run pending |
 
 Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), `grid.py`, `viewer.py`, `tag_prompt.py` (the `t` prompt, shared by grid and viewer), `status_bar.py`, `drive_session.py` (library open/create/restore/backup), `library.py` (SQLite, schema v2), `backup.py`, `state.py` (last folder, geometry, recent searches; `$XDG_CONFIG_HOME`), `search.py` (query matching), `search_bar.py` (the `/` box and its `↑`/`↓` history), `folder.py`, `slideshow.py`, `thumbnails.py` (image/video/folder thumbnails, `ffmpeg`/`ffprobe`), `thumbnail_cache.py`, `thumbnail_scheduler.py` (3 workers + prefetch), `folder_thumbnails.py` (a folder's thumbnails for its grid), `video.py` + `mpv_surface.py` (libmpv render API), `video_controls.py` (video progress bar), `zoom.py` (mouse-wheel zoom for images and mpv), `gui_thread_gc.py`. Tests are co-located (`test_*.py`). Open structural debt is in `BACKLOG.md`.
 
@@ -35,6 +36,10 @@ Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), 
   - send the agent back with a numbered fix list if anything is off.
 - Progress is relayed to the user in chat from a `Monitor` that polls `git log`, `TODO.md` checkbox counts, `~/Library/Logs/DiagnosticReports/Python-*.ips` and `/Volumes/MEDIATAGGER`. Monitors expire every 30 min; re-arm.
 - The user asked for progress to be printed in the conversation and for questions only when a decision is genuinely theirs.
+
+## Phase 15 — done
+
+`h` toggles `cheat_sheet.CheatSheet`, a mouse-transparent, never-focused widget over the whole Window, raised above the stack (so above the mpv surface) that paints a centred translucent panel of the current screen's keys (`GRID_KEYS`, `VIEWER_KEYS`, `LAUNCH_KEYS`, pinned against DESIGN.md's tables). Esc while shown only hides it; other keys pass through; `h` in the tag prompt / search bar types. Shown state in `state.json` (`cheat_sheet`). First delivered as a background behind the media per the original spec; the native check showed tiles and pictures hid it, and the user chose (2026-10-15) a dim overlay instead — reworked in `f61933c..83868f5`. Orchestrator check: suite twice (835), native: panel readable over the grid and a playing video, keys switch grid ⇄ viewer, Esc hides then goes back. The automated quality loops and `/backlog-audit` were skipped for the rework.
 
 ## Phase 14 — done
 
