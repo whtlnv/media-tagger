@@ -10,7 +10,7 @@ Phase 16 notes for every cycle (Phases 1–15 are delivered — see DONE.md; Pha
 - After the tag prompt saves (grid) the current grid recomputes every tile's tag count and mark from fresh bulk reads (covers a folder whose tags reach other shown tiles); returning with `Esc` from a results slideshow to the same results grid recomputes them too (a fresh folder grid already reads fresh data).
 - `Window._grid_of` and `run_search` pass `self.session.required_roots` to `Grid`.
 
-- [ ] `required_roots` of a drive whose root holds `mediatagger_config.json` with `{"requiredRoots": ["type:", "size:"]}` gives those two roots and no problem
+- [x] `required_roots` of a drive whose root holds `mediatagger_config.json` with `{"requiredRoots": ["type:", "size:"]}` gives those two roots and no problem
 - [ ] `required_roots` of a drive with no config file, or one with no `requiredRoots`, gives no roots and no problem, and leaves the drive's file list unchanged
 - [ ] `required_roots` of a drive whose config isn't valid JSON gives no roots and the "can't be read" problem text
 - [ ] `required_roots` of a drive whose config is JSON but whose `requiredRoots` isn't a list of strings (or which isn't an object) gives no roots and the problem text
