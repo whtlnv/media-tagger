@@ -299,3 +299,12 @@ def test_scrolling_the_mouse_wheel_up_many_notches_over_a_video_stops_at_three_t
     scroll(viewer, 30, at=viewer.rect().center())
 
     assert engine.video_zoom == pytest.approx(math.log2(3))
+
+
+def test_pressing_r_on_a_zoomed_in_video_turns_it_and_keeps_it_zoomed_in(qtbot, tmp_path):
+    viewer, engine = viewer_playing_a_clip_in(qtbot, tmp_path)
+    scroll(viewer, 2, at=viewer.rect().center())
+
+    qtbot.keyClick(viewer, Qt.Key.Key_R)
+
+    assert (engine.video_rotate, engine.video_zoom) == (90, pytest.approx(math.log2(1.2)))
