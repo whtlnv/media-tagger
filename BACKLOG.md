@@ -2,6 +2,12 @@
 
 ## Out of Scope
 
+- **[src/mediatagger/zoom.py:37] A zoom's pan is clamped only when the wheel turns, not when the window resizes or `r` turns a video** (added: 2026-10-15)
+  `Zoom.pan` is kept in fractions of the shown picture, so a zoom survives `f`/a resize/`r` centred where it was, but the no-black-edge clamp in `Zoom.wheel` is not re-run against the new fitted rect until the next wheel turn, so a zoomed picture panned to an edge can show black there after a resize or a turn. Fixing it needs the viewer to re-clamp on resize and on `r` (a `Zoom.reclamp(fitted, window)` called from `resizeEvent` and the `r` key), lines `viewer.py` has no room for under its 270-line budget.
+
+- **[src/mediatagger/viewer.py:239] Zooming a photo decodes it at up to 3x the window** (added: 2026-10-15)
+  `Zoom.detail()` makes `_current_image` decode once more, no larger than three times the window (and never larger than the photo), on the first notch past 100 %. On a 2560x1080 screen that is a 12 MP photo decoded whole (~48 MB of RGB32), one extra full decode; unmeasured on the Pi. If it lags there, decode at the window size times the current level only after the wheel settles.
+
 - **[src/mediatagger/test_video_controls.py:335] Window staging (`Window(…, player_options=SILENT)`, `addWidget`, `show_exposed`) is repeated with no shared helper** (added: 2026-10-14; location corrected 2026-10-14)
   This file now repeats it five times, but the same three lines show up 32 times in total, mostly in test files outside 76e644f..HEAD. A helper beside `show_exposed` in `test_viewer.py` would only be partly adopted if this range's sites used it alone. Hoist it when those other files are touched.
 
