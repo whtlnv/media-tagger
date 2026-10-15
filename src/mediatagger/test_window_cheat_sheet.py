@@ -22,7 +22,7 @@ def grid_of_one_red_image(qtbot, folder):
     make_image(folder / "a.jpg", "red")
     window = Window(folder, player_options=SILENT)
     qtbot.addWidget(window)
-    window.resize(800, 600)
+    window.resize(1000, 600)
     window.show()
     qtbot.waitExposed(window)
     stack = window.findChild(QStackedWidget)
@@ -123,3 +123,17 @@ def test_on_the_windows_empty_launch_screen_pressing_h_shows_the_launch_screens_
 
     around = pixels_outside(window.viewer.grab().toImage(), message)
     assert around == pixels_outside(sheet_on_black(window.viewer.size(), LAUNCH_KEYS), message)
+
+
+def test_with_the_sheet_shown_in_the_grid_opening_an_image_shows_it_in_the_viewer_and_esc_back_to_the_grid_still_shows_it(qtbot, tmp_path):
+    grid, tile = grid_of_one_red_image(qtbot, tmp_path)
+    qtbot.keyClick(grid, Qt.Key.Key_H)
+    viewer = grid.window().viewer
+
+    qtbot.keyClick(grid, Qt.Key.Key_Return)
+
+    assert len(set(pixels_outside(viewer.grab().toImage(), fitted_rect(QSize(64, 48), viewer.rect())))) > 1
+    qtbot.keyClick(viewer, Qt.Key.Key_Escape)
+    grid_again = grid.window().findChild(QStackedWidget).currentWidget()
+    assert grid_again is not viewer
+    assert len(set(pixels_outside(grid_again.viewport().grab().toImage(), tile))) > 1
