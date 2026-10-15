@@ -3,6 +3,7 @@ from pathlib import Path
 from PySide6.QtCore import QRect, Qt
 from PySide6.QtWidgets import QApplication, QStackedWidget, QStyle, QVBoxLayout, QWidget
 
+from mediatagger.cheat_sheet import CheatSheet
 from mediatagger.drive_session import DriveSession
 from mediatagger.folder_thumbnails import GENERATING_THUMBNAILS_TEXT, progress_text
 from mediatagger.grid import TILE_ROLE, Grid
@@ -33,6 +34,7 @@ class Window(QWidget):
         self._state_file = state_file(home or Path.home())
         remembered = remembered_folder(self._state_file) if path is None else None
         collect_garbage_on_the_gui_thread()
+        self.cheat_sheet = CheatSheet()
         self.stack = QStackedWidget(self)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -128,7 +130,9 @@ class Window(QWidget):
         self._show_parent_of(self.viewer.slideshow.current)
 
     def _grid_of(self, folder, at=None):
-        return Grid(folder, at=at, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache())
+        grid = Grid(folder, at=at, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache(), cheat_sheet=self.cheat_sheet)
+        self.cheat_sheet.watch(grid)
+        return grid
 
     def _show(self, grid):
         grid.activated.connect(self._open_tile)
