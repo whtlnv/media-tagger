@@ -12,7 +12,7 @@ Phase 15 notes for every cycle (Phases 1–14 are delivered — see DONE.md; Pha
 - [x] In the window's folder grid, pressing `h` draws dim text over the grid's empty background, behind the tiles, where before the background was plain
 - [x] In the window's folder grid, pressing `h` a second time leaves the grid's empty background plain again
 - [x] The grid's cheat sheet lists exactly the keys of DESIGN.md's grid table, in order, `h` included
-- [ ] Pressing `h` in the window's folder grid leaves its tiles' pictures exactly as they were drawn without the sheet
+- [x] Pressing `h` in the window's folder grid leaves its tiles' pictures exactly as they were drawn without the sheet
 - [ ] In the window's viewer showing an image, pressing `h` draws dim text in the black around the fitted picture, its brightest pixel well below white, and leaves the picture's pixels unchanged
 - [ ] The viewer's cheat sheet lists exactly the keys of DESIGN.md's viewer table, in order, `h` included, and the viewer's background shows the viewer's keys rather than the grid's
 - [ ] On the window's empty launch screen, pressing `h` shows a cheat sheet of exactly the keys of DESIGN.md's launch table, in order
