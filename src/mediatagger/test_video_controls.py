@@ -1,3 +1,4 @@
+import re
 import time
 from types import SimpleNamespace
 
@@ -196,26 +197,20 @@ def test_a_key_pressed_while_the_progress_bar_is_hidden_on_a_playing_video_shows
     assert bar.isVisible()
 
 
-def test_up_on_a_playing_video_whose_progress_bar_is_hidden_shows_the_bar_at_once_at_the_new_position(qtbot, tmp_path):
-    clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
+@pytest.mark.parametrize("duration, key, text", [
+    pytest.param(65, Qt.Key.Key_Up, r"0:10 / 1:05", id="up shows the bar at the new position"),
+    pytest.param(65, Qt.Key.Key_BracketRight, r"\d:\d\d / 1:05 · 1\.25×", id="] shows the bar reading its new speed"),
+    pytest.param(64, Qt.Key.Key_5, r"0:32 / 1:04", id="5 seeks to half its length and shows the bar"),
+])
+def test_a_seek_or_speed_key_on_a_playing_video_whose_progress_bar_is_hidden_shows_the_bar_at_once_reading_the_change(qtbot, tmp_path, duration, key, text):
+    clip = make_clip(tmp_path / "IMG_1.mp4", duration=duration)
     viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
     bar.hide()  # as when the hide delay runs out
 
-    qtbot.keyClick(viewer, Qt.Key.Key_Up)
+    qtbot.keyClick(viewer, key)
 
     assert bar.isVisible()
-    assert bar.text() == "0:10 / 1:05"
-
-
-def test_right_bracket_on_a_playing_video_whose_progress_bar_is_hidden_shows_the_bar_at_once_reading_its_new_speed(qtbot, tmp_path):
-    clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
-    viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
-    bar.hide()  # as when the hide delay runs out
-
-    qtbot.keyClick(viewer, Qt.Key.Key_BracketRight)
-
-    assert bar.isVisible()
-    assert bar.text().endswith(" · 1.25×")
+    assert re.fullmatch(text, bar.text())
 
 
 def test_left_bracket_on_a_playing_video_shows_the_bar_reading_its_slower_speed(qtbot, tmp_path):
@@ -253,17 +248,6 @@ def test_v_on_a_playing_video_leaves_its_pause_mute_position_speed_rotation_and_
     assert (engine.pause, engine.mute, engine.speed, engine.video_rotate) == (True, True, 2, 90)
     assert engine.time_pos == pytest.approx(position, abs=0.05)
     assert viewer.slideshow.current == clip
-
-
-def test_five_on_a_playing_video_whose_progress_bar_is_hidden_seeks_to_half_its_length_and_shows_the_bar(qtbot, tmp_path):
-    clip = make_clip(tmp_path / "IMG_1.mp4", duration=64)
-    viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
-    bar.hide()  # as when the hide delay runs out
-
-    qtbot.keyClick(viewer, Qt.Key.Key_5)
-
-    assert bar.isVisible()
-    assert bar.text() == "0:32 / 1:04"
 
 
 def test_zero_on_a_playing_video_seeks_back_to_the_start(qtbot, tmp_path):
