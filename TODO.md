@@ -21,7 +21,7 @@ Phase 15 notes for every cycle (Phases 1–14 are delivered — see DONE.md; Pha
 - [x] Scrolling a grid of many tiles while the sheet is shown leaves the sheet where it was in the window, drawn whole, not moved with the tiles
 - [x] After pressing `h`, a window started next time with the same home shows the sheet from the start
 - [x] With the sheet remembered as shown, pressing `h` makes a window started next time with the same home start without it
-- [ ] Toggling the sheet while the state file would lie on the drive being viewed writes no state file
+- [x] Toggling the sheet while the state file would lie on the drive being viewed writes no state file
 - [ ] Typing `h` into the grid's tag prompt puts an `h` in the prompt and leaves the sheet as it was
 - [ ] Typing `h` into the viewer's tag prompt puts an `h` in the prompt and leaves the sheet as it was
 - [ ] Typing `h` into the search bar puts an `h` in the search and leaves the sheet as it was

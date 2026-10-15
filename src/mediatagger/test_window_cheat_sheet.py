@@ -10,6 +10,7 @@ from mediatagger.test_viewer import SILENT, make_image
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image
 from mediatagger.test_window import window_showing_the_grid_with_its_cursor_on_its_first_tile
 from mediatagger.test_window_search import search_for
+from mediatagger.test_window_state import state_file_path
 from mediatagger.window import Window
 
 
@@ -209,3 +210,13 @@ def test_with_the_sheet_remembered_as_shown_pressing_h_makes_a_window_started_ne
     next_window, next_stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
 
     assert not grid_background_shows_text(next_stack.currentWidget())
+
+
+def test_toggling_the_sheet_while_the_state_file_would_lie_on_the_drive_being_viewed_writes_no_state_file(qtbot, tmp_path, monkeypatch):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(drive / "config"))
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_H)
+
+    assert not state_file_path().exists()
