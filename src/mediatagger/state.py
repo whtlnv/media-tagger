@@ -24,31 +24,17 @@ def remember(state, folder, mount_point):
 
 
 def remember_geometry(state, geometry):
-    remembering = _read(state)
-    remembering["geometry"] = geometry
-    try:
-        _write(state, remembering)
-    except OSError:
-        pass  # the window still closes; next time it opens centred
+    _remember_if_writable(state, "geometry", geometry)  # unwritable, the window still closes; next time it opens centred
 
 
 def remember_search(state, query):
-    remembering = _read(state)
     earlier_searches = [search for search in remembered_searches(state) if search != query]
-    remembering["searches"] = (earlier_searches + [query])[-MOST_SEARCHES_REMEMBERED:]
-    try:
-        _write(state, remembering)
-    except OSError:
-        pass  # the search still runs; it just isn't offered by ↑ next time
+    # unwritable, the search still runs; it just isn't offered by ↑ next time
+    _remember_if_writable(state, "searches", (earlier_searches + [query])[-MOST_SEARCHES_REMEMBERED:])
 
 
 def remember_cheat_sheet(state, shown):
-    remembering = _read(state)
-    remembering["cheat_sheet"] = shown
-    try:
-        _write(state, remembering)
-    except OSError:
-        pass  # the sheet still toggles; next time it starts as it was before
+    _remember_if_writable(state, "cheat_sheet", shown)  # unwritable, the sheet still toggles; next time it starts as it was before
 
 
 def remembered_cheat_sheet(state):
@@ -63,6 +49,15 @@ def remembered_searches(state):
 
 def remembered_geometry(state):
     return _remembered(state, "geometry")
+
+
+def _remember_if_writable(state, key, value):
+    remembering = _read(state)
+    remembering[key] = value
+    try:
+        _write(state, remembering)
+    except OSError:
+        pass
 
 
 def _remembered(state, key):
