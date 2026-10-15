@@ -13,7 +13,8 @@ class Zoom:
 
     def wheel(self, angle_delta):
         """Turn the mouse wheel by angle_delta (eighths of a degree; positive is up, which zooms in)."""
-        self.level = min(_MAX_ZOOM, max(1, self.level * _ZOOM_STEP ** (angle_delta / _WHEEL_NOTCH)))
+        zoomed = self.level * _ZOOM_STEP ** (angle_delta / _WHEEL_NOTCH)
+        self.level = min(_MAX_ZOOM, max(1, zoomed))
 
     def shown(self, fitted):
         """Where the picture fitted at fitted is shown at this zoom."""
