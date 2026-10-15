@@ -105,3 +105,17 @@ def test_tagging_a_file_in_a_slideshow_opened_from_results_then_esc_back_to_them
 
     assert stack.currentWidget() is results
     assert (missing_badge(results, 0), f"{TAG_BADGE}2" in painted_texts(results, 0)) == (f"{MISSING_BADGE}1", True)
+
+
+def test_opening_and_browsing_a_drive_with_a_config_leaves_its_root_and_its_config_untouched(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    write_config(drive, ["type:", "size:"])
+    config = drive / CONFIG_FILE
+    before = (sorted(path.name for path in drive.iterdir()), config.read_bytes(), config.stat().st_mtime_ns)
+
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    window.close()
+
+    assert (sorted(path.name for path in drive.iterdir()), config.read_bytes(), config.stat().st_mtime_ns) == before
