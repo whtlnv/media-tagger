@@ -187,22 +187,14 @@ def test_destroying_a_shown_progress_bar_that_avoids_a_shown_sibling_after_the_g
     bar.__dict__.clear()  # what Python's GC does to the wrapper when it breaks a reference cycle
     shiboken6.delete(parent)  # Qt hides the shown sibling while destroying it, which the bar watches
 
-def test_a_key_pressed_while_the_progress_bar_is_hidden_on_a_playing_video_shows_it_again(qtbot, tmp_path):
-    clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
-    viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
-    bar.hide()  # as when the hide delay runs out
-
-    qtbot.keyClick(viewer, Qt.Key.Key_A)
-
-    assert bar.isVisible()
-
-
 @pytest.mark.parametrize("duration, key, text", [
+    pytest.param(65, Qt.Key.Key_A, r"\d:\d\d / 1:05", id="a key with no command shows the bar again"),
+    pytest.param(65, Qt.Key.Key_V, r"\d:\d\d / 1:05", id="v shows the bar"),
     pytest.param(65, Qt.Key.Key_Up, r"0:10 / 1:05", id="up shows the bar at the new position"),
     pytest.param(65, Qt.Key.Key_BracketRight, r"\d:\d\d / 1:05 · 1\.25×", id="] shows the bar reading its new speed"),
     pytest.param(64, Qt.Key.Key_5, r"0:32 / 1:04", id="5 seeks to half its length and shows the bar"),
 ])
-def test_a_seek_or_speed_key_on_a_playing_video_whose_progress_bar_is_hidden_shows_the_bar_at_once_reading_the_change(qtbot, tmp_path, duration, key, text):
+def test_a_key_on_a_playing_video_whose_progress_bar_is_hidden_shows_the_bar_at_once_reading_any_change(qtbot, tmp_path, duration, key, text):
     clip = make_clip(tmp_path / "IMG_1.mp4", duration=duration)
     viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
     bar.hide()  # as when the hide delay runs out
@@ -220,16 +212,6 @@ def test_left_bracket_on_a_playing_video_shows_the_bar_reading_its_slower_speed(
     qtbot.keyClick(viewer, Qt.Key.Key_BracketLeft)
 
     assert bar.text().endswith(" · 0.75×")
-
-
-def test_v_on_a_playing_video_whose_progress_bar_is_hidden_shows_the_bar(qtbot, tmp_path):
-    clip = make_clip(tmp_path / "IMG_1.mp4", duration=65)
-    viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
-    bar.hide()  # as when the hide delay runs out
-
-    qtbot.keyClick(viewer, Qt.Key.Key_V)
-
-    assert bar.isVisible()
 
 
 def test_v_on_a_playing_video_leaves_its_pause_mute_position_speed_rotation_and_item_as_they_were(qtbot, tmp_path):
