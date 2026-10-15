@@ -188,3 +188,15 @@ def test_after_zooming_out_near_a_window_edge_pulls_a_zoomed_in_image_back_to_th
     scroll(viewer, 1, at=mouse)
 
     assert viewer.grab().toImage().pixelColor(mouse) == QColor("blue")
+
+
+def test_a_wide_image_zoomed_in_near_the_top_of_the_picture_while_still_shorter_than_the_window_stays_inside_the_window(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red", width=200, height=100)
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    viewer.resize(300, 300)
+    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+
+    scroll(viewer, 3, at=QPoint(150, 76))  # fitted 300x150 at y 75..224; 195 % is 293 rows, which scaling about y 76 would put at y 74..367
+
+    frame = viewer.grab().toImage()
+    assert (frame.pixelColor(150, 0), frame.pixelColor(150, 12)) == (QColor("black"), QColor("red"))  # pushed up to y 7..299
