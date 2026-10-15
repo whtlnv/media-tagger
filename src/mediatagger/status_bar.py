@@ -68,8 +68,8 @@ class TagOverlay:
 
 
 class StatusBar(QWidget):
-    """The always-visible strip along the bottom: the open library, the read-only notice, tagging messages and the
-    one slot for background work."""
+    """The always-visible strip along the bottom: the open library, the read-only notice, tagging messages, a problem
+    with the drive's config and the one slot for background work."""
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -81,6 +81,8 @@ class StatusBar(QWidget):
         self.cant_save_status.hide()
         self.couldnt_save_status = overlay_label(_COULDNT_SAVE_TAGS_TEXT, self)
         self.couldnt_save_status.hide()
+        self.config_status = overlay_label("", self)
+        self.config_status.hide()
         self.background_status = overlay_label("", self)
         self.background_status.hide()
         self.tags_status = overlay_label("", self)
@@ -93,7 +95,7 @@ class StatusBar(QWidget):
         self._background_status_clearing.timeout.connect(self.background_status.hide)
         layout = QHBoxLayout(self)
         layout.setContentsMargins(CORNER_MARGIN, 0, CORNER_MARGIN, CORNER_MARGIN)
-        for label in (self.library_label, self.read_only_status, self.cant_save_status, self.couldnt_save_status, self.background_status, self.tags_status, self.inherited_tags_status):
+        for label in (self.library_label, self.read_only_status, self.cant_save_status, self.couldnt_save_status, self.config_status, self.background_status, self.tags_status, self.inherited_tags_status):
             layout.addWidget(label)
         layout.addStretch()
 
@@ -106,6 +108,11 @@ class StatusBar(QWidget):
         self.read_only_status.setVisible(read_only)
         self.library_label.setText(text)
         self.library_label.setVisible(bool(text))
+
+    def show_config_problem(self, text):
+        """What is wrong with the drive's config file, while that drive is open; nothing when it is fine or absent."""
+        self.config_status.setText(text)
+        self.config_status.setVisible(bool(text))
 
     def flash_cant_save(self):
         self.cant_save_status.show()

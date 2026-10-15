@@ -60,7 +60,8 @@ class DriveSession:
             self.back_up_library()
         self.library = None
         self.drive = drive
-        self.required_roots, _problem = required_roots(drive)
+        self.required_roots, problem = required_roots(drive)
+        self.status_bar.show_config_problem(problem or "")
         if self._never_holds_a_library(drive):
             self.status_bar.show_library(NO_LIBRARY_VIEWING_ONLY_TEXT, read_only=False)
             return

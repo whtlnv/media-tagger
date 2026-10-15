@@ -26,8 +26,8 @@ Phase 16 notes for every cycle (Phases 1–15 are delivered — see DONE.md; Pha
 - [x] A results grid given required roots marks each result file by its effective tags (own tags and those of its ancestor folders in the library), and never marks a result folder or a missing result
 - [x] After a first grid has been shown, opening and showing the grid of a folder of 5,000 files in a library where half are tagged, with two required roots, takes under 150 ms
 - [x] In the window, opening a folder on a fake drive whose root holds a config naming `type:` and `size:` shows the grid with its untagged file's tile marked `✗2`
-- [ ] In the window, opening a folder on a fake drive with no config shows no `✗` badge on any tile
-- [ ] In the window, opening a drive whose config isn't valid JSON shows the "can't be read" text in the status bar and no `✗` badge on any tile, and the app keeps working (the grid opens)
+- [x] In the window, opening a folder on a fake drive with no config shows no `✗` badge on any tile
+- [x] In the window, opening a drive whose config isn't valid JSON shows the "can't be read" text in the status bar and no `✗` badge on any tile, and the app keeps working (the grid opens)
 - [ ] In the window, after opening a drive with an invalid config, switching to another drive (e.g. by a drop) with a valid config clears the status-bar text and marks that drive's tiles by its own config
 - [ ] In the window's grid, tagging the cursor's file `type:photo` with the tag prompt changes its mark from `✗2` to `✗1` at once, and adding `size:big` then removes the mark
 - [ ] In the window's results grid, tagging a result file with a missing root updates its mark at once
