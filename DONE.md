@@ -1,3 +1,27 @@
+- [x] 2026-10-15 · Scrolling the mouse wheel up one notch over a fitted image shows it larger than fitted
+- [x] 2026-10-15 · Scrolling the mouse wheel down one notch over a fitted image leaves it fitted
+- [x] 2026-10-15 · Scrolling the mouse wheel down one notch over a zoomed-in image shows it smaller than before, still no smaller than fitted
+- [x] 2026-10-15 · Scrolling the mouse wheel up many notches over an image stops at three times its fitted size
+- [x] 2026-10-15 · A photo larger than the window, zoomed in to 300 %, shows its own fine detail rather than an enlarged copy of its fitted size
+- [x] 2026-10-15 · Zooming in on an image with the mouse near its top-left corner keeps the image point under the mouse under the mouse
+- [x] 2026-10-15 · Zooming in on an image with the mouse near its bottom-right corner keeps the image point under the mouse under the mouse
+- [x] 2026-10-15 · Zooming out of a zoomed-in image, without reaching fitted, keeps the image point under the mouse under the mouse
+- [x] 2026-10-15 · Zooming an image back out to fitted, after zooming in with the mouse off its centre, shows it exactly where it was fitted
+- [x] 2026-10-15 · Zooming out of an image that covers the window, with the mouse near a window edge, never leaves black between that edge and the image
+- [x] 2026-10-15 · After zooming out near a window edge pulls a zoomed-in image back to that edge, zooming in again keeps the image point under the mouse under the mouse
+- [x] 2026-10-15 · A wide image zoomed in with the mouse near the top of the picture, while still shorter than the window, never hangs off the window's top while black shows below it
+- [x] 2026-10-15 · One wheel notch up from fitted shows an image at 110 % of its fitted size (steps of 10 percentage points)
+- [x] 2026-10-15 · Scrolling the wheel several notches over a zoomed-in photo larger than the window decodes it at most once more, not once per notch
+- [x] 2026-10-15 · Moving to the next item after zooming in on an image, then back, shows that image fitted again
+- [x] 2026-10-15 · Scrolling the mouse wheel up one notch over a playing video shows it larger than fitted
+- [x] 2026-10-15 · Scrolling the mouse wheel down one notch over a fitted playing video leaves it fitted
+- [x] 2026-10-15 · Scrolling the mouse wheel down one notch over a zoomed-in video shows it smaller than before, still no smaller than fitted
+- [x] 2026-10-15 · Scrolling the mouse wheel up many notches over a video stops at three times its fitted size
+- [x] 2026-10-15 · Zooming in on a playing video with the mouse off its centre keeps the video point under the mouse under the mouse
+- [x] 2026-10-15 · Zooming in on a video turned 90° with `r`, with the mouse off its centre, keeps the video point under the mouse under the mouse
+- [x] 2026-10-15 · Pressing `r` on a zoomed-in video turns it and keeps it zoomed in
+- [x] 2026-10-15 · Moving to the next video after zooming in on a video shows the next video fitted
+- [x] 2026-10-15 · In the window the `mediatagger` command builds, scrolling the mouse wheel up over a playing video in the viewer shows it larger than fitted
 - [x] 2026-10-14 · Pressing `]` on a video playing at 1× makes it play at 1.25×
 - [x] 2026-10-14 · Pressing `[` on a video playing at 1× makes it play at 0.75×
 - [x] 2026-10-14 · Pressing `]` on a video playing at 8× leaves it at 8×
