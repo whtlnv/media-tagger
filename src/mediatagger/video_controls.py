@@ -6,6 +6,8 @@ from PySide6.QtWidgets import QLabel
 HIDE_DELAY_MS = 3000  # the bar fades after this long without input
 _TRACK = QColor(255, 255, 255, 80)  # the whole length, dimmer than the elapsed part
 _TRACK_HEIGHT = 3  # a thin strip along the bottom edge, clear of the text
+_EDGE = QColor(0, 0, 0, 200)  # around the light text, so it reads over a white frame as well as a black one
+_EDGE_OFFSETS = [(dx, dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1) if (dx, dy) != (0, 0)]
 _GEOMETRY_EVENTS = (QEvent.Type.Show, QEvent.Type.Hide, QEvent.Type.Move, QEvent.Type.Resize)
 
 
@@ -97,7 +99,16 @@ class ProgressBar(QLabel):
             top = self.height() - _TRACK_HEIGHT
             painter.fillRect(0, top, self.width(), _TRACK_HEIGHT, _TRACK)
             painter.fillRect(0, top, int(self.width() * self._fraction), _TRACK_HEIGHT, Qt.GlobalColor.white)
-        super().paintEvent(event)
+            self._draw_edged_text(painter)
+
+    def _draw_edged_text(self, painter):
+        """The text in white over a one-pixel dark edge, in place of the label's own plain drawing."""
+        area, flags = self.contentsRect(), int(self.alignment())
+        painter.setPen(_EDGE)
+        for dx, dy in _EDGE_OFFSETS:
+            painter.drawText(area.translated(dx, dy), flags, self.text())
+        painter.setPen(Qt.GlobalColor.white)
+        painter.drawText(area, flags, self.text())
 
 
 def _clock(seconds, with_hours):

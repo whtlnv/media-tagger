@@ -311,6 +311,22 @@ def test_over_a_white_video_frame_the_progress_bar_outside_its_text_and_track_le
     assert image.pixelColor(295, 5) == QColor("white")  # right of the text, above the track
 
 
+def test_over_a_white_video_frame_the_light_elapsed_and_total_text_is_edged_with_dark_pixels(qtbot):
+    frame = QWidget()
+    frame.setStyleSheet("background: white")
+    qtbot.addWidget(frame)
+    bar = ProgressBar(frame)
+    bar.resize(300, 20)
+    bar.start(SimpleNamespace(duration=60, time_pos=0))
+    frame.show()
+    qtbot.waitExposed(frame)
+
+    image = frame.grab(bar.geometry()).toImage()
+    text_area = [image.pixelColor(x, y).lightness() for x in range(120) for y in range(20 - 3)]  # left of the bar, above its track
+
+    assert min(text_area) < 64  # the text's dark edge shows against the white frame
+
+
 def test_over_a_black_video_frame_the_progress_bar_outside_its_text_and_track_leaves_the_frame_black(qtbot):
     frame = QWidget()
     frame.setStyleSheet("background: black")
