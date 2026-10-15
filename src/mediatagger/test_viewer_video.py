@@ -273,3 +273,19 @@ def test_a_viewer_made_with_extra_player_options_keeps_them_and_still_turns_off_
 
     assert [output["name"] for output in viewer.video_player.engine["ao"]] == ["null"]
     assert viewer.video_player.engine["vd-lavc-dr"] is False
+
+
+def test_pressing_right_bracket_and_r_in_the_viewer_on_an_image_leaves_the_next_video_starting_at_1x_and_unrotated(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red")
+    clip = make_clip(tmp_path / "IMG_2.mp4", duration=30)
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    engine = viewer.video_player.engine
+
+    qtbot.keyClick(viewer, Qt.Key.Key_BracketRight)
+    qtbot.keyClick(viewer, Qt.Key.Key_R)
+    qtbot.keyClick(viewer, Qt.Key.Key_Space)
+    make_surface_ready(viewer)
+    wait_until_playing(engine)
+
+    assert engine.path == str(clip)
+    assert [engine.speed, engine.video_rotate] == [1, 0]
