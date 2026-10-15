@@ -1,6 +1,6 @@
 from PySide6.QtCore import QEvent, QRect, Qt
 from PySide6.QtGui import QColor, QPainter
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QLineEdit, QWidget
 
 GRID_KEYS = [
     ("arrows", "move"),
@@ -100,7 +100,8 @@ class CheatSheet(QWidget):
         if event.key() == Qt.Key.Key_H and not event.modifiers():
             self._show(not self.shown)
             return True
-        if event.key() == Qt.Key.Key_Escape and self.shown:  # hides the sheet rather than quitting or going back
+        typing = isinstance(watched.window().focusWidget(), QLineEdit)  # Esc there closes the tag prompt, as always
+        if event.key() == Qt.Key.Key_Escape and self.shown and not typing:  # hides the sheet rather than quitting or going back
             self._show(False)
             return True
         return False

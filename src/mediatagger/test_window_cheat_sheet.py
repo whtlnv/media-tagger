@@ -288,3 +288,16 @@ def test_with_the_panel_shown_the_arrow_keys_still_move_the_grids_cursor_and_the
     assert grid.currentIndex().row() == 1
     assert grid.window().focusWidget() is grid
     assert sheet_is_shown(grid.window())
+
+
+def test_with_the_panel_shown_esc_in_the_viewers_tag_prompt_closes_the_prompt_and_leaves_the_panel_shown(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    window = window_on_the_drive(qtbot, drive, folder)
+    qtbot.keyClick(window.viewer, Qt.Key.Key_H)
+    qtbot.keyClick(window.viewer, Qt.Key.Key_T)
+    [prompt] = visible_tag_prompts(window)
+
+    qtbot.keyClick(prompt, Qt.Key.Key_Escape)
+
+    assert visible_tag_prompts(window) == []
+    assert sheet_is_shown(window)
