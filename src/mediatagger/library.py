@@ -103,6 +103,12 @@ class Library:
     def _key(self, path):
         return str(path.relative_to(self.root))
 
+    def _direct_items_of(self, folder):
+        """The prefix the folder's direct items' paths start with, and the condition and parameters matching their rows."""
+        prefix = "" if folder == self.root else f"{self._key(folder)}/"
+        condition = "substr(items.rel_path, 1, ?) = ? AND instr(substr(items.rel_path, ?), '/') = 0"
+        return prefix, condition, (len(prefix), prefix, len(prefix) + 1)
+
     def enter(self, path, text):
         if path == self.root:
             return
@@ -131,14 +137,14 @@ class Library:
 
     def tag_counts(self, folder):
         """The own-tag counts of the folder's direct items, read in one query that looks only at that folder's rows."""
-        prefix = "" if folder == self.root else f"{self._key(folder)}/"
+        _prefix, in_folder, parameters = self._direct_items_of(folder)
         connection = sqlite3.connect(self._tags_db)
         rows = connection.execute(
             "SELECT items.rel_path, COUNT(*) FROM item_tags"
             " JOIN items ON items.id = item_tags.item_id"
-            " WHERE substr(items.rel_path, 1, ?) = ? AND instr(substr(items.rel_path, ?), '/') = 0"
+            f" WHERE {in_folder}"
             " GROUP BY items.rel_path",
-            (len(prefix), prefix, len(prefix) + 1),
+            parameters,
         )
         counts = {self.root / rel_path: count for rel_path, count in rows}
         connection.close()
@@ -148,14 +154,14 @@ class Library:
         """The own tags of the folder's direct items, keyed by name, read in one query that looks only at that folder's rows."""
         if not self._has_tag_tables:
             return {}
-        prefix = "" if folder == self.root else f"{self._key(folder)}/"
+        prefix, in_folder, parameters = self._direct_items_of(folder)
         connection = sqlite3.connect(self._tags_db)
         rows = connection.execute(
             "SELECT items.rel_path, tags.name FROM item_tags"
             " JOIN items ON items.id = item_tags.item_id"
             " JOIN tags ON tags.id = item_tags.tag_id"
-            " WHERE substr(items.rel_path, 1, ?) = ? AND instr(substr(items.rel_path, ?), '/') = 0",
-            (len(prefix), prefix, len(prefix) + 1),
+            f" WHERE {in_folder}",
+            parameters,
         )
         tags = {}
         for rel_path, tag in rows:
