@@ -175,3 +175,23 @@ def test_in_the_windows_grid_pressing_h_a_second_time_removes_the_panel_leaving_
     qtbot.keyClick(grid, Qt.Key.Key_H)
 
     assert middle_of(window.grab().toImage()) == before
+
+
+def window_on(qtbot, path=None, **options):
+    window = Window(path, player_options=SILENT, **options)
+    qtbot.addWidget(window)
+    window.resize(1000, 600)
+    window.show()
+    qtbot.waitExposed(window)
+    return window
+
+
+def test_in_the_windows_viewer_showing_an_image_pressing_h_draws_a_panel_of_the_viewers_keys_over_the_middle_on_top_of_the_picture(qtbot, tmp_path):
+    window = window_on(qtbot, make_image(tmp_path / "a.png", "red"))
+    before = window.grab().toImage()
+
+    qtbot.keyClick(window.viewer, Qt.Key.Key_H)
+
+    after = middle_of(window.grab().toImage())
+    assert after == middle_of(with_the_panel(before, VIEWER_KEYS))
+    assert after != middle_of(with_the_panel(before, GRID_KEYS))
