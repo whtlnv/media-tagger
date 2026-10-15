@@ -111,8 +111,8 @@ class Viewer(QWidget):
         painter.drawImage(zoomed, image)
 
     def wheelEvent(self, event):
-        if event.angleDelta().y() > 0:
-            self._zoom = 1.25
+        notches = event.angleDelta().y() / 120
+        self._zoom = max(1, self._zoom * 1.25 ** notches)
         self.update()
 
     def dragEnterEvent(self, event):

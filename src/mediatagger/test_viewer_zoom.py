@@ -39,3 +39,24 @@ def test_scrolling_the_mouse_wheel_down_one_notch_over_a_fitted_image_leaves_it_
     scroll(viewer, -1, at=viewer.rect().center())
 
     assert viewer.grab().toImage() == fitted
+
+
+def shown_height(viewer, column):
+    """How many rows of the viewer's centre column show the (red) picture."""
+    frame = viewer.grab().toImage()
+    return sum(1 for y in range(frame.height()) if frame.pixelColor(column, y).red() > 128)
+
+
+def test_scrolling_the_mouse_wheel_down_one_notch_over_a_zoomed_in_image_shows_it_smaller_but_no_smaller_than_fitted(qtbot, tmp_path):
+    make_image(tmp_path / "IMG_1.png", "red", width=200, height=100)
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    viewer.resize(300, 300)
+    qtbot.waitUntil(lambda: viewer.size().width() == viewer.size().height())
+    centre = viewer.rect().center()
+    fitted = shown_height(viewer, centre.x())
+    scroll(viewer, 2, at=centre)
+    zoomed_in = shown_height(viewer, centre.x())
+
+    scroll(viewer, -1, at=centre)
+
+    assert fitted < shown_height(viewer, centre.x()) < zoomed_in
