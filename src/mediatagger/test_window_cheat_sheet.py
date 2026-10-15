@@ -156,3 +156,26 @@ def test_a_results_grid_shows_the_cheat_sheet_when_it_is_on_and_h_there_hides_it
     assert len(set(pixels_outside(results.viewport().grab().toImage(), tile))) > 1
     qtbot.keyClick(results, Qt.Key.Key_H)
     assert len(set(pixels_outside(results.viewport().grab().toImage(), tile))) == 1
+
+
+def test_scrolling_a_grid_of_many_tiles_with_the_sheet_shown_leaves_the_sheet_where_it_was_drawn_whole(qtbot, tmp_path):
+    for number in range(60):
+        make_image(tmp_path / f"IMG_{number:02}.png", "red")
+    window = Window(tmp_path / "IMG_00.png", player_options=SILENT)
+    qtbot.addWidget(window)
+    window.resize(500, 400)
+    window.show()
+    qtbot.waitExposed(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    grid = stack.currentWidget()
+    qtbot.keyClick(grid, Qt.Key.Key_H)
+    qtbot.wait(50)
+
+    grid.verticalScrollBar().setValue(37)
+    qtbot.wait(50)
+
+    on_screen = window.screen().grabWindow(window.winId()).toImage()  # what the window's backing store holds, scrolled or not
+    viewport = grid.viewport()
+    at = viewport.mapTo(window, viewport.rect().topLeft())
+    assert on_screen.copy(at.x(), at.y(), viewport.width(), viewport.height()) == viewport.grab().toImage()

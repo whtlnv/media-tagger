@@ -297,6 +297,12 @@ class Grid(QListView):
         painter.end()
         super().paintEvent(event)
 
+    def scrollContentsBy(self, dx, dy):
+        """The tiles move but the cheat sheet behind them doesn't: while it shows, the whole view is drawn again, not shifted."""
+        super().scrollContentsBy(dx, dy)
+        if self.cheat_sheet.shown:
+            self.viewport().update()
+
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Plus:
             self.setGridSize((self.gridSize() + ZOOM_STEP).boundedTo(MAX_TILE_SIZE))
