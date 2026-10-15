@@ -263,3 +263,15 @@ def test_pressing_esc_while_the_panel_is_shown_in_the_grid_hides_it_and_leaves_t
     assert not sheet_is_shown(window)
     assert window.isVisible()
     assert window.stack.currentWidget() is grid
+
+
+def test_pressing_esc_while_the_panel_is_shown_in_the_viewer_hides_it_and_leaves_the_viewer_showing_the_same_item(qtbot, tmp_path):
+    image = make_image(tmp_path / "a.png", "red")
+    window = window_on(qtbot, image)
+    qtbot.keyClick(window.viewer, Qt.Key.Key_H)
+
+    qtbot.keyClick(window.viewer, Qt.Key.Key_Escape)
+
+    assert not sheet_is_shown(window)
+    assert window.stack.currentWidget() is window.viewer
+    assert window.viewer.slideshow.current == image
