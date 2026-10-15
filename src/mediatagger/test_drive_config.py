@@ -1,5 +1,7 @@
 import json
 
+import pytest
+
 from mediatagger.drive_config import CONFIG_CANT_BE_READ_TEXT, CONFIG_FILE, missing_roots, required_roots
 
 
@@ -17,20 +19,14 @@ def test_required_roots_of_a_drive_with_no_config_gives_no_roots_no_problem_and_
     assert sorted(tmp_path.iterdir()) == before
 
 
-def test_required_roots_of_a_drive_whose_config_isnt_valid_json_gives_no_roots_and_the_cant_be_read_problem(tmp_path):
-    (tmp_path / CONFIG_FILE).write_text("{not json", encoding="utf-8")
-
-    assert required_roots(tmp_path) == ((), CONFIG_CANT_BE_READ_TEXT)
-
-
-def test_required_roots_of_a_drive_whose_config_required_roots_isnt_a_list_of_strings_gives_no_roots_and_the_cant_be_read_problem(tmp_path):
-    (tmp_path / CONFIG_FILE).write_text(json.dumps({"requiredRoots": "type:"}), encoding="utf-8")
-
-    assert required_roots(tmp_path) == ((), CONFIG_CANT_BE_READ_TEXT)
-
-
-def test_required_roots_of_a_drive_whose_config_cant_be_read_gives_no_roots_and_the_cant_be_read_problem(tmp_path):
-    (tmp_path / CONFIG_FILE).mkdir()
+@pytest.mark.parametrize("break_config", [
+    pytest.param(lambda config: config.write_text("{not json", encoding="utf-8"), id="not valid JSON"),
+    pytest.param(lambda config: config.write_text(json.dumps({"requiredRoots": "type:"}), encoding="utf-8"),
+                 id="requiredRoots not a list of strings"),
+    pytest.param(lambda config: config.mkdir(), id="cannot be read"),
+])
+def test_required_roots_of_a_drive_whose_config_is_broken_gives_no_roots_and_the_cant_be_read_problem(tmp_path, break_config):
+    break_config(tmp_path / CONFIG_FILE)
 
     assert required_roots(tmp_path) == ((), CONFIG_CANT_BE_READ_TEXT)
 
