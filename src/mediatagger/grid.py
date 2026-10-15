@@ -77,12 +77,23 @@ def _tiles(folder, tag_counts):
     return [_Tile(folder / name, name, kind, counts_by_name.get(name, 0)) for name, kind in zip(subfolders + media, kinds)]
 
 
-def _mark_missing(tiles, own_tags, inherited, roots):
-    """Each file tile counts the required roots its effective tags (its own and those it inherits) lack; folder tiles
-    are never marked."""
+def _effective_tags(tiles, folder, library, results):
+    """Each file tile's effective tags (its own and those it inherits), from bulk reads, never one query per tile: a
+    folder's files share what they inherit from it; results look their ancestors up among every tagged item."""
+    files = [tile.path for tile in tiles if tile.kind in (_Kind.IMAGE, _Kind.VIDEO)]
+    if results:
+        tags = {library.root / rel_path: own for rel_path, (_kind, own) in library.tagged_items().items()}
+        return {path: set().union(*(tags.get(item, ()) for item in (path, *path.parents))) for path in files}
+    shared = library.effective_tags(folder)
+    own = library.own_tags_in(folder)
+    return {path: {*own.get(path, ()), *shared.own, *shared.inherited} for path in files}
+
+
+def _mark_missing(tiles, effective_tags, roots):
+    """Each file tile counts the required roots its effective tags lack; folders and missing results are never marked."""
     for tile in tiles:
-        if tile.kind is not _Kind.FOLDER:
-            tile.missing = missing_roots([*own_tags.get(tile.path, ()), *inherited], roots)
+        if tile.path in effective_tags:
+            tile.missing = missing_roots(effective_tags[tile.path], roots)
 
 
 def _result_kind(path):
@@ -227,8 +238,7 @@ class Grid(QListView):
         self.setVerticalScrollMode(QListView.ScrollMode.ScrollPerPixel)
         tiles = _result_tiles(paths, library) if paths is not None else _tiles(folder, library.tag_counts(folder) if library else {})
         if library and required_roots:
-            folder_tags = library.effective_tags(folder)  # what every item in the folder inherits
-            _mark_missing(tiles, library.own_tags_in(folder), [*folder_tags.own, *folder_tags.inherited], required_roots)
+            _mark_missing(tiles, _effective_tags(tiles, folder, library, results=paths is not None), required_roots)
         self.setModel(_FolderModel(tiles, self))
         self.setItemDelegate(_TileDelegate(self))
         self._generate_thumbnails(tiles, thumbnail_cache or ThumbnailCache(":memory:"))

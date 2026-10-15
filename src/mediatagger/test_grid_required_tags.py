@@ -10,6 +10,10 @@ from mediatagger.test_grid import painted_texts, painted_tile
 ROOTS = ("type:", "size:")
 
 
+def missing_badge(grid, row):
+    return next((text for text in painted_texts(grid, row) if MISSING_BADGE in text), None)
+
+
 def test_a_grid_given_two_required_roots_marks_an_untagged_files_tile_as_missing_both(qtbot, tmp_path):
     library = Library.create(tmp_path)
     touch(tmp_path, "beach.jpg")
@@ -108,3 +112,20 @@ def test_the_missing_badge_contrasts_with_its_surroundings_over_both_a_white_and
                        for x in range(badge_area.left(), badge_area.right() + 1)]
 
         assert max(lightnesses) - min(lightnesses) > 128, f"missing badge unreadable over a {color.name} thumbnail"
+
+
+def test_a_results_grid_marks_result_files_by_their_effective_tags_and_never_a_result_folder_or_a_missing_result(qtbot, tmp_path):
+    library = Library.create(tmp_path)
+    (tmp_path / "trip").mkdir()
+    (tmp_path / "album").mkdir()
+    touch(tmp_path / "trip", "a.jpg")
+    touch(tmp_path, "b.jpg", "gone.jpg")
+    library.enter(tmp_path / "trip", "type:photo")
+    for path in (tmp_path / "trip" / "a.jpg", tmp_path / "b.jpg", tmp_path / "album", tmp_path / "gone.jpg"):
+        library.enter(path, "beach")
+    (tmp_path / "gone.jpg").unlink()
+    paths = [tmp_path / "album", tmp_path / "trip" / "a.jpg", tmp_path / "b.jpg", tmp_path / "gone.jpg"]
+    grid = Grid(tmp_path, library=library, paths=paths, required_roots=ROOTS)
+    qtbot.addWidget(grid)
+
+    assert [missing_badge(grid, row) for row in range(4)] == [None, f"{MISSING_BADGE}1", f"{MISSING_BADGE}2", None]
