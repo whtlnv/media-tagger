@@ -177,6 +177,15 @@ def test_pressing_r_four_times_on_a_video_turns_it_back_to_unrotated(playing_vid
     assert engine.video_rotate == 0
 
 
+def test_a_video_shown_after_one_that_was_rotated_starts_unrotated(playing_video, tmp_path):
+    player, engine = playing_video
+    player.press("r")
+
+    player.show(make_clip(tmp_path / "next.mp4"))
+
+    assert engine.video_rotate == 0
+
+
 def test_pressing_i_f_right_or_left_on_a_playing_video_does_not_pause_it(playing_video):
     player, engine = playing_video
 
