@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-14 18:37 · `src/mediatagger/test_video_controls.py::test_over_a_black_video_frame_the_progress_bar_outside_its_text_and_track_leaves_the_frame_black`
+- Behavior: Over a black video frame, the progress bar outside its text and track leaves the frame black
+- Predicted: passes on first run (stated up front) — the previous cycle (9e5f433) removed the whole backdrop, and even the old dark backdrop left black pixels black
+- Actual: passed (1 passed)
+- Type: passed unexpectedly
+- Resolution: Not rewritten — no honest version of this test can fail today. Kept as a regression pin for the upcoming "edged with dark pixels" items: a halo that spills light pixels outside the text or track would break it.
+
 ## 2026-10-14 10:42 · `src/mediatagger/test_main.py::test_quitting_the_mediatagger_command_with_a_library_whose_backup_is_due_ends_the_process_within_3_s`
 - Behavior: Quitting the app with a library whose backup is due ends the process within 3 s
 - Predicted: passes on first run — the backup on close is a quick SQLite copy and `Window.closeEvent` already stops the grid's thumbnail workers
