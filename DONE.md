@@ -1,3 +1,19 @@
+- [x] 2026-10-15 · In the window's folder grid, pressing `h` draws dim text over the grid's empty background, behind the tiles, where before the background was plain
+- [x] 2026-10-15 · In the window's folder grid, pressing `h` a second time leaves the grid's empty background plain again
+- [x] 2026-10-15 · The grid's cheat sheet lists exactly the keys of DESIGN.md's grid table, in order, `h` included
+- [x] 2026-10-15 · Pressing `h` in the window's folder grid leaves its tiles' pictures exactly as they were drawn without the sheet
+- [x] 2026-10-15 · In the window's viewer showing an image, pressing `h` draws dim text in the black around the fitted picture, its brightest pixel well below white, and leaves the picture's pixels unchanged
+- [x] 2026-10-15 · The viewer's cheat sheet lists exactly the keys of DESIGN.md's viewer table, in order, `h` included, and the viewer's background shows the viewer's keys rather than the grid's
+- [x] 2026-10-15 · On the window's empty launch screen, pressing `h` shows a cheat sheet of exactly the keys of DESIGN.md's launch table, in order
+- [x] 2026-10-15 · With the sheet shown in the grid, opening an image from it shows the sheet in the viewer too, and `Esc` back to the grid still shows it
+- [x] 2026-10-15 · A results grid (after a search) shows the cheat sheet when it is on, and `h` there hides it
+- [x] 2026-10-15 · Scrolling a grid of many tiles while the sheet is shown leaves the sheet where it was in the window, drawn whole, not moved with the tiles
+- [x] 2026-10-15 · After pressing `h`, a window started next time with the same home shows the sheet from the start
+- [x] 2026-10-15 · With the sheet remembered as shown, pressing `h` makes a window started next time with the same home start without it
+- [x] 2026-10-15 · Toggling the sheet while the state file would lie on the drive being viewed writes no state file
+- [x] 2026-10-15 · Typing `h` into the grid's tag prompt puts an `h` in the prompt and leaves the sheet as it was
+- [x] 2026-10-15 · Typing `h` into the viewer's tag prompt puts an `h` in the prompt and leaves the sheet as it was
+- [x] 2026-10-15 · Typing `h` into the search bar puts an `h` in the search and leaves the sheet as it was
 - [x] 2026-10-15 · Scrolling the mouse wheel up one notch over a fitted image shows it larger than fitted
 - [x] 2026-10-15 · Scrolling the mouse wheel down one notch over a fitted image leaves it fitted
 - [x] 2026-10-15 · Scrolling the mouse wheel down one notch over a zoomed-in image shows it smaller than before, still no smaller than fitted

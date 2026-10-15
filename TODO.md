@@ -9,19 +9,3 @@ Phase 15 notes for every cycle (Phases 1–14 are delivered — see DONE.md; Pha
 - **Painted as the background, beneath everything:** the viewer paints it right after filling black and before drawing the picture (`VIEWER_KEYS` when an item is shown, `LAUNCH_KEYS` when `slideshow is None`, which is the launch screen and the "Can't open" screen); over a video the `MpvSurface` covers it, which is accepted. The grid paints it on its viewport before the tiles (override `paintEvent`, paint on `self.viewport()`, then `super().paintEvent`), fixed to the viewport, not scrolling with the tiles (a scroll must repaint the whole viewport, not blit a moved copy of the sheet). Grid and Viewer take the sheet as a `cheat_sheet=` constructor argument; given none, they make their own hidden one.
 - **Remembered:** `state.py` gains `remember_cheat_sheet(state, shown)` / `remembered_cheat_sheet(state)` (key `"cheat_sheet"`, default hidden), writing like `remember_geometry` (an `OSError` is swallowed). The Window reads it when it starts and writes it on every toggle, only when `_may_write_state()` says yes.
 
-- [x] In the window's folder grid, pressing `h` draws dim text over the grid's empty background, behind the tiles, where before the background was plain
-- [x] In the window's folder grid, pressing `h` a second time leaves the grid's empty background plain again
-- [x] The grid's cheat sheet lists exactly the keys of DESIGN.md's grid table, in order, `h` included
-- [x] Pressing `h` in the window's folder grid leaves its tiles' pictures exactly as they were drawn without the sheet
-- [x] In the window's viewer showing an image, pressing `h` draws dim text in the black around the fitted picture, its brightest pixel well below white, and leaves the picture's pixels unchanged
-- [x] The viewer's cheat sheet lists exactly the keys of DESIGN.md's viewer table, in order, `h` included, and the viewer's background shows the viewer's keys rather than the grid's
-- [x] On the window's empty launch screen, pressing `h` shows a cheat sheet of exactly the keys of DESIGN.md's launch table, in order
-- [x] With the sheet shown in the grid, opening an image from it shows the sheet in the viewer too, and `Esc` back to the grid still shows it
-- [x] A results grid (after a search) shows the cheat sheet when it is on, and `h` there hides it
-- [x] Scrolling a grid of many tiles while the sheet is shown leaves the sheet where it was in the window, drawn whole, not moved with the tiles
-- [x] After pressing `h`, a window started next time with the same home shows the sheet from the start
-- [x] With the sheet remembered as shown, pressing `h` makes a window started next time with the same home start without it
-- [x] Toggling the sheet while the state file would lie on the drive being viewed writes no state file
-- [x] Typing `h` into the grid's tag prompt puts an `h` in the prompt and leaves the sheet as it was
-- [x] Typing `h` into the viewer's tag prompt puts an `h` in the prompt and leaves the sheet as it was
-- [x] Typing `h` into the search bar puts an `h` in the search and leaves the sheet as it was
