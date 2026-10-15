@@ -8,8 +8,8 @@ Phase 13 notes for every cycle (Phases 1–12 are delivered — see DONE.md; Pha
 - [x] Pressing `[` on a video playing at 0.25× leaves it at 0.25×
 - [x] A video shown after one that was sped up starts playing at 1×
 - [x] The progress bar of a video playing at 2× reads its time followed by ` · 2×` (e.g. `0:00 / 0:30 · 2×`), and at 0.25× by ` · 0.25×`
-- [ ] The progress bar of a video playing at 1× reads its time with no speed (e.g. `0:00 / 0:30`)
-- [ ] In the viewer, pressing `]` on a playing video whose progress bar is hidden shows the bar at once, already reading ` · 1.25×`
+- [x] The progress bar of a video playing at 1× reads its time with no speed (e.g. `0:00 / 0:30`)
+- [x] In the viewer, pressing `]` on a playing video whose progress bar is hidden shows the bar at once, already reading ` · 1.25×`
 - [ ] Pressing `r` on a video turns it 90° clockwise
 - [ ] Pressing `r` four times on a video turns it back to unrotated
 - [ ] A video shown after one that was rotated starts unrotated
