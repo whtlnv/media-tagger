@@ -248,8 +248,9 @@ class Grid(QListView):
         self.setUniformItemSizes(True)  # lays out thousands of tiles without asking each one its size
         self.setVerticalScrollMode(QListView.ScrollMode.ScrollPerPixel)
         tiles = _result_tiles(paths, library) if paths is not None else _tiles(folder, library.tag_counts(folder) if library else {})
+        self._required_roots, self._results = required_roots, paths is not None
         if library and required_roots:
-            _mark_missing(tiles, _effective_tags(tiles, folder, library, results=paths is not None), required_roots)
+            _mark_missing(tiles, _effective_tags(tiles, folder, library, self._results), required_roots)
         self.setModel(_FolderModel(tiles, self))
         self.setItemDelegate(_TileDelegate(self))
         self._generate_thumbnails(tiles, thumbnail_cache or ThumbnailCache(":memory:"))
@@ -321,11 +322,21 @@ class Grid(QListView):
         super().updateGeometries()
         self._request_visible()
 
-    def show_tag_count(self, count):
-        """The cursor's tile shows a new own-tag count, without listing the folder again."""
-        index = self.currentIndex()
-        index.data(TILE_ROLE).tag_count = count
-        self.update(index)
+    def show_new_tags(self, library):
+        """Every tile shows its own-tag count and missing roots afresh, read in bulk, without listing the folder again:
+        tagging one item can change what others inherit."""
+        tiles = self.model().tiles
+        if self._results:
+            counts = library.own_tag_counts()
+            new_counts = [counts.get(str(tile.path), 0) for tile in tiles]
+        else:
+            counts = {path.name: count for path, count in library.tag_counts(self.folder).items()}
+            new_counts = [counts.get(tile.name, 0) for tile in tiles]
+        for tile, count in zip(tiles, new_counts):
+            tile.tag_count = count
+        if self._required_roots:
+            _mark_missing(tiles, _effective_tags(tiles, self.folder, library, self._results), self._required_roots)
+        self.viewport().update()
 
     def keep_clear_at_the_bottom(self, height):
         """Room below the last row for what lies over the grid's bottom edge (the window's status bar)."""

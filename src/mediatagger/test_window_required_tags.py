@@ -9,7 +9,7 @@ from mediatagger.test_grid_required_tags import missing_badge
 from mediatagger.test_viewer import SILENT, show_exposed
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image
 from mediatagger.test_viewer_open import drag_and_drop_onto
-from mediatagger.test_window import shown_status_bar_texts, window_showing_the_grid_with_its_cursor_on_its_first_tile
+from mediatagger.test_window import enter_in_the_grids_tag_prompt, shown_status_bar_texts, window_showing_the_grid_with_its_cursor_on_its_first_tile
 from mediatagger.window import Window
 
 
@@ -61,3 +61,15 @@ def test_after_a_drive_with_an_invalid_config_dropping_a_folder_of_a_drive_with_
 
     assert CONFIG_CANT_BE_READ_TEXT not in shown_status_bar_texts(window)
     assert (stack.currentWidget().folder, missing_badge(stack.currentWidget(), 0)) == (second_folder, f"{MISSING_BADGE}1")
+
+
+def test_tagging_the_grid_cursors_file_with_a_missing_root_updates_its_mark_at_once(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    write_config(drive, ["type:", "size:"])
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+
+    enter_in_the_grids_tag_prompt(qtbot, window, stack, "type:photo")
+    after_type = missing_badge(stack.currentWidget(), 0)
+    enter_in_the_grids_tag_prompt(qtbot, window, stack, "size:big")
+
+    assert (after_type, missing_badge(stack.currentWidget(), 0)) == (f"{MISSING_BADGE}1", None)

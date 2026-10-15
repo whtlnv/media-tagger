@@ -270,7 +270,7 @@ class Window(QWidget):
 
     def _show_saved_tags(self, library, path):
         grid = self.stack.currentWidget()
-        grid.show_tag_count(len(library.tags(path)))
+        grid.show_new_tags(library)
         self._show_current_tags()
 
     def _leave(self, folder):
