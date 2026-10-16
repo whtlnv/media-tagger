@@ -153,45 +153,25 @@ def cursor_name(grid):
     return grid.currentIndex().data(Qt.ItemDataRole.DisplayRole)
 
 
-def test_choosing_a_filter_that_hides_the_cursors_tile_moves_the_cursor_to_the_next_shown_tile_after_it(qtbot, tmp_path):
+@pytest.mark.parametrize("tagged, at, cursor", [
+    (["a.jpg", "c.jpg"], "b.jpg", "c.jpg"),
+    (["a.jpg", "b.jpg"], "c.jpg", "b.jpg"),
+    (["b.jpg"], "b.jpg", "b.jpg"),
+], ids=["hiding the cursor's tile moves it to the next shown tile after it",
+        "with no shown tile after it, to the nearest shown tile before it",
+        "leaving the cursor's tile shown keeps the cursor where it is"])
+def test_choosing_a_filter_moves_the_cursor_only_off_a_hidden_tile(qtbot, tmp_path, tagged, at, cursor):
     library = Library.create(tmp_path)
     touch(tmp_path, "a.jpg", "b.jpg", "c.jpg")
-    library.enter(tmp_path / "a.jpg", "sea")
-    library.enter(tmp_path / "c.jpg", "sea")
+    for name in tagged:
+        library.enter(tmp_path / name, "sea")
     grid_filter = GridFilter()
-    grid = Grid(tmp_path, at=tmp_path / "b.jpg", library=library, grid_filter=grid_filter)
+    grid = Grid(tmp_path, at=tmp_path / at, library=library, grid_filter=grid_filter)
     qtbot.addWidget(grid)
 
     grid_filter.choose(WITH_TAGS)
 
-    assert cursor_name(grid) == "c.jpg"
-
-
-def test_choosing_a_filter_that_hides_the_cursors_tile_with_no_shown_tile_after_it_moves_the_cursor_to_the_nearest_shown_tile_before_it(qtbot, tmp_path):
-    library = Library.create(tmp_path)
-    touch(tmp_path, "a.jpg", "b.jpg", "c.jpg")
-    library.enter(tmp_path / "a.jpg", "sea")
-    library.enter(tmp_path / "b.jpg", "sea")
-    grid_filter = GridFilter()
-    grid = Grid(tmp_path, at=tmp_path / "c.jpg", library=library, grid_filter=grid_filter)
-    qtbot.addWidget(grid)
-
-    grid_filter.choose(WITH_TAGS)
-
-    assert cursor_name(grid) == "b.jpg"
-
-
-def test_choosing_a_filter_that_leaves_the_cursors_tile_shown_keeps_the_cursor_where_it_is(qtbot, tmp_path):
-    library = Library.create(tmp_path)
-    touch(tmp_path, "a.jpg", "b.jpg", "c.jpg")
-    library.enter(tmp_path / "b.jpg", "sea")
-    grid_filter = GridFilter()
-    grid = Grid(tmp_path, at=tmp_path / "b.jpg", library=library, grid_filter=grid_filter)
-    qtbot.addWidget(grid)
-
-    grid_filter.choose(WITH_TAGS)
-
-    assert cursor_name(grid) == "b.jpg"
+    assert cursor_name(grid) == cursor
 
 
 def test_a_grid_opened_at_a_file_the_filter_hides_puts_the_cursor_on_the_next_shown_tile_after_it(qtbot, tmp_path):
