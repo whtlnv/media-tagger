@@ -291,10 +291,10 @@ class Window(QWidget):
             self.status_bar.show_background(RENAME_LEADING_DASH_TEXT, finished=True)
             return
         renamed = self.session.library.rename_tag(old, new)
-        self.rename_prompt.close()
         if not renamed:
             self.status_bar.show_background(NO_SUCH_TAG_TEXT.format(old), finished=True)
             return
+        self.rename_prompt.close()
         self.status_bar.show_background(RENAMED_TAG_TEXT.format(old, new, renamed), finished=True)
 
     def _show_saved_tags(self, library, path):
