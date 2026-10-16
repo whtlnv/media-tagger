@@ -47,6 +47,14 @@ def remembered_searches(state):
     return _remembered(state, "searches") or []
 
 
+def remember_rename(state, rename):
+    _remember_if_writable(state, "rename", rename)
+
+
+def remembered_rename(state):
+    return _remembered(state, "rename")
+
+
 def remembered_geometry(state):
     return _remembered(state, "geometry")
 

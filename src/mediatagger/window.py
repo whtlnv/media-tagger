@@ -50,7 +50,7 @@ class Window(QWidget):
         layout.addWidget(self.stack)
         self.status_bar = StatusBar(self)
         self.tag_prompt = TagPrompt(self, self.status_bar, on_close=self._show_saved_tags)
-        self.rename_prompt = RenamePrompt(self, self.status_bar, on_enter=self._rename_tag)
+        self.rename_prompt = RenamePrompt(self, self.status_bar, self._state_file, on_enter=self._rename_tag)
         self.session = DriveSession(self.status_bar, self, home=home or Path.home(), **session_options)
         self.viewer = Viewer(player_options=player_options, folder_picker=folder_picker, on_escape=self._escape, session=self.session,
             on_drop=self._record_state)

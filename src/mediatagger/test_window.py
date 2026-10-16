@@ -675,6 +675,22 @@ def test_up_in_the_windows_rename_prompt_reopened_after_applying_beach_places_be
     assert prompt.text() == "beach places:beach"
 
 
+def test_up_in_the_rename_prompt_of_a_window_opened_after_one_that_applied_beach_places_beach_was_closed_recalls_beach_places_beach(qtbot, tmp_path):
+    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
+    [prompt] = visible_tag_prompts(window)
+    qtbot.keyClicks(prompt, "beach places:beach")
+    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+    window.close()
+    reopened, reopened_stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path / "reopened")
+    qtbot.keyClick(reopened_stack.currentWidget(), Qt.Key.Key_N)
+    [prompt] = visible_tag_prompts(reopened)
+
+    qtbot.keyClick(prompt, Qt.Key.Key_Up)
+
+    assert prompt.text() == "beach places:beach"
+
+
 def test_pressing_t_in_the_windows_grid_on_a_read_only_drive_opens_no_tag_prompt_and_says_tags_cant_be_saved_here(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     with made_read_only(drive):

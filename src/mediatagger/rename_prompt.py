@@ -1,15 +1,20 @@
 from PySide6.QtCore import Qt
 
+from mediatagger.state import remember_rename, remembered_rename
 from mediatagger.status_bar import overlay_label
 from mediatagger.tag_prompt import TAG_INPUT_STYLE, TagInput, _LastWordCompleter, place_above_the_status_bar, prompt_width
 
 
 class _RecallingInput(TagInput):
-    """The rename input: Up brings back the last entry entered."""
+    """The rename input: Up brings back the last entry entered, remembered in the state file."""
+
+    def __init__(self, state_file, parent):
+        super().__init__(parent)
+        self.state_file = state_file
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Up:
-            self.setText(self.last_entry)
+            self.setText(remembered_rename(self.state_file))
             return
         super().keyPressEvent(event)
 
@@ -18,10 +23,10 @@ class RenamePrompt:
     """The `n` prompt over a grid, in the tag prompt's style and place: `Rename tag:` shown above an input taking the old
     tag and the new one. Enter hands the entry to on_enter."""
 
-    def __init__(self, host, status_bar, on_enter):
+    def __init__(self, host, status_bar, state_file, on_enter):
         self._host = host
         self._status_bar = status_bar
-        self.input = _RecallingInput(host)
+        self.input = _RecallingInput(state_file, host)
         self.input.setStyleSheet(TAG_INPUT_STYLE)
         self.input.setCompleter(_LastWordCompleter([], self.input))
         self.input.returnPressed.connect(self._enter)
@@ -31,7 +36,7 @@ class RenamePrompt:
         self.label.hide()
 
     def _enter(self):
-        self.input.last_entry = self.input.text()
+        remember_rename(self.input.state_file, self.input.text())
         self._on_enter(self.input.text())
 
     def is_open(self):
