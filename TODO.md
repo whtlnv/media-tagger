@@ -30,7 +30,7 @@
 - [x] `Enter` on a rename whose old name starts with `-` shows a short status message and nothing changes
 - [x] `Enter` on a rename whose new name starts with `-` shows a short status message and nothing changes
 - [x] A rename rejected by its status message (no such tag, wrong word count, same name, a leading `-`) keeps the rename prompt open with what was typed, so it can be corrected
-- [ ] `Enter` in the rename prompt with no library open shows the same "tags can't be saved" message as `t` and nothing changes
+- [x] `Enter` in the rename prompt with no library open shows the same "tags can't be saved" message as `t` and nothing changes
 - [ ] `Enter` in the rename prompt on a read-only drive shows the same "tags can't be saved" message as `t`
 - [ ] Right before a rename applies, the library is backed up, so the drive's newest backup still holds the old tag
 - [ ] A rename rejected by validation makes no backup

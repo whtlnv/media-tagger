@@ -484,6 +484,18 @@ def test_after_enter_on_a_rename_whose_old_tag_no_item_has_the_windows_rename_pr
     assert [prompt.text() for prompt in visible_tag_prompts(window)] == ["sunset places:sunset"]
 
 
+def test_enter_on_a_rename_in_the_windows_rename_prompt_with_no_library_open_says_tags_cant_be_saved_here(qtbot, tmp_path):
+    drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
+    [prompt] = visible_tag_prompts(window)
+    qtbot.keyClicks(prompt, "beach places:beach")
+
+    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+
+    assert TAGS_CANT_BE_SAVED_HERE_TEXT in shown_status_bar_texts(window)
+
+
 def test_enter_on_a_single_word_in_the_windows_rename_prompt_says_a_rename_needs_two_tags_and_changes_nothing(qtbot, tmp_path):
     from mediatagger.status_bar import RENAME_NEEDS_TWO_TAGS_TEXT
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
