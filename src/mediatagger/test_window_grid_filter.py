@@ -5,7 +5,7 @@ from mediatagger.grid_filter import MISSING_TAGS, NO_TAGS, WITH_TAGS, FilterButt
 from mediatagger.library import Library
 from mediatagger.test_grid_filter import cursor_name, popped_up_menu, shown_tile_names
 from mediatagger.test_viewer import make_image
-from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt
+from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, visible_tag_prompts
 from mediatagger.test_viewer_open import make_folders
 from mediatagger.test_window import enter_in_the_grids_tag_prompt, shown_status_bar_texts, window_showing_the_grid_with_its_cursor_on_its_first_tile
 from mediatagger.test_window_required_tags import write_config
@@ -82,6 +82,24 @@ def test_under_no_tags_adding_a_tag_to_a_files_folder_leaves_the_file_shown(qtbo
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
 
     assert (stack.currentWidget().folder, shown_tile_names(stack.currentWidget())) == (trip, ["IMG_2.png"])
+
+
+def test_under_missing_tags_enter_on_photo_type_photo_in_the_windows_rename_prompt_hides_the_file_tagged_photo_at_once(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    write_config(drive, ["type:"])
+    Library.open(drive).enter(folder / "IMG_1.png", "photo")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    grid = stack.currentWidget()
+    window.grid_filter.choose(MISSING_TAGS)
+    before = shown_tile_names(grid)
+    qtbot.keyClick(grid, Qt.Key.Key_N)
+    [prompt] = visible_tag_prompts(window)
+    qtbot.keyClicks(prompt, "photo type:photo")
+
+    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+
+    assert (before, shown_tile_names(grid)) == (["IMG_1.png", "IMG_2.png"], ["IMG_2.png"])
 
 
 def test_choosing_a_filter_that_hides_every_file_of_a_folder_with_no_subfolders_leaves_no_cursor_and_clears_the_status_bars_tags(qtbot, tmp_path):
