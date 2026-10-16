@@ -13,7 +13,7 @@ Phase 17 notes for every cycle (Phases 1–16 are delivered — see DONE.md; Pha
 - The cheat sheet (mouse-transparent) never blocks a click on the button; DESIGN.md's key tables stay as they are (the button isn't a key).
 
 
-- [ ] In a folder grid sharing the window's filter, with no filter chosen, every file tile shows
+- [x] In a folder grid sharing the window's filter, with no filter chosen, every file tile shows
 - [ ] With "With tags" chosen, a folder grid hides a file that has no own tags
 - [ ] With "With tags" chosen, a folder grid keeps showing a file that has own tags
 - [ ] With "With tags" chosen, a file whose only tags are inherited from its folder is hidden

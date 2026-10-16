@@ -244,7 +244,7 @@ class Grid(QListView):
     pick_folder = Signal()
     dropped = Signal(Path)
 
-    def __init__(self, folder, at=None, library=None, thumbnail_cache=None, paths=None, cheat_sheet=None, required_roots=()):
+    def __init__(self, folder, at=None, library=None, thumbnail_cache=None, paths=None, cheat_sheet=None, required_roots=(), grid_filter=None):
         super().__init__()
         self.folder = folder
         if cheat_sheet is not None:
