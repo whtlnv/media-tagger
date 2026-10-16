@@ -1,11 +1,13 @@
 from datetime import datetime, timezone
 
+import pytest
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QStackedWidget
 
 from mediatagger.grid import TAG_BADGE, TILE_ROLE
 from mediatagger.library import Library
-from mediatagger.status_bar import TAGS_CANT_BE_SAVED_HERE_TEXT
+from mediatagger.status_bar import (NO_SUCH_TAG_TEXT, RENAME_LEADING_DASH_TEXT, RENAME_NEEDS_TWO_TAGS_TEXT, RENAME_TO_SAME_TAG_TEXT,
+    TAGS_CANT_BE_SAVED_HERE_TEXT)
 from mediatagger.test_grid import painted_texts
 from mediatagger.test_tag_prompt import listed
 from mediatagger.test_viewer import SILENT, show_exposed
@@ -117,18 +119,6 @@ def test_after_enter_on_beach_places_beach_in_the_windows_rename_prompt_with_the
     assert "family places:beach" in shown_status_bar_texts(window)
 
 
-def test_enter_on_a_rename_whose_old_tag_no_item_has_in_the_windows_rename_prompt_says_there_is_no_such_tag_and_changes_nothing(qtbot, tmp_path):
-    from mediatagger.status_bar import NO_SUCH_TAG_TEXT
-    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
-    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "sunset places:sunset")
-
-    qtbot.keyClick(prompt, Qt.Key.Key_Return)
-
-    drive = tmp_path / "MEDIATAGGER"
-    assert Library.open(drive).tags(drive / "Photos" / "IMG_2.png") == ["beach", "family"]
-    assert NO_SUCH_TAG_TEXT.format("sunset") in shown_status_bar_texts(window)
-
-
 def test_after_enter_on_a_rename_whose_old_tag_no_item_has_the_windows_rename_prompt_stays_open_with_what_was_typed(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "sunset places:sunset")
@@ -160,64 +150,23 @@ def test_enter_on_a_rename_in_the_windows_rename_prompt_on_a_read_only_drive_say
     assert TAGS_CANT_BE_SAVED_HERE_TEXT in shown_status_bar_texts(window)
 
 
-def test_enter_on_a_single_word_in_the_windows_rename_prompt_says_a_rename_needs_two_tags_and_changes_nothing(qtbot, tmp_path):
-    from mediatagger.status_bar import RENAME_NEEDS_TWO_TAGS_TEXT
+@pytest.mark.parametrize(("typed", "message"), [
+    ("sunset places:sunset", NO_SUCH_TAG_TEXT.format("sunset")),
+    ("beach", RENAME_NEEDS_TWO_TAGS_TEXT),
+    ("beach sea shore", RENAME_NEEDS_TWO_TAGS_TEXT),
+    ("beach Beach", RENAME_TO_SAME_TAG_TEXT),
+    ("-beach places", RENAME_LEADING_DASH_TEXT),
+    ("beach -places", RENAME_LEADING_DASH_TEXT),
+], ids=["old tag no item has", "a single word", "three words", "a tag to itself", "old name starting with a dash", "new name starting with a dash"])
+def test_enter_on_a_rejected_rename_in_the_windows_rename_prompt_says_why_in_the_status_bar_and_changes_nothing(qtbot, tmp_path, typed, message):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
-    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "beach")
+    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), typed)
 
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
     drive = tmp_path / "MEDIATAGGER"
     assert Library.open(drive).tags(drive / "Photos" / "IMG_2.png") == ["beach", "family"]
-    assert RENAME_NEEDS_TWO_TAGS_TEXT in shown_status_bar_texts(window)
-
-
-def test_enter_on_three_words_in_the_windows_rename_prompt_says_a_rename_needs_two_tags_and_changes_nothing(qtbot, tmp_path):
-    from mediatagger.status_bar import RENAME_NEEDS_TWO_TAGS_TEXT
-    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
-    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "beach sea shore")
-
-    qtbot.keyClick(prompt, Qt.Key.Key_Return)
-
-    drive = tmp_path / "MEDIATAGGER"
-    assert Library.open(drive).tags(drive / "Photos" / "IMG_2.png") == ["beach", "family"]
-    assert RENAME_NEEDS_TWO_TAGS_TEXT in shown_status_bar_texts(window)
-
-
-def test_enter_on_a_rename_of_a_tag_to_itself_in_the_windows_rename_prompt_says_the_names_are_the_same_and_changes_nothing(qtbot, tmp_path):
-    from mediatagger.status_bar import RENAME_TO_SAME_TAG_TEXT
-    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
-    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "beach Beach")
-
-    qtbot.keyClick(prompt, Qt.Key.Key_Return)
-
-    drive = tmp_path / "MEDIATAGGER"
-    assert Library.open(drive).tags(drive / "Photos" / "IMG_2.png") == ["beach", "family"]
-    assert RENAME_TO_SAME_TAG_TEXT in shown_status_bar_texts(window)
-
-
-def test_enter_on_a_rename_whose_old_name_starts_with_a_dash_in_the_windows_rename_prompt_says_tags_cant_start_with_a_dash_and_changes_nothing(qtbot, tmp_path):
-    from mediatagger.status_bar import RENAME_LEADING_DASH_TEXT
-    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
-    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "-beach places")
-
-    qtbot.keyClick(prompt, Qt.Key.Key_Return)
-
-    drive = tmp_path / "MEDIATAGGER"
-    assert Library.open(drive).tags(drive / "Photos" / "IMG_2.png") == ["beach", "family"]
-    assert RENAME_LEADING_DASH_TEXT in shown_status_bar_texts(window)
-
-
-def test_enter_on_a_rename_whose_new_name_starts_with_a_dash_in_the_windows_rename_prompt_says_tags_cant_start_with_a_dash_and_changes_nothing(qtbot, tmp_path):
-    from mediatagger.status_bar import RENAME_LEADING_DASH_TEXT
-    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
-    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "beach -places")
-
-    qtbot.keyClick(prompt, Qt.Key.Key_Return)
-
-    drive = tmp_path / "MEDIATAGGER"
-    assert Library.open(drive).tags(drive / "Photos" / "IMG_2.png") == ["beach", "family"]
-    assert RENAME_LEADING_DASH_TEXT in shown_status_bar_texts(window)
+    assert message in shown_status_bar_texts(window)
 
 
 def test_after_enter_applies_a_rename_in_the_windows_rename_prompt_the_prompt_closes_and_arrows_move_the_grids_cursor_again(qtbot, tmp_path):
