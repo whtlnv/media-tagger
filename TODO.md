@@ -11,17 +11,17 @@ Layout (keep cycles consistent): moments are stored in `library.py` (a `moments`
 - [x] Opening a schema-version-1 library upgrades it in place to schema version 3, its drive id unchanged
   - predicted-contradiction: `src/mediatagger/test_library.py::test_opening_a_schema_version_1_library_upgrades_its_tags_db_in_place_to_schema_version_2` — asserts: opening a v1 library leaves its meta schema_version at "2" — retired-by: "upgrades it in place to schema version 3"
   - predicted-contradiction: `src/mediatagger/test_library.py::test_a_schema_version_1_library_reports_schema_version_2_once_it_has_been_opened` — asserts: an opened v1 library reports schema_version == 2 — retired-by: "upgrades it in place to schema version 3"
-- [ ] Opening a schema-version-2 library on a read-only drive does not fail: nothing is written, its files still report their tags, and its videos report no moments
+- [x] Opening a schema-version-2 library on a read-only drive does not fail: nothing is written, its files still report their tags, and its videos report no moments
 - [x] Opening a schema-version-2 library whose upgrade fails for a reason other than a read-only drive (e.g. the database is locked) raises the error instead of reporting no moments
 - [x] An upgrade from schema version 2 that fails partway (after the moments table would be made, before the version is recorded) leaves the library at schema version 2 with no moments table and every tag intact
 - [x] Opening a schema-version-3 library again changes nothing in its `tags.db`
 - [x] Restoring a schema-version-2 backup onto a drive opens it at schema version 3 with every tag of the backup
-- [ ] Adding the chapter `goal` at 83.4 s to a video makes the library report the video tagged `goal` and one moment at 83.4 s carrying `goal`
-- [ ] A video with no chapters added reports no moments
-- [ ] A chapter added to one video is not reported as a moment of another video in the same folder
-- [ ] A chapter's time is kept to 0.1 s (added at 83.44 s, it is reported at 83.4 s)
-- [ ] Adding the chapter `goal` to a video already tagged `goal` keeps one `goal` tag on the video and adds the moment
-- [ ] Adding the chapter `goal` at 10 s and again at 60 s gives the video two moments carrying `goal`
+- [x] Adding the chapter `goal` at 83.4 s to a video makes the library report the video tagged `goal` and one moment at 83.4 s carrying `goal`
+- [x] A video with no chapters added reports no moments
+- [x] A chapter added to one video is not reported as a moment of another video in the same folder
+- [x] A chapter's time is kept to 0.1 s (added at 83.44 s, it is reported at 83.4 s)
+- [x] Adding the chapter `goal` to a video already tagged `goal` keeps one `goal` tag on the video and adds the moment
+- [x] Adding the chapter `goal` at 10 s and again at 60 s gives the video two moments carrying `goal`
 - [ ] Adding the chapter `goal` at 10.8 s to a video with a `goal` moment at 10 s adds no moment
 - [ ] Adding the chapter `goal` at 11.5 s to a video with a `goal` moment at 10 s adds a second moment
 - [ ] Adding the chapter `goal people:ana` at one time gives the video one moment carrying both tags, and both as tags of the video

@@ -79,6 +79,13 @@ class EffectiveTags(NamedTuple):
     inherited: list
 
 
+class Moment(NamedTuple):
+    """A time in a video, in seconds to 0.1 s, and the tags marked there, alphabetical."""
+
+    seconds: float
+    tags: list
+
+
 class Library:
     schema_version = 3  # the version this code writes; an opened library reports the version its tags.db records
 
@@ -140,6 +147,38 @@ class Library:
             if not tags:
                 connection.execute("DELETE FROM items WHERE rel_path = ?", (key,))
         connection.close()
+
+    def add_chapter(self, video, text, seconds):
+        """Every word of text becomes a tag of the video, marked at the moment seconds into it."""
+        added, _removed = _parse_entry(text)
+        tags = set(self.tags(video)) | added
+        connection = sqlite3.connect(self._tags_db)
+        with connection:
+            item_id = _ensure_item_id(connection, self._key(video), "file")
+            _set_item_tags(connection, item_id, tags)
+            connection.executemany(
+                "INSERT INTO moments (item_id, tag_id, tenths) SELECT ?, id, ? FROM tags WHERE name = ?",
+                [(item_id, round(seconds * 10), tag) for tag in added],
+            )
+        connection.close()
+
+    def moments(self, video):
+        """The video's moments in time order."""
+        if self.schema_version < 3:
+            return []  # a read-only drive left at an older schema has no moments table
+        connection = sqlite3.connect(self._tags_db)
+        rows = connection.execute(
+            "SELECT moments.tenths, tags.name FROM moments"
+            " JOIN items ON items.id = moments.item_id"
+            " JOIN tags ON tags.id = moments.tag_id"
+            " WHERE items.rel_path = ? ORDER BY moments.tenths, tags.name",
+            (self._key(video),),
+        )
+        moments = {}
+        for tenths, tag in rows:
+            moments.setdefault(tenths, []).append(tag)
+        connection.close()
+        return [Moment(tenths / 10, tags) for tenths, tags in moments.items()]
 
     def all_tags(self):
         connection = sqlite3.connect(self._tags_db)

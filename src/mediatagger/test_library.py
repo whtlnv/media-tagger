@@ -4,7 +4,7 @@ from contextlib import contextmanager
 
 import pytest
 
-from mediatagger.library import Library
+from mediatagger.library import Library, Moment
 
 
 def _tags_db(root):
@@ -317,8 +317,10 @@ def test_opening_a_schema_version_2_library_on_a_read_only_drive_writes_nothing_
     with _read_only_drive(tmp_path):
         library = Library.open(tmp_path)
         tags = {rel_path: library.tags(tmp_path / rel_path) for rel_path in TAGGED_ON_A_SCHEMA_VERSION_2_DRIVE}
+        moments = library.moments(tmp_path / "Trip" / "goal.mp4")
 
     assert library.schema_version == 2
+    assert moments == []
     assert tags == {rel_path: sorted(tags) for rel_path, (_kind, tags) in TAGGED_ON_A_SCHEMA_VERSION_2_DRIVE.items()}
     assert _tags_db(tmp_path).read_bytes() == before
     assert sorted(path.name for path in library_folder.iterdir()) == ["tags.db"]
@@ -742,3 +744,67 @@ def test_reading_the_effective_tags_of_a_file_five_folders_deep_runs_one_sql_que
     library.effective_tags(photo)
 
     assert len(statements) == 1
+
+
+def test_adding_the_chapter_goal_at_83_4_s_to_a_video_tags_it_goal_and_gives_it_one_moment_at_83_4_s_carrying_goal(tmp_path):
+    library = Library.create(tmp_path)
+    video = tmp_path / "match.mp4"
+    video.touch()
+
+    library.add_chapter(video, "goal", 83.4)
+
+    assert library.tags(video) == ["goal"]
+    assert library.moments(video) == [Moment(83.4, ["goal"])]
+
+
+def test_a_video_with_no_chapters_added_reports_no_moments(tmp_path):
+    library = Library.create(tmp_path)
+    video = tmp_path / "match.mp4"
+    video.touch()
+    library.enter(video, "goal")
+
+    assert library.moments(video) == []
+
+
+def _library_with_video(tmp_path, name="match.mp4"):
+    library = Library.create(tmp_path)
+    video = tmp_path / name
+    video.touch()
+    return library, video
+
+
+def test_a_chapter_added_to_one_video_is_not_reported_as_a_moment_of_another_video_in_the_same_folder(tmp_path):
+    library, video = _library_with_video(tmp_path)
+    other = tmp_path / "other.mp4"
+    other.touch()
+
+    library.add_chapter(video, "goal", 10)
+
+    assert library.moments(other) == []
+
+
+def test_a_chapter_added_at_83_44_s_is_reported_at_83_4_s(tmp_path):
+    library, video = _library_with_video(tmp_path)
+
+    library.add_chapter(video, "goal", 83.44)
+
+    assert library.moments(video) == [Moment(83.4, ["goal"])]
+
+
+def test_adding_the_chapter_goal_to_a_video_already_tagged_goal_keeps_one_goal_tag_and_adds_the_moment(tmp_path):
+    library, video = _library_with_video(tmp_path)
+    library.enter(video, "goal sports")
+
+    library.add_chapter(video, "goal", 30)
+
+    assert library.tags(video) == ["goal", "sports"]
+    assert library.moments(video) == [Moment(30, ["goal"])]
+
+
+def test_adding_the_chapter_goal_at_10_s_and_again_at_60_s_gives_the_video_two_moments_carrying_goal(tmp_path):
+    library, video = _library_with_video(tmp_path)
+
+    library.add_chapter(video, "goal", 10)
+    library.add_chapter(video, "goal", 60)
+
+    assert library.moments(video) == [Moment(10, ["goal"]), Moment(60, ["goal"])]
