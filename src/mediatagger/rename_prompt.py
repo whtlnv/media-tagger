@@ -74,4 +74,5 @@ class RenamePrompt:
     def close(self):
         self.input.hide()
         self.label.hide()
+        self._status_bar.show_couldnt_save(False)  # it was about this prompt's entry
         self._host.setFocus()  # keys go back to the host, not to the hidden input

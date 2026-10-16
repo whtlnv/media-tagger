@@ -253,6 +253,24 @@ def test_when_a_rename_in_the_windows_rename_prompt_fails_with_a_drive_error_the
     assert "Couldn't save tags — is the drive still connected?" in shown_status_bar_texts(window)
 
 
+def test_after_a_rename_in_the_windows_rename_prompt_fails_with_a_drive_error_enter_again_once_the_drive_is_back_renames_and_takes_the_couldnt_save_message_off(qtbot, tmp_path, monkeypatch):
+    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
+    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "beach places:beach")
+
+    def rename_on_an_unplugged_drive(self, old, new):
+        raise sqlite3.OperationalError("disk I/O error")
+
+    with monkeypatch.context() as unplugged:
+        unplugged.setattr(Library, "rename_tag", rename_on_an_unplugged_drive)
+        qtbot.keyClick(prompt, Qt.Key.Key_Return)
+
+    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+
+    drive = tmp_path / "MEDIATAGGER"
+    assert Library.open(drive).tags(drive / "Photos" / "IMG_2.png") == ["family", "places:beach"]
+    assert "Couldn't save tags — is the drive still connected?" not in shown_status_bar_texts(window)
+
+
 def test_enter_on_a_rename_whose_old_tag_no_item_has_in_the_windows_rename_prompt_makes_no_backup_so_the_newest_backup_is_still_the_one_from_opening(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     backup_root = tmp_path / "backups"
