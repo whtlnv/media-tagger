@@ -14,7 +14,7 @@ from mediatagger.search_bar import SearchBar
 from mediatagger.slideshow import Slideshow
 from mediatagger.state import (remember, remember_cheat_sheet, remember_geometry, remember_search, remembered_cheat_sheet, remembered_folder,
     remembered_geometry, state_file)
-from mediatagger.status_bar import StatusBar, overlay_label
+from mediatagger.status_bar import RENAMED_TAG_TEXT, StatusBar, overlay_label
 from mediatagger.tag_prompt import TagPrompt
 from mediatagger.viewer import Viewer
 
@@ -280,10 +280,15 @@ class Window(QWidget):
     def _open_rename_prompt(self):
         prompt = QLineEdit(self)
         prompt.setStyleSheet(self.tag_prompt.input.styleSheet())
+        prompt.returnPressed.connect(lambda: self._rename_tag(*prompt.text().split()))
         prompt.show()
         label = overlay_label("Rename tag:", self)
         label.show()
         self._rename_prompt = (prompt, label)
+
+    def _rename_tag(self, old, new):
+        renamed = self.session.library.rename_tag(old, new)
+        self.status_bar.show_background(RENAMED_TAG_TEXT.format(old, new, renamed), finished=True)
 
     def _show_saved_tags(self, library, path):
         grid = self.stack.currentWidget()

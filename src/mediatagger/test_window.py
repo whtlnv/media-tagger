@@ -432,6 +432,20 @@ def test_esc_in_the_windows_rename_prompt_after_typing_beach_places_beach_closes
     assert Library.open(drive).tags(drive / "Photos" / "IMG_2.png") == ["beach", "family"]
 
 
+def test_enter_on_beach_places_beach_in_the_windows_rename_prompt_renames_the_tag_in_the_drives_library_and_the_status_bar_says_how_many_items_it_renamed(qtbot, tmp_path):
+    from mediatagger.status_bar import RENAMED_TAG_TEXT
+    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
+    [prompt] = visible_tag_prompts(window)
+    qtbot.keyClicks(prompt, "beach places:beach")
+
+    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+
+    drive = tmp_path / "MEDIATAGGER"
+    assert Library.open(drive).tags(drive / "Photos" / "IMG_2.png") == ["family", "places:beach"]
+    assert RENAMED_TAG_TEXT.format("beach", "places:beach", 1) in shown_status_bar_texts(window)
+
+
 def test_pressing_t_in_the_windows_grid_on_a_read_only_drive_opens_no_tag_prompt_and_says_tags_cant_be_saved_here(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     with made_read_only(drive):
