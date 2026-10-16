@@ -1,3 +1,50 @@
+- [x] 2026-10-15 · In a folder grid sharing the window's filter, with no filter chosen, every file tile shows
+- [x] 2026-10-15 · With "With tags" chosen, a folder grid hides a file that has no own tags
+- [x] 2026-10-15 · With "With tags" chosen, a folder grid keeps showing a file that has own tags
+- [x] 2026-10-15 · With "With tags" chosen, a file whose only tags are inherited from its folder is hidden
+- [x] 2026-10-15 · With "No tags" chosen, a folder grid hides a file that has own tags
+- [x] 2026-10-15 · With "No tags" chosen, a folder grid keeps showing a file with no own tags, even one that inherits tags
+- [x] 2026-10-15 · With "Missing tags" chosen, a folder grid hides a file that carries no `✗` mark
+- [x] 2026-10-15 · With "Missing tags" chosen, a folder grid keeps showing a file that carries a `✗` mark
+- [x] 2026-10-15 · Under any filter, folder tiles stay shown
+- [x] 2026-10-15 · Choosing a second filter replaces the first: only the second one's matches show
+- [x] 2026-10-15 · Choosing the active filter again turns filtering off and every tile shows again
+- [x] 2026-10-15 · Choosing a filter while a grid is shown hides its non-matching files at once
+- [x] 2026-10-15 · A filter chosen in one folder's grid applies to the next folder opened in the same window
+- [x] 2026-10-15 · A new window starts with no filter, whatever was chosen in an earlier window
+- [x] 2026-10-15 · Under a filter, a search results grid hides result files that don't match
+- [x] 2026-10-15 · Under any filter, a search results grid keeps showing missing result tiles
+- [x] 2026-10-15 · Under "With tags", removing a file's last own tag from the grid's tag prompt hides it at once
+- [x] 2026-10-15 · Under "No tags", adding a tag to a shown file from the grid's tag prompt hides it at once
+- [x] 2026-10-15 · Under "No tags", adding a tag to a file's folder leaves the file shown
+- [x] 2026-10-15 · Choosing a filter that hides the cursor's tile moves the cursor to the next shown tile after it
+- [x] 2026-10-15 · Choosing a filter that hides the cursor's tile, with no shown tile after it, moves the cursor to the nearest shown tile before it
+- [x] 2026-10-15 · Choosing a filter that leaves the cursor's tile shown keeps the cursor where it is
+- [x] 2026-10-15 · Choosing a filter that hides every file of a folder with no subfolders leaves no cursor and clears the status bar's tags
+- [x] 2026-10-15 · Opening a folder whose first tile is hidden by the filter puts the cursor on the first shown tile
+- [x] 2026-10-15 · Going up to a folder at a child that the filter hides puts the cursor on the next shown tile after it
+- [x] 2026-10-15 · Saving a tag that hides the cursor's file moves the cursor to the next shown tile
+- [x] 2026-10-15 · A grid under a filter requests no thumbnail for a hidden file
+- [x] 2026-10-15 · A grid under a filter requests thumbnails for its shown files in view
+- [x] 2026-10-15 · A grid sharing the window's filter shows a round filter button at its bottom-right corner, above the status bar's clear margin and left of the vertical scroll bar
+- [x] 2026-10-15 · A grid given no shared filter shows no filter button
+- [x] 2026-10-15 · After the grid is resized (fullscreen included), the filter button sits at its new bottom-right corner
+- [x] 2026-10-15 · Clicking the filter button leaves keyboard focus on the grid, so arrow keys still move the cursor
+- [x] 2026-10-15 · With no filter on, the filter button is drawn with a translucent dark backing
+- [x] 2026-10-15 · With a filter on, the filter button is drawn checked, opaque, in the highlight colour
+- [x] 2026-10-15 · With a filter on, the filter button's tooltip names the active filter
+- [x] 2026-10-15 · Clicking the filter button pops up a menu offering "With tags" and "No tags", the active filter checked
+- [x] 2026-10-15 · The filter menu offers "Missing tags" when the grid's library has required roots
+- [x] 2026-10-15 · The filter menu doesn't offer "Missing tags" when the drive has no required roots
+- [x] 2026-10-15 · The filter menu offers "Missing tags" when it is the active filter, even without required roots
+- [x] 2026-10-15 · Triggering an action in the filter menu chooses that filter
+- [x] 2026-10-15 · With the cheat sheet shown over the grid, a click on the filter button still pops up its menu
+- [x] 2026-10-15 · `Enter` on a file of a filtered folder grid starts a slideshow over only the shown files, in grid order
+- [x] 2026-10-15 · After the filter is turned off again, `Enter` on a file starts a slideshow over every file of the folder
+- [x] 2026-10-15 · `Enter` on a file of a filtered results grid starts a slideshow over only the shown result files
+- [x] 2026-10-15 · `Esc` back from a filtered slideshow puts the cursor on the file that was showing
+- [x] 2026-10-15 · `Esc` back from a filtered slideshow on a file tagged so it no longer matches puts the cursor on the next shown tile
+- [x] 2026-10-15 · In the shipped `mediatagger` app, clicking the grid's filter button and choosing "No tags" hides the folder's tagged files
 - [x] 2026-10-15 · `required_roots` of a drive whose root holds `mediatagger_config.json` with `{"requiredRoots": ["type:", "size:"]}` gives those two roots and no problem
 - [x] 2026-10-15 · `required_roots` of a drive with no config file, or one with no `requiredRoots`, gives no roots and no problem, and leaves the drive's file list unchanged
 - [x] 2026-10-15 · `required_roots` of a drive whose config isn't valid JSON gives no roots and the "can't be read" problem text
