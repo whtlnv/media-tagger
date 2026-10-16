@@ -479,3 +479,15 @@ def test_after_adding_a_chapter_with_c_esc_back_to_the_grid_shows_the_videos_til
 
     grid = window.stack.currentWidget()
     assert f"{MOMENTS_BADGE} 2" in painted_texts(grid, 0)
+
+
+def test_keys_the_tag_prompt_passes_on_never_reach_the_chapter_list_open_behind_it(qtbot, tmp_path):
+    viewer = viewer_playing_a_clip_with_chapters(qtbot, tmp_path, THREE_CHAPTERS)
+    qtbot.keyClick(viewer, Qt.Key.Key_L)
+    qtbot.keyClick(viewer, Qt.Key.Key_C)
+
+    qtbot.keyClick(viewer.tag_prompt.input, Qt.Key.Key_Down)
+    qtbot.keyClick(viewer.tag_prompt.input, Qt.Key.Key_Backspace)
+
+    assert highlighted_chapter_line(viewer) == "0:05 kickoff"
+    assert len(shown_chapter_lines(viewer)) == 3

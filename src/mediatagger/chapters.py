@@ -42,6 +42,8 @@ class Chapters(QObject):
     def eventFilter(self, watched, event):
         if event.type() != QEvent.Type.KeyPress or event.modifiers() or not self._video_shown():
             return False
+        if self._viewer.tag_prompt.has_focus():
+            return False  # a key the tag prompt passes on
         if event.key() == Qt.Key.Key_C:
             self._open_prompt()
             return True
