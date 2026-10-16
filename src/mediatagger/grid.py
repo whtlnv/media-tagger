@@ -351,6 +351,14 @@ class Grid(QListView):
             return
         for row, tile in enumerate(self.model().tiles):
             self.setRowHidden(row, _is_file(tile) and not self._filter.shows(tile.tag_count, tile.missing_roots))
+        current = self.currentIndex()
+        if current.isValid() and self.isRowHidden(current.row()):
+            self.setCurrentIndex(self._shown_near(current.row()))
+
+    def _shown_near(self, row):
+        """The first shown tile after row, else the last shown one before it, else none."""
+        rows = [*range(row + 1, self.model().rowCount()), *range(row - 1, -1, -1)]
+        return self.model().index(next((near for near in rows if not self.isRowHidden(near)), -1), 0)
 
     def keep_clear_at_the_bottom(self, height):
         """Room below the last row for what lies over the grid's bottom edge (the window's status bar)."""

@@ -159,3 +159,48 @@ def test_under_any_filter_a_search_results_grid_keeps_showing_missing_result_til
     qtbot.addWidget(grid)
 
     assert shown_tile_names(grid) == ["gone.jpg"]
+
+
+def cursor_name(grid):
+    return grid.currentIndex().data(Qt.ItemDataRole.DisplayRole)
+
+
+def test_choosing_a_filter_that_hides_the_cursors_tile_moves_the_cursor_to_the_next_shown_tile_after_it(qtbot, tmp_path):
+    library = Library.create(tmp_path)
+    touch(tmp_path, "a.jpg", "b.jpg", "c.jpg")
+    library.enter(tmp_path / "a.jpg", "sea")
+    library.enter(tmp_path / "c.jpg", "sea")
+    grid_filter = GridFilter()
+    grid = Grid(tmp_path, at=tmp_path / "b.jpg", library=library, grid_filter=grid_filter)
+    qtbot.addWidget(grid)
+
+    grid_filter.choose(WITH_TAGS)
+
+    assert cursor_name(grid) == "c.jpg"
+
+
+def test_choosing_a_filter_that_hides_the_cursors_tile_with_no_shown_tile_after_it_moves_the_cursor_to_the_nearest_shown_tile_before_it(qtbot, tmp_path):
+    library = Library.create(tmp_path)
+    touch(tmp_path, "a.jpg", "b.jpg", "c.jpg")
+    library.enter(tmp_path / "a.jpg", "sea")
+    library.enter(tmp_path / "b.jpg", "sea")
+    grid_filter = GridFilter()
+    grid = Grid(tmp_path, at=tmp_path / "c.jpg", library=library, grid_filter=grid_filter)
+    qtbot.addWidget(grid)
+
+    grid_filter.choose(WITH_TAGS)
+
+    assert cursor_name(grid) == "b.jpg"
+
+
+def test_choosing_a_filter_that_leaves_the_cursors_tile_shown_keeps_the_cursor_where_it_is(qtbot, tmp_path):
+    library = Library.create(tmp_path)
+    touch(tmp_path, "a.jpg", "b.jpg", "c.jpg")
+    library.enter(tmp_path / "b.jpg", "sea")
+    grid_filter = GridFilter()
+    grid = Grid(tmp_path, at=tmp_path / "b.jpg", library=library, grid_filter=grid_filter)
+    qtbot.addWidget(grid)
+
+    grid_filter.choose(WITH_TAGS)
+
+    assert cursor_name(grid) == "b.jpg"

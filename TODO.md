@@ -32,10 +32,10 @@ Phase 17 notes for every cycle (Phases 1–16 are delivered — see DONE.md; Pha
 - [x] Under "With tags", removing a file's last own tag from the grid's tag prompt hides it at once
 - [x] Under "No tags", adding a tag to a shown file from the grid's tag prompt hides it at once
 - [x] Under "No tags", adding a tag to a file's folder leaves the file shown
-- [ ] Choosing a filter that hides the cursor's tile moves the cursor to the next shown tile after it
-- [ ] Choosing a filter that hides the cursor's tile, with no shown tile after it, moves the cursor to the nearest shown tile before it
-- [ ] Choosing a filter that leaves the cursor's tile shown keeps the cursor where it is
-- [ ] Choosing a filter that hides every file of a folder with no subfolders leaves no cursor and clears the status bar's tags
+- [x] Choosing a filter that hides the cursor's tile moves the cursor to the next shown tile after it
+- [x] Choosing a filter that hides the cursor's tile, with no shown tile after it, moves the cursor to the nearest shown tile before it
+- [x] Choosing a filter that leaves the cursor's tile shown keeps the cursor where it is
+- [x] Choosing a filter that hides every file of a folder with no subfolders leaves no cursor and clears the status bar's tags
 - [ ] Opening a folder whose first tile is hidden by the filter puts the cursor on the first shown tile
 - [ ] Going up to a folder at a child that the filter hides puts the cursor on the next shown tile after it
 - [ ] Saving a tag that hides the cursor's file moves the cursor to the next shown tile
