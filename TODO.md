@@ -1,7 +1,3 @@
 # TODO
 
-## Phase 18 — Video chapters
-
-Notes: spec is PLAN.md "Phase 18". Data safety first — the schema 2 → 3 upgrade runs in one transaction, is purely additive (never drops or rewrites items/tags), leaves a read-only drive at its old schema (no chapters, all else works), and is pinned test-first against v2 and v1 libraries built like the current code builds them. Chapters go in their own modules (`viewer.py` is at its 270-line budget). Tests offscreen and silent; no cycle screenshots the real display.
-Layout (keep cycles consistent): moments are stored in `library.py` (a `moments` table keyed by item and tag, time in whole tenths of a second; read only through `item_tags` so a row whose tag the video no longer has never shows; removing a tag deletes its moment rows in the same transaction; the schema upgrade inside an explicit `BEGIN … COMMIT`, since `executescript` and DDL run outside a transaction otherwise). The viewer side lives in a new `chapters.py` (the `c` prompt, `.`/`,` jumps, the bar's ticks and tag name) and `chapter_list.py` (the `l` overlay), wired into `viewer.py` with as few lines as possible; `.`/`,`/`l`/`c` do nothing on images, in the grid and while the tag prompt has focus. While the chapter list is shown, `↑`/`↓`/`Enter`/`Esc`/`Backspace`/`l` go to it; other keys work as usual and moving to another item hides it. `Esc` with the cheat sheet shown hides only the sheet (Phase 15 rule), so with both shown the first `Esc` hides the sheet, the second the list.
-
+No phase in progress. Phases 1–18 are delivered (items archived in DONE.md); PLAN.md has no further phases.

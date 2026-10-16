@@ -25,6 +25,7 @@ State of the project and how it has been run, for the next session. Read `DESIGN
 | 15 Key cheat sheet | done, validated on the Mac (`83868f5`, 835 tests); Pi run pending |
 | 16 Required tags | done, validated on the Mac (`a6efa62`, 858 tests); Pi run pending |
 | 17 Grid filters | done, validated on the Mac (`0b28e39`, 908 tests); Pi run pending |
+| 18 Video chapters | done, validated on the Mac (`1c4d945`, 982 tests); Pi run pending |
 
 Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), `grid.py`, `grid_filter.py` (the grids' shared filter and its button), `viewer.py`, `tag_prompt.py` (the `t` prompt, shared by grid and viewer), `status_bar.py`, `drive_session.py` (library open/create/restore/backup), `drive_config.py` (the drive's `mediatagger_config.json`: required tag roots), `library.py` (SQLite, schema v3: tags and chapter moments), `backup.py`, `state.py` (last folder, geometry, recent searches; `$XDG_CONFIG_HOME`), `search.py` (query matching), `search_bar.py` (the `/` box and its `↑`/`↓` history), `folder.py`, `slideshow.py`, `thumbnails.py` (image/video/folder thumbnails, `ffmpeg`/`ffprobe`), `thumbnail_cache.py`, `thumbnail_scheduler.py` (3 workers + prefetch), `folder_thumbnails.py` (a folder's thumbnails for its grid), `video.py` + `mpv_surface.py` (libmpv render API), `video_controls.py` (video progress bar), `chapters.py` + `chapter_list.py` (the viewer's `c`, `.`/`,` and `l` chapters), `zoom.py` (mouse-wheel zoom for images and mpv), `gui_thread_gc.py`. Tests are co-located (`test_*.py`). Open structural debt is in `BACKLOG.md`.
 
@@ -38,6 +39,13 @@ Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), 
   - send the agent back with a numbered fix list if anything is off.
 - Progress is relayed to the user in chat from a `Monitor` that polls `git log`, `TODO.md` checkbox counts, `~/Library/Logs/DiagnosticReports/Python-*.ips` and `/Volumes/MEDIATAGGER`. Monitors expire every 30 min; re-arm.
 - The user asked for progress to be printed in the conversation and for questions only when a decision is genuinely theirs.
+
+## Phase 18 — done
+
+Chapters = tags at moments (`moments(item_id, tag_id, tenths)`, schema 3). `chapters.py` watches the viewer's keys: `c` (tag prompt, moment captured at the key press, video keeps playing), `.`/`,` jumps (bar shows `tag · m:ss / m:ss`), `l` list overlay above the mpv surface (↑/↓, Enter jumps, Backspace deletes, Esc closes; with the cheat sheet shown the first Esc hides the sheet). Amber ticks on the progress bar; `⏱ n` tile badge after the tag count. The v1/v2 → v3 upgrade runs in one `BEGIN IMMEDIATE` transaction, only adds, leaves read-only drives at their schema. Orchestrator check: suite twice (982); a v2 library created by the previous build (`58f9105`) opened by the new one: items/tags/item_tags identical, drive id kept, schema 3; the same library read-only: stays 2, tags read, file byte-identical; native: `c` while playing, `.` label, `l` list over video, ticks, badge.
+
+- **Important for the Pi:** once a drive is opened by this build it is schema 3; an older build still reads its tags but ignores chapters and may leave stray (invisible) moment rows when it removes tags.
+- 2026-10-15 23:21 crash report was the orchestrator's own check script (`QTest.keyClick(None)`), not the app.
 
 ## Phase 17 — done
 
