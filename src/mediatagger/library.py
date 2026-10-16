@@ -15,6 +15,7 @@ _KEPT_MOMENTS = (  # moments of tags their item still has: a build from before c
     "moments JOIN items ON items.id = moments.item_id"
     " JOIN item_tags ON item_tags.item_id = moments.item_id AND item_tags.tag_id = moments.tag_id"
 )
+_SAME_MOMENT_WITHIN_TENTHS = 10  # two moments of a tag a second or less apart are one moment
 
 
 def tags_db_path(root):
@@ -179,7 +180,8 @@ class Library:
             tenths = _tenths(seconds)
             connection.executemany(  # no second moment of a tag within a second of one it has
                 "INSERT INTO moments (item_id, tag_id, tenths) SELECT ?, id, ? FROM tags WHERE name = ?"
-                " AND NOT EXISTS (SELECT 1 FROM moments WHERE item_id = ? AND tag_id = tags.id AND abs(tenths - ?) <= 10)",
+                " AND NOT EXISTS (SELECT 1 FROM moments WHERE item_id = ? AND tag_id = tags.id"
+                f" AND abs(tenths - ?) <= {_SAME_MOMENT_WITHIN_TENTHS})",
                 [(item_id, tenths, tag, item_id, tenths) for tag in added],
             )
         connection.close()
@@ -222,7 +224,7 @@ class Library:
                 )
                 connection.execute(  # an old moment within a second of a new one merges into it
                     "DELETE FROM moments AS old WHERE tag_id = ? AND EXISTS (SELECT 1 FROM moments"
-                    " WHERE item_id = old.item_id AND tag_id = ? AND abs(tenths - old.tenths) <= 10)",
+                    f" WHERE item_id = old.item_id AND tag_id = ? AND abs(tenths - old.tenths) <= {_SAME_MOMENT_WITHIN_TENTHS})",
                     (old_id, existing[0]),
                 )
                 connection.execute(
