@@ -27,7 +27,7 @@
 - [x] `Enter` on a single word in the rename prompt shows a short status message and nothing changes
 - [x] `Enter` on three words in the rename prompt shows a short status message and nothing changes
 - [x] `Enter` on a rename of a tag to itself shows a short status message and nothing changes
-- [ ] `Enter` on a rename whose old name starts with `-` shows a short status message and nothing changes
+- [x] `Enter` on a rename whose old name starts with `-` shows a short status message and nothing changes
 - [ ] `Enter` on a rename whose new name starts with `-` shows a short status message and nothing changes
 - [ ] A rename rejected by its status message (no such tag, wrong word count, same name, a leading `-`) keeps the rename prompt open with what was typed, so it can be corrected
 - [ ] `Enter` in the rename prompt with no library open shows the same "tags can't be saved" message as `t` and nothing changes

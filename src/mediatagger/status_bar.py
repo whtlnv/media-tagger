@@ -12,6 +12,7 @@ RENAMED_TAG_TEXT = "Renamed {} → {} on {:,} items"
 NO_SUCH_TAG_TEXT = 'No tag "{}"'
 RENAME_NEEDS_TWO_TAGS_TEXT = "A rename needs two tags: old new"
 RENAME_TO_SAME_TAG_TEXT = "The old and new tags are the same"
+RENAME_LEADING_DASH_TEXT = "Tags can't start with a dash"
 _COULDNT_SAVE_TAGS_TEXT = "Couldn't save tags — is the drive still connected?"
 _CANT_SAVE_MESSAGE_MS = 3000
 _FINISHED_MESSAGE_MS = 3000
