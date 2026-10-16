@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-16 03:10 · `src/mediatagger/test_library.py::test_renaming_beach_into_places_beach_keeps_the_videos_beach_moment_at_13_1_s_apart_from_its_places_beach_moment_at_12_s`
+- Behavior: A moment of the old tag more than 1 s from a moment of the new tag on the same video stays a separate moment after the rename
+- Predicted: passes — the previous cycle's merge `DELETE` only removes old moments with `abs(tenths - old.tenths) <= 10`, and the following `UPDATE` moves the rest to the new tag
+- Actual: passes (1 passed)
+- Type: passed unexpectedly (relative to the TODO plan, which expected a separate cycle; predicted by /red)
+- Resolution: The within-1 s cycle's threshold already delivers this item. The test sits at the boundary (1.1 s apart): loosening the threshold to `<= 11` makes it fail, so it isn't vacuous. I reverted that mutation and kept the test as a characterization pin; the item needs no /green.
+
 ## 2026-10-16 01:08 · `src/mediatagger/test_library.py::test_renaming_beach_to_places_beach_replaces_beach_with_places_beach_on_a_folder_tagged_beach`
 - Behavior: Renaming a tag replaces it on a folder tagged with it, as on files
 - Predicted: passes — `rename_tag` is one `UPDATE tags SET name = ? WHERE name = ?` with no item-kind condition, and folder tags live in the same `tags` table

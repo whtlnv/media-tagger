@@ -1029,3 +1029,15 @@ def test_renaming_beach_into_places_beach_merges_the_videos_beach_moment_at_12_5
     library.rename_tag("beach", "places:beach")
 
     assert library.moments(video) == [Moment(12.0, ["places:beach"])]
+
+
+def test_renaming_beach_into_places_beach_keeps_the_videos_beach_moment_at_13_1_s_apart_from_its_places_beach_moment_at_12_s(tmp_path):
+    library = Library.create(tmp_path)
+    video = tmp_path / "trip.mp4"
+    video.touch()
+    library.add_chapter(video, "places:beach", 12.0)
+    library.add_chapter(video, "beach", 13.1)
+
+    library.rename_tag("beach", "places:beach")
+
+    assert library.moments(video) == [Moment(12.0, ["places:beach"]), Moment(13.1, ["places:beach"])]
