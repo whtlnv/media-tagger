@@ -1,3 +1,44 @@
 # TODO
 
-No phase in progress. Phases 1–18 are delivered (items archived in DONE.md); PLAN.md has no further phases.
+## Phase 19 — Rename a tag across the library
+
+- [ ] Renaming a tag in the library replaces it with the new tag on a file tagged with exactly the old tag
+- [ ] Renaming a tag leaves untouched a file whose tags only resemble the old one (tagged `beachy` when renaming `beach`)
+- [ ] Renaming a tag replaces it on a folder tagged with it, as on files
+- [ ] Renaming a tag into one an item already has leaves that item with the new tag once
+- [ ] Renaming a tag reports how many items it changed
+- [ ] Renaming a tag that no item has changes nothing and reports zero items
+- [ ] A video's chapter moment of the old tag becomes a moment of the new tag after the rename, at the same time
+- [ ] A moment of the old tag within 1 s of a moment of the new tag on the same video becomes one moment after the rename
+- [ ] A moment of the old tag more than 1 s from a moment of the new tag on the same video stays a separate moment after the rename
+- [ ] When a rename fails partway through writing, no item's tags or moments have changed
+- [ ] Pressing `n` in a folder grid opens a one-line prompt labelled `Rename tag:` in the tag prompt's style
+- [ ] Pressing `n` in search results opens the `Rename tag:` prompt
+- [ ] Pressing `n` in the viewer opens no rename prompt
+- [ ] Typing `n` into the tag prompt types an `n` and opens no rename prompt
+- [ ] Typing `n` into the search bar types an `n` and opens no rename prompt
+- [ ] `Esc` in the rename prompt closes it and no tag changes
+- [ ] `Enter` on `beach places:beach` in the rename prompt renames the tag across the drive's library and the status bar says `Renamed beach → places:beach on <n> items`
+- [ ] The rename prompt lowercases both names (`Beach Places:Beach` renames `beach` to `places:beach`)
+- [ ] `Enter` on a rename whose old tag no item has shows `No tag "beach"` and nothing changes
+- [ ] `Enter` on a single word in the rename prompt shows a short status message and nothing changes
+- [ ] `Enter` on three words in the rename prompt shows a short status message and nothing changes
+- [ ] `Enter` on a rename of a tag to itself shows a short status message and nothing changes
+- [ ] `Enter` on a rename whose old name starts with `-` shows a short status message and nothing changes
+- [ ] `Enter` on a rename whose new name starts with `-` shows a short status message and nothing changes
+- [ ] `Enter` in the rename prompt with no library open shows the same "tags can't be saved" message as `t` and nothing changes
+- [ ] `Enter` in the rename prompt on a read-only drive shows the same "tags can't be saved" message as `t`
+- [ ] Right before a rename applies, the library is backed up, so the drive's newest backup still holds the old tag
+- [ ] A rename rejected by validation makes no backup
+- [ ] While typing the first word, the rename prompt's autocomplete offers the library's existing tags
+- [ ] While typing the second word, the rename prompt's autocomplete offers the library's existing tags
+- [ ] `↑` in the rename prompt recalls the previous applied rename, and `↓` goes back to a newer one
+- [ ] Applied renames are remembered in `state.json` and recalled with `↑` after the app restarts
+- [ ] After a rename, the open grid's tag-count badges show the counts with the new tag
+- [ ] After a rename that merges moments, the open grid's `⏱` badge shows the merged count
+- [ ] After a rename into a required tag, a file's `✗` missing badge disappears from the open grid
+- [ ] After a rename, the status bar's tags for the tile under the cursor show the new tag
+- [ ] After a rename, open search results show their items' new tags
+- [ ] With the Missing tags filter on, a file that a rename stops leaving missing is hidden at once
+- [ ] The cheat sheet lists `n` as renaming a tag in the grid, and DESIGN.md's grid key table lists `n` the same way
+- [ ] In the shipped `mediatagger` app on a drive, pressing `n` in a grid, typing `beach places:beach` and `Enter` renames the tag in the drive's `tags.db`
