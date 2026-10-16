@@ -1,20 +1,29 @@
 from PySide6.QtCore import Qt
 
-from mediatagger.state import remember_rename, remembered_rename
+from mediatagger.state import remember_rename, remembered_renames
 from mediatagger.status_bar import overlay_label
 from mediatagger.tag_prompt import TAG_INPUT_STYLE, TagInput, _LastWordCompleter, place_above_the_status_bar, prompt_width
 
 
 class _RecallingInput(TagInput):
-    """The rename input: Up brings back the last entry entered, remembered in the state file."""
+    """The rename input: ↑ and ↓ step through the entries remembered in the state file, like the search bar's."""
 
     def __init__(self, state_file, parent):
         super().__init__(parent)
         self.state_file = state_file
+        self.recalled = 0
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Up:
-            self.setText(remembered_rename(self.state_file))
+            renames = remembered_renames(self.state_file)
+            if renames:
+                self.recalled = min(self.recalled + 1, len(renames))
+                self.setText(renames[-self.recalled])
+            return
+        if event.key() == Qt.Key.Key_Down:
+            if self.recalled:
+                self.recalled -= 1
+                self.setText(remembered_renames(self.state_file)[-self.recalled] if self.recalled else "")
             return
         super().keyPressEvent(event)
 
@@ -44,6 +53,7 @@ class RenamePrompt:
 
     def open(self, tags):
         self.input.clear()
+        self.input.recalled = 0
         self.input.completer().model().setStringList(tags)
         self.input.resize(prompt_width(self._host), self.input.sizeHint().height())
         self.label.adjustSize()

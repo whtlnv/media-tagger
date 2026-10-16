@@ -28,9 +28,7 @@ def remember_geometry(state, geometry):
 
 
 def remember_search(state, query):
-    earlier_searches = [search for search in remembered_searches(state) if search != query]
-    # unwritable, the search still runs; it just isn't offered by ↑ next time
-    _remember_if_writable(state, "searches", (earlier_searches + [query])[-MOST_SEARCHES_REMEMBERED:])
+    _remember_latest(state, "searches", query)  # unwritable, the search still runs; it just isn't offered by ↑ next time
 
 
 def remember_cheat_sheet(state, shown):
@@ -48,15 +46,22 @@ def remembered_searches(state):
 
 
 def remember_rename(state, rename):
-    _remember_if_writable(state, "rename", rename)
+    _remember_latest(state, "renames", rename)  # unwritable, the rename still applies; it just isn't offered by ↑ next time
 
 
-def remembered_rename(state):
-    return _remembered(state, "rename")
+def remembered_renames(state):
+    """The renames entered before, oldest first; none if nothing is remembered."""
+    return _remembered(state, "renames") or []
 
 
 def remembered_geometry(state):
     return _remembered(state, "geometry")
+
+
+def _remember_latest(state, key, entry):
+    """Adds entry as the newest of the list remembered under key, dropping an earlier copy and the oldest past the most kept."""
+    earlier = [remembered for remembered in _remembered(state, key) or [] if remembered != entry]
+    _remember_if_writable(state, key, (earlier + [entry])[-MOST_SEARCHES_REMEMBERED:])
 
 
 def _remember_if_writable(state, key, value):
