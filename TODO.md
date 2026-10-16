@@ -36,9 +36,9 @@ Phase 17 notes for every cycle (Phases 1–16 are delivered — see DONE.md; Pha
 - [x] Choosing a filter that hides the cursor's tile, with no shown tile after it, moves the cursor to the nearest shown tile before it
 - [x] Choosing a filter that leaves the cursor's tile shown keeps the cursor where it is
 - [x] Choosing a filter that hides every file of a folder with no subfolders leaves no cursor and clears the status bar's tags
-- [ ] Opening a folder whose first tile is hidden by the filter puts the cursor on the first shown tile
-- [ ] Going up to a folder at a child that the filter hides puts the cursor on the next shown tile after it
-- [ ] Saving a tag that hides the cursor's file moves the cursor to the next shown tile
+- [x] Opening a folder whose first tile is hidden by the filter puts the cursor on the first shown tile
+- [x] Going up to a folder at a child that the filter hides puts the cursor on the next shown tile after it
+- [x] Saving a tag that hides the cursor's file moves the cursor to the next shown tile
 - [ ] A grid under a filter requests no thumbnail for a hidden file
 - [ ] A grid under a filter requests thumbnails for its shown files in view
 - [ ] A grid sharing the window's filter shows a round filter button at its bottom-right corner, above the status bar's clear margin and left of the vertical scroll bar

@@ -92,3 +92,32 @@ def test_choosing_a_filter_that_hides_every_file_of_a_folder_with_no_subfolders_
     window.grid_filter.choose(NO_TAGS)
 
     assert ("beach" in shown_before, stack.currentWidget().currentIndex().isValid(), "beach" in shown_status_bar_texts(window)) == (True, False, False)
+
+
+def cursor_name(stack):
+    return stack.currentWidget().currentIndex().data(Qt.ItemDataRole.DisplayRole)
+
+
+def test_opening_a_folder_whose_first_tile_is_hidden_by_the_filter_puts_the_cursor_on_the_first_shown_tile(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    [trip] = make_folders(folder, "Trip")
+    make_image(trip / "IMG_2.png", "blue")
+    make_image(trip / "IMG_3.png", "green")
+    Library.open(drive).enter(trip / "IMG_3.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    window.grid_filter.choose(WITH_TAGS)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+
+    assert cursor_name(stack) == "IMG_3.png"
+
+
+def test_saving_a_tag_that_hides_the_cursors_file_moves_the_cursor_to_the_next_shown_tile(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    window.grid_filter.choose(NO_TAGS)
+
+    enter_in_the_grids_tag_prompt(qtbot, window, stack, "beach")
+
+    assert cursor_name(stack) == "IMG_2.png"

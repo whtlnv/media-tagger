@@ -351,9 +351,13 @@ class Grid(QListView):
             return
         for row, tile in enumerate(self.model().tiles):
             self.setRowHidden(row, _is_file(tile) and not self._filter.shows(tile.tag_count, tile.missing_roots))
-        current = self.currentIndex()
-        if current.isValid() and self.isRowHidden(current.row()):
-            self.setCurrentIndex(self._shown_near(current.row()))
+        self.setCurrentIndex(self.currentIndex())  # off a tile just hidden
+
+    def setCurrentIndex(self, index):
+        """A hidden tile never takes the cursor: the nearest shown one does instead."""
+        if index.isValid() and self.isRowHidden(index.row()):
+            index = self._shown_near(index.row())
+        super().setCurrentIndex(index)
 
     def _shown_near(self, row):
         """The first shown tile after row, else the last shown one before it, else none."""

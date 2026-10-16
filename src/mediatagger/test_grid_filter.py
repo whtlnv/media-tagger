@@ -204,3 +204,14 @@ def test_choosing_a_filter_that_leaves_the_cursors_tile_shown_keeps_the_cursor_w
     grid_filter.choose(WITH_TAGS)
 
     assert cursor_name(grid) == "b.jpg"
+
+
+def test_a_grid_opened_at_a_file_the_filter_hides_puts_the_cursor_on_the_next_shown_tile_after_it(qtbot, tmp_path):
+    library = Library.create(tmp_path)
+    touch(tmp_path, "a.jpg", "b.jpg", "c.jpg")
+    library.enter(tmp_path / "a.jpg", "sea")
+    library.enter(tmp_path / "c.jpg", "sea")
+    grid = Grid(tmp_path, at=tmp_path / "b.jpg", library=library, grid_filter=chosen(WITH_TAGS))
+    qtbot.addWidget(grid)
+
+    assert cursor_name(grid) == "c.jpg"
