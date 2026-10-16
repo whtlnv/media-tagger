@@ -1,7 +1,7 @@
 import pytest
 from PySide6.QtCore import Qt
 
-from mediatagger.test_video import wait_until_playing
+from mediatagger.test_video import make_clip, wait_until_playing
 from mediatagger.test_video_controls import is_tick_coloured
 from mediatagger.test_viewer import make_surface_ready, shown_texts
 from mediatagger.chapter_list import ChapterList
@@ -11,6 +11,7 @@ from mediatagger.test_viewer_library import (
     drive_with_a_tag_library_holding_one_clip, drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, made_read_only, shown_viewer_on_drive, status_bar_texts,
     visible_tag_prompt_texts,
 )
+from mediatagger.test_window_cheat_sheet import sheet_is_shown, window_on_the_drive
 
 
 def viewer_playing_a_clip_on_a_drive_with_a_library(qtbot, tmp_path, duration=30):
@@ -382,3 +383,79 @@ def test_esc_in_the_chapter_list_hides_it_and_leaves_the_viewer_showing_the_vide
 
     assert shown_chapter_lines(viewer) is None
     assert left == []
+
+
+def test_backspace_in_the_chapter_list_deletes_the_highlighted_moment_its_line_and_tick_go_and_its_tags_stay(qtbot, tmp_path):
+    viewer = viewer_playing_a_clip_with_chapters(qtbot, tmp_path, THREE_CHAPTERS)
+    qtbot.waitUntil(lambda: len(ticks_on_the_progress_bar(viewer)) == 3, timeout=5000)
+    qtbot.keyClick(viewer, Qt.Key.Key_L)
+    qtbot.keyClick(viewer, Qt.Key.Key_Down)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Backspace)
+
+    assert shown_chapter_lines(viewer) == ["0:05 kickoff", "0:40 save"]
+    assert len(ticks_on_the_progress_bar(viewer)) == 2
+    assert Library.open(viewer.session.library.root).tags(viewer.slideshow.current) == ["goal", "kickoff", "save"]
+
+
+def test_backspace_in_the_chapter_list_on_a_read_only_drive_keeps_the_moment_and_says_tags_cant_be_saved_here(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=30)
+    Library.open(drive).add_chapter(folder / "IMG_1.mp4", "goal", 5)
+    with made_read_only(drive):
+        viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+        make_surface_ready(viewer)
+        wait_until_playing(viewer.video_player.engine)
+        qtbot.keyClick(viewer, Qt.Key.Key_L)
+
+        qtbot.keyClick(viewer, Qt.Key.Key_Backspace)
+
+        moments = Library.open(drive).moments(folder / "IMG_1.mp4")
+    assert shown_chapter_lines(viewer) == ["0:05 goal"]
+    assert [moment.seconds for moment in moments] == [5]
+    assert TAGS_CANT_BE_SAVED_HERE_TEXT in status_bar_texts(viewer)
+
+
+def test_backspace_in_the_chapter_list_when_the_drive_fails_keeps_the_moment_listed_and_says_tags_cant_be_saved_here(qtbot, tmp_path, monkeypatch):
+    viewer = viewer_playing_a_clip_with_chapters(qtbot, tmp_path, THREE_CHAPTERS)
+    qtbot.keyClick(viewer, Qt.Key.Key_L)
+    monkeypatch.setattr(Library, "delete_moment", lambda self, video, seconds: (_ for _ in ()).throw(OSError(5, "Input/output error")))
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Backspace)
+
+    assert shown_chapter_lines(viewer) == ["0:05 kickoff", "0:20 goal", "0:40 save"]
+    assert TAGS_CANT_BE_SAVED_HERE_TEXT in status_bar_texts(viewer)
+
+
+@pytest.mark.parametrize("key", [Qt.Key.Key_Space, Qt.Key.Key_Right])
+def test_moving_to_another_item_while_the_chapter_list_is_shown_hides_it(qtbot, tmp_path, key):
+    drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=30)
+    make_clip(folder / "IMG_2.mp4", duration=30)
+    Library.open(drive).add_chapter(folder / "IMG_1.mp4", "goal", 5)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    make_surface_ready(viewer)
+    wait_until_playing(viewer.video_player.engine)
+    qtbot.keyClick(viewer, Qt.Key.Key_L)
+
+    qtbot.keyClick(viewer, key)
+
+    assert viewer.slideshow.current.name == "IMG_2.mp4"
+    assert shown_chapter_lines(viewer) is None
+
+
+def test_with_the_cheat_sheet_and_the_chapter_list_shown_esc_hides_only_the_sheet_and_a_second_esc_the_list(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=30)
+    Library.open(drive).add_chapter(folder / "IMG_1.mp4", "goal", 5)
+    window = window_on_the_drive(qtbot, drive, folder)
+    viewer = window.viewer
+    make_surface_ready(viewer)
+    wait_until_playing(viewer.video_player.engine)
+    qtbot.keyClick(viewer, Qt.Key.Key_L)
+    qtbot.keyClick(viewer, Qt.Key.Key_H)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Escape)
+    after_the_first = (sheet_is_shown(window), shown_chapter_lines(viewer))
+    qtbot.keyClick(viewer, Qt.Key.Key_Escape)
+
+    assert after_the_first == (False, ["0:05 goal"])
+    assert shown_chapter_lines(viewer) is None
+    assert window.stack.currentWidget() is viewer

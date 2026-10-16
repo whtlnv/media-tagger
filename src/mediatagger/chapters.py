@@ -1,3 +1,5 @@
+import sqlite3
+
 from PySide6.QtCore import QEvent, QObject, Qt
 
 from mediatagger.chapter_list import ChapterList
@@ -15,8 +17,9 @@ def _previous(moments, now):
     return next((moment for moment in reversed(moments) if moment.seconds < now - _REPLAYING), None)
 
 _JUMPS = {Qt.Key.Key_Period: _next, Qt.Key.Key_Comma: _previous}
+_MOVES = {Qt.Key.Key_Space, Qt.Key.Key_Left, Qt.Key.Key_Right}  # the viewer's keys to another item
 _LIST_STEPS = {Qt.Key.Key_Down: 1, Qt.Key.Key_Up: -1}
-_LIST_KEYS = {*_LIST_STEPS, Qt.Key.Key_Return, Qt.Key.Key_Escape}
+_LIST_KEYS = {*_LIST_STEPS, Qt.Key.Key_Return, Qt.Key.Key_Escape, Qt.Key.Key_Backspace}
 
 
 class Chapters(QObject):
@@ -42,6 +45,9 @@ class Chapters(QObject):
         if event.key() == Qt.Key.Key_C:
             self._open_prompt()
             return True
+        if event.key() in _MOVES:
+            self.list.hide()  # it lists the item being left
+            return False
         if self.list.isVisible() and event.key() in _LIST_KEYS:
             self._in_list(event.key())
             return True
@@ -61,10 +67,30 @@ class Chapters(QObject):
         if key in _LIST_STEPS:
             self.list.step(_LIST_STEPS[key])
             return
+        if key == Qt.Key.Key_Backspace:
+            self._delete_highlighted()
+            return
         self.list.hide()
         row = self.list.currentRow()
         if key == Qt.Key.Key_Return and row >= 0:
             self._jump(lambda moments, now: moments[row])
+
+    def _delete_highlighted(self):
+        """Backspace in the chapter list: the highlighted moment goes, where tags can be saved; its tags stay."""
+        viewer, row = self._viewer, self.list.currentRow()
+        if row < 0:
+            return
+        if not viewer.session.tags_can_be_saved():
+            viewer.status_bar.flash_cant_save()
+            return
+        library, video = viewer.session.library, viewer.slideshow.current
+        try:
+            library.delete_moment(video, self._moments()[row].seconds)
+        except (sqlite3.Error, OSError):
+            viewer.status_bar.flash_cant_save()
+            return
+        self.read(library, video)
+        self.list.show_moments(self._moments(), row=row)
 
     def _jump(self, choose):
         """Seeks to the moment choose picks from the moments and the playback time; with none, stays put."""

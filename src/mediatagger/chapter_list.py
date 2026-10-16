@@ -30,11 +30,12 @@ class ChapterList(QListWidget):
         parent.installEventFilter(self)  # to stay centred as it resizes
         self.hide()
 
-    def show_moments(self, moments):
+    def show_moments(self, moments, row=0):
+        """Lists the moments, the line at row (or the last) highlighted."""
         self.clear()
         self.addItems([moment_line(moment) for moment in moments] or [NO_CHAPTERS_TEXT])
         if moments:
-            self.setCurrentRow(0)
+            self.setCurrentRow(min(row, len(moments) - 1))
         self._place()
         self.show()
         self.raise_()  # over the video surface
