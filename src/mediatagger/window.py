@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from PySide6.QtCore import QRect, Qt
-from PySide6.QtWidgets import QApplication, QStackedWidget, QStyle, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QApplication, QLineEdit, QStackedWidget, QStyle, QVBoxLayout, QWidget
 
 from mediatagger.cheat_sheet import GRID_KEYS, LAUNCH_KEYS, VIEWER_KEYS, CheatSheet
 from mediatagger.drive_session import DriveSession
@@ -159,6 +159,7 @@ class Window(QWidget):
         """What a folder's grid and a results grid both do: tag the cursor's item, search again, pick a folder, show its
         tags, and count its thumbnails."""
         grid.tag.connect(lambda: self._tag(grid.currentIndex()))
+        grid.rename_tag.connect(self._open_rename_prompt)
         grid.search.connect(self._open_search_bar)
         grid.pick_folder.connect(self._pick_folder)
         grid.selectionModel().currentChanged.connect(self._show_tags_of)
@@ -270,6 +271,12 @@ class Window(QWidget):
             self.status_bar.flash_cant_save()
             return
         self.tag_prompt.open(self.session.library, index.data(TILE_ROLE).path)
+
+    def _open_rename_prompt(self):
+        prompt = QLineEdit(self)
+        prompt.setStyleSheet(self.tag_prompt.input.styleSheet())
+        prompt.show()
+        overlay_label("Rename tag:", self).show()
 
     def _show_saved_tags(self, library, path):
         grid = self.stack.currentWidget()

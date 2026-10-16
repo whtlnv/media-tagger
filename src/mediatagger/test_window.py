@@ -389,6 +389,17 @@ def test_pressing_t_in_the_windows_grid_on_a_file_tile_tagged_beach_family_opens
     assert "beach family" in shown_texts_outside_the_status_bar(window)
 
 
+def test_pressing_n_in_the_windows_folder_grid_opens_one_empty_prompt_labelled_rename_tag_styled_like_the_tag_prompt(qtbot, tmp_path):
+    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
+
+    [prompt] = visible_tag_prompts(window)
+    assert prompt.text() == ""
+    assert prompt.styleSheet() == window.tag_prompt.input.styleSheet()
+    assert "Rename tag:" in shown_texts_outside_the_status_bar(window)
+
+
 def test_pressing_t_in_the_windows_grid_on_a_read_only_drive_opens_no_tag_prompt_and_says_tags_cant_be_saved_here(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     with made_read_only(drive):

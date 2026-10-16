@@ -255,6 +255,7 @@ class Grid(QListView):
     up = Signal()
     escaped = Signal()
     tag = Signal()
+    rename_tag = Signal()
     search = Signal()
     pick_folder = Signal()
     dropped = Signal(Path)
@@ -409,6 +410,9 @@ class Grid(QListView):
             return
         if event.key() == Qt.Key.Key_T:
             self.tag.emit()
+            return
+        if event.key() == Qt.Key.Key_N:
+            self.rename_tag.emit()
             return
         if event.key() == Qt.Key.Key_Slash:
             self.search.emit()
