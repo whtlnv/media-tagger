@@ -82,6 +82,26 @@ def _set_item_tags(connection, item_id, tags):
     connection.execute("DELETE FROM tags WHERE id NOT IN (SELECT tag_id FROM item_tags)")
 
 
+def _merge_tag(connection, old_id, new_id):
+    """Every item tagged old_id is tagged new_id instead, its moments of old_id becoming moments of new_id."""
+    connection.execute(  # a stale old moment would otherwise revive under the new tag
+        "DELETE FROM moments WHERE tag_id = ? AND NOT EXISTS (SELECT 1 FROM item_tags"
+        " WHERE item_id = moments.item_id AND tag_id = moments.tag_id)",
+        (old_id,),
+    )
+    connection.execute(
+        "DELETE FROM item_tags WHERE tag_id = ? AND item_id IN (SELECT item_id FROM item_tags WHERE tag_id = ?)",
+        (old_id, new_id),
+    )
+    connection.execute("UPDATE item_tags SET tag_id = ? WHERE tag_id = ?", (new_id, old_id))
+    connection.execute(  # an old moment within a second of a new one merges into it
+        "DELETE FROM moments AS old WHERE tag_id = ? AND EXISTS (SELECT 1 FROM moments"
+        f" WHERE item_id = old.item_id AND tag_id = ? AND abs(tenths - old.tenths) <= {_SAME_MOMENT_WITHIN_TENTHS})",
+        (old_id, new_id),
+    )
+    connection.execute("UPDATE moments SET tag_id = ? WHERE tag_id = ?", (new_id, old_id))
+
+
 def _parse_entry(text):
     words = text.lower().split()
     added = {word for word in words if not word.startswith("-")}
@@ -209,27 +229,7 @@ class Library:
                 connection.execute("UPDATE tags SET name = ? WHERE name = ?", (new, old))
             else:
                 (old_id,) = connection.execute("SELECT id FROM tags WHERE name = ?", (old,)).fetchone()
-                connection.execute(  # a stale old moment would otherwise revive under the new tag
-                    "DELETE FROM moments WHERE tag_id = ? AND NOT EXISTS (SELECT 1 FROM item_tags"
-                    " WHERE item_id = moments.item_id AND tag_id = moments.tag_id)",
-                    (old_id,),
-                )
-                connection.execute(
-                    "DELETE FROM item_tags WHERE tag_id = ? AND item_id IN"
-                    " (SELECT item_id FROM item_tags WHERE tag_id = ?)",
-                    (old_id, existing[0]),
-                )
-                connection.execute(
-                    "UPDATE item_tags SET tag_id = ? WHERE tag_id = ?", (existing[0], old_id)
-                )
-                connection.execute(  # an old moment within a second of a new one merges into it
-                    "DELETE FROM moments AS old WHERE tag_id = ? AND EXISTS (SELECT 1 FROM moments"
-                    f" WHERE item_id = old.item_id AND tag_id = ? AND abs(tenths - old.tenths) <= {_SAME_MOMENT_WITHIN_TENTHS})",
-                    (old_id, existing[0]),
-                )
-                connection.execute(
-                    "UPDATE moments SET tag_id = ? WHERE tag_id = ?", (existing[0], old_id)
-                )
+                _merge_tag(connection, old_id, existing[0])
         connection.close()
         return changed
 
