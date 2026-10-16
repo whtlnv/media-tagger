@@ -293,11 +293,11 @@ class Window(QWidget):
         if not self.session.tags_can_be_saved():
             self.status_bar.flash_cant_save()
             return
-        self.session.back_up_library()
-        renamed = self.session.library.rename_tag(old, new)
-        if not renamed:
+        if old not in self.session.library.all_tags():
             self.status_bar.show_background(NO_SUCH_TAG_TEXT.format(old), finished=True)
             return
+        self.session.back_up_library()
+        renamed = self.session.library.rename_tag(old, new)
         self.rename_prompt.close()
         self.status_bar.show_background(RENAMED_TAG_TEXT.format(old, new, renamed), finished=True)
 
