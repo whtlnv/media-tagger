@@ -21,6 +21,7 @@
 - [x] Typing `n` into the search bar types an `n` and opens no rename prompt
 - [x] `Esc` in the rename prompt closes it and no tag changes
 - [x] `Enter` on `beach places:beach` in the rename prompt renames the tag across the drive's library and the status bar says `Renamed beach → places:beach on <n> items`
+- [ ] After `Enter` applies a rename, the rename prompt closes and keys go back to the grid
 - [ ] The rename prompt lowercases both names (`Beach Places:Beach` renames `beach` to `places:beach`)
 - [ ] `Enter` on a rename whose old tag no item has shows `No tag "beach"` and nothing changes
 - [ ] `Enter` on a single word in the rename prompt shows a short status message and nothing changes
@@ -28,6 +29,7 @@
 - [ ] `Enter` on a rename of a tag to itself shows a short status message and nothing changes
 - [ ] `Enter` on a rename whose old name starts with `-` shows a short status message and nothing changes
 - [ ] `Enter` on a rename whose new name starts with `-` shows a short status message and nothing changes
+- [ ] A rename rejected by its status message (no such tag, wrong word count, same name, a leading `-`) keeps the rename prompt open with what was typed, so it can be corrected
 - [ ] `Enter` in the rename prompt with no library open shows the same "tags can't be saved" message as `t` and nothing changes
 - [ ] `Enter` in the rename prompt on a read-only drive shows the same "tags can't be saved" message as `t`
 - [ ] Right before a rename applies, the library is backed up, so the drive's newest backup still holds the old tag
