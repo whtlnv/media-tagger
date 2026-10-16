@@ -279,7 +279,7 @@ class Window(QWidget):
         self.tag_prompt.open(self.session.library, index.data(TILE_ROLE).path)
 
     def _rename_tag(self, text):
-        old, new = text.split()
+        old, new = text.lower().split()
         renamed = self.session.library.rename_tag(old, new)
         self.rename_prompt.close()
         self.status_bar.show_background(RENAMED_TAG_TEXT.format(old, new, renamed), finished=True)
