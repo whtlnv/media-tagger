@@ -4,12 +4,7 @@ Delivery phases, in order. Decisions, key maps and rules live in `DESIGN.md`; ev
 Each phase must end with its behavior reachable from the shipped `mediatagger` command, not only from tests.
 
 
-Phases 1–16 are delivered. Their specs are in git history (`PLAN.md` at `fcd5d3b` for 1–11, at `ca048de` for 12, at `76e644f` for 13, at `5ba4a0a` for 14, at `9a27389` for 15, at `213f913` for 16) and their items in `DONE.md`.
-
-## Phase 17 — Grid filters
-
-- **A round floating button in the grid's bottom corner** (mouse only for now) opens a small menu of filters: **With tags**, **No tags**, **Missing tags** (only offered when the drive has required roots, Phase 16). Choosing one shows only the files that match; they're mutually exclusive; choosing the active one again turns filtering off. The button shows when a filter is on.
-- Filters apply to the files of the folder shown; folder tiles stay so you can still move around. The filter lasts while the app runs and applies to every folder opened.
+Phases 1–17 are delivered. Their specs are in git history (`PLAN.md` at `fcd5d3b` for 1–11, at `ca048de` for 12, at `76e644f` for 13, at `5ba4a0a` for 14, at `9a27389` for 15, at `213f913` for 16, at `f1a53c2` for 17) and their items in `DONE.md`.
 
 ## Phase 18 — Video chapters
 

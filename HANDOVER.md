@@ -24,6 +24,7 @@ State of the project and how it has been run, for the next session. Read `DESIGN
 | 14 Zoom | done, validated on the Mac (`78f1a39`, 813 tests); Pi run pending |
 | 15 Key cheat sheet | done, validated on the Mac (`83868f5`, 835 tests); Pi run pending |
 | 16 Required tags | done, validated on the Mac (`a6efa62`, 858 tests); Pi run pending |
+| 17 Grid filters | done, validated on the Mac (`0b28e39`, 908 tests); Pi run pending |
 
 Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), `grid.py`, `grid_filter.py` (the grids' shared filter and its button), `viewer.py`, `tag_prompt.py` (the `t` prompt, shared by grid and viewer), `status_bar.py`, `drive_session.py` (library open/create/restore/backup), `drive_config.py` (the drive's `mediatagger_config.json`: required tag roots), `library.py` (SQLite, schema v2), `backup.py`, `state.py` (last folder, geometry, recent searches; `$XDG_CONFIG_HOME`), `search.py` (query matching), `search_bar.py` (the `/` box and its `↑`/`↓` history), `folder.py`, `slideshow.py`, `thumbnails.py` (image/video/folder thumbnails, `ffmpeg`/`ffprobe`), `thumbnail_cache.py`, `thumbnail_scheduler.py` (3 workers + prefetch), `folder_thumbnails.py` (a folder's thumbnails for its grid), `video.py` + `mpv_surface.py` (libmpv render API), `video_controls.py` (video progress bar), `zoom.py` (mouse-wheel zoom for images and mpv), `gui_thread_gc.py`. Tests are co-located (`test_*.py`). Open structural debt is in `BACKLOG.md`.
 
@@ -37,6 +38,12 @@ Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), 
   - send the agent back with a numbered fix list if anything is off.
 - Progress is relayed to the user in chat from a `Monitor` that polls `git log`, `TODO.md` checkbox counts, `~/Library/Logs/DiagnosticReports/Python-*.ips` and `/Volumes/MEDIATAGGER`. Monitors expire every 30 min; re-arm.
 - The user asked for progress to be printed in the conversation and for questions only when a decision is genuinely theirs.
+
+## Phase 17 — done
+
+`grid_filter.GridFilter` (one per Window, not saved) + `FilterButton` (40 px disc, bottom-right of the tile area, mouse only, never focused): With tags / No tags use OWN tags (what the badge counts); Missing tags = files with a ✕ mark, offered only with required roots (or while active). File rows are hidden in place; folder and ❓ tiles stay; applies to folder and results grids; tagging hides a no-longer-matching file at once; cursor skips hidden tiles; Enter starts a slideshow over only the shown files. Orchestrator check: suite twice (908), native: button off/on look, menu with checkmarks, Missing tags and With tags filter and pack tiles, choosing the active one again shows all.
+
+- **Known (BACKLOG):** with `i` on, opening from a filtered grid drops the info overlay until `i` again; prefetch still makes thumbnails for hidden files.
 
 ## Phase 16 — done
 
