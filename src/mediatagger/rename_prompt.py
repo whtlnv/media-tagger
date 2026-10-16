@@ -45,7 +45,6 @@ class RenamePrompt:
         self.label.hide()
 
     def _enter(self):
-        remember_rename(self.input.state_file, self.input.text())
         self._on_enter(self.input.text())
 
     def is_open(self):
@@ -66,6 +65,11 @@ class RenamePrompt:
 
     def place(self):
         place_above_the_status_bar(self._host, self._status_bar, self.input, self.label)
+
+    def close_applied(self):
+        """Closes the prompt once its entry has been applied, remembering the entry for ↑."""
+        remember_rename(self.input.state_file, self.input.text())
+        self.close()
 
     def close(self):
         self.input.hide()

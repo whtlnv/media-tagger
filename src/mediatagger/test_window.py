@@ -693,6 +693,22 @@ def test_up_up_down_in_the_windows_rename_prompt_after_applying_beach_places_bea
     assert recalled == ["family people:family", "beach places:beach", "family people:family"]
 
 
+def test_up_in_the_windows_rename_prompt_after_applying_beach_places_beach_then_entering_a_rename_of_an_unknown_tag_recalls_beach_places_beach(qtbot, tmp_path):
+    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
+    for rename in ("beach places:beach", "nosuch other"):
+        qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
+        [prompt] = visible_tag_prompts(window)
+        qtbot.keyClicks(prompt, rename)
+        qtbot.keyClick(prompt, Qt.Key.Key_Return)
+    qtbot.keyClick(prompt, Qt.Key.Key_Escape)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
+    [prompt] = visible_tag_prompts(window)
+
+    qtbot.keyClick(prompt, Qt.Key.Key_Up)
+
+    assert prompt.text() == "beach places:beach"
+
+
 def test_up_in_the_rename_prompt_of_a_window_opened_after_one_that_applied_beach_places_beach_was_closed_recalls_beach_places_beach(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
