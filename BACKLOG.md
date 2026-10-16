@@ -2,6 +2,9 @@
 
 ## Out of Scope
 
+- **[src/mediatagger/rename_prompt.py:_RecallingInput] The rename input's ↑/↓ recall repeats the search bar's** (added: 2026-10-16)
+  `_RecallingInput.keyPressEvent` re-implements `SearchBar.recall_older_search`/`recall_newer_search` (step back through a remembered list, empty past the newest) over `remembered_renames` instead of `remembered_searches`. Unifying them needs a new shared recall helper that `search_bar.py`, outside the 29bbecd..HEAD range, would adopt; hoist it when the search bar is next touched.
+
 - **[src/mediatagger/chapters.py:Chapters] Chapters reaches into six of the viewer's attributes** (added: 2026-10-15)
   To stay out of `viewer.py` (at its 270-line budget) `Chapters` filters the viewer's keys and uses its `slideshow`, `session`, `status_bar`, `tag_prompt`, `video_player` and `progress_bar` directly, and the viewer calls `chapters.read` from `_show_tag_overlay` so moments are re-read whenever tags are. A narrower seam (the viewer handing Chapters the current item, library and player) would decouple them, but needs room in `viewer.py`.
 
