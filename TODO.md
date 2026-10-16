@@ -25,8 +25,8 @@ Phase 17 notes for every cycle (Phases 1–16 are delivered — see DONE.md; Pha
 - [x] Choosing a second filter replaces the first: only the second one's matches show
 - [x] Choosing the active filter again turns filtering off and every tile shows again
 - [x] Choosing a filter while a grid is shown hides its non-matching files at once
-- [ ] A filter chosen in one folder's grid applies to the next folder opened in the same window
-- [ ] A new window starts with no filter, whatever was chosen in an earlier window
+- [x] A filter chosen in one folder's grid applies to the next folder opened in the same window
+- [x] A new window starts with no filter, whatever was chosen in an earlier window
 - [ ] Under a filter, a search results grid hides result files that don't match
 - [ ] Under any filter, a search results grid keeps showing missing result tiles
 - [ ] Under "With tags", removing a file's last own tag from the grid's tag prompt hides it at once

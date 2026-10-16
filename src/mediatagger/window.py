@@ -7,6 +7,7 @@ from mediatagger.cheat_sheet import GRID_KEYS, LAUNCH_KEYS, VIEWER_KEYS, CheatSh
 from mediatagger.drive_session import DriveSession
 from mediatagger.folder_thumbnails import GENERATING_THUMBNAILS_TEXT, progress_text
 from mediatagger.grid import TILE_ROLE, Grid
+from mediatagger.grid_filter import GridFilter
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
 from mediatagger.search import search
 from mediatagger.search_bar import SearchBar
@@ -58,6 +59,7 @@ class Window(QWidget):
         self.stack.currentChanged.connect(lambda: self.cheat_sheet.update())  # the keys of the screen now shown
         self._forwarding = False
         self._results = None
+        self.grid_filter = GridFilter()  # shared by every grid, for as long as the app runs
         self.setAcceptDrops(True)
         geometry = remembered_geometry(self._state_file)
         if geometry:
@@ -136,7 +138,7 @@ class Window(QWidget):
 
     def _grid_of(self, folder, at=None):
         return Grid(folder, at=at, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache(), cheat_sheet=self.cheat_sheet,
-            required_roots=self.session.required_roots)
+            required_roots=self.session.required_roots, grid_filter=self.grid_filter)
 
     def _show(self, grid):
         grid.activated.connect(self._open_tile)
