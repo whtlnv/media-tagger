@@ -1,5 +1,8 @@
 import pytest
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QPoint, Qt
+from PySide6.QtGui import QColor, QImage
+from PySide6.QtTest import QTest
+from PySide6.QtWidgets import QMenu, QWidget
 
 from mediatagger.grid import Grid
 from mediatagger.grid_filter import MISSING_TAGS, NO_TAGS, WITH_TAGS, FilterButton, GridFilter
@@ -287,3 +290,57 @@ def test_after_the_grid_is_resized_the_filter_button_sits_in_the_new_bottom_righ
     grid.resize(1200, 900)
 
     qtbot.waitUntil(lambda: sits_in_the_bottom_right_corner_of_the_tiles(grid.findChild(FilterButton), grid))
+
+
+def click(widget):
+    QTest.mouseClick(widget, Qt.MouseButton.LeftButton)
+
+
+def test_clicking_the_filter_button_leaves_the_keyboard_focus_on_the_grid_so_arrow_keys_still_move_the_cursor(qtbot, tmp_path):
+    grid = shown_filtered_grid(qtbot, tmp_path, at=tmp_path / "IMG_000.jpg")
+    grid.activateWindow()
+    grid.setFocus()
+    qtbot.waitUntil(grid.hasFocus)
+
+    click(grid.findChild(FilterButton))
+    for menu in grid.findChildren(QMenu):
+        menu.close()
+    QTest.keyClick(grid, Qt.Key.Key_Right)
+
+    assert (grid.hasFocus(), cursor_name(grid)) == (True, "IMG_001.jpg")
+
+
+def backing_over(button, colour):
+    """The colour of the button's backing, beside its glyph, when drawn over a plain colour."""
+    image = QImage(button.size(), QImage.Format.Format_ARGB32)
+    image.fill(QColor(colour))
+    button.render(image, QPoint(0, 0), renderFlags=QWidget.RenderFlag.DrawChildren)  # over the colour, as over tiles
+    return image.pixelColor(button.width() // 5, button.height() // 2)
+
+
+def test_with_no_filter_on_the_filter_button_has_a_translucent_dark_backing(qtbot, tmp_path):
+    button = shown_filtered_grid(qtbot, tmp_path).findChild(FilterButton)
+
+    over_white, over_black = backing_over(button, "white"), backing_over(button, "black")
+
+    assert over_white != over_black
+    assert over_white.lightness() < 200
+
+
+def test_with_a_filter_on_the_filter_button_is_drawn_checked_and_opaque_in_the_highlight_colour(qtbot, tmp_path):
+    grid_filter = GridFilter()
+    button = shown_filtered_grid(qtbot, tmp_path, grid_filter).findChild(FilterButton)
+
+    grid_filter.choose(NO_TAGS)
+
+    highlight = button.palette().highlight().color()
+    assert (button.isChecked(), backing_over(button, "white"), backing_over(button, "black")) == (True, highlight, highlight)
+
+
+def test_with_a_filter_on_the_filter_buttons_tooltip_names_the_active_filter(qtbot, tmp_path):
+    grid_filter = GridFilter()
+    button = shown_filtered_grid(qtbot, tmp_path, grid_filter).findChild(FilterButton)
+
+    grid_filter.choose(MISSING_TAGS)
+
+    assert MISSING_TAGS in button.toolTip()

@@ -44,10 +44,10 @@ Phase 17 notes for every cycle (Phases 1–16 are delivered — see DONE.md; Pha
 - [x] A grid sharing the window's filter shows a round filter button at its bottom-right corner, above the status bar's clear margin and left of the vertical scroll bar
 - [x] A grid given no shared filter shows no filter button
 - [x] After the grid is resized (fullscreen included), the filter button sits at its new bottom-right corner
-- [ ] Clicking the filter button leaves keyboard focus on the grid, so arrow keys still move the cursor
-- [ ] With no filter on, the filter button is drawn with a translucent dark backing
-- [ ] With a filter on, the filter button is drawn checked, opaque, in the highlight colour
-- [ ] With a filter on, the filter button's tooltip names the active filter
+- [x] Clicking the filter button leaves keyboard focus on the grid, so arrow keys still move the cursor
+- [x] With no filter on, the filter button is drawn with a translucent dark backing
+- [x] With a filter on, the filter button is drawn checked, opaque, in the highlight colour
+- [x] With a filter on, the filter button's tooltip names the active filter
 - [ ] Clicking the filter button pops up a menu offering "With tags" and "No tags", the active filter checked
 - [ ] The filter menu offers "Missing tags" when the grid's library has required roots
 - [ ] The filter menu doesn't offer "Missing tags" when the drive has no required roots
