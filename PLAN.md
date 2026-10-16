@@ -4,14 +4,7 @@ Delivery phases, in order. Decisions, key maps and rules live in `DESIGN.md`; ev
 Each phase must end with its behavior reachable from the shipped `mediatagger` command, not only from tests.
 
 
-Phases 1–15 are delivered. Their specs are in git history (`PLAN.md` at `fcd5d3b` for 1–11, at `ca048de` for 12, at `76e644f` for 13, at `5ba4a0a` for 14, at `9a27389` for 15) and their items in `DONE.md`.
-
-## Phase 16 — Required tags
-
-- **A drive can name the tag roots every file should have.** `mediatagger_config.json` at the drive's root (next to the media, where it's obvious which drive it configures) may hold `{"requiredRoots": ["type:", "size:"]}`. The app reads it when it opens the drive; the app never writes it.
-- **Grid tiles mark files missing required tags.** A file is missing a root when none of its effective tags (own and inherited) starts with it. Its tile shows a small `✗` badge with the number of missing roots, styled like the tag-count badge, in the top-right corner to the left of the tag-count badge (the top-right badges read, left to right: missing, tags, moments — Phase 18); a file missing none shows nothing. With no config file, or no `requiredRoots`, no tile is marked.
-- A config file that can't be read or isn't valid JSON doesn't stop the app: the status bar says so and no tile is marked.
-- Tagging an item updates its mark at once.
+Phases 1–16 are delivered. Their specs are in git history (`PLAN.md` at `fcd5d3b` for 1–11, at `ca048de` for 12, at `76e644f` for 13, at `5ba4a0a` for 14, at `9a27389` for 15, at `213f913` for 16) and their items in `DONE.md`.
 
 ## Phase 17 — Grid filters
 

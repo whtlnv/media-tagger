@@ -23,6 +23,7 @@ State of the project and how it has been run, for the next session. Read `DESIGN
 | 13 Video speed, rotation, show controls | done, validated on the Mac (`21e6968`, 789 tests); Pi run pending |
 | 14 Zoom | done, validated on the Mac (`78f1a39`, 813 tests); Pi run pending |
 | 15 Key cheat sheet | done, validated on the Mac (`83868f5`, 835 tests); Pi run pending |
+| 16 Required tags | done, validated on the Mac (`a6efa62`, 858 tests); Pi run pending |
 
 Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), `grid.py`, `viewer.py`, `tag_prompt.py` (the `t` prompt, shared by grid and viewer), `status_bar.py`, `drive_session.py` (library open/create/restore/backup), `drive_config.py` (the drive's `mediatagger_config.json`: required tag roots), `library.py` (SQLite, schema v2), `backup.py`, `state.py` (last folder, geometry, recent searches; `$XDG_CONFIG_HOME`), `search.py` (query matching), `search_bar.py` (the `/` box and its `↑`/`↓` history), `folder.py`, `slideshow.py`, `thumbnails.py` (image/video/folder thumbnails, `ffmpeg`/`ffprobe`), `thumbnail_cache.py`, `thumbnail_scheduler.py` (3 workers + prefetch), `folder_thumbnails.py` (a folder's thumbnails for its grid), `video.py` + `mpv_surface.py` (libmpv render API), `video_controls.py` (video progress bar), `zoom.py` (mouse-wheel zoom for images and mpv), `gui_thread_gc.py`. Tests are co-located (`test_*.py`). Open structural debt is in `BACKLOG.md`.
 
@@ -36,6 +37,12 @@ Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), 
   - send the agent back with a numbered fix list if anything is off.
 - Progress is relayed to the user in chat from a `Monitor` that polls `git log`, `TODO.md` checkbox counts, `~/Library/Logs/DiagnosticReports/Python-*.ips` and `/Volumes/MEDIATAGGER`. Monitors expire every 30 min; re-arm.
 - The user asked for progress to be printed in the conversation and for questions only when a decision is genuinely theirs.
+
+## Phase 16 — done
+
+`drive_config.required_roots(drive)` reads `<drive>/mediatagger_config.json` (`requiredRoots`, read only) whenever the session opens a drive; a bad file shows `mediatagger_config.json can't be read — no tiles marked` in its own status-bar label. File tiles (folder grids and search results, only with a library open) show `✕<n>` left of the tag badge, from bulk reads (`Library.own_tags_in`, `tagged_items`); `Grid.show_new_tags` re-reads counts and marks after every save (also fixed stale counts in results after a results slideshow). Roots match case-sensitively as written. Orchestrator check: suite twice (858), native: badges at 200 px and smallest size, `t` updates ✕2→✕1 at once, broken config message, drive gains no files.
+
+- **Pi to check:** 5,000-file folder open time with roots; tag-save time in a big folder (BACKLOG: whole-grid re-read per save).
 
 ## Phase 15 — done
 
