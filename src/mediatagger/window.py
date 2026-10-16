@@ -287,7 +287,7 @@ class Window(QWidget):
         if old == new:
             self.status_bar.show_background(RENAME_TO_SAME_TAG_TEXT, finished=True)
             return
-        if old.startswith("-"):
+        if old.startswith("-") or new.startswith("-"):
             self.status_bar.show_background(RENAME_LEADING_DASH_TEXT, finished=True)
             return
         renamed = self.session.library.rename_tag(old, new)
