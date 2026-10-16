@@ -12,7 +12,7 @@
 - [x] A video's chapter moment of the old tag becomes a moment of the new tag after the rename, at the same time
 - [x] A moment of the old tag within 1 s of a moment of the new tag on the same video becomes one moment after the rename
 - [x] A moment of the old tag more than 1 s from a moment of the new tag on the same video stays a separate moment after the rename
-- [ ] When a rename fails partway through writing, no item's tags or moments have changed
+- [x] When a rename fails partway through writing, no item's tags or moments have changed
 - [ ] Pressing `n` in a folder grid opens a one-line prompt labelled `Rename tag:` in the tag prompt's style
 - [ ] Pressing `n` in search results opens the `Rename tag:` prompt
 - [ ] Pressing `n` in the viewer opens no rename prompt

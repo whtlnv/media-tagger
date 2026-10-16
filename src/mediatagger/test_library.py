@@ -1041,3 +1041,26 @@ def test_renaming_beach_into_places_beach_keeps_the_videos_beach_moment_at_13_1_
     library.rename_tag("beach", "places:beach")
 
     assert library.moments(video) == [Moment(12.0, ["places:beach"]), Moment(13.1, ["places:beach"])]
+
+
+def test_renaming_beach_into_places_beach_that_fails_at_its_last_write_leaves_every_items_tags_and_moments_as_they_were(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "sunset.jpg"
+    photo.touch()
+    library.enter(photo, "beach")
+    video = tmp_path / "trip.mp4"
+    video.touch()
+    library.add_chapter(video, "places:beach", 12.0)
+    library.add_chapter(video, "beach", 12.5)
+    library.add_chapter(video, "beach", 20.0)
+    connection = sqlite3.connect(_tags_db(tmp_path))
+    with connection:  # moving the old tag's moments is the rename's last step: make it fail there
+        connection.execute("CREATE TRIGGER fail_rename BEFORE UPDATE ON moments BEGIN SELECT RAISE(ABORT, 'disk gone'); END")
+    connection.close()
+
+    with pytest.raises(sqlite3.DatabaseError, match="disk gone"):
+        library.rename_tag("beach", "places:beach")
+
+    assert library.tags(photo) == ["beach"]
+    assert library.tags(video) == ["beach", "places:beach"]
+    assert library.moments(video) == [Moment(12.0, ["places:beach"]), Moment(12.5, ["beach"]), Moment(20.0, ["beach"])]

@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-16 03:22 · `src/mediatagger/test_library.py::test_renaming_beach_into_places_beach_that_fails_at_its_last_write_leaves_every_items_tags_and_moments_as_they_were`
+- Behavior: When a rename fails partway through writing, no item's tags or moments have changed
+- Predicted: passes — `rename_tag` already does all its writes inside one `with connection` transaction, which rolls back when the trigger aborts the final `UPDATE moments`
+- Actual: passes (1 passed)
+- Type: passed unexpectedly (relative to the TODO plan, which expected a separate cycle; predicted by /red)
+- Resolution: The test isn't vacuous: adding a temporary `connection.commit()` after the `item_tags` writes made it fail (`['places:beach'] == ['beach']` on the photo). I reverted that mutation and kept the test as a characterization pin; the item needs no /green.
+
 ## 2026-10-16 03:10 · `src/mediatagger/test_library.py::test_renaming_beach_into_places_beach_keeps_the_videos_beach_moment_at_13_1_s_apart_from_its_places_beach_moment_at_12_s`
 - Behavior: A moment of the old tag more than 1 s from a moment of the new tag on the same video stays a separate moment after the rename
 - Predicted: passes — the previous cycle's merge `DELETE` only removes old moments with `abs(tenths - old.tenths) <= 10`, and the following `UPDATE` moves the rest to the new tag
