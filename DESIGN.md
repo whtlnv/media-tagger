@@ -79,7 +79,7 @@ Rules:
 2. An item matches if its **effective** tags satisfy the query.
 3. **Collapse:** if a matching item has a matching ancestor directory, show only the top-most matching directory.
 4. Opening a directory from results shows that folder normally (all contents, unfiltered).
-5. `Enter` on a file in results starts a slideshow **over the result list**, starting at that file.
+5. `Enter` on a file in results starts a slideshow **over the result list** (with a filter on, only the files it shows), starting at that file.
 
 Results show under a `Search: <query>` breadcrumb; a result whose path no longer exists is drawn as a missing tile (❓ and its name).
 
@@ -92,7 +92,7 @@ Results show under a `Search: <query>` breadcrumb; a result whose path no longer
 - Ignore hidden files and macOS litter on exFAT (`._*` AppleDouble files, `.DS_Store`, `.Spotlight-V100`, `.fseventsd`, `.Trashes`).
 - Order: natural filename sort ignoring letter case (`IMG_2` before `IMG_10`, `img_3` between them), folders first in the grid.
 - Images honour their EXIF orientation (sideways phone photos display upright).
-- Slideshow covers the current folder only (non-recursive).
+- Slideshow covers the current folder only (non-recursive); with a grid filter on, only the files it shows.
 
 ## Screens and keys
 
@@ -165,6 +165,7 @@ Results show under a `Search: <query>` breadcrumb; a result whose path no longer
 - Video tiles: frame at ~10%, ▶ badge, duration.
 - Folder tiles: first image directly inside (natural order); none there, no thumbnail.
 - Selected item's own tags shown in the status bar, followed by its inherited tags dimmed.
+- Filter (mouse only): a round button with a funnel in the bottom-right corner of the tiles pops up a menu — **With tags** (own tags), **No tags** (no own tags), and **Missing tags** (files with a `✗` mark; offered only when the drive has required roots and a library is open, or while it is on). One filter at a time, for every folder grid and search results, until the app quits; choosing the active one again turns it off. While one is on the button is in the highlight colour and its tooltip names it. Non-matching files are hidden at once (also when tagging makes a file stop matching); folder tiles and missing results always stay. A hidden tile never holds the cursor: it moves to the next shown tile, else the nearest before it.
 
 ### Status bar (always visible)
 
