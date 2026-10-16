@@ -69,3 +69,8 @@ Append-only record of tests removed because a delivered change retired the behav
 - Asserted: a new library's `meta.schema_version` is `2`.
 - Retired by: Phase 18 item "A newly created library records schema version 3 in its `tags.db`" (chapters need a new table).
 - Confirmed: failed with `AssertionError: '3' == '2'` once new libraries record 3; replaced in place by the schema-3 test.
+
+## 2026-10-15 · migrated · `src/mediatagger/test_library.py` — the schema 1 → 2 upgrade tests
+- `test_opening_a_schema_version_1_library_upgrades_its_tags_db_in_place_to_schema_version_2` and `test_a_schema_version_1_library_reports_schema_version_2_once_it_has_been_opened` asserted a schema-1 library opens at version 2.
+- Retired by: Phase 18 item "Opening a schema-version-1 library upgrades it in place to schema version 3, its drive id unchanged" — a library is now upgraded straight to the current version.
+- Confirmed: both failed with `'3' == '2'` / `3 == 2` once the upgrade went to 3; migrated in place to expect 3 (setups unchanged).

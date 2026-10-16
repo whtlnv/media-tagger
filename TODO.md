@@ -7,8 +7,8 @@ Layout (keep cycles consistent): moments are stored in `library.py` (a `moments`
 
 - [x] A newly created library records schema version 3 in its `tags.db`
   - predicted-contradiction: `src/mediatagger/test_library.py::test_a_newly_created_library_records_schema_version_2_in_its_tags_db` — asserts: a newly created library's meta records schema_version "2" — retired-by: "A newly created library records schema version 3 in its `tags.db`"
-- [ ] Opening a schema-version-2 library upgrades it in place to schema version 3, its drive id and its files' tags unchanged
-- [ ] Opening a schema-version-1 library upgrades it in place to schema version 3, its drive id unchanged
+- [x] Opening a schema-version-2 library upgrades it in place to schema version 3, its drive id and its files' tags unchanged
+- [x] Opening a schema-version-1 library upgrades it in place to schema version 3, its drive id unchanged
   - predicted-contradiction: `src/mediatagger/test_library.py::test_opening_a_schema_version_1_library_upgrades_its_tags_db_in_place_to_schema_version_2` — asserts: opening a v1 library leaves its meta schema_version at "2" — retired-by: "upgrades it in place to schema version 3"
   - predicted-contradiction: `src/mediatagger/test_library.py::test_a_schema_version_1_library_reports_schema_version_2_once_it_has_been_opened` — asserts: an opened v1 library reports schema_version == 2 — retired-by: "upgrades it in place to schema version 3"
 - [ ] Opening a schema-version-2 library on a read-only drive does not fail: nothing is written, its files still report their tags, and its videos report no moments

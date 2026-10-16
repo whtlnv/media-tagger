@@ -25,9 +25,24 @@ def _init_tags_db(tags_db, **meta):
     connection.close()
 
 
-def _migrate_to_schema_version_2(connection):
-    connection.executescript(CREATE_TAGS_TABLES)
-    connection.execute("UPDATE meta SET value = '2' WHERE key = 'schema_version' AND value = '1'")
+_UPGRADES = {  # what brings a tags.db from the schema version before to the one named: only ever adding, never dropping
+    2: [statement for statement in CREATE_TAGS_TABLES.split(";") if statement.strip()],
+    3: [],
+}
+
+
+def _upgrade(connection, to_version):
+    """Brings a tags.db of a known older schema version up to to_version in one transaction: all of it, or none of it.
+    One of an unknown version is left as it is."""
+    (recorded,) = connection.execute("SELECT value FROM meta WHERE key = 'schema_version'").fetchone()
+    if recorded not in {str(version - 1) for version in _UPGRADES}:
+        return
+    connection.execute("BEGIN IMMEDIATE")  # DDL and executescript would otherwise run outside any transaction
+    with connection:  # commits, or rolls everything back on any error
+        for version in range(int(recorded) + 1, to_version + 1):
+            for statement in _UPGRADES[version]:
+                connection.execute(statement)
+        connection.execute("UPDATE meta SET value = ? WHERE key = 'schema_version'", (str(to_version),))
 
 
 def _ensure_item_id(connection, rel_path, kind):
@@ -82,8 +97,7 @@ class Library:
         connection = sqlite3.connect(tags_db)
         try:
             connection.execute("PRAGMA journal_mode = DELETE")
-            with connection:
-                _migrate_to_schema_version_2(connection)
+            _upgrade(connection, cls.schema_version)
         except sqlite3.OperationalError as error:
             if "locked" in str(error):
                 raise

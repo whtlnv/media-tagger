@@ -49,6 +49,44 @@ def _create_schema_version_1_library(root, drive_id):
     connection.close()
 
 
+SCHEMA_VERSION_2_TABLES = """
+CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY, rel_path TEXT UNIQUE, kind TEXT DEFAULT 'file');
+CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY, name TEXT UNIQUE);
+CREATE TABLE IF NOT EXISTS item_tags (item_id INTEGER, tag_id INTEGER);
+"""  # as the code of schema version 2 made them
+
+
+def _create_schema_version_2_library(root, drive_id, tagged):
+    """A tags.db as schema version 2 left it, its items tagged as given ({rel_path: (kind, [tags])})."""
+    (root / ".mediatagger").mkdir()
+    connection = sqlite3.connect(_tags_db(root))
+    with connection:
+        connection.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
+        connection.executemany("INSERT INTO meta (key, value) VALUES (?, ?)", [("drive_id", drive_id), ("schema_version", "2")])
+        connection.executescript(SCHEMA_VERSION_2_TABLES)
+    with connection:
+        for rel_path, (kind, tags) in tagged.items():
+            (item_id,) = connection.execute("INSERT INTO items (rel_path, kind) VALUES (?, ?) RETURNING id", (rel_path, kind)).fetchone()
+            connection.executemany("INSERT OR IGNORE INTO tags (name) VALUES (?)", [(tag,) for tag in tags])
+            connection.executemany(
+                "INSERT INTO item_tags (item_id, tag_id) SELECT ?, id FROM tags WHERE name = ?", [(item_id, tag) for tag in tags]
+            )
+    connection.close()
+
+
+TAGGED_ON_A_SCHEMA_VERSION_2_DRIVE = {
+    "Trip": ("dir", ["place:mexico", "trip"]),
+    "Trip/beach.jpg": ("file", ["beach", "family", "people:ana"]),
+    "Trip/goal.mp4": ("file", ["goal", "sports"]),
+    "notes.mov": ("file", ["family"]),
+}
+
+
+def _tag_rows(root):
+    """Every row of the tag tables, as stored."""
+    return [_query(root, f"SELECT * FROM {table} ORDER BY rowid") for table in ("items", "tags", "item_tags")]
+
+
 def test_a_newly_created_library_reports_the_same_drive_id_after_it_is_closed_and_opened_again(tmp_path):
     created = Library.create(tmp_path)
     drive_id = created.drive_id
@@ -244,7 +282,7 @@ def test_tags_db_of_a_newly_created_library_records_each_file_and_tag_once_and_l
     assert library.tags(photo) == ["beach", "family"]
 
 
-def test_opening_a_schema_version_1_library_upgrades_its_tags_db_in_place_to_schema_version_2(tmp_path):
+def test_opening_a_schema_version_1_library_upgrades_its_tags_db_in_place_to_schema_version_3_its_drive_id_unchanged(tmp_path):
     _create_schema_version_1_library(tmp_path, "phase-3-drive")
 
     Library.open(tmp_path)
@@ -252,9 +290,22 @@ def test_opening_a_schema_version_1_library_upgrades_its_tags_db_in_place_to_sch
     meta = _read_meta(tmp_path)
     tables = {name for (name,) in _query(tmp_path, "SELECT name FROM sqlite_master WHERE type = 'table'")}
 
-    assert meta["schema_version"] == "2"
+    assert meta["schema_version"] == "3"
     assert meta["drive_id"] == "phase-3-drive"
     assert {"items", "tags", "item_tags"} <= tables
+
+
+def test_opening_a_schema_version_2_library_upgrades_it_in_place_to_schema_version_3_its_drive_id_and_every_tag_unchanged(tmp_path):
+    _create_schema_version_2_library(tmp_path, "phase-17-drive", TAGGED_ON_A_SCHEMA_VERSION_2_DRIVE)
+    rows_before = _tag_rows(tmp_path)
+
+    library = Library.open(tmp_path)
+
+    assert _read_meta(tmp_path) == {"drive_id": "phase-17-drive", "schema_version": "3"}
+    assert library.schema_version == 3
+    assert _tag_rows(tmp_path) == rows_before
+    for rel_path, (_kind, tags) in TAGGED_ON_A_SCHEMA_VERSION_2_DRIVE.items():
+        assert library.tags(tmp_path / rel_path) == sorted(tags)
 
 
 def test_a_newly_created_library_records_schema_version_3_in_its_tags_db(tmp_path):
@@ -265,12 +316,12 @@ def test_a_newly_created_library_records_schema_version_3_in_its_tags_db(tmp_pat
     assert meta["schema_version"] == "3"
 
 
-def test_a_schema_version_1_library_reports_schema_version_2_once_it_has_been_opened(tmp_path):
+def test_a_schema_version_1_library_reports_schema_version_3_once_it_has_been_opened(tmp_path):
     _create_schema_version_1_library(tmp_path, "phase-3-drive")
 
     opened = Library.open(tmp_path)
 
-    assert opened.schema_version == 2
+    assert opened.schema_version == 3
 
 
 def test_opening_a_schema_version_1_library_on_a_read_only_drive_writes_nothing_and_its_files_report_no_tags(tmp_path):
