@@ -57,14 +57,14 @@ Layout (keep cycles consistent): moments are stored in `library.py` (a `moments`
 - [x] A moment from an hour on is listed as `h:mm:ss` (`1:02:03 goal`)
 - [x] Pressing `l` while the chapter list is shown hides it
 - [x] Pressing `l` on a shown image shows no chapter list
-- [ ] When the chapter list opens, its first line is highlighted
-- [ ] `↓` in the chapter list highlights the next line
-- [ ] `↑` in the chapter list highlights the previous line
-- [ ] `↑` or `↓` while the chapter list is shown leaves the playback position unchanged
-- [ ] The video keeps playing while the chapter list is shown
-- [ ] `Enter` in the chapter list seeks to the highlighted moment and hides the list
-- [ ] `Enter` in the chapter list does not pause the video
-- [ ] `Esc` in the chapter list hides it and leaves the viewer showing the video, not the grid
+- [x] When the chapter list opens, its first line is highlighted
+- [x] `↓` in the chapter list highlights the next line
+- [x] `↑` in the chapter list highlights the previous line
+- [x] `↑` or `↓` while the chapter list is shown leaves the playback position unchanged
+- [x] The video keeps playing while the chapter list is shown
+- [x] `Enter` in the chapter list seeks to the highlighted moment and hides the list
+- [x] `Enter` in the chapter list does not pause the video
+- [x] `Esc` in the chapter list hides it and leaves the viewer showing the video, not the grid
 - [ ] `Backspace` in the chapter list deletes the highlighted moment: its line leaves the list and its tick leaves the progress bar, its tags stay on the video
 - [ ] `Backspace` in the chapter list where tags can't be saved (read-only drive) keeps the moment and briefly shows `Tags can't be saved here`
 - [ ] Moving to another item (`Space`, `←`, `→`) while the chapter list is shown hides it

@@ -15,6 +15,8 @@ def _previous(moments, now):
     return next((moment for moment in reversed(moments) if moment.seconds < now - _REPLAYING), None)
 
 _JUMPS = {Qt.Key.Key_Period: _next, Qt.Key.Key_Comma: _previous}
+_LIST_STEPS = {Qt.Key.Key_Down: 1, Qt.Key.Key_Up: -1}
+_LIST_KEYS = {*_LIST_STEPS, Qt.Key.Key_Return, Qt.Key.Key_Escape}
 
 
 class Chapters(QObject):
@@ -40,6 +42,9 @@ class Chapters(QObject):
         if event.key() == Qt.Key.Key_C:
             self._open_prompt()
             return True
+        if self.list.isVisible() and event.key() in _LIST_KEYS:
+            self._in_list(event.key())
+            return True
         if event.key() == Qt.Key.Key_L:
             if self.list.isVisible():
                 self.list.hide()
@@ -50,6 +55,16 @@ class Chapters(QObject):
             self._jump(_JUMPS[event.key()])
             return True
         return False
+
+    def _in_list(self, key):
+        """While the chapter list is shown: ↑/↓ move its highlight, Enter jumps to that moment, Esc closes it."""
+        if key in _LIST_STEPS:
+            self.list.step(_LIST_STEPS[key])
+            return
+        self.list.hide()
+        row = self.list.currentRow()
+        if key == Qt.Key.Key_Return and row >= 0:
+            self._jump(lambda moments, now: moments[row])
 
     def _jump(self, choose):
         """Seeks to the moment choose picks from the moments and the playback time; with none, stays put."""

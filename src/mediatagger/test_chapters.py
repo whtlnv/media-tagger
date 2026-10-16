@@ -291,3 +291,94 @@ def test_pressing_l_on_a_shown_image_shows_no_chapter_list(qtbot, tmp_path):
     qtbot.keyClick(viewer, Qt.Key.Key_L)
 
     assert shown_chapter_lines(viewer) is None
+
+
+def highlighted_chapter_line(viewer):
+    chapter_list = viewer.findChild(ChapterList)
+    item = chapter_list.currentItem()
+    return item.text() if item is not None and item.isSelected() else None
+
+
+THREE_CHAPTERS = [("kickoff", 5), ("goal", 20), ("save", 40)]
+
+
+def test_when_the_chapter_list_opens_its_first_line_is_highlighted(qtbot, tmp_path):
+    viewer = viewer_playing_a_clip_with_chapters(qtbot, tmp_path, THREE_CHAPTERS)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_L)
+
+    assert highlighted_chapter_line(viewer) == "0:05 kickoff"
+
+
+def test_down_in_the_chapter_list_highlights_the_next_line(qtbot, tmp_path):
+    viewer = viewer_playing_a_clip_with_chapters(qtbot, tmp_path, THREE_CHAPTERS)
+    qtbot.keyClick(viewer, Qt.Key.Key_L)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Down)
+
+    assert highlighted_chapter_line(viewer) == "0:20 goal"
+
+
+def test_up_in_the_chapter_list_highlights_the_previous_line(qtbot, tmp_path):
+    viewer = viewer_playing_a_clip_with_chapters(qtbot, tmp_path, THREE_CHAPTERS)
+    qtbot.keyClick(viewer, Qt.Key.Key_L)
+    qtbot.keyClick(viewer, Qt.Key.Key_Down)
+    qtbot.keyClick(viewer, Qt.Key.Key_Down)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Up)
+
+    assert highlighted_chapter_line(viewer) == "0:20 goal"
+
+
+@pytest.mark.parametrize("key", [Qt.Key.Key_Up, Qt.Key.Key_Down])
+def test_up_or_down_while_the_chapter_list_is_shown_leaves_the_playback_position_unchanged(qtbot, tmp_path, key):
+    viewer = viewer_paused_at(qtbot, tmp_path, 30, moments=[5, 20, 40])
+    qtbot.keyClick(viewer, Qt.Key.Key_L)
+
+    qtbot.keyClick(viewer, key)
+
+    assert viewer.video_player.engine.time_pos == pytest.approx(30, abs=0.3)
+
+
+def test_the_video_keeps_playing_while_the_chapter_list_is_shown(qtbot, tmp_path):
+    viewer = viewer_playing_a_clip_with_chapters(qtbot, tmp_path, THREE_CHAPTERS)
+    engine = viewer.video_player.engine
+    qtbot.keyClick(viewer, Qt.Key.Key_L)
+    shown_at = engine.time_pos
+
+    engine.wait_for_property("time-pos", lambda pos: pos is not None and pos > shown_at + 0.5, timeout=5)
+
+    assert shown_chapter_lines(viewer) is not None
+    assert engine.pause is False
+
+
+def test_enter_in_the_chapter_list_seeks_to_the_highlighted_moment_and_hides_the_list(qtbot, tmp_path):
+    viewer = viewer_paused_at(qtbot, tmp_path, 30, moments=[5, 20, 40])
+    qtbot.keyClick(viewer, Qt.Key.Key_L)
+    qtbot.keyClick(viewer, Qt.Key.Key_Down)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Return)
+
+    assert viewer.video_player.engine.time_pos == pytest.approx(20, abs=0.2)
+    assert shown_chapter_lines(viewer) is None
+
+
+def test_enter_in_the_chapter_list_does_not_pause_the_video(qtbot, tmp_path):
+    viewer = viewer_playing_a_clip_with_chapters(qtbot, tmp_path, THREE_CHAPTERS)
+    qtbot.keyClick(viewer, Qt.Key.Key_L)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Return)
+
+    assert viewer.video_player.engine.pause is False
+
+
+def test_esc_in_the_chapter_list_hides_it_and_leaves_the_viewer_showing_the_video(qtbot, tmp_path):
+    left = []
+    viewer = viewer_playing_a_clip_with_chapters(qtbot, tmp_path, THREE_CHAPTERS)
+    viewer.on_escape = lambda: left.append(True)
+    qtbot.keyClick(viewer, Qt.Key.Key_L)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Escape)
+
+    assert shown_chapter_lines(viewer) is None
+    assert left == []

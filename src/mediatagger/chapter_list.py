@@ -5,7 +5,8 @@ from mediatagger.video_controls import clock
 
 _STYLE = (
     "QListWidget { color: white; background-color: rgba(0, 0, 0, 170); border: none; border-radius: 6px; font-size: 18px; padding: 8px; }"
-    " QListWidget::item { padding: 4px 12px; }"
+    " QListWidget::item { padding: 4px 12px; border-radius: 4px; }"
+    " QListWidget::item:selected { color: black; background-color: rgb(255, 210, 0); }"  # the highlight, in the ticks' colour
 )
 NO_CHAPTERS_TEXT = "No chapters"
 
@@ -24,7 +25,7 @@ class ChapterList(QListWidget):
         self.setStyleSheet(_STYLE)
         self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
-        self.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         parent.installEventFilter(self)  # to stay centred as it resizes
         self.hide()
@@ -32,9 +33,16 @@ class ChapterList(QListWidget):
     def show_moments(self, moments):
         self.clear()
         self.addItems([moment_line(moment) for moment in moments] or [NO_CHAPTERS_TEXT])
+        if moments:
+            self.setCurrentRow(0)
         self._place()
         self.show()
         self.raise_()  # over the video surface
+
+    def step(self, rows):
+        """Moves the highlight by rows, stopping at the first and last lines."""
+        if self.currentRow() >= 0:
+            self.setCurrentRow(min(max(self.currentRow() + rows, 0), self.count() - 1))
 
     def eventFilter(self, watched, event):
         if watched is self.parent() and event.type() == QEvent.Type.Resize and self.isVisible():
