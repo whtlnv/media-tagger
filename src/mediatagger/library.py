@@ -100,6 +100,7 @@ def _merge_tag(connection, old_id, new_id):
         (old_id, new_id),
     )
     connection.execute("UPDATE moments SET tag_id = ? WHERE tag_id = ?", (new_id, old_id))
+    connection.execute("DELETE FROM tags WHERE id = ?", (old_id,))  # no item has it now
 
 
 def _parse_entry(text):

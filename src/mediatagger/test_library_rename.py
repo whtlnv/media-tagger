@@ -94,6 +94,23 @@ def test_renaming_beach_into_places_beach_that_a_pier_already_has_replaces_beach
     assert changed == 2
 
 
+def test_renaming_beach_into_places_beach_that_a_pier_already_has_leaves_no_beach_row_in_the_tags_table(tmp_path):
+    library = Library.create(tmp_path)
+    shore = tmp_path / "shore.jpg"
+    shore.touch()
+    pier = tmp_path / "pier.jpg"
+    pier.touch()
+    library.enter(shore, "beach")
+    library.enter(pier, "places:beach")
+
+    library.rename_tag("beach", "places:beach")
+
+    connection = sqlite3.connect(tags_db_path(tmp_path))
+    names = [name for (name,) in connection.execute("SELECT name FROM tags")]
+    connection.close()
+    assert names == ["places:beach"]
+
+
 def test_renaming_beach_into_places_beach_that_a_pier_already_has_moves_the_videos_beach_moment_at_12_5_s_to_places_beach(tmp_path):
     library = Library.create(tmp_path)
     video = tmp_path / "trip.mp4"
