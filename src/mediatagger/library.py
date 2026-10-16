@@ -198,6 +198,10 @@ class Library:
         """Every item tagged old is tagged new instead."""
         connection = sqlite3.connect(self._tags_db)
         with connection:
+            (changed,) = connection.execute(
+                "SELECT COUNT(*) FROM item_tags JOIN tags ON tags.id = item_tags.tag_id WHERE tags.name = ?",
+                (old,),
+            ).fetchone()
             existing = connection.execute("SELECT id FROM tags WHERE name = ?", (new,)).fetchone()
             if existing is None:
                 connection.execute("UPDATE tags SET name = ? WHERE name = ?", (new, old))
@@ -209,7 +213,7 @@ class Library:
                     (old_id, existing[0]),
                 )
         connection.close()
-        return 2
+        return changed
 
     def moments(self, video):
         """The video's moments in time order."""

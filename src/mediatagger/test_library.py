@@ -973,3 +973,15 @@ def test_renaming_beach_to_places_beach_reports_the_two_items_tagged_beach(tmp_p
     library.enter(pier, "beachy")
 
     assert library.rename_tag("beach", "places:beach") == 2
+
+
+def test_renaming_beach_when_no_item_is_tagged_beach_changes_nothing_and_reports_zero_items(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "dusk.jpg"
+    photo.touch()
+    library.enter(photo, "sunset")
+
+    changed = library.rename_tag("beach", "places:beach")
+
+    assert library.tags(photo) == ["sunset"]
+    assert changed == 0
