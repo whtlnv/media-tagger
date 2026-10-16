@@ -16,6 +16,7 @@ def _next(moments, now):
 def _previous(moments, now):
     return next((moment for moment in reversed(moments) if moment.seconds < now - _REPLAYING), None)
 
+
 _JUMPS = {Qt.Key.Key_Period: _next, Qt.Key.Key_Comma: _previous}
 _MOVES = {Qt.Key.Key_Space, Qt.Key.Key_Left, Qt.Key.Key_Right}  # the viewer's keys to another item
 _LIST_STEPS = {Qt.Key.Key_Down: 1, Qt.Key.Key_Up: -1}
@@ -109,7 +110,7 @@ class Chapters(QObject):
         if not viewer.session.tags_can_be_saved():
             viewer.status_bar.flash_cant_save()
             return
-        library, at = viewer.session.library, viewer.video_player.engine.time_pos
+        library, at = viewer.session.library, viewer.video_player.engine.time_pos or 0  # none while it can't play
         viewer.tag_prompt.open(library, viewer.slideshow.current, enter=lambda video, text: library.add_chapter(video, text, at))
 
     def _moments(self):

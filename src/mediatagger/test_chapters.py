@@ -10,7 +10,7 @@ from mediatagger.test_video import make_clip, wait_until_playing
 from mediatagger.test_video_controls import is_tick_coloured
 from mediatagger.test_viewer import make_surface_ready, shown_texts
 from mediatagger.test_viewer_library import (
-    drive_with_a_tag_library_holding_one_clip, drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, made_read_only, shown_viewer_on_drive, status_bar_texts,
+    drive_with_a_tag_library_holding_one_clip, drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, made_read_only, make_tag_library_drive, shown_viewer_on_drive, status_bar_texts,
     visible_tag_prompt_texts,
 )
 from mediatagger.test_window_cheat_sheet import sheet_is_shown, window_on_the_drive
@@ -491,3 +491,16 @@ def test_keys_the_tag_prompt_passes_on_never_reach_the_chapter_list_open_behind_
 
     assert highlighted_chapter_line(viewer) == "0:05 kickoff"
     assert len(shown_chapter_lines(viewer)) == 3
+
+
+def test_a_chapter_added_with_c_on_a_video_that_cannot_play_is_recorded_at_its_start(qtbot, tmp_path):
+    drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
+    (drive / "Clips").mkdir()
+    clip = drive / "Clips" / "IMG_1.mp4"
+    clip.write_bytes(b"not really an mp4")
+    viewer = shown_viewer_on_drive(qtbot, drive / "Clips", drive, lambda question: False)
+    make_surface_ready(viewer)
+
+    enter_in_tag_prompt(qtbot, viewer, "goal", key=Qt.Key.Key_C)
+
+    assert [moment.seconds for moment in Library.open(drive).moments(clip)] == [0]

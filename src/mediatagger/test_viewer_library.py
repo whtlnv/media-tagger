@@ -99,8 +99,8 @@ def visible_tag_prompt_texts(viewer):
     return [prompt.text() for prompt in visible_tag_prompts(viewer)]
 
 
-def enter_in_tag_prompt(qtbot, viewer, text):
-    qtbot.keyClick(viewer, Qt.Key.Key_T)
+def enter_in_tag_prompt(qtbot, viewer, text, key=Qt.Key.Key_T):
+    qtbot.keyClick(viewer, key)
     [prompt] = visible_tag_prompts(viewer)
     qtbot.keyClicks(prompt, text)
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
