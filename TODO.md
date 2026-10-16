@@ -79,3 +79,4 @@ Layout (keep cycles consistent): moments are stored in `library.py` (a `moments`
 - [x] In the shipped `mediatagger` app on a drive with a library, pressing `c` on a video, typing `goal` and `Enter` records a moment in the drive's `tags.db`, and a second run of the command shows it in `l`'s chapter list (the test's driver script treats a temp folder as the mount point)
 - [x] Keys the open tag prompt passes on (`↓`, `Backspace` on an empty prompt) never reach the chapter list behind it
 - [x] A chapter added with `c` on a video that can't play is recorded at its start
+- [x] A tag added back after a build from before chapters removed it does not bring back its old moments

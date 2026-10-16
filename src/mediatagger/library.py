@@ -63,16 +63,21 @@ def _ensure_item_id(connection, rel_path, kind):
     return item_id
 
 
+def _drop_moments_of_tags_it_lacks(connection, item_id):
+    connection.execute(
+        "DELETE FROM moments WHERE item_id = ? AND tag_id NOT IN (SELECT tag_id FROM item_tags WHERE item_id = ?)", (item_id, item_id)
+    )
+
+
 def _set_item_tags(connection, item_id, tags):
+    _drop_moments_of_tags_it_lacks(connection, item_id)  # any a build from before chapters left, so a tag added back can't revive them
     connection.execute("DELETE FROM item_tags WHERE item_id = ?", (item_id,))
     connection.executemany("INSERT OR IGNORE INTO tags (name) VALUES (?)", [(tag,) for tag in tags])
     connection.executemany(
         "INSERT INTO item_tags (item_id, tag_id) SELECT ?, id FROM tags WHERE name = ?",
         [(item_id, tag) for tag in tags],
     )
-    connection.execute(  # a tag the item no longer has takes its moments with it
-        "DELETE FROM moments WHERE item_id = ? AND tag_id NOT IN (SELECT tag_id FROM item_tags WHERE item_id = ?)", (item_id, item_id)
-    )
+    _drop_moments_of_tags_it_lacks(connection, item_id)  # a tag the item no longer has takes its moments with it
     connection.execute("DELETE FROM tags WHERE id NOT IN (SELECT tag_id FROM item_tags)")
 
 

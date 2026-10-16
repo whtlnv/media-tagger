@@ -900,3 +900,17 @@ def test_a_moment_left_behind_for_a_tag_the_video_no_longer_has_is_not_reported(
     connection.close()
 
     assert library.moments(video) == [Moment(10, ["goal"])]
+
+
+def test_a_tag_added_back_after_a_build_from_before_chapters_removed_it_does_not_bring_back_its_old_moments(tmp_path):
+    library, video = _library_with_video(tmp_path)
+    library.add_chapter(video, "goal", 10)
+    library.add_chapter(video, "save", 60)
+    connection = sqlite3.connect(_tags_db(tmp_path))
+    with connection:  # as a build from before chapters would remove a tag: its moments stay behind
+        connection.execute("DELETE FROM item_tags WHERE tag_id = (SELECT id FROM tags WHERE name = 'save')")
+    connection.close()
+
+    library.enter(video, "save")
+
+    assert library.moments(video) == [Moment(10, ["goal"])]
