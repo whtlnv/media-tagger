@@ -62,6 +62,9 @@ def _set_item_tags(connection, item_id, tags):
         "INSERT INTO item_tags (item_id, tag_id) SELECT ?, id FROM tags WHERE name = ?",
         [(item_id, tag) for tag in tags],
     )
+    connection.execute(  # a tag the item no longer has takes its moments with it
+        "DELETE FROM moments WHERE item_id = ? AND tag_id NOT IN (SELECT tag_id FROM item_tags WHERE item_id = ?)", (item_id, item_id)
+    )
     connection.execute("DELETE FROM tags WHERE id NOT IN (SELECT tag_id FROM item_tags)")
 
 
@@ -156,9 +159,21 @@ class Library:
         with connection:
             item_id = _ensure_item_id(connection, self._key(video), "file")
             _set_item_tags(connection, item_id, tags)
-            connection.executemany(
-                "INSERT INTO moments (item_id, tag_id, tenths) SELECT ?, id, ? FROM tags WHERE name = ?",
-                [(item_id, round(seconds * 10), tag) for tag in added],
+            tenths = round(seconds * 10)
+            connection.executemany(  # no second moment of a tag within a second of one it has
+                "INSERT INTO moments (item_id, tag_id, tenths) SELECT ?, id, ? FROM tags WHERE name = ?"
+                " AND NOT EXISTS (SELECT 1 FROM moments WHERE item_id = ? AND tag_id = tags.id AND abs(tenths - ?) <= 10)",
+                [(item_id, tenths, tag, item_id, tenths) for tag in added],
+            )
+        connection.close()
+
+    def delete_moment(self, video, seconds):
+        """The video's moment at seconds goes; its tags stay on the video."""
+        connection = sqlite3.connect(self._tags_db)
+        with connection:
+            connection.execute(
+                "DELETE FROM moments WHERE tenths = ? AND item_id = (SELECT id FROM items WHERE rel_path = ?)",
+                (round(seconds * 10), self._key(video)),
             )
         connection.close()
 
@@ -170,6 +185,7 @@ class Library:
         rows = connection.execute(
             "SELECT moments.tenths, tags.name FROM moments"
             " JOIN items ON items.id = moments.item_id"
+            " JOIN item_tags ON item_tags.item_id = moments.item_id AND item_tags.tag_id = moments.tag_id"  # only tags it still has
             " JOIN tags ON tags.id = moments.tag_id"
             " WHERE items.rel_path = ? ORDER BY moments.tenths, tags.name",
             (self._key(video),),

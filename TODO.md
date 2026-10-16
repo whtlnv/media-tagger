@@ -22,14 +22,15 @@ Layout (keep cycles consistent): moments are stored in `library.py` (a `moments`
 - [x] A chapter's time is kept to 0.1 s (added at 83.44 s, it is reported at 83.4 s)
 - [x] Adding the chapter `goal` to a video already tagged `goal` keeps one `goal` tag on the video and adds the moment
 - [x] Adding the chapter `goal` at 10 s and again at 60 s gives the video two moments carrying `goal`
-- [ ] Adding the chapter `goal` at 10.8 s to a video with a `goal` moment at 10 s adds no moment
-- [ ] Adding the chapter `goal` at 11.5 s to a video with a `goal` moment at 10 s adds a second moment
-- [ ] Adding the chapter `goal people:ana` at one time gives the video one moment carrying both tags, and both as tags of the video
-- [ ] A video's moments are reported in time order, whatever order they were added in
-- [ ] Deleting a video's moment removes it from its moments and leaves its tags on the video
-- [ ] Removing `goal` from a video (`-goal`) also removes every moment carrying only `goal`
-- [ ] Removing `goal` from a video leaves the moments of its other tags, and drops `goal` from a moment shared with another tag
-- [ ] Removing a video's last tag leaves no moment of it in `tags.db`
+- [x] Adding the chapter `goal` at 10.8 s to a video with a `goal` moment at 10 s adds no moment
+- [x] Adding the chapter `goal` at 11.5 s to a video with a `goal` moment at 10 s adds a second moment
+- [x] Adding the chapter `goal people:ana` at one time gives the video one moment carrying both tags, and both as tags of the video
+- [x] A video's moments are reported in time order, whatever order they were added in
+- [x] Deleting a video's moment removes it from its moments and leaves its tags on the video
+- [x] Removing `goal` from a video (`-goal`) also removes every moment carrying only `goal`
+- [x] Removing `goal` from a video leaves the moments of its other tags, and drops `goal` from a moment shared with another tag
+- [x] Removing a video's last tag leaves no moment of it in `tags.db`
+- [x] A moment left behind for a tag the video no longer has (as an older build removing a tag would leave it) is never reported
 - [ ] Pressing `c` on a shown video opens the tag prompt
 - [ ] Pressing `c` on a shown image opens no tag prompt
 - [ ] Pressing `c` on a video where tags can't be saved (no library, read-only drive) opens no prompt and briefly shows `Tags can't be saved here`

@@ -808,3 +808,95 @@ def test_adding_the_chapter_goal_at_10_s_and_again_at_60_s_gives_the_video_two_m
     library.add_chapter(video, "goal", 60)
 
     assert library.moments(video) == [Moment(10, ["goal"]), Moment(60, ["goal"])]
+
+
+def test_adding_the_chapter_goal_at_10_8_s_to_a_video_with_a_goal_moment_at_10_s_adds_no_moment(tmp_path):
+    library, video = _library_with_video(tmp_path)
+    library.add_chapter(video, "goal", 10)
+
+    library.add_chapter(video, "goal", 10.8)
+
+    assert library.moments(video) == [Moment(10, ["goal"])]
+
+
+def test_adding_the_chapter_goal_at_11_5_s_to_a_video_with_a_goal_moment_at_10_s_adds_a_second_moment(tmp_path):
+    library, video = _library_with_video(tmp_path)
+    library.add_chapter(video, "goal", 10)
+
+    library.add_chapter(video, "goal", 11.5)
+
+    assert library.moments(video) == [Moment(10, ["goal"]), Moment(11.5, ["goal"])]
+
+
+def test_adding_the_chapter_goal_people_ana_gives_the_video_one_moment_carrying_both_and_both_as_its_tags(tmp_path):
+    library, video = _library_with_video(tmp_path)
+
+    library.add_chapter(video, "goal people:ana", 42)
+
+    assert library.tags(video) == ["goal", "people:ana"]
+    assert library.moments(video) == [Moment(42, ["goal", "people:ana"])]
+
+
+def test_a_videos_moments_are_reported_in_time_order_whatever_order_they_were_added_in(tmp_path):
+    library, video = _library_with_video(tmp_path)
+
+    library.add_chapter(video, "save", 70)
+    library.add_chapter(video, "goal", 5)
+    library.add_chapter(video, "kickoff", 30)
+
+    assert [moment.seconds for moment in library.moments(video)] == [5, 30, 70]
+
+
+def test_deleting_a_videos_moment_removes_it_from_its_moments_and_leaves_its_tags_on_the_video(tmp_path):
+    library, video = _library_with_video(tmp_path)
+    library.add_chapter(video, "goal people:ana", 10)
+    library.add_chapter(video, "goal", 60)
+
+    library.delete_moment(video, 10)
+
+    assert library.moments(video) == [Moment(60, ["goal"])]
+    assert library.tags(video) == ["goal", "people:ana"]
+
+
+def test_removing_goal_from_a_video_also_removes_every_moment_carrying_only_goal(tmp_path):
+    library, video = _library_with_video(tmp_path)
+    library.add_chapter(video, "goal", 10)
+    library.add_chapter(video, "goal", 60)
+    library.enter(video, "sports")
+
+    library.enter(video, "-goal")
+
+    assert library.moments(video) == []
+    assert _query(tmp_path, "SELECT * FROM moments") == []
+
+
+def test_removing_goal_from_a_video_leaves_its_other_tags_moments_and_drops_goal_from_a_moment_shared_with_another_tag(tmp_path):
+    library, video = _library_with_video(tmp_path)
+    library.add_chapter(video, "goal people:ana", 10)
+    library.add_chapter(video, "save", 60)
+
+    library.enter(video, "-goal")
+
+    assert library.moments(video) == [Moment(10, ["people:ana"]), Moment(60, ["save"])]
+
+
+def test_removing_a_videos_last_tag_leaves_no_moment_of_it_in_tags_db(tmp_path):
+    library, video = _library_with_video(tmp_path)
+    library.add_chapter(video, "goal", 10)
+
+    library.enter(video, "-goal")
+
+    assert _query(tmp_path, "SELECT * FROM moments") == []
+    assert _query(tmp_path, "SELECT * FROM items") == []
+
+
+def test_a_moment_left_behind_for_a_tag_the_video_no_longer_has_is_not_reported(tmp_path):
+    library, video = _library_with_video(tmp_path)
+    library.add_chapter(video, "goal", 10)
+    library.add_chapter(video, "save", 60)
+    connection = sqlite3.connect(_tags_db(tmp_path))
+    with connection:  # as a build from before chapters would remove a tag: its moments stay behind
+        connection.execute("DELETE FROM item_tags WHERE tag_id = (SELECT id FROM tags WHERE name = 'save')")
+    connection.close()
+
+    assert library.moments(video) == [Moment(10, ["goal"])]
