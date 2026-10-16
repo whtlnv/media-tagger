@@ -75,4 +75,5 @@ Layout (keep cycles consistent): moments are stored in `library.py` (a `moments`
 - [x] A results grid shows the `⏱` badge on a result video with moments
 - [x] After adding a chapter with `c`, `Esc` back to the grid shows the video's tile with the updated `⏱` count
 - [x] The viewer's cheat sheet lists `c` (add chapter), `l` (chapter list) and `.` / `,` (next / previous chapter) as DESIGN.md's viewer table does
-- [ ] In the shipped `mediatagger` app on a drive with a library, pressing `c` on a video, typing `goal` and `Enter` records a moment in the drive's `tags.db`, and a second run of the command shows it in `l`'s chapter list (the test's driver script treats a temp folder as the mount point)
+- [x] The shipped `mediatagger` command on a drive whose library is at schema version 2 upgrades it and shows its tags
+- [x] In the shipped `mediatagger` app on a drive with a library, pressing `c` on a video, typing `goal` and `Enter` records a moment in the drive's `tags.db`, and a second run of the command shows it in `l`'s chapter list (the test's driver script treats a temp folder as the mount point)
