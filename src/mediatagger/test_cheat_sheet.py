@@ -20,3 +20,8 @@ def test_a_screens_cheat_sheet_lists_exactly_the_keys_of_designs_table_for_that_
 
     assert keys == design_table_keys(screen)
     assert "h" in keys
+
+
+def test_the_grid_cheat_sheet_and_designs_grid_table_both_list_n_for_renaming_a_tag():
+    assert "n" in [key for key, _ in GRID_KEYS]
+    assert "n" in design_table_keys("Grid")

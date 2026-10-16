@@ -159,6 +159,7 @@ Results show under a `Search: <query>` breadcrumb; a result whose path no longer
 | `Backspace` | up a folder |
 | `/` | focus search |
 | `t` | tag selected item (file or folder) |
+| `n` | rename a tag |
 | `+` / `-` | tile size |
 | `Esc` | quit; (in search) clear search, back to the folder |
 | `f` | toggle fullscreen |

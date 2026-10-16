@@ -8,6 +8,7 @@ GRID_KEYS = [
     ("Backspace", "up a folder"),
     ("/", "search"),
     ("t", "tag"),
+    ("n", "rename a tag"),
     ("+ / -", "tile size"),
     ("Esc", "quit; in a search, back to the folder"),
     ("f", "fullscreen"),
