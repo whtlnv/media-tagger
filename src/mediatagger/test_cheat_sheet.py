@@ -7,11 +7,16 @@ from mediatagger.cheat_sheet import GRID_KEYS, LAUNCH_KEYS, VIEWER_KEYS
 DESIGN = Path(__file__).parents[2] / "DESIGN.md"
 
 
-def design_table_keys(screen):
-    """The key column of the table under DESIGN.md's `### <screen>` heading, backticks removed, in order."""
+def design_table_rows(screen):
+    """The (key, what it does) rows of the table under DESIGN.md's `### <screen>` heading, backticks removed, in order."""
     section = DESIGN.read_text().split(f"\n### {screen}\n", 1)[1].split("\n### ", 1)[0]
     rows = [line for line in section.splitlines() if line.startswith("|")][2:]  # past the header and its rule
-    return [row.split("|")[1].strip().replace("`", "") for row in rows]
+    return [(row.split("|")[1].strip().replace("`", ""), row.split("|")[2].strip()) for row in rows]
+
+
+def design_table_keys(screen):
+    """The key column of the table under DESIGN.md's `### <screen>` heading, backticks removed, in order."""
+    return [key for key, _ in design_table_rows(screen)]
 
 
 @pytest.mark.parametrize(("sheet", "screen"), [(GRID_KEYS, "Grid"), (VIEWER_KEYS, "Viewer"), (LAUNCH_KEYS, "Launch")])
@@ -23,5 +28,5 @@ def test_a_screens_cheat_sheet_lists_exactly_the_keys_of_designs_table_for_that_
 
 
 def test_the_grid_cheat_sheet_and_designs_grid_table_both_list_n_for_renaming_a_tag():
-    assert "n" in [key for key, _ in GRID_KEYS]
-    assert "n" in design_table_keys("Grid")
+    assert dict(GRID_KEYS)["n"] == "rename a tag"
+    assert dict(design_table_rows("Grid"))["n"] == "rename a tag"
