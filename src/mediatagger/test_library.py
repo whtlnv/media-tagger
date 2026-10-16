@@ -257,12 +257,12 @@ def test_opening_a_schema_version_1_library_upgrades_its_tags_db_in_place_to_sch
     assert {"items", "tags", "item_tags"} <= tables
 
 
-def test_a_newly_created_library_records_schema_version_2_in_its_tags_db(tmp_path):
+def test_a_newly_created_library_records_schema_version_3_in_its_tags_db(tmp_path):
     Library.create(tmp_path)
 
     meta = _read_meta(tmp_path)
 
-    assert meta["schema_version"] == "2"
+    assert meta["schema_version"] == "3"
 
 
 def test_a_schema_version_1_library_reports_schema_version_2_once_it_has_been_opened(tmp_path):

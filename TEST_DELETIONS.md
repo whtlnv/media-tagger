@@ -64,3 +64,8 @@ Append-only record of tests removed because a delivered change retired the behav
 - `test_after_pressing_h_…shows_the_sheet_from_the_start` and `test_with_the_sheet_remembered_as_shown_pressing_h_…start_without_it` reached the grid with `Esc` from the viewer, which now hides a shown sheet instead; they now start the window on the drive's folder and press `h` in the viewer (same assertions).
 - `test_with_the_panel_shown_in_the_grid_opening_an_image_shows_the_viewers_keys_and_esc_back_to_the_grid_shows_the_grids_keys` → `…and_back_in_the_grid_it_shows_the_grids_keys`: `Esc` in the viewer now hides the panel first, so the test presses `Esc` twice and `h` in the grid before checking the grid's keys.
 - Retired by: follow-up item "Pressing `Esc` while the panel is shown in the grid hides it and leaves the window open on the grid".
+
+## 2026-10-15 · deleted · `src/mediatagger/test_library.py::test_a_newly_created_library_records_schema_version_2_in_its_tags_db`
+- Asserted: a new library's `meta.schema_version` is `2`.
+- Retired by: Phase 18 item "A newly created library records schema version 3 in its `tags.db`" (chapters need a new table).
+- Confirmed: failed with `AssertionError: '3' == '2'` once new libraries record 3; replaced in place by the schema-3 test.
