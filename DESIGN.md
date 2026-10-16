@@ -134,6 +134,9 @@ Results show under a `Search: <query>` breadcrumb; a result whose path no longer
 | `]` / `[` | faster / slower (video): 0.25×–8×, stopping at the ends |
 | `r` | turn 90° clockwise (video), still fitted whole to the screen |
 | `v` | show the progress bar (video), nothing else |
+| `c` | add a chapter: a tag prompt like `t` whose words become tags of the video at the moment `c` was pressed (video) |
+| `.` / `,` | jump to the next / previous chapter (video) |
+| `l` | show / hide the chapter list (video): `↑`/`↓` highlight, `Enter` jump there, `Backspace` delete it, `Esc` close |
 | `o` | open a folder (picker), as if dropped |
 | mouse wheel | zoom in (up) / out (down) about the point under the mouse: 100 %–300 % in steps of 10 points (images and videos) |
 | `h` | show / hide the key cheat sheet |
