@@ -4,13 +4,13 @@ from PySide6.QtCore import Qt
 from mediatagger.chapter_list import ChapterList
 from mediatagger.library import Library
 from mediatagger.status_bar import TAGS_CANT_BE_SAVED_HERE_TEXT
+from mediatagger.test_chapters import ticks_on_the_progress_bar, viewer_paused_at
 from mediatagger.test_video import make_clip, wait_until_playing
 from mediatagger.test_viewer import make_surface_ready
 from mediatagger.test_viewer_library import (
     drive_with_a_tag_library_holding_one_clip, drive_with_a_tag_library_holding_one_image, made_read_only, shown_viewer_on_drive, status_bar_texts,
 )
 from mediatagger.test_window_cheat_sheet import sheet_is_shown, window_on_the_drive
-from mediatagger.test_chapters import ticks_on_the_progress_bar, viewer_paused_at
 
 
 def viewer_playing_a_clip_with_chapters(qtbot, tmp_path, chapters, duration=65):
