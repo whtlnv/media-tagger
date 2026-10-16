@@ -206,3 +206,16 @@ def test_esc_back_from_a_filtered_slideshow_on_a_file_tagged_so_it_no_longer_mat
     qtbot.keyClick(window.viewer, Qt.Key.Key_Escape)
 
     assert (shown_tile_names(stack.currentWidget()), cursor_name(stack)) == (["IMG_3.png"], "IMG_3.png")
+
+
+def test_in_the_windows_grid_clicking_the_filter_button_and_choosing_no_tags_hides_the_folders_tagged_files(qtbot, tmp_path):
+    window, stack, folder = window_on_a_folder_whose_second_and_third_images_are_tagged(qtbot, tmp_path)
+    grid = stack.currentWidget()
+
+    QTest.mouseClick(grid.findChild(FilterButton), Qt.MouseButton.LeftButton)
+    menu = popped_up_menu(grid)
+    qtbot.waitExposed(menu)
+    [no_tags] = [action for action in menu.actions() if action.text() == NO_TAGS]
+    QTest.mouseClick(menu, Qt.MouseButton.LeftButton, pos=menu.actionGeometry(no_tags).center())
+
+    assert (shown_tile_names(stack.currentWidget()), grid.findChild(FilterButton).isChecked()) == (["IMG_1.png"], True)

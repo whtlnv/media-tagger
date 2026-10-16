@@ -59,4 +59,4 @@ Phase 17 notes for every cycle (Phases 1–16 are delivered — see DONE.md; Pha
 - [x] `Enter` on a file of a filtered results grid starts a slideshow over only the shown result files
 - [x] `Esc` back from a filtered slideshow puts the cursor on the file that was showing
 - [x] `Esc` back from a filtered slideshow on a file tagged so it no longer matches puts the cursor on the next shown tile
-- [ ] In the shipped `mediatagger` app, clicking the grid's filter button and choosing "No tags" hides the folder's tagged files
+- [x] In the shipped `mediatagger` app, clicking the grid's filter button and choosing "No tags" hides the folder's tagged files
