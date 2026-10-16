@@ -65,11 +65,10 @@ def test_enter_on_beach_places_beach_in_the_windows_rename_prompt_renames_the_ta
 
     drive = tmp_path / "MEDIATAGGER"
     assert Library.open(drive).tags(drive / "Photos" / "IMG_2.png") == ["family", "places:beach"]
-    assert "Renamed beach → places:beach on 1 items" in shown_status_bar_texts(window)
+    assert "Renamed beach → places:beach on 1 item" in shown_status_bar_texts(window)
 
 
 def test_enter_on_capitalised_beach_places_beach_in_the_windows_rename_prompt_renames_beach_to_places_beach_lowercased(qtbot, tmp_path):
-    from mediatagger.status_bar import RENAMED_TAG_TEXT
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "Beach Places:Beach")
 
@@ -77,7 +76,7 @@ def test_enter_on_capitalised_beach_places_beach_in_the_windows_rename_prompt_re
 
     drive = tmp_path / "MEDIATAGGER"
     assert Library.open(drive).tags(drive / "Photos" / "IMG_2.png") == ["family", "places:beach"]
-    assert RENAMED_TAG_TEXT.format("beach", "places:beach", 1) in shown_status_bar_texts(window)
+    assert "Renamed beach → places:beach on 1 item" in shown_status_bar_texts(window)
 
 
 def test_after_enter_on_beach_family_in_the_windows_rename_prompt_the_open_grids_tile_tagged_beach_family_shows_a_tag_badge_with_count_1(qtbot, tmp_path):

@@ -15,7 +15,7 @@ from mediatagger.search_bar import SearchBar
 from mediatagger.slideshow import Slideshow
 from mediatagger.state import (remember, remember_cheat_sheet, remember_geometry, remember_search, remembered_cheat_sheet, remembered_folder,
     remembered_geometry, state_file)
-from mediatagger.status_bar import NO_SUCH_TAG_TEXT, RENAME_LEADING_DASH_TEXT, RENAME_NEEDS_TWO_TAGS_TEXT, RENAME_TO_SAME_TAG_TEXT, RENAMED_TAG_TEXT, StatusBar, overlay_label
+from mediatagger.status_bar import NO_SUCH_TAG_TEXT, RENAME_LEADING_DASH_TEXT, RENAME_NEEDS_TWO_TAGS_TEXT, RENAME_TO_SAME_TAG_TEXT, StatusBar, overlay_label, renamed_tag_text
 from mediatagger.tag_prompt import TagPrompt
 from mediatagger.viewer import Viewer
 
@@ -303,7 +303,7 @@ class Window(QWidget):
                 grid.show_new_tags(self.session.library)
         self._show_current_tags()
         self.rename_prompt.close_applied()
-        self.status_bar.show_background(RENAMED_TAG_TEXT.format(old, new, renamed), finished=True)
+        self.status_bar.show_background(renamed_tag_text(old, new, renamed), finished=True)
 
     def _show_saved_tags(self, library, path):
         grid = self.stack.currentWidget()
