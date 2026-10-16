@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-16 04:04 · `src/mediatagger/test_window.py::test_typing_n_into_the_windows_grid_tag_prompt_types_an_n_and_opens_no_rename_prompt`
+- Behavior: Typing `n` into the tag prompt types an `n` and opens no rename prompt
+- Predicted: passes — the focused `_TagInput` (a QLineEdit) consumes the `n` keypress; only `Grid.keyPressEvent` binds `Key_N`
+- Actual: passes (1 passed)
+- Type: passed unexpectedly (relative to the TODO plan, which expected a separate cycle; predicted by /red)
+- Resolution: The test isn't vacuous: a temporary `Key_N` branch in `_TagInput.keyPressEvent` calling `self.window()._open_rename_prompt()` made it fail (`['', ''] == ['n']`). I reverted that mutation and kept the test as a characterization pin; the item needs no /green.
+
 ## 2026-10-16 04:00 · `src/mediatagger/test_window.py::test_pressing_n_in_the_windows_viewer_opens_no_rename_prompt_and_stays_in_the_viewer`
 - Behavior: Pressing `n` in the viewer opens no rename prompt
 - Predicted: passes — only `Grid.keyPressEvent` handles `Key_N` (emitting `rename_tag`); the viewer has no `n` binding

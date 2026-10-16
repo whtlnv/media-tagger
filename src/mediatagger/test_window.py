@@ -573,6 +573,15 @@ def test_typing_b_in_the_windows_grid_tag_prompt_on_a_drive_whose_library_has_be
     assert listed(suggestions) == ["beach"]
 
 
+def test_typing_n_into_the_windows_grid_tag_prompt_types_an_n_and_opens_no_rename_prompt(qtbot, tmp_path):
+    window, prompt = window_with_the_grids_tag_prompt_focused_on_a_drive_whose_library_has_beach(qtbot, tmp_path)
+
+    qtbot.keyClicks(prompt, "n")
+
+    assert visible_tag_prompt_texts(window) == ["n"]
+    assert "Rename tag:" not in shown_texts_outside_the_status_bar(window)
+
+
 def test_when_saving_from_the_windows_grid_tag_prompt_fails_because_the_drive_has_gone_away_the_prompt_stays_open_with_its_text_and_the_status_bar_says_it_couldnt_save_tags(qtbot, tmp_path, monkeypatch):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
