@@ -26,6 +26,7 @@ State of the project and how it has been run, for the next session. Read `DESIGN
 | 16 Required tags | done, validated on the Mac (`a6efa62`, 858 tests); Pi run pending |
 | 17 Grid filters | done, validated on the Mac (`0b28e39`, 908 tests); Pi run pending |
 | 18 Video chapters | done, validated on the Mac (`1c4d945`, 982 tests); Pi run pending |
+| 19 Rename a tag | done, validated on the Mac (`2872de9`, 1035 tests); Pi run pending |
 
 Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), `grid.py`, `grid_filter.py` (the grids' shared filter and its button), `viewer.py`, `tag_prompt.py` (the `t` prompt, shared by grid and viewer), `rename_prompt.py` (the grid's `n` prompt), `status_bar.py`, `drive_session.py` (library open/create/restore/backup), `drive_config.py` (the drive's `mediatagger_config.json`: required tag roots), `library.py` (SQLite, schema v3: tags and chapter moments), `backup.py`, `state.py` (last folder, geometry, recent searches and renames; `$XDG_CONFIG_HOME`), `search.py` (query matching), `search_bar.py` (the `/` box and its `↑`/`↓` history), `folder.py`, `slideshow.py`, `thumbnails.py` (image/video/folder thumbnails, `ffmpeg`/`ffprobe`), `thumbnail_cache.py`, `thumbnail_scheduler.py` (3 workers + prefetch), `folder_thumbnails.py` (a folder's thumbnails for its grid), `video.py` + `mpv_surface.py` (libmpv render API), `video_controls.py` (video progress bar), `chapters.py` + `chapter_list.py` (the viewer's `c`, `.`/`,` and `l` chapters), `zoom.py` (mouse-wheel zoom for images and mpv), `gui_thread_gc.py`. Tests are co-located (`test_*.py`). Open structural debt is in `BACKLOG.md`.
 
@@ -39,6 +40,14 @@ Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), 
   - send the agent back with a numbered fix list if anything is off.
 - Progress is relayed to the user in chat from a `Monitor` that polls `git log`, `TODO.md` checkbox counts, `~/Library/Logs/DiagnosticReports/Python-*.ips` and `/Volumes/MEDIATAGGER`. Monitors expire every 30 min; re-arm.
 - The user asked for progress to be printed in the conversation and for questions only when a decision is genuinely theirs.
+
+## Phase 19 — done
+
+`n` in a folder grid or search results opens `rename_prompt.RenamePrompt` (the tag prompt's input, style, placement and completer, shared via public names in `tag_prompt.py`); `old new` + Enter → `Window._rename_tag`: lowercases, validates (two words, different, no leading `-`, old tag exists), needs a writable library, backs up (`DriveSession.back_up_library()` now returns whether it did — **a failed backup stops the rename**), then `Library.rename_tag` in one transaction (merge into an existing tag, moments moved, old/new moments ≤ 1 s apart become one, stale moments from older builds dropped, the empty old tag row deleted). SQLite/OS error → `t`'s "Couldn't save tags". Every Grid in the stack re-reads tags (badges, ✕, ⏱, filters); status bar `Renamed a → b on N item(s)`. Applied renames in `state.json` `renames` (50, ↑/↓). Delivered by `/tdd-supervise` (headless `/tdd-cycle` stalled on its first cycle). Orchestrator check: suite twice (1029, then 1035 after a 4-item fix round: singular count, backup failure blocks, drive error message, orphan tag row), native on a scratch exFAT drive: prompt look and placement, completer popup, merge result in `tags.db`, badges and ✕ update at once, `No tag "x"` keeps the prompt open, `n` types inside the prompt, Esc, ↑ recall, pre-rename backup holds the old tags.
+
+- **Decisions the user may overrule:** a rejected entry keeps the prompt open (an applied one closes it); only applied renames are remembered; `n` opens the prompt even without a writable library (the message comes on Enter); the rejection messages' wording.
+- **Flaky under load:** with another project's `cargo test` running (load 12–16), the 3 s quit tests in `test_main` and `drive/test_run.py`'s real-python3 start (8 s) failed intermittently; they pass alone.
+- 2026-10-16 09:10 crash reports (two) were a red test step's `QTest.keyClick` on a missing window, not the app.
 
 ## Phase 18 — done
 
