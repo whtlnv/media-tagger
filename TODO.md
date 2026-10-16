@@ -29,9 +29,9 @@ Phase 17 notes for every cycle (Phases 1–16 are delivered — see DONE.md; Pha
 - [x] A new window starts with no filter, whatever was chosen in an earlier window
 - [x] Under a filter, a search results grid hides result files that don't match
 - [x] Under any filter, a search results grid keeps showing missing result tiles
-- [ ] Under "With tags", removing a file's last own tag from the grid's tag prompt hides it at once
-- [ ] Under "No tags", adding a tag to a shown file from the grid's tag prompt hides it at once
-- [ ] Under "No tags", adding a tag to a file's folder leaves the file shown
+- [x] Under "With tags", removing a file's last own tag from the grid's tag prompt hides it at once
+- [x] Under "No tags", adding a tag to a shown file from the grid's tag prompt hides it at once
+- [x] Under "No tags", adding a tag to a file's folder leaves the file shown
 - [ ] Choosing a filter that hides the cursor's tile moves the cursor to the next shown tile after it
 - [ ] Choosing a filter that hides the cursor's tile, with no shown tile after it, moves the cursor to the nearest shown tile before it
 - [ ] Choosing a filter that leaves the cursor's tile shown keeps the cursor where it is

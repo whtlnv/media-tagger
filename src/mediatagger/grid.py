@@ -257,10 +257,11 @@ class Grid(QListView):
         tiles = _result_tiles(paths) if paths is not None else _tiles(folder)
         self._required_roots, self._results = required_roots, paths is not None
         self.setModel(_FolderModel(tiles, self))
+        self._filter = grid_filter
         if library:
             self.show_new_tags(library)
-        self._filter = grid_filter
-        self._apply_filter()
+        else:
+            self._apply_filter()
         if grid_filter is not None:
             grid_filter.changed.connect(self._apply_filter)
         self.setItemDelegate(_TileDelegate(self))
@@ -334,13 +335,14 @@ class Grid(QListView):
         self._request_visible()
 
     def show_new_tags(self, library):
-        """Every tile shows its own-tag count and missing roots afresh, read in bulk, without listing the folder again:
+        """Every tile shows its own-tag count and missing roots afresh, and is filtered by them, read in bulk, without listing the folder again:
         tagging one item can change what others inherit."""
         tiles = self.model().tiles
         for tile, count in zip(tiles, _own_tag_counts(tiles, self.folder, library, self._results)):
             tile.tag_count = count
         if self._required_roots:
             _mark_missing_roots(tiles, _effective_tags(tiles, self.folder, library, self._results), self._required_roots)
+        self._apply_filter()  # a file tagged so it no longer matches goes at once
         self.viewport().update()
 
     def _apply_filter(self):
