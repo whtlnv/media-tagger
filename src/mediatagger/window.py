@@ -162,8 +162,8 @@ class Window(QWidget):
         self._record_state(grid.folder)
 
     def _connect_tags_search_and_progress_of(self, grid):
-        """What a folder's grid and a results grid both do: tag the cursor's item, search again, pick a folder, show its
-        tags, and count its thumbnails."""
+        """What a folder's grid and a results grid both do: tag the cursor's item, rename a tag, search again, pick a
+        folder, show its tags, and count its thumbnails."""
         grid.tag.connect(lambda: self._tag(grid.currentIndex()))
         grid.rename_tag.connect(lambda: self.rename_prompt.open(self.session.library.all_tags() if self.session.library else []))
         grid.search.connect(self._open_search_bar)
