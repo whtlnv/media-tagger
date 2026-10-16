@@ -147,3 +147,15 @@ def test_choosing_a_filter_while_a_grid_is_shown_hides_its_non_matching_files_at
     grid_filter.choose(WITH_TAGS)
 
     assert shown_tile_names(grid) == ["beach.jpg"]
+
+
+@pytest.mark.parametrize("text", [WITH_TAGS, NO_TAGS, MISSING_TAGS])
+def test_under_any_filter_a_search_results_grid_keeps_showing_missing_result_tiles(qtbot, tmp_path, text):
+    library = Library.create(tmp_path)
+    touch(tmp_path, "gone.jpg")
+    library.enter(tmp_path / "gone.jpg", "beach")
+    (tmp_path / "gone.jpg").unlink()
+    grid = Grid(tmp_path, library=library, paths=[tmp_path / "gone.jpg"], required_roots=("type:",), grid_filter=chosen(text))
+    qtbot.addWidget(grid)
+
+    assert shown_tile_names(grid) == ["gone.jpg"]
