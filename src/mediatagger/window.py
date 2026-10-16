@@ -280,7 +280,7 @@ class Window(QWidget):
 
     def _rename_tag(self, text):
         names = text.lower().split()
-        if len(names) < 2:
+        if len(names) != 2:
             self.status_bar.show_background(RENAME_NEEDS_TWO_TAGS_TEXT, finished=True)
             return
         old, new = names
