@@ -12,9 +12,9 @@ Layout (keep cycles consistent): moments are stored in `library.py` (a `moments`
   - predicted-contradiction: `src/mediatagger/test_library.py::test_opening_a_schema_version_1_library_upgrades_its_tags_db_in_place_to_schema_version_2` — asserts: opening a v1 library leaves its meta schema_version at "2" — retired-by: "upgrades it in place to schema version 3"
   - predicted-contradiction: `src/mediatagger/test_library.py::test_a_schema_version_1_library_reports_schema_version_2_once_it_has_been_opened` — asserts: an opened v1 library reports schema_version == 2 — retired-by: "upgrades it in place to schema version 3"
 - [ ] Opening a schema-version-2 library on a read-only drive does not fail: nothing is written, its files still report their tags, and its videos report no moments
-- [ ] Opening a schema-version-2 library whose upgrade fails for a reason other than a read-only drive (e.g. the database is locked) raises the error instead of reporting no moments
-- [ ] An upgrade from schema version 2 that fails partway (after the moments table would be made, before the version is recorded) leaves the library at schema version 2 with no moments table and every tag intact
-- [ ] Opening a schema-version-3 library again changes nothing in its `tags.db`
+- [x] Opening a schema-version-2 library whose upgrade fails for a reason other than a read-only drive (e.g. the database is locked) raises the error instead of reporting no moments
+- [x] An upgrade from schema version 2 that fails partway (after the moments table would be made, before the version is recorded) leaves the library at schema version 2 with no moments table and every tag intact
+- [x] Opening a schema-version-3 library again changes nothing in its `tags.db`
 - [ ] Restoring a schema-version-2 backup onto a drive opens it at schema version 3 with every tag of the backup
 - [ ] Adding the chapter `goal` at 83.4 s to a video makes the library report the video tagged `goal` and one moment at 83.4 s carrying `goal`
 - [ ] A video with no chapters added reports no moments

@@ -8,6 +8,9 @@ CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY, rel_path TEXT UNIQUE, 
 CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY, name TEXT UNIQUE);
 CREATE TABLE IF NOT EXISTS item_tags (item_id INTEGER, tag_id INTEGER);
 """
+CREATE_MOMENTS_TABLE = (  # a chapter: a tag of a video at a moment, in whole tenths of a second
+    "CREATE TABLE IF NOT EXISTS moments (item_id INTEGER, tag_id INTEGER, tenths INTEGER)"
+)
 
 
 def tags_db_path(root):
@@ -22,12 +25,13 @@ def _init_tags_db(tags_db, **meta):
             "INSERT INTO meta (key, value) VALUES (?, ?)", meta.items()
         )
         connection.executescript(CREATE_TAGS_TABLES)
+        connection.execute(CREATE_MOMENTS_TABLE)
     connection.close()
 
 
 _UPGRADES = {  # what brings a tags.db from the schema version before to the one named: only ever adding, never dropping
     2: [statement for statement in CREATE_TAGS_TABLES.split(";") if statement.strip()],
-    3: [],
+    3: [CREATE_MOMENTS_TABLE],
 }
 
 
