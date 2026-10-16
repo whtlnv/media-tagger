@@ -18,7 +18,7 @@
 - [x] Pressing `n` in search results opens the `Rename tag:` prompt
 - [x] Pressing `n` in the viewer opens no rename prompt
 - [x] Typing `n` into the tag prompt types an `n` and opens no rename prompt
-- [ ] Typing `n` into the search bar types an `n` and opens no rename prompt
+- [x] Typing `n` into the search bar types an `n` and opens no rename prompt
 - [ ] `Esc` in the rename prompt closes it and no tag changes
 - [ ] `Enter` on `beach places:beach` in the rename prompt renames the tag across the drive's library and the status bar says `Renamed beach → places:beach on <n> items`
 - [ ] The rename prompt lowercases both names (`Beach Places:Beach` renames `beach` to `places:beach`)

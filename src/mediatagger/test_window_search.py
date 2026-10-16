@@ -303,6 +303,17 @@ def test_pressing_n_in_the_results_grid_opens_one_empty_prompt_labelled_rename_t
     assert "Rename tag:" in shown_texts_outside_the_status_bar(window)
 
 
+def test_typing_n_into_the_search_bar_types_an_n_and_opens_no_rename_prompt(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Slash)
+
+    qtbot.keyClicks(window.search_bar, "n")
+
+    assert window.search_bar.text() == "n"
+    assert "Rename tag:" not in shown_texts_outside_the_status_bar(window)
+
+
 def test_a_result_whose_path_no_longer_exists_is_drawn_as_a_missing_tile_with_a_distinct_glyph_and_its_name(qtbot, tmp_path):
     drive, folder = drive_with_a_missing_image_tagged(tmp_path, "beach")
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
