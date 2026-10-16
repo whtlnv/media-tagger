@@ -17,6 +17,13 @@ from mediatagger.test_window import (enter_in_the_grids_tag_prompt, shown_status
 from mediatagger.window import Window
 
 
+def rename_prompt_after_typing(qtbot, window, grid, text):
+    qtbot.keyClick(grid, Qt.Key.Key_N)
+    [prompt] = visible_tag_prompts(window)
+    qtbot.keyClicks(prompt, text)
+    return prompt
+
+
 def test_pressing_n_in_the_windows_folder_grid_opens_one_empty_prompt_labelled_rename_tag_styled_like_the_tag_prompt(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
 
@@ -31,9 +38,7 @@ def test_pressing_n_in_the_windows_folder_grid_opens_one_empty_prompt_labelled_r
 def test_esc_in_the_windows_rename_prompt_after_typing_beach_places_beach_closes_only_the_prompt_staying_in_the_grid_and_leaves_the_item_tagged_beach_family(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     grid = stack.currentWidget()
-    qtbot.keyClick(grid, Qt.Key.Key_N)
-    [prompt] = visible_tag_prompts(window)
-    qtbot.keyClicks(prompt, "beach places:beach")
+    prompt = rename_prompt_after_typing(qtbot, window, grid, "beach places:beach")
 
     qtbot.keyClick(prompt, Qt.Key.Key_Escape)
 
@@ -47,9 +52,7 @@ def test_esc_in_the_windows_rename_prompt_after_typing_beach_places_beach_closes
 
 def test_enter_on_beach_places_beach_in_the_windows_rename_prompt_renames_the_tag_in_the_drives_library_and_the_status_bar_says_how_many_items_it_renamed(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
-    [prompt] = visible_tag_prompts(window)
-    qtbot.keyClicks(prompt, "beach places:beach")
+    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "beach places:beach")
 
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
@@ -61,9 +64,7 @@ def test_enter_on_beach_places_beach_in_the_windows_rename_prompt_renames_the_ta
 def test_enter_on_capitalised_beach_places_beach_in_the_windows_rename_prompt_renames_beach_to_places_beach_lowercased(qtbot, tmp_path):
     from mediatagger.status_bar import RENAMED_TAG_TEXT
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
-    [prompt] = visible_tag_prompts(window)
-    qtbot.keyClicks(prompt, "Beach Places:Beach")
+    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "Beach Places:Beach")
 
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
@@ -75,9 +76,7 @@ def test_enter_on_capitalised_beach_places_beach_in_the_windows_rename_prompt_re
 def test_after_enter_on_beach_family_in_the_windows_rename_prompt_the_open_grids_tile_tagged_beach_family_shows_a_tag_badge_with_count_1(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     grid = stack.currentWidget()
-    qtbot.keyClick(grid, Qt.Key.Key_N)
-    [prompt] = visible_tag_prompts(window)
-    qtbot.keyClicks(prompt, "beach family")
+    prompt = rename_prompt_after_typing(qtbot, window, grid, "beach family")
 
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
@@ -98,9 +97,7 @@ def test_after_enter_on_beach_places_beach_in_the_windows_rename_prompt_the_open
     stack = window.findChild(QStackedWidget)
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
     grid = stack.currentWidget()
-    qtbot.keyClick(grid, Qt.Key.Key_N)
-    [prompt] = visible_tag_prompts(window)
-    qtbot.keyClicks(prompt, "beach places:beach")
+    prompt = rename_prompt_after_typing(qtbot, window, grid, "beach places:beach")
 
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
@@ -112,9 +109,7 @@ def test_after_enter_on_beach_places_beach_in_the_windows_rename_prompt_with_the
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     grid = stack.currentWidget()
     qtbot.keyClick(grid, Qt.Key.Key_Right)
-    qtbot.keyClick(grid, Qt.Key.Key_N)
-    [prompt] = visible_tag_prompts(window)
-    qtbot.keyClicks(prompt, "beach places:beach")
+    prompt = rename_prompt_after_typing(qtbot, window, grid, "beach places:beach")
 
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
@@ -124,9 +119,7 @@ def test_after_enter_on_beach_places_beach_in_the_windows_rename_prompt_with_the
 def test_enter_on_a_rename_whose_old_tag_no_item_has_in_the_windows_rename_prompt_says_there_is_no_such_tag_and_changes_nothing(qtbot, tmp_path):
     from mediatagger.status_bar import NO_SUCH_TAG_TEXT
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
-    [prompt] = visible_tag_prompts(window)
-    qtbot.keyClicks(prompt, "sunset places:sunset")
+    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "sunset places:sunset")
 
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
@@ -137,9 +130,7 @@ def test_enter_on_a_rename_whose_old_tag_no_item_has_in_the_windows_rename_promp
 
 def test_after_enter_on_a_rename_whose_old_tag_no_item_has_the_windows_rename_prompt_stays_open_with_what_was_typed(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
-    [prompt] = visible_tag_prompts(window)
-    qtbot.keyClicks(prompt, "sunset places:sunset")
+    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "sunset places:sunset")
 
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
@@ -149,9 +140,7 @@ def test_after_enter_on_a_rename_whose_old_tag_no_item_has_the_windows_rename_pr
 def test_enter_on_a_rename_in_the_windows_rename_prompt_with_no_library_open_says_tags_cant_be_saved_here(qtbot, tmp_path):
     drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
-    [prompt] = visible_tag_prompts(window)
-    qtbot.keyClicks(prompt, "beach places:beach")
+    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "beach places:beach")
 
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
@@ -167,9 +156,7 @@ def test_enter_on_a_rename_in_the_windows_rename_prompt_on_a_read_only_drive_say
         show_exposed(qtbot, window)
         stack = window.findChild(QStackedWidget)
         qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
-        qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
-        [prompt] = visible_tag_prompts(window)
-        qtbot.keyClicks(prompt, "beach places:beach")
+        prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "beach places:beach")
 
         qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
@@ -179,9 +166,7 @@ def test_enter_on_a_rename_in_the_windows_rename_prompt_on_a_read_only_drive_say
 def test_enter_on_a_single_word_in_the_windows_rename_prompt_says_a_rename_needs_two_tags_and_changes_nothing(qtbot, tmp_path):
     from mediatagger.status_bar import RENAME_NEEDS_TWO_TAGS_TEXT
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
-    [prompt] = visible_tag_prompts(window)
-    qtbot.keyClicks(prompt, "beach")
+    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "beach")
 
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
@@ -193,9 +178,7 @@ def test_enter_on_a_single_word_in_the_windows_rename_prompt_says_a_rename_needs
 def test_enter_on_three_words_in_the_windows_rename_prompt_says_a_rename_needs_two_tags_and_changes_nothing(qtbot, tmp_path):
     from mediatagger.status_bar import RENAME_NEEDS_TWO_TAGS_TEXT
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
-    [prompt] = visible_tag_prompts(window)
-    qtbot.keyClicks(prompt, "beach sea shore")
+    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "beach sea shore")
 
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
@@ -207,9 +190,7 @@ def test_enter_on_three_words_in_the_windows_rename_prompt_says_a_rename_needs_t
 def test_enter_on_a_rename_of_a_tag_to_itself_in_the_windows_rename_prompt_says_the_names_are_the_same_and_changes_nothing(qtbot, tmp_path):
     from mediatagger.status_bar import RENAME_TO_SAME_TAG_TEXT
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
-    [prompt] = visible_tag_prompts(window)
-    qtbot.keyClicks(prompt, "beach Beach")
+    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "beach Beach")
 
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
@@ -221,9 +202,7 @@ def test_enter_on_a_rename_of_a_tag_to_itself_in_the_windows_rename_prompt_says_
 def test_enter_on_a_rename_whose_old_name_starts_with_a_dash_in_the_windows_rename_prompt_says_tags_cant_start_with_a_dash_and_changes_nothing(qtbot, tmp_path):
     from mediatagger.status_bar import RENAME_LEADING_DASH_TEXT
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
-    [prompt] = visible_tag_prompts(window)
-    qtbot.keyClicks(prompt, "-beach places")
+    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "-beach places")
 
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
@@ -235,9 +214,7 @@ def test_enter_on_a_rename_whose_old_name_starts_with_a_dash_in_the_windows_rena
 def test_enter_on_a_rename_whose_new_name_starts_with_a_dash_in_the_windows_rename_prompt_says_tags_cant_start_with_a_dash_and_changes_nothing(qtbot, tmp_path):
     from mediatagger.status_bar import RENAME_LEADING_DASH_TEXT
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
-    [prompt] = visible_tag_prompts(window)
-    qtbot.keyClicks(prompt, "beach -places")
+    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "beach -places")
 
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
@@ -249,9 +226,7 @@ def test_enter_on_a_rename_whose_new_name_starts_with_a_dash_in_the_windows_rena
 def test_after_enter_applies_a_rename_in_the_windows_rename_prompt_the_prompt_closes_and_arrows_move_the_grids_cursor_again(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     grid = stack.currentWidget()
-    qtbot.keyClick(grid, Qt.Key.Key_N)
-    [prompt] = visible_tag_prompts(window)
-    qtbot.keyClicks(prompt, "beach places:beach")
+    prompt = rename_prompt_after_typing(qtbot, window, grid, "beach places:beach")
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
     qtbot.keyClick(window.focusWidget(), Qt.Key.Key_Right)
@@ -272,9 +247,7 @@ def test_enter_on_beach_places_beach_in_the_windows_rename_prompt_backs_up_the_l
     stack = window.findChild(QStackedWidget)
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
     enter_in_the_grids_tag_prompt(qtbot, window, stack, "beach")
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
-    [prompt] = visible_tag_prompts(window)
-    qtbot.keyClicks(prompt, "beach places:beach")
+    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "beach places:beach")
 
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
@@ -292,9 +265,7 @@ def test_enter_on_a_rename_whose_old_tag_no_item_has_in_the_windows_rename_promp
     stack = window.findChild(QStackedWidget)
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
     enter_in_the_grids_tag_prompt(qtbot, window, stack, "beach")
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
-    [prompt] = visible_tag_prompts(window)
-    qtbot.keyClicks(prompt, "sunset places:sunset")
+    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "sunset places:sunset")
 
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
@@ -337,9 +308,7 @@ def test_typing_capital_b_in_the_windows_rename_prompt_lists_beach_in_a_suggesti
 
 def test_up_in_the_windows_rename_prompt_reopened_after_applying_beach_places_beach_recalls_beach_places_beach(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
-    [prompt] = visible_tag_prompts(window)
-    qtbot.keyClicks(prompt, "beach places:beach")
+    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "beach places:beach")
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
     qtbot.keyClick(window.focusWidget(), Qt.Key.Key_N)
     [prompt] = visible_tag_prompts(window)
@@ -352,9 +321,7 @@ def test_up_in_the_windows_rename_prompt_reopened_after_applying_beach_places_be
 def test_up_up_down_in_the_windows_rename_prompt_after_applying_beach_places_beach_then_family_people_family_recalls_older_then_newer(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     for rename in ("beach places:beach", "family people:family"):
-        qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
-        [prompt] = visible_tag_prompts(window)
-        qtbot.keyClicks(prompt, rename)
+        prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), rename)
         qtbot.keyClick(prompt, Qt.Key.Key_Return)
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
     [prompt] = visible_tag_prompts(window)
@@ -370,9 +337,7 @@ def test_up_up_down_in_the_windows_rename_prompt_after_applying_beach_places_bea
 def test_up_in_the_windows_rename_prompt_after_applying_beach_places_beach_then_entering_a_rename_of_an_unknown_tag_recalls_beach_places_beach(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     for rename in ("beach places:beach", "nosuch other"):
-        qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
-        [prompt] = visible_tag_prompts(window)
-        qtbot.keyClicks(prompt, rename)
+        prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), rename)
         qtbot.keyClick(prompt, Qt.Key.Key_Return)
     qtbot.keyClick(prompt, Qt.Key.Key_Escape)
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
@@ -385,9 +350,7 @@ def test_up_in_the_windows_rename_prompt_after_applying_beach_places_beach_then_
 
 def test_up_in_the_rename_prompt_of_a_window_opened_after_one_that_applied_beach_places_beach_was_closed_recalls_beach_places_beach(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
-    [prompt] = visible_tag_prompts(window)
-    qtbot.keyClicks(prompt, "beach places:beach")
+    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "beach places:beach")
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
     window.close()
     reopened, reopened_stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path / "reopened")

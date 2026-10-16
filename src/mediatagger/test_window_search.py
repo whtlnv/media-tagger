@@ -14,6 +14,7 @@ from mediatagger.test_window import enter_in_the_grids_tag_prompt, shown_status_
 from mediatagger.test_viewer_open import make_folders
 from mediatagger.thumbnails import thumbnail_and_duration
 from mediatagger.viewer import Viewer
+from mediatagger.test_window_rename import rename_prompt_after_typing
 from mediatagger.window import Window
 
 
@@ -309,9 +310,7 @@ def test_after_enter_on_beach_family_in_the_rename_prompt_over_search_results_es
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
     folder_grid = stack.currentWidget()
     search_for(qtbot, window, stack, "beach")
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
-    [prompt] = visible_tag_prompts(window)
-    qtbot.keyClicks(prompt, "beach family")
+    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "beach family")
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)

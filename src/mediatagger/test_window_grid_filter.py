@@ -5,9 +5,10 @@ from mediatagger.grid_filter import MISSING_TAGS, NO_TAGS, WITH_TAGS, FilterButt
 from mediatagger.library import Library
 from mediatagger.test_grid_filter import cursor_name, popped_up_menu, shown_tile_names
 from mediatagger.test_viewer import make_image
-from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, visible_tag_prompts
+from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt
 from mediatagger.test_viewer_open import make_folders
 from mediatagger.test_window import enter_in_the_grids_tag_prompt, shown_status_bar_texts, window_showing_the_grid_with_its_cursor_on_its_first_tile
+from mediatagger.test_window_rename import rename_prompt_after_typing
 from mediatagger.test_window_required_tags import write_config
 from mediatagger.test_window_search import search_for
 
@@ -93,9 +94,7 @@ def test_under_missing_tags_enter_on_photo_type_photo_in_the_windows_rename_prom
     grid = stack.currentWidget()
     window.grid_filter.choose(MISSING_TAGS)
     before = shown_tile_names(grid)
-    qtbot.keyClick(grid, Qt.Key.Key_N)
-    [prompt] = visible_tag_prompts(window)
-    qtbot.keyClicks(prompt, "photo type:photo")
+    prompt = rename_prompt_after_typing(qtbot, window, grid, "photo type:photo")
 
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
