@@ -650,6 +650,17 @@ def test_typing_b_as_the_first_word_in_the_windows_rename_prompt_on_a_drive_whos
     assert listed(suggestions) == ["beach"]
 
 
+def test_typing_beach_f_as_the_second_word_in_the_windows_rename_prompt_on_a_drive_whose_library_has_beach_family_lists_family_in_the_suggestion_popup(qtbot, tmp_path):
+    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
+    [prompt] = visible_tag_prompts(window)
+    qtbot.waitUntil(prompt.hasFocus)
+
+    suggestions = suggestion_popup_after_typing(qtbot, prompt, "beach f")
+
+    assert listed(suggestions) == ["family"]
+
+
 def test_pressing_t_in_the_windows_grid_on_a_read_only_drive_opens_no_tag_prompt_and_says_tags_cant_be_saved_here(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     with made_read_only(drive):
