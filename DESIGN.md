@@ -65,7 +65,8 @@ On the Pi, not the drive: `$XDG_CACHE_HOME/mediatagger/<drive_id>/thumbs.db` (de
 ### Rename prompt (`n`, grid only)
 
 - `beach places:beach` replaces `beach` with `places:beach` on every item of the drive's library; an item that already has the new tag keeps it once. Chapter moments move to the new tag; two within 1 s of each other become one.
-- The library is backed up right before the rename applies; the status bar says `Renamed beach → places:beach on <n> items`.
+- The library is backed up right before the rename applies; the status bar says `Renamed beach → places:beach on <n> items` (`on 1 item` for one). If the backup fails, the rename doesn't apply: the backup failure stays shown and the prompt stays open.
+- If the rename fails with a drive error, nothing changes, the prompt stays open with its text and the status bar says `Couldn't save tags — is the drive still connected?`.
 - A rejected entry (`No tag "beach"`, not exactly two words, same name, a leading `-`) keeps the prompt open with its text and changes nothing.
 - Autocomplete offers existing tags for both words; `↑`/`↓` recall the 50 most recent applied renames, remembered in `state.json`.
 
