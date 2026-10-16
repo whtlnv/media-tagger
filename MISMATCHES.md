@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-16 01:00 · `src/mediatagger/test_library.py::test_renaming_beach_leaves_beachy_on_a_photo_tagged_beachy`
+- Behavior: Renaming a tag leaves untouched a file whose tags only resemble the old one (tagged `beachy` when renaming `beach`)
+- Predicted: passes — the previous cycle's `rename_tag` already matches names exactly (`WHERE name = ?`)
+- Actual: passes
+- Type: passed unexpectedly
+- Resolution: The behavior already came with the previous item, so no test can fail for the right reason without asserting something else. The test stays as a guard against a later switch to prefix or LIKE matching; the item needs no green step.
+
 ## 2026-10-15 01:35 · `src/mediatagger/test_viewer_zoom.py::test_zooming_out_of_a_zoomed_in_image_without_reaching_fitted_keeps_the_image_point_under_the_mouse_under_the_mouse`
 - Behavior: Zooming out of a zoomed-in image, without reaching fitted, keeps the image point under the mouse under the mouse
 - Predicted: passes on first run — `Zoom.wheel`'s anchor formula (`centre = at - (at - centre) * ratio`) does not depend on the zoom direction. This prediction was reasoned through before the run but not written out to the user first.

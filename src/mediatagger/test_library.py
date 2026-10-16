@@ -925,3 +925,14 @@ def test_renaming_beach_to_places_beach_replaces_beach_with_places_beach_on_a_ph
     library.rename_tag("beach", "places:beach")
 
     assert library.tags(photo) == ["places:beach"]
+
+
+def test_renaming_beach_leaves_beachy_on_a_photo_tagged_beachy(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "shore.jpg"
+    photo.touch()
+    library.enter(photo, "beachy")
+
+    library.rename_tag("beach", "places:beach")
+
+    assert library.tags(photo) == ["beachy"]

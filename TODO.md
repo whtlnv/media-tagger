@@ -3,7 +3,7 @@
 ## Phase 19 — Rename a tag across the library
 
 - [x] Renaming a tag in the library replaces it with the new tag on a file tagged with exactly the old tag
-- [ ] Renaming a tag leaves untouched a file whose tags only resemble the old one (tagged `beachy` when renaming `beach`)
+- [x] Renaming a tag leaves untouched a file whose tags only resemble the old one (tagged `beachy` when renaming `beach`)
 - [ ] Renaming a tag replaces it on a folder tagged with it, as on files
 - [ ] Renaming a tag into one an item already has leaves that item with the new tag once
 - [ ] Renaming a tag reports how many items it changed
