@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-16 10:35 · `src/mediatagger/test_window_search.py::test_after_enter_on_beach_family_in_the_rename_prompt_over_search_results_esc_returns_to_a_folder_grid_whose_tile_tagged_beach_family_shows_a_tag_badge_with_count_1`
+- Behavior: After a rename, open search results show their items' new tags
+- Predicted: AssertionError — the results grid's tile still shows `🏷2` after renaming `beach` → `family` from the results
+- Actual: passed — `_rename_tag` refreshes `stack.currentWidget()` and the status bar, and the results grid is the current widget, so the results already show new tags (via commits c7f60a0/6ed0536)
+- Type: passed unexpectedly
+- Resolution: the remaining gap is the folder grid the search started from, still in the stack under the results and never refreshed; rewrote the test to rename from the results, `Esc` back, and expect that folder tile's `🏷1` — now fails with `🏷2`.
+
 ## 2026-10-16 10:14 · `src/mediatagger/test_window_required_tags.py::test_after_enter_on_photo_type_photo_in_the_windows_rename_prompt_the_open_grids_file_tagged_photo_on_a_drive_requiring_type_shows_no_missing_badge`
 - Behavior: After a rename into a required tag, a file's `✗` missing badge disappears from the open grid
 - Predicted: AssertionError — the tile still reads `✗1` after the rename (flagged up front that it might pass, since `Grid.show_new_tags` already recomputes missing roots)

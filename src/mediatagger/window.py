@@ -298,7 +298,9 @@ class Window(QWidget):
             return
         self.session.back_up_library()
         renamed = self.session.library.rename_tag(old, new)
-        self.stack.currentWidget().show_new_tags(self.session.library)
+        for grid in (self.stack.widget(i) for i in range(self.stack.count())):
+            if isinstance(grid, Grid):  # the grid a search started from, under the results, too
+                grid.show_new_tags(self.session.library)
         self._show_current_tags()
         self.rename_prompt.close_applied()
         self.status_bar.show_background(RENAMED_TAG_TEXT.format(old, new, renamed), finished=True)

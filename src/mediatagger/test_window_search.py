@@ -303,6 +303,23 @@ def test_pressing_n_in_the_results_grid_opens_one_empty_prompt_labelled_rename_t
     assert "Rename tag:" in shown_texts_outside_the_status_bar(window)
 
 
+def test_after_enter_on_beach_family_in_the_rename_prompt_over_search_results_esc_returns_to_a_folder_grid_whose_tile_tagged_beach_family_shows_a_tag_badge_with_count_1(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach family")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    folder_grid = stack.currentWidget()
+    search_for(qtbot, window, stack, "beach")
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
+    [prompt] = visible_tag_prompts(window)
+    qtbot.keyClicks(prompt, "beach family")
+    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    assert stack.currentWidget() is folder_grid
+    assert f"{TAG_BADGE}1" in painted_texts(folder_grid, folder_grid.currentIndex().row())
+
+
 def test_typing_n_into_the_search_bar_types_an_n_and_opens_no_rename_prompt(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
