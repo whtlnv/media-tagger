@@ -61,3 +61,9 @@
 
 - **[src/mediatagger/grid.py:Grid.show_new_tags] Every tag save re-reads the whole grid's tag counts and marks** (added: 2026-10-15)
   So that a change one item's tags make to what others inherit shows at once, each save from the tag prompt re-reads the shown folder's counts, own tags and inherited tags (three bulk queries), or for results every tagged item; with required roots a 5,000-file folder opens in ~70 ms on the Mac against ~60 ms without them. Unmeasured on the Pi; if saving a tag lags there in a big folder, update only the saved item's tile when it is a file.
+
+- **[src/mediatagger/window.py:Window._open_tile] A slideshow opened from a filtered grid (or from results) drops the info overlay's state** (added: 2026-10-15)
+  `viewer.open(path)` builds the folder's slideshow (carrying `i`'s overlay over), then the window replaces it with `Slideshow(shown, …)`, whose overlay starts off — so with `i` on, opening a file from a filtered grid or from results shows no filename/position until `i` is pressed again (results did this before Phase 17). Passing the files to `Viewer.open` instead would fix it, but `viewer.py` is at its 270-line budget.
+
+- **[src/mediatagger/folder_thumbnails.py:FolderThumbnails.start] Background prefetch still generates thumbnails for files a filter hides** (added: 2026-10-15)
+  A filtered grid never asks for a hidden tile's thumbnail, but the prefetch of the rest of the folder still generates them, so on the Pi a filtered big folder does the same background work as an unfiltered one. Harmless (they are cached for when the filter goes off); skip hidden files in the prefetch if it matters there.
