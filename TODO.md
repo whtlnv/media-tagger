@@ -15,7 +15,7 @@
 - [x] When a rename fails partway through writing, no item's tags or moments have changed
 - [x] A moment of the old tag that an older build left behind on a video that no longer has the old tag, but has the new tag, does not show up as a moment of the new tag after the rename
 - [x] Pressing `n` in a folder grid opens a one-line prompt labelled `Rename tag:` in the tag prompt's style
-- [ ] Pressing `n` in search results opens the `Rename tag:` prompt
+- [x] Pressing `n` in search results opens the `Rename tag:` prompt
 - [ ] Pressing `n` in the viewer opens no rename prompt
 - [ ] Typing `n` into the tag prompt types an `n` and opens no rename prompt
 - [ ] Typing `n` into the search bar types an `n` and opens no rename prompt

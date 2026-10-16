@@ -9,8 +9,8 @@ from mediatagger.grid import Grid
 from mediatagger.search import search
 from mediatagger.test_grid import fastest_of_three, painted_texts, tile_names
 from mediatagger.test_viewer import SILENT, make_image
-from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image
-from mediatagger.test_window import enter_in_the_grids_tag_prompt, shown_status_bar_texts, window_showing_the_grid_with_its_cursor_on_its_first_tile
+from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image, visible_tag_prompts
+from mediatagger.test_window import enter_in_the_grids_tag_prompt, shown_status_bar_texts, shown_texts_outside_the_status_bar, window_showing_the_grid_with_its_cursor_on_its_first_tile
 from mediatagger.test_viewer_open import make_folders
 from mediatagger.thumbnails import thumbnail_and_duration
 from mediatagger.viewer import Viewer
@@ -287,6 +287,20 @@ def test_entering_family_in_the_tag_prompt_on_a_result_adds_it_to_that_item_and_
     assert Library.open(drive).tags(folder / "IMG_1.png") == ["beach", "family"]
     assert stack.currentWidget() is results
     assert f"{TAG_BADGE}2" in painted_texts(results, results.currentIndex().row())
+
+
+def test_pressing_n_in_the_results_grid_opens_one_empty_prompt_labelled_rename_tag_styled_like_the_tag_prompt(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    search_for(qtbot, window, stack, "beach")
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
+
+    [prompt] = visible_tag_prompts(window)
+    assert prompt.text() == ""
+    assert prompt.styleSheet() == window.tag_prompt.input.styleSheet()
+    assert "Rename tag:" in shown_texts_outside_the_status_bar(window)
 
 
 def test_a_result_whose_path_no_longer_exists_is_drawn_as_a_missing_tile_with_a_distinct_glyph_and_its_name(qtbot, tmp_path):

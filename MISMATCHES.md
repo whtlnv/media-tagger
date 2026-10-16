@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-16 03:54 · `src/mediatagger/test_window_search.py::test_pressing_n_in_the_results_grid_opens_one_empty_prompt_labelled_rename_tag_styled_like_the_tag_prompt`
+- Behavior: Pressing `n` in search results opens the `Rename tag:` prompt
+- Predicted: passes — the folder-grid cycle connected `grid.rename_tag` inside `_connect_tags_search_and_progress_of`, which the results grid also goes through
+- Actual: passes (1 passed)
+- Type: passed unexpectedly (relative to the TODO plan, which expected a separate cycle; predicted by /red)
+- Resolution: The test isn't vacuous: a temporary `grid.rename_tag.disconnect()` on the results grid only made it fail (`[prompt] = visible_tag_prompts(window)` found no prompt). I reverted that mutation and kept the test as a characterization pin; the item needs no /green.
+
 ## 2026-10-16 03:22 · `src/mediatagger/test_library.py::test_renaming_beach_into_places_beach_that_fails_at_its_last_write_leaves_every_items_tags_and_moments_as_they_were`
 - Behavior: When a rename fails partway through writing, no item's tags or moments have changed
 - Predicted: passes — `rename_tag` already does all its writes inside one `with connection` transaction, which rolls back when the trigger aborts the final `UPDATE moments`
