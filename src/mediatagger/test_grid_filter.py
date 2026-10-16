@@ -215,3 +215,33 @@ def test_a_grid_opened_at_a_file_the_filter_hides_puts_the_cursor_on_the_next_sh
     qtbot.addWidget(grid)
 
     assert cursor_name(grid) == "c.jpg"
+
+
+def test_a_grid_under_a_filter_asks_for_its_shown_tiles_in_view_before_a_hidden_tile_among_them(qtbot, tmp_path, monkeypatch):
+    import threading
+
+    from mediatagger import grid as grid_module
+
+    lock = threading.Lock()
+    started = []
+
+    def generate(path):
+        with lock:
+            started.append(path.name)
+        return None, None
+
+    monkeypatch.setattr(grid_module, "thumbnail_and_duration", generate)
+    names = [f"IMG_{i:03}.jpg" for i in range(200)]
+    touch(tmp_path, *names)
+    library = Library.create(tmp_path)
+    library.enter(tmp_path / names[1], "sea")
+    grid = Grid(tmp_path, at=tmp_path / names[0], library=library, grid_filter=chosen(NO_TAGS))
+    qtbot.addWidget(grid)
+    grid.resize(800, 600)
+    grid.show()
+    qtbot.waitExposed(grid)
+
+    qtbot.waitUntil(lambda: names[2] in started and names[1] in started)
+
+    with lock:
+        assert started.index(names[2]) < started.index(names[1])

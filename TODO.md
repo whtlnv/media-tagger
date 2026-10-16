@@ -39,8 +39,8 @@ Phase 17 notes for every cycle (Phases 1–16 are delivered — see DONE.md; Pha
 - [x] Opening a folder whose first tile is hidden by the filter puts the cursor on the first shown tile
 - [x] Going up to a folder at a child that the filter hides puts the cursor on the next shown tile after it
 - [x] Saving a tag that hides the cursor's file moves the cursor to the next shown tile
-- [ ] A grid under a filter requests no thumbnail for a hidden file
-- [ ] A grid under a filter requests thumbnails for its shown files in view
+- [x] A grid under a filter requests no thumbnail for a hidden file
+- [x] A grid under a filter requests thumbnails for its shown files in view
 - [ ] A grid sharing the window's filter shows a round filter button at its bottom-right corner, above the status bar's clear margin and left of the vertical scroll bar
 - [ ] A grid given no shared filter shows no filter button
 - [ ] After the grid is resized (fullscreen included), the filter button sits at its new bottom-right corner

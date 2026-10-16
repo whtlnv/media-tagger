@@ -321,11 +321,13 @@ class Grid(QListView):
         first = self.indexAt(viewport.topLeft())
         if not first.isValid():
             return
-        last_row = first.row()
-        while last_row + 1 < len(tiles) and self.visualRect(self.model().index(last_row + 1, 0)).intersects(viewport):
-            last_row += 1
+        in_view, row = [first.row()], first.row() + 1
+        while row < len(tiles) and (self.isRowHidden(row) or self.visualRect(self.model().index(row, 0)).intersects(viewport)):
+            if not self.isRowHidden(row):  # a hidden tile, filtered out, is stepped over and never asked for
+                in_view.append(row)
+            row += 1
         current = self.currentIndex().row() if self.currentIndex().isValid() else None
-        for row in [*range(last_row, first.row() - 1, -1), current]:  # the cursor's tile last, so generated first
+        for row in [*reversed(in_view), current]:  # the cursor's tile last, so generated first
             if row is not None and row not in self._answered and tiles[row].kind is not _Kind.MISSING:
                 self._thumbnails.request(tiles[row].path)
 
