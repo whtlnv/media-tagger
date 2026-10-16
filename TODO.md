@@ -23,7 +23,7 @@
 - [x] `Enter` on `beach places:beach` in the rename prompt renames the tag across the drive's library and the status bar says `Renamed beach → places:beach on <n> items`
 - [x] After `Enter` applies a rename, the rename prompt closes and keys go back to the grid
 - [x] The rename prompt lowercases both names (`Beach Places:Beach` renames `beach` to `places:beach`)
-- [ ] `Enter` on a rename whose old tag no item has shows `No tag "beach"` and nothing changes
+- [x] `Enter` on a rename whose old tag no item has shows `No tag "beach"` and nothing changes
 - [ ] `Enter` on a single word in the rename prompt shows a short status message and nothing changes
 - [ ] `Enter` on three words in the rename prompt shows a short status message and nothing changes
 - [ ] `Enter` on a rename of a tag to itself shows a short status message and nothing changes

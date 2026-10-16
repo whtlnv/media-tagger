@@ -9,6 +9,7 @@ NO_LIBRARY_TEXT = "No library open"
 READ_ONLY_STATUS_TEXT = "Read-only — tags can't be saved"
 TAGS_CANT_BE_SAVED_HERE_TEXT = "Tags can't be saved here"
 RENAMED_TAG_TEXT = "Renamed {} → {} on {:,} items"
+NO_SUCH_TAG_TEXT = 'No tag "{}"'
 _COULDNT_SAVE_TAGS_TEXT = "Couldn't save tags — is the drive still connected?"
 _CANT_SAVE_MESSAGE_MS = 3000
 _FINISHED_MESSAGE_MS = 3000
