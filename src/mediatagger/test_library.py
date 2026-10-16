@@ -914,3 +914,14 @@ def test_a_tag_added_back_after_a_build_from_before_chapters_removed_it_does_not
     library.enter(video, "save")
 
     assert library.moments(video) == [Moment(10, ["goal"])]
+
+
+def test_renaming_beach_to_places_beach_replaces_beach_with_places_beach_on_a_photo_tagged_beach(tmp_path):
+    library = Library.create(tmp_path)
+    photo = tmp_path / "shore.jpg"
+    photo.touch()
+    library.enter(photo, "beach")
+
+    library.rename_tag("beach", "places:beach")
+
+    assert library.tags(photo) == ["places:beach"]

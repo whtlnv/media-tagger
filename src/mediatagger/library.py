@@ -194,6 +194,13 @@ class Library:
             )
         connection.close()
 
+    def rename_tag(self, old, new):
+        """Every item tagged old is tagged new instead."""
+        connection = sqlite3.connect(self._tags_db)
+        with connection:
+            connection.execute("UPDATE tags SET name = ? WHERE name = ?", (new, old))
+        connection.close()
+
     def moments(self, video):
         """The video's moments in time order."""
         if not self._has_moments_table:
