@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS item_tags (item_id INTEGER, tag_id INTEGER);
 """  # as the code of schema version 2 made them
 
 
-def _create_schema_version_2_library(root, drive_id, tagged):
+def create_schema_version_2_library(root, drive_id, tagged):
     """A tags.db as schema version 2 left it, its items tagged as given ({rel_path: (kind, [tags])})."""
     (root / ".mediatagger").mkdir()
     connection = sqlite3.connect(_tags_db(root))
@@ -296,7 +296,7 @@ def test_opening_a_schema_version_1_library_upgrades_its_tags_db_in_place_to_sch
 
 
 def test_opening_a_schema_version_2_library_upgrades_it_in_place_to_schema_version_3_its_drive_id_and_every_tag_unchanged(tmp_path):
-    _create_schema_version_2_library(tmp_path, "phase-17-drive", TAGGED_ON_A_SCHEMA_VERSION_2_DRIVE)
+    create_schema_version_2_library(tmp_path, "phase-17-drive", TAGGED_ON_A_SCHEMA_VERSION_2_DRIVE)
     rows_before = _tag_rows(tmp_path)
 
     library = Library.open(tmp_path)
@@ -311,7 +311,7 @@ def test_opening_a_schema_version_2_library_upgrades_it_in_place_to_schema_versi
 
 
 def test_opening_a_schema_version_2_library_on_a_read_only_drive_writes_nothing_and_its_files_still_report_their_tags(tmp_path):
-    _create_schema_version_2_library(tmp_path, "read-only-drive", TAGGED_ON_A_SCHEMA_VERSION_2_DRIVE)
+    create_schema_version_2_library(tmp_path, "read-only-drive", TAGGED_ON_A_SCHEMA_VERSION_2_DRIVE)
     library_folder = tmp_path / ".mediatagger"
     before = _tags_db(tmp_path).read_bytes()
     with _read_only_drive(tmp_path):
@@ -325,7 +325,7 @@ def test_opening_a_schema_version_2_library_on_a_read_only_drive_writes_nothing_
 
 
 def test_opening_a_schema_version_2_library_whose_upgrade_is_blocked_by_a_lock_on_tags_db_raises_the_error_and_leaves_it_at_schema_version_2(tmp_path):
-    _create_schema_version_2_library(tmp_path, "locked-drive", TAGGED_ON_A_SCHEMA_VERSION_2_DRIVE)
+    create_schema_version_2_library(tmp_path, "locked-drive", TAGGED_ON_A_SCHEMA_VERSION_2_DRIVE)
     locker = sqlite3.connect(_tags_db(tmp_path))
     locker.execute("BEGIN IMMEDIATE")
     try:
@@ -339,7 +339,7 @@ def test_opening_a_schema_version_2_library_whose_upgrade_is_blocked_by_a_lock_o
 
 
 def test_a_schema_version_2_library_whose_upgrade_fails_partway_is_left_at_schema_version_2_with_no_moments_table_and_every_tag(tmp_path):
-    _create_schema_version_2_library(tmp_path, "interrupted-drive", TAGGED_ON_A_SCHEMA_VERSION_2_DRIVE)
+    create_schema_version_2_library(tmp_path, "interrupted-drive", TAGGED_ON_A_SCHEMA_VERSION_2_DRIVE)
     rows_before = _tag_rows(tmp_path)
     connection = sqlite3.connect(_tags_db(tmp_path))
     with connection:  # recording the new version is the upgrade's last step: make it fail there
@@ -356,7 +356,7 @@ def test_a_schema_version_2_library_whose_upgrade_fails_partway_is_left_at_schem
 
 
 def test_opening_an_upgraded_schema_version_3_library_again_changes_nothing_in_its_tags_db(tmp_path):
-    _create_schema_version_2_library(tmp_path, "phase-17-drive", TAGGED_ON_A_SCHEMA_VERSION_2_DRIVE)
+    create_schema_version_2_library(tmp_path, "phase-17-drive", TAGGED_ON_A_SCHEMA_VERSION_2_DRIVE)
     Library.open(tmp_path)
     before = _tags_db(tmp_path).read_bytes()
 

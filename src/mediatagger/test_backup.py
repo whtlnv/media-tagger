@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 
 from mediatagger.backup import back_up, newest_backup, restore
 from mediatagger.library import Library, tags_db_path
+from mediatagger.test_library import TAGGED_ON_A_SCHEMA_VERSION_2_DRIVE, create_schema_version_2_library
 
 
 def _clock_at_october(day):
@@ -202,3 +203,19 @@ def test_restoring_a_drive_from_a_backup_keeps_the_damaged_tags_db_aside_and_ope
 
     assert (tags_db_path(drive).parent / "tags.db.damaged-20261010T153000Z").read_bytes() == b"garbage"
     assert Library.open(drive).tags(photo) == ["beach", "family"]
+
+
+def test_restoring_a_backup_taken_at_schema_version_2_opens_the_drive_at_schema_version_3_with_every_backed_up_tag(tmp_path):
+    taken_before_the_upgrade = tmp_path / "old"
+    taken_before_the_upgrade.mkdir()
+    create_schema_version_2_library(taken_before_the_upgrade, "drive-id", TAGGED_ON_A_SCHEMA_VERSION_2_DRIVE)
+    drive = tmp_path / "drive"
+    tags_db_path(drive).parent.mkdir(parents=True)
+    tags_db_path(drive).write_bytes(b"garbage")
+
+    restore(drive, tags_db_path(taken_before_the_upgrade), clock=_clock_at_october(10))
+    library = Library.open(drive)
+
+    assert library.schema_version == 3
+    for rel_path, (_kind, tags) in TAGGED_ON_A_SCHEMA_VERSION_2_DRIVE.items():
+        assert library.tags(drive / rel_path) == sorted(tags)

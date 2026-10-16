@@ -15,7 +15,7 @@ Layout (keep cycles consistent): moments are stored in `library.py` (a `moments`
 - [x] Opening a schema-version-2 library whose upgrade fails for a reason other than a read-only drive (e.g. the database is locked) raises the error instead of reporting no moments
 - [x] An upgrade from schema version 2 that fails partway (after the moments table would be made, before the version is recorded) leaves the library at schema version 2 with no moments table and every tag intact
 - [x] Opening a schema-version-3 library again changes nothing in its `tags.db`
-- [ ] Restoring a schema-version-2 backup onto a drive opens it at schema version 3 with every tag of the backup
+- [x] Restoring a schema-version-2 backup onto a drive opens it at schema version 3 with every tag of the backup
 - [ ] Adding the chapter `goal` at 83.4 s to a video makes the library report the video tagged `goal` and one moment at 83.4 s carrying `goal`
 - [ ] A video with no chapters added reports no moments
 - [ ] A chapter added to one video is not reported as a moment of another video in the same folder
