@@ -59,6 +59,7 @@ class Window(QWidget):
         self.stack.currentChanged.connect(lambda: self.cheat_sheet.update())  # the keys of the screen now shown
         self._forwarding = False
         self._results = None
+        self._rename_prompt = None
         self.grid_filter = GridFilter()  # shared by every grid, for as long as the app runs
         self.setAcceptDrops(True)
         geometry = remembered_geometry(self._state_file)
@@ -87,6 +88,10 @@ class Window(QWidget):
         if self.tag_prompt.has_focus():
             if event.key() == Qt.Key.Key_Escape:
                 self.tag_prompt.close()
+            return
+        if self._rename_prompt and event.key() == Qt.Key.Key_Escape:
+            for widget in self._rename_prompt:
+                widget.hide()
             return
         self._forward_to_the_shown_page(event)
 
@@ -276,7 +281,9 @@ class Window(QWidget):
         prompt = QLineEdit(self)
         prompt.setStyleSheet(self.tag_prompt.input.styleSheet())
         prompt.show()
-        overlay_label("Rename tag:", self).show()
+        label = overlay_label("Rename tag:", self)
+        label.show()
+        self._rename_prompt = (prompt, label)
 
     def _show_saved_tags(self, library, path):
         grid = self.stack.currentWidget()

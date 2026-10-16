@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-16 04:14 · `src/mediatagger/test_window.py::test_esc_in_the_windows_rename_prompt_after_typing_beach_places_beach_closes_only_the_prompt_staying_in_the_grid_and_leaves_the_item_tagged_beach_family`
+- Behavior: `Esc` in the rename prompt closes it and no tag changes
+- Predicted: AssertionError — the rename prompt (a bare QLineEdit) stays visible after Esc
+- Actual: passed unexpectedly — the QLineEdit ignores Esc, which bubbles to Window.keyPressEvent, gets forwarded to the grid, and quits the app; the hidden window makes "no visible prompt" vacuously true
+- Type: passed unexpectedly
+- Resolution: Added assertions that the window stays visible on the same grid; now fails with `assert window.isVisible()`.
+
 ## 2026-10-16 04:09 · `src/mediatagger/test_window_search.py::test_typing_n_into_the_search_bar_types_an_n_and_opens_no_rename_prompt`
 - Behavior: Typing `n` into the search bar types an `n` and opens no rename prompt
 - Predicted: passes — `SearchBar.keyPressEvent` hands every key other than Return/Esc/Up/Down to `QLineEdit`; only `Grid.keyPressEvent` binds `Key_N`
