@@ -198,7 +198,16 @@ class Library:
         """Every item tagged old is tagged new instead."""
         connection = sqlite3.connect(self._tags_db)
         with connection:
-            connection.execute("UPDATE tags SET name = ? WHERE name = ?", (new, old))
+            existing = connection.execute("SELECT id FROM tags WHERE name = ?", (new,)).fetchone()
+            if existing is None:
+                connection.execute("UPDATE tags SET name = ? WHERE name = ?", (new, old))
+            else:
+                (old_id,) = connection.execute("SELECT id FROM tags WHERE name = ?", (old,)).fetchone()
+                connection.execute(
+                    "DELETE FROM item_tags WHERE tag_id = ? AND item_id IN"
+                    " (SELECT item_id FROM item_tags WHERE tag_id = ?)",
+                    (old_id, existing[0]),
+                )
         connection.close()
 
     def moments(self, video):

@@ -5,7 +5,7 @@
 - [x] Renaming a tag in the library replaces it with the new tag on a file tagged with exactly the old tag
 - [x] Renaming a tag leaves untouched a file whose tags only resemble the old one (tagged `beachy` when renaming `beach`)
 - [x] Renaming a tag replaces it on a folder tagged with it, as on files
-- [ ] Renaming a tag into one an item already has leaves that item with the new tag once
+- [x] Renaming a tag into one an item already has leaves that item with the new tag once
 - [ ] Renaming a tag reports how many items it changed
 - [ ] Renaming a tag that no item has changes nothing and reports zero items
 - [ ] A video's chapter moment of the old tag becomes a moment of the new tag after the rename, at the same time
