@@ -24,7 +24,7 @@
 - [x] After `Enter` applies a rename, the rename prompt closes and keys go back to the grid
 - [x] The rename prompt lowercases both names (`Beach Places:Beach` renames `beach` to `places:beach`)
 - [x] `Enter` on a rename whose old tag no item has shows `No tag "beach"` and nothing changes
-- [ ] `Enter` on a single word in the rename prompt shows a short status message and nothing changes
+- [x] `Enter` on a single word in the rename prompt shows a short status message and nothing changes
 - [ ] `Enter` on three words in the rename prompt shows a short status message and nothing changes
 - [ ] `Enter` on a rename of a tag to itself shows a short status message and nothing changes
 - [ ] `Enter` on a rename whose old name starts with `-` shows a short status message and nothing changes
