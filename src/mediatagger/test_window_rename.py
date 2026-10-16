@@ -68,6 +68,19 @@ def test_enter_on_beach_places_beach_in_the_windows_rename_prompt_renames_the_ta
     assert "Renamed beach → places:beach on 1 item" in shown_status_bar_texts(window)
 
 
+def test_enter_on_beach_places_beach_in_the_windows_rename_prompt_with_a_photo_and_its_folder_tagged_beach_says_on_2_items(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    library = Library.open(drive)
+    library.enter(folder / "IMG_1.png", "beach")
+    library.enter(folder, "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "beach places:beach")
+
+    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+
+    assert "Renamed beach → places:beach on 2 items" in shown_status_bar_texts(window)
+
+
 def test_enter_on_capitalised_beach_places_beach_in_the_windows_rename_prompt_renames_beach_to_places_beach_lowercased(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "Beach Places:Beach")
