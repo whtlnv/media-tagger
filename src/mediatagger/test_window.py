@@ -600,6 +600,26 @@ def test_after_enter_applies_a_rename_in_the_windows_rename_prompt_the_prompt_cl
     assert grid.currentIndex().row() == 1
 
 
+def test_enter_on_beach_places_beach_in_the_windows_rename_prompt_backs_up_the_library_first_so_the_newest_backup_still_holds_beach(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    backup_root = tmp_path / "backups"
+    ticks = iter(datetime(2026, 10, 16, 12, 0, second, tzinfo=timezone.utc) for second in range(60))
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False, backup_root=backup_root, backup_clock=lambda: next(ticks))
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    enter_in_the_grids_tag_prompt(qtbot, window, stack, "beach")
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
+    [prompt] = visible_tag_prompts(window)
+    qtbot.keyClicks(prompt, "beach places:beach")
+
+    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+
+    assert Library.open(drive).tags(folder / "IMG_1.png") == ["places:beach"]
+    assert tags_in_newest_backup(backup_root, drive, tmp_path / "restored", "Photos/IMG_1.png") == ["beach"]
+
+
 def test_pressing_t_in_the_windows_grid_on_a_read_only_drive_opens_no_tag_prompt_and_says_tags_cant_be_saved_here(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     with made_read_only(drive):
