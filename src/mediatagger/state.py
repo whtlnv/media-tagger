@@ -2,7 +2,7 @@ import json
 import os
 from pathlib import Path
 
-MOST_SEARCHES_REMEMBERED = 50
+MOST_ENTRIES_REMEMBERED = 50
 
 
 def state_file(home):
@@ -61,7 +61,7 @@ def remembered_geometry(state):
 def _remember_latest(state, key, entry):
     """Adds entry as the newest of the list remembered under key, dropping an earlier copy and the oldest past the most kept."""
     earlier = [remembered for remembered in _remembered(state, key) or [] if remembered != entry]
-    _remember_if_writable(state, key, (earlier + [entry])[-MOST_SEARCHES_REMEMBERED:])
+    _remember_if_writable(state, key, (earlier + [entry])[-MOST_ENTRIES_REMEMBERED:])
 
 
 def _remember_if_writable(state, key, value):
