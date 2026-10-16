@@ -566,6 +566,35 @@ def test_running_the_mediatagger_command_on_a_folder_of_a_drive_with_a_tagged_li
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == "crumbs=['Search: beach'] tiles=['IMG_2.png']"
 
+RENAME_A_TAG_FROM_THE_GRID_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT + (
+    "from PySide6.QtCore import Qt, QTimer\n"
+    "from PySide6.QtTest import QTest\n"
+    "from PySide6.QtWidgets import QApplication, QStackedWidget\n"
+    "app = QApplication([])\n"
+    "typed = sys.argv[3]\n"
+    "def shown():\n"
+    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    return window, window.findChild(QStackedWidget).currentWidget()\n"
+    "def rename_from_the_grid():\n"
+    "    window, viewer = shown()\n"
+    "    QTest.keyClick(viewer, Qt.Key.Key_Escape)\n"
+    "    window, grid = shown()\n"
+    "    QTest.keyClick(grid, Qt.Key.Key_N)\n"
+    "    QTest.keyClicks(window.focusWidget(), typed)\n"
+    "    QTest.keyClick(window.focusWidget(), Qt.Key.Key_Return)\n"
+    "    QApplication.closeAllWindows()\n"
+    "    QApplication.quit()\n"
+    "QTimer.singleShot(1000, rename_from_the_grid)\n"
+) + RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT
+
+
+def test_in_the_mediatagger_command_on_a_drive_pressing_n_in_the_grid_typing_beach_places_beach_and_enter_renames_the_tag_in_the_drives_tags_db(tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    result = run_python_offscreen(RENAME_A_TAG_FROM_THE_GRID_SCRIPT, str(drive), str(folder), "beach places:beach")
+    assert result.returncode == 0, result.stderr
+    assert Library.open(drive).tags(folder / "IMG_1.png") == ["places:beach"]
+
 PRESS_ESC_THEN_O_IN_THE_GRID_THEN_REPORT_THE_PICKER_SCRIPT = (
     "import sys\n"
     "from PySide6.QtCore import Qt, QTimer\n"
