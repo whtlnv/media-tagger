@@ -985,3 +985,21 @@ def test_renaming_beach_when_no_item_is_tagged_beach_changes_nothing_and_reports
 
     assert library.tags(photo) == ["sunset"]
     assert changed == 0
+
+
+def test_renaming_beach_into_places_beach_that_a_pier_already_has_replaces_beach_on_the_shore_and_reports_both_beach_items(tmp_path):
+    library = Library.create(tmp_path)
+    shore = tmp_path / "shore.jpg"
+    shore.touch()
+    dunes = tmp_path / "dunes.jpg"
+    dunes.touch()
+    pier = tmp_path / "pier.jpg"
+    pier.touch()
+    library.enter(shore, "beach")
+    library.enter(dunes, "beach places:beach")
+    library.enter(pier, "places:beach")
+
+    changed = library.rename_tag("beach", "places:beach")
+
+    assert library.tags(shore) == ["places:beach"]
+    assert changed == 2

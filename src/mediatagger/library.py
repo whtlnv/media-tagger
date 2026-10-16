@@ -212,6 +212,9 @@ class Library:
                     " (SELECT item_id FROM item_tags WHERE tag_id = ?)",
                     (old_id, existing[0]),
                 )
+                connection.execute(
+                    "UPDATE item_tags SET tag_id = ? WHERE tag_id = ?", (existing[0], old_id)
+                )
         connection.close()
         return changed
 
