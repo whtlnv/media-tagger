@@ -32,6 +32,7 @@ Why not web/Electron/Wails: browsers can't play AVI/MPEG-2/DivX, and dropped fol
 - The system disk (mount point `/`) never holds a library: media there is viewing only.
 - Read-only drive: browsing and viewing work; tagging is disabled, with a banner saying so.
 - Each library has a unique `drive_id` stored in its DB. One drive at a time.
+- Schema version 3 (chapter moments). An older library is upgraded when opened, in one transaction that only adds the `moments` table; a read-only drive keeps its older schema and simply has no chapters.
 - **Only tagged items are stored.** Untagged directories are never indexed. Browsing reads the filesystem live.
 - A tagged path that no longer exists shows as a **missing** tile in results; its tags can be removed from there. No rename/move tracking.
 - **Required tags:** `mediatagger_config.json` at the drive's root may hold `{"requiredRoots": ["type:", "size:"]}`, the tag roots every file on that drive should have. It is read (only read, never written) whenever the app opens the drive — at launch, on `o` and on a drop — and only while that drive has a library open are tiles marked (see Grid). Roots are matched as written, so they should be lowercase like tags.
@@ -144,9 +145,10 @@ Results show under a `Search: <query>` breadcrumb; a result whose path no longer
 - Images fit to screen.
 - Zoom: the picture point under the mouse stays under it, except that a picture bigger than the window always covers it and a smaller one stays inside it (no black between picture and edge). Back at 100 % it is centred again. Every item opens at 100 %; `r` keeps the zoom. No zoom indicator.
 - Video autoplays **with sound**, loops, at 1× and unrotated. Space never pauses.
-- While a video plays, a progress bar (`1:23 / 4:56`, `0:00:05 / 1:02:03` from an hour, `1:23 / 4:56 · 1.25×` when not at 1×) sits along its bottom above the status bar; any key shows it, and it hides after 3 s without input.
+- While a video plays, a progress bar (`1:23 / 4:56`, `0:00:05 / 1:02:03` from an hour, `1:23 / 4:56 · 1.25×` when not at 1×) sits along its bottom above the status bar; any key shows it, and it hides after 3 s without input. Each chapter moment is a tick on it; a `.` / `,` jump shows it with the moment's tags (`goal · 1:23 / 4:56`).
 - Tag overlay in a corner: own tags normal, inherited tags dimmed.
 - Manual advance only.
+- Chapters (videos only): a chapter is a tag at a moment. `c` captures the playback time and opens the tag prompt (the video plays on); `Enter` adds every word as a tag of the video with that moment (`-word` is ignored), no second moment of a tag within 1 s of one it has. Moments are kept to 0.1 s, belong to the file only (no inheritance), and removing a tag with `t` removes its moments. The `l` list (moments in time order, `1:23 goal, people:ana`, or "No chapters") sits over the playing video; while it is shown `↑`/`↓`/`Enter`/`Esc`/`Backspace` act on it (Backspace deletes the highlighted moment, keeping its tags; no confirmation), and moving to another item hides it. `Esc` with the cheat sheet also shown hides only the sheet first. Adding or deleting where tags can't be saved shows `Tags can't be saved here`.
 
 ### Grid
 
@@ -165,7 +167,7 @@ Results show under a `Search: <query>` breadcrumb; a result whose path no longer
 
 - Tiles ~200 px: thumbnail (a large type glyph until it arrives, or when there is none), truncated filename, tag-count badge when the item has own tags.
 - A file missing required roots (none of its effective tags — own and inherited — starts with the root) shows `✗<n>`, the number of roots it lacks, styled like the tag-count badge, in the top-right corner just left of it (left to right: missing, tags). A file missing none, and every folder tile, shows nothing. Marks show in folder grids and search results, and change at once when tagging changes them (back from a results slideshow too).
-- Video tiles: frame at ~10%, ▶ badge, duration.
+- Video tiles: frame at ~10%, ▶ badge, duration; with chapters, `⏱ <n>` (its moments) in the top-right corner right of the tag-count badge (left to right: missing, tags, moments).
 - Folder tiles: first image directly inside (natural order); none there, no thumbnail.
 - Selected item's own tags shown in the status bar, followed by its inherited tags dimmed.
 - Filter (mouse only): a round button with a funnel in the bottom-right corner of the tiles pops up a menu — **With tags** (own tags), **No tags** (no own tags), and **Missing tags** (files with a `✗` mark; offered only when the drive has required roots and a library is open, or while it is on). One filter at a time, for every folder grid and search results, until the app quits; choosing the active one again turns it off. While one is on the button is in the highlight colour and its tooltip names it. Non-matching files are hidden at once (also when tagging makes a file stop matching); folder tiles and missing results always stay. A hidden tile never holds the cursor: it moves to the next shown tile, else the nearest before it.
