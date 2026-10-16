@@ -431,3 +431,40 @@ def test_closing_the_window_while_a_video_plays_with_its_progress_bar_shown_rais
 
     window.close()  # the backup lets Qt process due timers before the window hides
     qtbot.wait(600)
+
+
+def is_tick_coloured(colour):
+    return colour.red() > 200 and colour.green() > 150 and colour.blue() < 100
+
+
+def test_a_video_with_a_moment_at_half_its_duration_shows_a_tick_at_the_middle_of_the_progress_bars_track(qtbot):
+    engine = fake_engine(duration=60, time_pos=0)
+    frame, bar = progress_bar_over(qtbot, "black", (400, 20), engine)
+
+    bar.moments = lambda: [30]
+    bar.wake()
+
+    image = frame.grab(bar.geometry()).toImage()
+    assert is_tick_coloured(image.pixelColor(200, 18))
+    assert not is_tick_coloured(image.pixelColor(190, 18))
+
+
+def test_a_moment_at_a_quarter_of_the_videos_duration_shows_a_tick_a_quarter_of_the_way_along_the_track(qtbot):
+    engine = fake_engine(duration=60, time_pos=0)
+    frame, bar = progress_bar_over(qtbot, "black", (400, 20), engine)
+
+    bar.moments = lambda: [15]
+    bar.wake()
+
+    image = frame.grab(bar.geometry()).toImage()
+    assert is_tick_coloured(image.pixelColor(100, 18))
+    assert not is_tick_coloured(image.pixelColor(200, 18))
+
+
+def test_a_video_with_no_moments_shows_no_tick_on_its_progress_bar(qtbot):
+    frame, bar = progress_bar_over(qtbot, "black", (400, 20), fake_engine(duration=60, time_pos=30))
+    qtbot.waitUntil(lambda: bar.text().startswith("0:30"))
+
+    image = frame.grab(bar.geometry()).toImage()
+
+    assert not any(is_tick_coloured(image.pixelColor(x, 18)) for x in range(400))

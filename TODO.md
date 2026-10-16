@@ -39,11 +39,11 @@ Layout (keep cycles consistent): moments are stored in `library.py` (a `moments`
 - [x] `Esc` in the prompt opened by `c` closes it and records no tag and no moment
 - [x] Entering `-goal` in the prompt opened by `c` on a video tagged `goal` leaves `goal` and its moments in place and adds no tag
 - [x] After entering a chapter with `c`, the viewer's tag overlay lists its tag
-- [ ] While a video with a moment at half its duration is shown, its progress bar draws a tick at the middle of its track
-- [ ] A moment at a quarter of the video's duration is drawn as a tick a quarter of the way along the track
-- [ ] A video with no moments draws no tick on its progress bar
-- [ ] After a chapter is added with `c`, its tick shows on the progress bar at once
-- [ ] After `-goal` is entered with `t`, the ticks of the moments that carried only `goal` leave the progress bar at once
+- [x] While a video with a moment at half its duration is shown, its progress bar draws a tick at the middle of its track
+- [x] A moment at a quarter of the video's duration is drawn as a tick a quarter of the way along the track
+- [x] A video with no moments draws no tick on its progress bar
+- [x] After a chapter is added with `c`, its tick shows on the progress bar at once
+- [x] After `-goal` is entered with `t`, the ticks of the moments that carried only `goal` leave the progress bar at once
 - [ ] Pressing `.` on a video at 0:20 with moments at 0:10 and 0:30 seeks to 0:30
 - [ ] Pressing `.` on a video past its last moment leaves the playback position unchanged
 - [ ] Pressing `,` on a video at 0:20 with moments at 0:10 and 0:30 seeks to 0:10

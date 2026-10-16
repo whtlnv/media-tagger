@@ -171,6 +171,7 @@ class Viewer(QWidget):
 
     def _show_tag_overlay(self, library, path):
         self.tag_overlay.show(library.effective_tags(path))
+        self.chapters.read(library, path)
         self.tag_overlay.pin(self._pin_top_right)
 
     def _toggle_fullscreen(self):

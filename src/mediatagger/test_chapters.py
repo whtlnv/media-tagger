@@ -1,11 +1,12 @@
 from PySide6.QtCore import Qt
 
 from mediatagger.test_video import wait_until_playing
+from mediatagger.test_video_controls import is_tick_coloured
 from mediatagger.test_viewer import make_surface_ready, shown_texts
 from mediatagger.library import Library
 from mediatagger.status_bar import TAGS_CANT_BE_SAVED_HERE_TEXT
 from mediatagger.test_viewer_library import (
-    drive_with_a_tag_library_holding_one_clip, drive_with_a_tag_library_holding_one_image, made_read_only, shown_viewer_on_drive, status_bar_texts,
+    drive_with_a_tag_library_holding_one_clip, drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, made_read_only, shown_viewer_on_drive, status_bar_texts,
     visible_tag_prompt_texts,
 )
 
@@ -111,3 +112,35 @@ def test_after_entering_a_chapter_with_c_the_tag_overlay_lists_its_tag(qtbot, tm
     qtbot.keyClick(viewer.tag_prompt.input, Qt.Key.Key_Return)
 
     assert "goal" in shown_texts(viewer)
+
+
+def ticks_on_the_progress_bar(viewer):
+    """The x of each tick along the bottom row of the viewer's progress bar."""
+    image = viewer.progress_bar.grab().toImage()
+    row = image.height() - 2
+    xs = [x for x in range(image.width()) if is_tick_coloured(image.pixelColor(x, row))]
+    return [x for x in xs if x - 1 not in xs]
+
+
+def test_after_a_chapter_is_added_with_c_its_tick_shows_on_the_progress_bar_at_once(qtbot, tmp_path):
+    viewer, _drive, _folder = viewer_playing_a_clip_on_a_drive_with_a_library(qtbot, tmp_path)
+    qtbot.keyClick(viewer, Qt.Key.Key_C)
+    qtbot.keyClicks(viewer.tag_prompt.input, "goal")
+
+    qtbot.keyClick(viewer.tag_prompt.input, Qt.Key.Key_Return)
+
+    assert len(ticks_on_the_progress_bar(viewer)) == 1
+
+
+def test_after_minus_goal_is_entered_with_t_the_ticks_of_moments_that_carried_only_goal_leave_the_progress_bar_at_once(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=30)
+    Library.open(drive).add_chapter(folder / "IMG_1.mp4", "goal", 5)
+    Library.open(drive).add_chapter(folder / "IMG_1.mp4", "save", 20)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    make_surface_ready(viewer)
+    wait_until_playing(viewer.video_player.engine)
+    qtbot.waitUntil(lambda: len(ticks_on_the_progress_bar(viewer)) == 2, timeout=5000)
+
+    enter_in_tag_prompt(qtbot, viewer, "-goal")
+
+    assert len(ticks_on_the_progress_bar(viewer)) == 1

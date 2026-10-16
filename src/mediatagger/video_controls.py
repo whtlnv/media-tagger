@@ -6,6 +6,9 @@ from PySide6.QtWidgets import QLabel
 HIDE_DELAY_MS = 3000  # the bar fades after this long without input
 _TRACK = QColor(255, 255, 255, 80)  # the whole length, dimmer than the elapsed part
 _TRACK_HEIGHT = 3  # a thin strip along the bottom edge, clear of the text
+_TICK = QColor(255, 210, 0)  # a moment of the video: warm, so it stands out on the white elapsed part and the dim rest
+_TICK_WIDTH = 2
+_TICK_RISE = 3  # how far a tick stands above the track
 _EDGE = QColor(0, 0, 0, 200)  # around the light text and filled track, so they read over white frames as over black
 _EDGE_OFFSETS = [(dx, dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1) if (dx, dy) != (0, 0)]
 _GEOMETRY_EVENTS = (QEvent.Type.Show, QEvent.Type.Hide, QEvent.Type.Move, QEvent.Type.Resize)
@@ -19,6 +22,8 @@ class ProgressBar(QLabel):
     _playing = False
     _area = None  # (rect, clear_at_the_bottom) from the latest place
     _obstacles = ()
+    _ticks = ()  # where the video's moments fall, as fractions of its length
+    moments = staticmethod(lambda: ())  # the seconds of the shown video's moments, asked on every update
 
     def __init__(self, parent, hide_delay=HIDE_DELAY_MS):
         super().__init__(parent)
@@ -88,6 +93,7 @@ class ProgressBar(QLabel):
     def _show_elapsed(self, seconds):
         duration = self._engine.duration
         self._fraction = seconds / duration
+        self._ticks = [moment / duration for moment in self.moments()]
         with_hours = duration >= 60 * 60
         speed = self._engine.speed
         shown_speed = "" if speed == 1 else f" · {speed:g}×"
@@ -100,6 +106,8 @@ class ProgressBar(QLabel):
             filled = int(self.width() * self._fraction)
             painter.fillRect(0, top - 1, filled, 1, _EDGE)  # so the light line reads over a white frame too
             painter.fillRect(0, top, filled, _TRACK_HEIGHT, Qt.GlobalColor.white)
+            for tick in self._ticks:
+                painter.fillRect(int(self.width() * tick) - _TICK_WIDTH // 2, top - _TICK_RISE, _TICK_WIDTH, _TRACK_HEIGHT + _TICK_RISE, _TICK)
             self._draw_edged_text(painter)
 
     def _draw_edged_text(self, painter):
