@@ -1,10 +1,15 @@
-from PySide6.QtCore import QObject, Signal
+from PySide6.QtCore import QEvent, QObject, Signal
+from PySide6.QtWidgets import QToolButton
 
 WITH_TAGS = "With tags"
 
 NO_TAGS = "No tags"
 
 MISSING_TAGS = "Missing tags"
+
+BUTTON_SIZE = 40
+
+BUTTON_INSET = 12  # from the corner of the tiles
 
 
 class GridFilter(QObject):
@@ -31,3 +36,24 @@ class GridFilter(QObject):
         if self.active == MISSING_TAGS:
             return missing_roots > 0
         return True
+
+
+class FilterButton(QToolButton):
+    """The round button floating over a grid's bottom-right corner, just inside its tiles (so above the status bar's
+    clear margin and left of the scroll bar), that opens the filter menu."""
+
+    def __init__(self, grid):
+        super().__init__(grid)
+        self.setFixedSize(BUTTON_SIZE, BUTTON_SIZE)
+        grid.viewport().installEventFilter(self)  # the tiles' area moves with resizes, margins and the scroll bar
+        self._place()
+
+    def eventFilter(self, watched, event):
+        if event.type() == QEvent.Type.Resize:
+            self._place()
+        return False
+
+    def _place(self):
+        tiles = self.parent().viewport().geometry()
+        self.move(tiles.right() + 1 - BUTTON_INSET - self.width(), tiles.bottom() + 1 - BUTTON_INSET - self.height())
+        self.raise_()

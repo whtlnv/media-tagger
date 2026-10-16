@@ -41,9 +41,9 @@ Phase 17 notes for every cycle (Phases 1–16 are delivered — see DONE.md; Pha
 - [x] Saving a tag that hides the cursor's file moves the cursor to the next shown tile
 - [x] A grid under a filter requests no thumbnail for a hidden file
 - [x] A grid under a filter requests thumbnails for its shown files in view
-- [ ] A grid sharing the window's filter shows a round filter button at its bottom-right corner, above the status bar's clear margin and left of the vertical scroll bar
-- [ ] A grid given no shared filter shows no filter button
-- [ ] After the grid is resized (fullscreen included), the filter button sits at its new bottom-right corner
+- [x] A grid sharing the window's filter shows a round filter button at its bottom-right corner, above the status bar's clear margin and left of the vertical scroll bar
+- [x] A grid given no shared filter shows no filter button
+- [x] After the grid is resized (fullscreen included), the filter button sits at its new bottom-right corner
 - [ ] Clicking the filter button leaves keyboard focus on the grid, so arrow keys still move the cursor
 - [ ] With no filter on, the filter button is drawn with a translucent dark backing
 - [ ] With a filter on, the filter button is drawn checked, opaque, in the highlight colour

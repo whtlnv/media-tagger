@@ -10,6 +10,7 @@ from PySide6.QtWidgets import QListView, QStyle, QStyledItemDelegate
 from mediatagger.drive_config import missing_roots
 from mediatagger.folder import is_video_name, subfolder_and_media_names
 from mediatagger.folder_thumbnails import FolderThumbnails
+from mediatagger.grid_filter import FilterButton
 from mediatagger.thumbnail_cache import ThumbnailCache
 from mediatagger.thumbnails import format_duration, thumbnail_and_duration
 
@@ -264,6 +265,7 @@ class Grid(QListView):
             self._apply_filter()
         if grid_filter is not None:
             grid_filter.changed.connect(self._apply_filter)
+            FilterButton(self)
         self.setItemDelegate(_TileDelegate(self))
         self._generate_thumbnails(tiles, thumbnail_cache or ThumbnailCache(":memory:"))
         self.setAcceptDrops(True)

@@ -2,7 +2,7 @@ import pytest
 from PySide6.QtCore import Qt
 
 from mediatagger.grid import Grid
-from mediatagger.grid_filter import MISSING_TAGS, NO_TAGS, WITH_TAGS, GridFilter
+from mediatagger.grid_filter import MISSING_TAGS, NO_TAGS, WITH_TAGS, FilterButton, GridFilter
 from mediatagger.library import Library
 from mediatagger.test_folder import touch
 
@@ -245,3 +245,45 @@ def test_a_grid_under_a_filter_asks_for_its_shown_tiles_in_view_before_a_hidden_
 
     with lock:
         assert started.index(names[2]) < started.index(names[1])
+
+
+def shown_filtered_grid(qtbot, tmp_path, grid_filter=None, **grid_options):
+    touch(tmp_path, *[f"IMG_{i:03}.jpg" for i in range(60)])  # more than fit, so the vertical scroll bar shows
+    grid = Grid(tmp_path, grid_filter=grid_filter or GridFilter(), **grid_options)
+    qtbot.addWidget(grid)
+    grid.keep_clear_at_the_bottom(40)  # as the window does for its status bar
+    grid.resize(800, 600)
+    grid.show()
+    qtbot.waitExposed(grid)
+    qtbot.waitUntil(grid.verticalScrollBar().isVisible)
+    return grid
+
+
+def sits_in_the_bottom_right_corner_of_the_tiles(button, grid):
+    tiles = grid.viewport().geometry()  # inside the clear bottom margin and left of the scroll bar
+    corner = button.geometry()
+    return tiles.contains(corner) and tiles.right() - corner.right() <= 24 and tiles.bottom() - corner.bottom() <= 24
+
+
+def test_a_grid_sharing_the_windows_filter_shows_a_round_filter_button_in_the_bottom_right_corner_of_its_tiles(qtbot, tmp_path):
+    grid = shown_filtered_grid(qtbot, tmp_path)
+
+    button = grid.findChild(FilterButton)
+
+    assert (button.isVisible(), button.width() == button.height(), sits_in_the_bottom_right_corner_of_the_tiles(button, grid)) == (True, True, True)
+
+
+def test_a_grid_given_no_shared_filter_shows_no_filter_button(qtbot, tmp_path):
+    touch(tmp_path, "a.jpg")
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+
+    assert grid.findChild(FilterButton) is None
+
+
+def test_after_the_grid_is_resized_the_filter_button_sits_in_the_new_bottom_right_corner_of_its_tiles(qtbot, tmp_path):
+    grid = shown_filtered_grid(qtbot, tmp_path)
+
+    grid.resize(1200, 900)
+
+    qtbot.waitUntil(lambda: sits_in_the_bottom_right_corner_of_the_tiles(grid.findChild(FilterButton), grid))
