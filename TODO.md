@@ -69,10 +69,10 @@ Layout (keep cycles consistent): moments are stored in `library.py` (a `moments`
 - [x] `Backspace` in the chapter list where tags can't be saved (read-only drive) keeps the moment and briefly shows `Tags can't be saved here`
 - [x] Moving to another item (`Space`, `←`, `→`) while the chapter list is shown hides it
 - [x] With both the cheat sheet and the chapter list shown, `Esc` hides only the cheat sheet; a second `Esc` hides the chapter list
-- [ ] A video tile whose video has 3 distinct moments shows a `⏱ 3` badge
-- [ ] A video tile whose video has no moments shows no `⏱` badge
-- [ ] On a tile with missing-roots, tag-count and `⏱` badges, they read left to right in the top row `✗`, tag count, `⏱`, not overlapping, the `⏱` badge in the top-right corner
-- [ ] A results grid shows the `⏱` badge on a result video with moments
-- [ ] After adding a chapter with `c`, `Esc` back to the grid shows the video's tile with the updated `⏱` count
+- [x] A video tile whose video has 3 distinct moments shows a `⏱ 3` badge
+- [x] A video tile whose video has no moments shows no `⏱` badge
+- [x] On a tile with missing-roots, tag-count and `⏱` badges, they read left to right in the top row `✗`, tag count, `⏱`, not overlapping, the `⏱` badge in the top-right corner
+- [x] A results grid shows the `⏱` badge on a result video with moments
+- [x] After adding a chapter with `c`, `Esc` back to the grid shows the video's tile with the updated `⏱` count
 - [ ] The viewer's cheat sheet lists `c` (add chapter), `l` (chapter list) and `.` / `,` (next / previous chapter) as DESIGN.md's viewer table does
 - [ ] In the shipped `mediatagger` app on a drive with a library, pressing `c` on a video, typing `goal` and `Enter` records a moment in the drive's `tags.db`, and a second run of the command shows it in `l`'s chapter list (the test's driver script treats a temp folder as the mount point)

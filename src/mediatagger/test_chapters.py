@@ -1,12 +1,14 @@
 import pytest
 from PySide6.QtCore import Qt
 
+from mediatagger.chapter_list import ChapterList
+from mediatagger.grid import MOMENTS_BADGE
+from mediatagger.library import Library
+from mediatagger.status_bar import TAGS_CANT_BE_SAVED_HERE_TEXT
+from mediatagger.test_grid import painted_texts
 from mediatagger.test_video import make_clip, wait_until_playing
 from mediatagger.test_video_controls import is_tick_coloured
 from mediatagger.test_viewer import make_surface_ready, shown_texts
-from mediatagger.chapter_list import ChapterList
-from mediatagger.library import Library
-from mediatagger.status_bar import TAGS_CANT_BE_SAVED_HERE_TEXT
 from mediatagger.test_viewer_library import (
     drive_with_a_tag_library_holding_one_clip, drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, made_read_only, shown_viewer_on_drive, status_bar_texts,
     visible_tag_prompt_texts,
@@ -459,3 +461,21 @@ def test_with_the_cheat_sheet_and_the_chapter_list_shown_esc_hides_only_the_shee
     assert after_the_first == (False, ["0:05 goal"])
     assert shown_chapter_lines(viewer) is None
     assert window.stack.currentWidget() is viewer
+
+
+def test_after_adding_a_chapter_with_c_esc_back_to_the_grid_shows_the_videos_tile_with_its_moments_badge(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=30)
+    Library.open(drive).add_chapter(folder / "IMG_1.mp4", "kickoff", 0)
+    window = window_on_the_drive(qtbot, drive, folder)
+    viewer = window.viewer
+    make_surface_ready(viewer)
+    engine = viewer.video_player.engine
+    engine.wait_for_property("time-pos", lambda pos: pos is not None and pos > 2, timeout=5)
+    qtbot.keyClick(viewer, Qt.Key.Key_C)
+    qtbot.keyClicks(viewer.tag_prompt.input, "goal")
+    qtbot.keyClick(viewer.tag_prompt.input, Qt.Key.Key_Return)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Escape)
+
+    grid = window.stack.currentWidget()
+    assert f"{MOMENTS_BADGE} 2" in painted_texts(grid, 0)

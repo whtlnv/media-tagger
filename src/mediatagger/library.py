@@ -223,6 +223,31 @@ class Library:
         connection.close()
         return counts
 
+    def moment_counts(self, folder):
+        """How many moments each of the folder's direct items has, for those with any, read in one query."""
+        _prefix, in_folder, parameters = self._direct_items_of(folder)
+        return {self.root / rel_path: count for rel_path, count in self._moment_counts(in_folder, parameters)}
+
+    def all_moment_counts(self):
+        """How many moments every item with any has, keyed by its full path as a string, read in one query."""
+        root = f"{self.root}/"
+        return {root + rel_path: count for rel_path, count in self._moment_counts("1", ())}
+
+    def _moment_counts(self, condition, parameters):
+        if self.schema_version < 3:
+            return []
+        connection = sqlite3.connect(self._tags_db)
+        rows = connection.execute(
+            "SELECT items.rel_path, COUNT(DISTINCT moments.tenths) FROM moments"
+            " JOIN items ON items.id = moments.item_id"
+            " JOIN item_tags ON item_tags.item_id = moments.item_id AND item_tags.tag_id = moments.tag_id"
+            f" WHERE {condition}"
+            " GROUP BY items.rel_path",
+            parameters,
+        ).fetchall()
+        connection.close()
+        return rows
+
     def own_tags_in(self, folder):
         """The own tags of the folder's direct items, keyed by name, read in one query that looks only at that folder's rows."""
         if not self._has_tag_tables:

@@ -27,6 +27,7 @@ VIDEO_BADGE = "▶"
 TAG_BADGE = "🏷"
 
 MISSING_ROOTS_BADGE = "✗"
+MOMENTS_BADGE = "⏱"
 
 TILE_SIZE = QSize(200, 200)
 
@@ -66,6 +67,7 @@ class _Tile:
     kind: _Kind
     tag_count: int = 0
     missing_roots: int = 0  # of the drive's required roots, by the file's effective tags (inherited ones included)
+    moments: int = 0  # a video's chapter moments
     thumbnail: object = None
     duration: float = None
 
@@ -83,6 +85,15 @@ def _own_tag_counts(tiles, folder, library, results):
         counts = library.own_tag_counts()
         return [counts.get(str(tile.path), 0) for tile in tiles]
     counts = {path.name: count for path, count in library.tag_counts(folder).items()}
+    return [counts.get(tile.name, 0) for tile in tiles]
+
+
+def _moment_counts(tiles, folder, library, results):
+    """Each tile's number of chapter moments, read in bulk like the tag counts."""
+    if results:
+        counts = library.all_moment_counts()
+        return [counts.get(str(tile.path), 0) for tile in tiles]
+    counts = {path.name: count for path, count in library.moment_counts(folder).items()}
     return [counts.get(tile.name, 0) for tile in tiles]
 
 
@@ -176,7 +187,10 @@ class _TileDelegate(QStyledItemDelegate):
         if tile.kind is _Kind.VIDEO:
             badge = VIDEO_BADGE if tile.duration is None else f"{VIDEO_BADGE} {format_duration(tile.duration)}"
             _draw_backed_badge(painter, picture_area, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignRight, badge)
-        top_right = picture_area  # the top-right badges read, left to right: missing roots, tags
+        top_right = picture_area  # the top-right badges read, left to right: missing roots, tags, moments
+        if tile.moments:
+            moments_badge = _draw_backed_badge(painter, top_right, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{MOMENTS_BADGE} {tile.moments}")
+            top_right = top_right.adjusted(0, 0, moments_badge.left() - top_right.right(), 0)
         if tile.tag_count:
             tag_badge = _draw_backed_badge(painter, top_right, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{TAG_BADGE}{tile.tag_count}")
             top_right = top_right.adjusted(0, 0, tag_badge.left() - top_right.right(), 0)  # a badge's padding apart
@@ -342,8 +356,8 @@ class Grid(QListView):
         """Every tile shows its own-tag count and missing roots afresh, and is filtered by them, read in bulk, without listing the folder again:
         tagging one item can change what others inherit."""
         tiles = self.model().tiles
-        for tile, count in zip(tiles, _own_tag_counts(tiles, self.folder, library, self._results)):
-            tile.tag_count = count
+        for tile, count, moments in zip(tiles, _own_tag_counts(tiles, self.folder, library, self._results), _moment_counts(tiles, self.folder, library, self._results)):
+            tile.tag_count, tile.moments = count, moments
         if self._required_roots:
             _mark_missing_roots(tiles, _effective_tags(tiles, self.folder, library, self._results), self._required_roots)
         self._apply_filter()  # a file tagged so it no longer matches goes at once
