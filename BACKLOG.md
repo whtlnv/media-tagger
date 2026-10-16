@@ -2,6 +2,9 @@
 
 ## Out of Scope
 
+- **[src/mediatagger/test_window_search.py:487] Test imports test_library's private `_create_schema_version_1_library` and `_read_only_drive`** (added: 2026-10-16)
+  The read-only schema-version-1 search test reaches two private helpers of `test_library.py`; no public equivalent exists (`made_read_only` locks only the drive root, not `.mediatagger` and `tags.db`, so the upgrade would still write), and making them public needs a rename in `test_library.py`, outside the 29bbecd..HEAD range.
+
 - **[src/mediatagger/rename_prompt.py:_RecallingInput] The rename input's ↑/↓ recall repeats the search bar's** (added: 2026-10-16)
   `_RecallingInput.keyPressEvent` re-implements `SearchBar.recall_older_search`/`recall_newer_search` (step back through a remembered list, empty past the newest) over `remembered_renames` instead of `remembered_searches`. Unifying them needs a new shared recall helper that `search_bar.py`, outside the 29bbecd..HEAD range, would adopt; hoist it when the search bar is next touched.
 
