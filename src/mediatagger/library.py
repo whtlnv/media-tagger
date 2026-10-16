@@ -207,6 +207,11 @@ class Library:
                 connection.execute("UPDATE tags SET name = ? WHERE name = ?", (new, old))
             else:
                 (old_id,) = connection.execute("SELECT id FROM tags WHERE name = ?", (old,)).fetchone()
+                connection.execute(  # a stale old moment would otherwise revive under the new tag
+                    "DELETE FROM moments WHERE tag_id = ? AND NOT EXISTS (SELECT 1 FROM item_tags"
+                    " WHERE item_id = moments.item_id AND tag_id = moments.tag_id)",
+                    (old_id,),
+                )
                 connection.execute(
                     "DELETE FROM item_tags WHERE tag_id = ? AND item_id IN"
                     " (SELECT item_id FROM item_tags WHERE tag_id = ?)",

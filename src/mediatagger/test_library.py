@@ -1064,3 +1064,19 @@ def test_renaming_beach_into_places_beach_that_fails_at_its_last_write_leaves_ev
     assert library.tags(photo) == ["beach"]
     assert library.tags(video) == ["beach", "places:beach"]
     assert library.moments(video) == [Moment(12.0, ["places:beach"]), Moment(12.5, ["beach"]), Moment(20.0, ["beach"])]
+
+
+def test_renaming_beach_into_places_beach_does_not_revive_a_beach_moment_a_build_from_before_chapters_left_on_a_video_that_now_has_only_places_beach(tmp_path):
+    library = Library.create(tmp_path)
+    video = tmp_path / "trip.mp4"
+    video.touch()
+    library.add_chapter(video, "places:beach", 12.0)
+    library.add_chapter(video, "beach", 30.0)
+    connection = sqlite3.connect(_tags_db(tmp_path))
+    with connection:  # as a build from before chapters would remove a tag: its moments stay behind
+        connection.execute("DELETE FROM item_tags WHERE tag_id = (SELECT id FROM tags WHERE name = 'beach')")
+    connection.close()
+
+    library.rename_tag("beach", "places:beach")
+
+    assert library.moments(video) == [Moment(12.0, ["places:beach"])]
