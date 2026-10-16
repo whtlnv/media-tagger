@@ -52,11 +52,11 @@ Layout (keep cycles consistent): moments are stored in `library.py` (a `moments`
 - [x] Pressing `.` or `,` on a video with no moments leaves the playback position unchanged
 - [x] A jump with `.` or `,` shows the progress bar reading the moment's tag before the time (`goal · 0:30 / 1:05`)
 - [x] After a jump, a key other than `.` or `,` shows the progress bar without a tag name
-- [ ] Pressing `l` on a video with moments shows an overlay listing them in time order, one line per moment with its tags (`0:10 goal, people:ana`)
-- [ ] Pressing `l` on a video with no moments shows an overlay reading "No chapters"
-- [ ] A moment from an hour on is listed as `h:mm:ss` (`1:02:03 goal`)
-- [ ] Pressing `l` while the chapter list is shown hides it
-- [ ] Pressing `l` on a shown image shows no chapter list
+- [x] Pressing `l` on a video with moments shows an overlay listing them in time order, one line per moment with its tags (`0:10 goal, people:ana`)
+- [x] Pressing `l` on a video with no moments shows an overlay reading "No chapters"
+- [x] A moment from an hour on is listed as `h:mm:ss` (`1:02:03 goal`)
+- [x] Pressing `l` while the chapter list is shown hides it
+- [x] Pressing `l` on a shown image shows no chapter list
 - [ ] When the chapter list opens, its first line is highlighted
 - [ ] `↓` in the chapter list highlights the next line
 - [ ] `↑` in the chapter list highlights the previous line

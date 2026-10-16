@@ -4,6 +4,7 @@ from PySide6.QtCore import Qt
 from mediatagger.test_video import wait_until_playing
 from mediatagger.test_video_controls import is_tick_coloured
 from mediatagger.test_viewer import make_surface_ready, shown_texts
+from mediatagger.chapter_list import ChapterList
 from mediatagger.library import Library
 from mediatagger.status_bar import TAGS_CANT_BE_SAVED_HERE_TEXT
 from mediatagger.test_viewer_library import (
@@ -229,3 +230,64 @@ def test_after_a_jump_a_key_other_than_period_or_comma_shows_the_progress_bar_wi
     qtbot.keyClick(viewer, Qt.Key.Key_V)
 
     assert viewer.progress_bar.text() == "0:30 / 1:05"
+
+
+def viewer_playing_a_clip_with_chapters(qtbot, tmp_path, chapters, duration=65):
+    """The viewer playing the drive's clip, which has each of the chapters, (text, seconds), added beforehand."""
+    drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=duration)
+    for text, seconds in chapters:
+        Library.open(drive).add_chapter(folder / "IMG_1.mp4", text, seconds)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    make_surface_ready(viewer)
+    wait_until_playing(viewer.video_player.engine)
+    return viewer
+
+
+def shown_chapter_lines(viewer):
+    """The lines of the chapter list, if it is shown; None if it isn't."""
+    chapter_list = viewer.findChild(ChapterList)
+    if chapter_list is None or not chapter_list.isVisible():
+        return None
+    return [chapter_list.item(row).text() for row in range(chapter_list.count())]
+
+
+def test_pressing_l_on_a_video_with_moments_lists_them_in_time_order_one_line_per_moment_with_its_tags(qtbot, tmp_path):
+    viewer = viewer_playing_a_clip_with_chapters(qtbot, tmp_path, [("save", 40), ("goal people:ana", 10)])
+
+    qtbot.keyClick(viewer, Qt.Key.Key_L)
+
+    assert shown_chapter_lines(viewer) == ["0:10 goal, people:ana", "0:40 save"]
+
+
+def test_pressing_l_on_a_video_with_no_moments_shows_a_list_reading_no_chapters(qtbot, tmp_path):
+    viewer = viewer_playing_a_clip_with_chapters(qtbot, tmp_path, [])
+
+    qtbot.keyClick(viewer, Qt.Key.Key_L)
+
+    assert shown_chapter_lines(viewer) == ["No chapters"]
+
+
+def test_a_moment_from_an_hour_on_is_listed_as_h_mm_ss(qtbot, tmp_path):
+    viewer = viewer_playing_a_clip_with_chapters(qtbot, tmp_path, [("goal", 3723)])
+
+    qtbot.keyClick(viewer, Qt.Key.Key_L)
+
+    assert shown_chapter_lines(viewer) == ["1:02:03 goal"]
+
+
+def test_pressing_l_while_the_chapter_list_is_shown_hides_it(qtbot, tmp_path):
+    viewer = viewer_playing_a_clip_with_chapters(qtbot, tmp_path, [("goal", 10)])
+    qtbot.keyClick(viewer, Qt.Key.Key_L)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_L)
+
+    assert shown_chapter_lines(viewer) is None
+
+
+def test_pressing_l_on_a_shown_image_shows_no_chapter_list(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_L)
+
+    assert shown_chapter_lines(viewer) is None

@@ -1,5 +1,6 @@
 from PySide6.QtCore import QEvent, QObject, Qt
 
+from mediatagger.chapter_list import ChapterList
 from mediatagger.folder import is_video
 
 _LANDED = 0.5  # a jump lands this close to its moment, give or take a frame: the next jump goes past it
@@ -24,6 +25,7 @@ class Chapters(QObject):
         super().__init__(viewer)
         self._viewer = viewer
         self._read = (None, [])  # the item whose moments were read last, and its moments
+        self.list = ChapterList(viewer)
         viewer.installEventFilter(self)
         viewer.progress_bar.moments = lambda: [moment.seconds for moment in self._moments()]
 
@@ -37,6 +39,12 @@ class Chapters(QObject):
             return False
         if event.key() == Qt.Key.Key_C:
             self._open_prompt()
+            return True
+        if event.key() == Qt.Key.Key_L:
+            if self.list.isVisible():
+                self.list.hide()
+            else:
+                self.list.show_moments(self._moments())
             return True
         if event.key() in _JUMPS:
             self._jump(_JUMPS[event.key()])
