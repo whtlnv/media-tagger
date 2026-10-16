@@ -445,6 +445,22 @@ def test_enter_on_beach_places_beach_in_the_windows_rename_prompt_renames_the_ta
     assert "Renamed beach → places:beach on 1 items" in shown_status_bar_texts(window)
 
 
+def test_after_enter_applies_a_rename_in_the_windows_rename_prompt_the_prompt_closes_and_arrows_move_the_grids_cursor_again(qtbot, tmp_path):
+    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
+    grid = stack.currentWidget()
+    qtbot.keyClick(grid, Qt.Key.Key_N)
+    [prompt] = visible_tag_prompts(window)
+    qtbot.keyClicks(prompt, "beach places:beach")
+    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+
+    qtbot.keyClick(window.focusWidget(), Qt.Key.Key_Right)
+
+    assert visible_tag_prompts(window) == []
+    assert "Rename tag:" not in shown_texts_outside_the_status_bar(window)
+    assert stack.currentWidget() is grid
+    assert grid.currentIndex().row() == 1
+
+
 def test_pressing_t_in_the_windows_grid_on_a_read_only_drive_opens_no_tag_prompt_and_says_tags_cant_be_saved_here(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     with made_read_only(drive):
