@@ -1,3 +1,47 @@
+- [x] 2026-10-16 · Renaming a tag in the library replaces it with the new tag on a file tagged with exactly the old tag
+- [x] 2026-10-16 · Renaming a tag leaves untouched a file whose tags only resemble the old one (tagged `beachy` when renaming `beach`)
+- [x] 2026-10-16 · Renaming a tag replaces it on a folder tagged with it, as on files
+- [x] 2026-10-16 · Renaming a tag into one an item already has leaves that item with the new tag once
+- [x] 2026-10-16 · Renaming a tag reports how many items it changed
+- [x] 2026-10-16 · Renaming a tag that no item has changes nothing and reports zero items
+- [x] 2026-10-16 · Renaming a tag into one that other items already have still replaces the old tag on the items that had only the old one, and reports every item that had the old tag
+- [x] 2026-10-16 · A video's chapter moment of the old tag becomes a moment of the new tag after the rename, at the same time
+- [x] 2026-10-16 · A moment of the old tag within 1 s of a moment of the new tag on the same video becomes one moment after the rename
+- [x] 2026-10-16 · A moment of the old tag more than 1 s from a moment of the new tag on the same video stays a separate moment after the rename
+- [x] 2026-10-16 · When a rename fails partway through writing, no item's tags or moments have changed
+- [x] 2026-10-16 · A moment of the old tag that an older build left behind on a video that no longer has the old tag, but has the new tag, does not show up as a moment of the new tag after the rename
+- [x] 2026-10-16 · Pressing `n` in a folder grid opens a one-line prompt labelled `Rename tag:` in the tag prompt's style
+- [x] 2026-10-16 · Pressing `n` in search results opens the `Rename tag:` prompt
+- [x] 2026-10-16 · Pressing `n` in the viewer opens no rename prompt
+- [x] 2026-10-16 · Typing `n` into the tag prompt types an `n` and opens no rename prompt
+- [x] 2026-10-16 · Typing `n` into the search bar types an `n` and opens no rename prompt
+- [x] 2026-10-16 · `Esc` in the rename prompt closes it and no tag changes
+- [x] 2026-10-16 · `Enter` on `beach places:beach` in the rename prompt renames the tag across the drive's library and the status bar says `Renamed beach → places:beach on <n> items`
+- [x] 2026-10-16 · After `Enter` applies a rename, the rename prompt closes and keys go back to the grid
+- [x] 2026-10-16 · The rename prompt lowercases both names (`Beach Places:Beach` renames `beach` to `places:beach`)
+- [x] 2026-10-16 · `Enter` on a rename whose old tag no item has shows `No tag "beach"` and nothing changes
+- [x] 2026-10-16 · `Enter` on a single word in the rename prompt shows a short status message and nothing changes
+- [x] 2026-10-16 · `Enter` on three words in the rename prompt shows a short status message and nothing changes
+- [x] 2026-10-16 · `Enter` on a rename of a tag to itself shows a short status message and nothing changes
+- [x] 2026-10-16 · `Enter` on a rename whose old name starts with `-` shows a short status message and nothing changes
+- [x] 2026-10-16 · `Enter` on a rename whose new name starts with `-` shows a short status message and nothing changes
+- [x] 2026-10-16 · A rename rejected by its status message (no such tag, wrong word count, same name, a leading `-`) keeps the rename prompt open with what was typed, so it can be corrected
+- [x] 2026-10-16 · `Enter` in the rename prompt with no library open shows the same "tags can't be saved" message as `t` and nothing changes
+- [x] 2026-10-16 · `Enter` in the rename prompt on a read-only drive shows the same "tags can't be saved" message as `t`
+- [x] 2026-10-16 · Right before a rename applies, the library is backed up, so the drive's newest backup still holds the old tag
+- [x] 2026-10-16 · A rename rejected by validation makes no backup
+- [x] 2026-10-16 · While typing the first word, the rename prompt's autocomplete offers the library's existing tags
+- [x] 2026-10-16 · While typing the second word, the rename prompt's autocomplete offers the library's existing tags
+- [x] 2026-10-16 · `↑` in the rename prompt recalls the previous applied rename, and `↓` goes back to a newer one
+- [x] 2026-10-16 · Applied renames are remembered in `state.json` and recalled with `↑` after the app restarts
+- [x] 2026-10-16 · After a rename, the open grid's tag-count badges show the counts with the new tag
+- [x] 2026-10-16 · After a rename that merges moments, the open grid's `⏱` badge shows the merged count
+- [x] 2026-10-16 · After a rename into a required tag, a file's `✗` missing badge disappears from the open grid
+- [x] 2026-10-16 · After a rename, the status bar's tags for the tile under the cursor show the new tag
+- [x] 2026-10-16 · After a rename, open search results show their items' new tags
+- [x] 2026-10-16 · With the Missing tags filter on, a file that a rename stops leaving missing is hidden at once
+- [x] 2026-10-16 · The cheat sheet lists `n` as renaming a tag in the grid, and DESIGN.md's grid key table lists `n` the same way
+- [x] 2026-10-16 · In the shipped `mediatagger` app on a drive, pressing `n` in a grid, typing `beach places:beach` and `Enter` renames the tag in the drive's `tags.db`
 - [x] 2026-10-15 · A newly created library records schema version 3 in its `tags.db`
   - predicted-contradiction: `src/mediatagger/test_library.py::test_a_newly_created_library_records_schema_version_2_in_its_tags_db` — asserts: a newly created library's meta records schema_version "2" — retired-by: "A newly created library records schema version 3 in its `tags.db`"
 - [x] 2026-10-15 · Opening a schema-version-2 library upgrades it in place to schema version 3, its drive id and its files' tags unchanged
