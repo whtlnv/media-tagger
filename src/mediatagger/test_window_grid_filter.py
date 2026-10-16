@@ -3,7 +3,7 @@ from PySide6.QtTest import QTest
 
 from mediatagger.grid_filter import MISSING_TAGS, NO_TAGS, WITH_TAGS, FilterButton
 from mediatagger.library import Library
-from mediatagger.test_grid_filter import popped_up_menu, shown_tile_names
+from mediatagger.test_grid_filter import cursor_name, popped_up_menu, shown_tile_names
 from mediatagger.test_viewer import make_image
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt
 from mediatagger.test_viewer_open import make_folders
@@ -95,10 +95,6 @@ def test_choosing_a_filter_that_hides_every_file_of_a_folder_with_no_subfolders_
     assert ("beach" in shown_before, stack.currentWidget().currentIndex().isValid(), "beach" in shown_status_bar_texts(window)) == (True, False, False)
 
 
-def cursor_name(stack):
-    return stack.currentWidget().currentIndex().data(Qt.ItemDataRole.DisplayRole)
-
-
 def test_opening_a_folder_whose_first_tile_is_hidden_by_the_filter_puts_the_cursor_on_the_first_shown_tile(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     [trip] = make_folders(folder, "Trip")
@@ -110,7 +106,7 @@ def test_opening_a_folder_whose_first_tile_is_hidden_by_the_filter_puts_the_curs
 
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
 
-    assert cursor_name(stack) == "IMG_3.png"
+    assert cursor_name(stack.currentWidget()) == "IMG_3.png"
 
 
 def test_saving_a_tag_that_hides_the_cursors_file_moves_the_cursor_to_the_next_shown_tile(qtbot, tmp_path):
@@ -121,7 +117,7 @@ def test_saving_a_tag_that_hides_the_cursors_file_moves_the_cursor_to_the_next_s
 
     enter_in_the_grids_tag_prompt(qtbot, window, stack, "beach")
 
-    assert cursor_name(stack) == "IMG_2.png"
+    assert cursor_name(stack.currentWidget()) == "IMG_2.png"
 
 
 def test_with_the_cheat_sheet_shown_over_the_grid_a_click_on_the_filter_button_still_pops_up_its_menu(qtbot, tmp_path):
@@ -194,7 +190,7 @@ def test_esc_back_from_a_filtered_slideshow_puts_the_cursor_on_the_file_that_was
 
     qtbot.keyClick(window.viewer, Qt.Key.Key_Escape)
 
-    assert cursor_name(stack) == "IMG_3.png"
+    assert cursor_name(stack.currentWidget()) == "IMG_3.png"
 
 
 def test_esc_back_from_a_filtered_slideshow_on_a_file_tagged_so_it_no_longer_matches_puts_the_cursor_on_the_next_shown_tile(qtbot, tmp_path):
@@ -205,7 +201,7 @@ def test_esc_back_from_a_filtered_slideshow_on_a_file_tagged_so_it_no_longer_mat
 
     qtbot.keyClick(window.viewer, Qt.Key.Key_Escape)
 
-    assert (shown_tile_names(stack.currentWidget()), cursor_name(stack)) == (["IMG_3.png"], "IMG_3.png")
+    assert (shown_tile_names(stack.currentWidget()), cursor_name(stack.currentWidget())) == (["IMG_3.png"], "IMG_3.png")
 
 
 def test_in_the_windows_grid_clicking_the_filter_button_and_choosing_no_tags_hides_the_folders_tagged_files(qtbot, tmp_path):
