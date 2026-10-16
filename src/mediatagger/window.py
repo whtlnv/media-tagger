@@ -1,3 +1,4 @@
+import sqlite3
 from pathlib import Path
 
 from PySide6.QtCore import QRect, Qt
@@ -298,7 +299,11 @@ class Window(QWidget):
             return
         if not self.session.back_up_library():
             return  # without the backup, a bad rename couldn't be undone
-        renamed = self.session.library.rename_tag(old, new)
+        try:
+            renamed = self.session.library.rename_tag(old, new)
+        except (sqlite3.Error, OSError):  # the rename is one transaction: nothing of it was written
+            self.status_bar.show_couldnt_save(True)
+            return
         for grid in (self.stack.widget(i) for i in range(self.stack.count())):
             if isinstance(grid, Grid):  # the grid a search started from, under the results, too
                 grid.show_new_tags(self.session.library)

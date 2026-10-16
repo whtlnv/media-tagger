@@ -1,5 +1,6 @@
 import errno
 import os
+import sqlite3
 from datetime import datetime, timezone
 
 import pytest
@@ -234,6 +235,22 @@ def test_enter_on_beach_places_beach_in_the_windows_rename_prompt_when_the_backu
     assert BACKUP_FAILED_TEXT.format(os.strerror(errno.EISDIR)) in shown_status_bar_texts(window)
     assert not [text for text in shown_status_bar_texts(window) if text.startswith("Renamed")]
     assert [prompt.text() for prompt in visible_tag_prompts(window)] == ["beach places:beach"]
+
+
+@pytest.mark.parametrize("drive_error", [sqlite3.OperationalError("disk I/O error"), OSError(5, "Input/output error")], ids=["sqlite_error", "os_error"])
+def test_when_a_rename_in_the_windows_rename_prompt_fails_with_a_drive_error_the_prompt_stays_open_with_its_text_and_the_status_bar_says_it_couldnt_save_tags(qtbot, tmp_path, monkeypatch, drive_error):
+    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
+    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "beach places:beach")
+
+    def rename_on_an_unplugged_drive(self, old, new):
+        raise drive_error
+
+    monkeypatch.setattr(Library, "rename_tag", rename_on_an_unplugged_drive)
+
+    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+
+    assert [prompt.text() for prompt in visible_tag_prompts(window)] == ["beach places:beach"]
+    assert "Couldn't save tags — is the drive still connected?" in shown_status_bar_texts(window)
 
 
 def test_enter_on_a_rename_whose_old_tag_no_item_has_in_the_windows_rename_prompt_makes_no_backup_so_the_newest_backup_is_still_the_one_from_opening(qtbot, tmp_path):
