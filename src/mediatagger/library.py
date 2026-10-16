@@ -215,6 +215,11 @@ class Library:
                 connection.execute(
                     "UPDATE item_tags SET tag_id = ? WHERE tag_id = ?", (existing[0], old_id)
                 )
+                connection.execute(  # an old moment within a second of a new one merges into it
+                    "DELETE FROM moments AS old WHERE tag_id = ? AND EXISTS (SELECT 1 FROM moments"
+                    " WHERE item_id = old.item_id AND tag_id = ? AND abs(tenths - old.tenths) <= 10)",
+                    (old_id, existing[0]),
+                )
                 connection.execute(
                     "UPDATE moments SET tag_id = ? WHERE tag_id = ?", (existing[0], old_id)
                 )
