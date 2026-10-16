@@ -86,7 +86,7 @@ class FilterButton(QToolButton):
         self.raise_()
 
     def paintEvent(self, event):
-        """A dark translucent disc with a white funnel on it, drawn rather than typed so no font can lack it."""
+        """The funnel is drawn rather than typed so no font can lack it."""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         painter.setPen(Qt.PenStyle.NoPen)
