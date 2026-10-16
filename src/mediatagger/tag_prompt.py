@@ -66,6 +66,7 @@ class TagPrompt:
         self._status_bar = status_bar
         self._on_close = on_close
         self._tagging = None  # (library, path) of the item being tagged while the prompt is open
+        self._enter = None  # what saves the entry, if not the library's own tag entry
         self._suggestions = ([], [])
         self.input = _TagInput(host)
         self.input.setStyleSheet(_TAG_INPUT_STYLE)

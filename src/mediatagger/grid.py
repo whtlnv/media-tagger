@@ -356,7 +356,8 @@ class Grid(QListView):
         """Every tile shows its own-tag count and missing roots afresh, and is filtered by them, read in bulk, without listing the folder again:
         tagging one item can change what others inherit."""
         tiles = self.model().tiles
-        for tile, count, moments in zip(tiles, _own_tag_counts(tiles, self.folder, library, self._results), _moment_counts(tiles, self.folder, library, self._results)):
+        counts = _own_tag_counts(tiles, self.folder, library, self._results)
+        for tile, count, moments in zip(tiles, counts, _moment_counts(tiles, self.folder, library, self._results)):
             tile.tag_count, tile.moments = count, moments
         if self._required_roots:
             _mark_missing_roots(tiles, _effective_tags(tiles, self.folder, library, self._results), self._required_roots)

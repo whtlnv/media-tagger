@@ -11,6 +11,10 @@ CREATE TABLE IF NOT EXISTS item_tags (item_id INTEGER, tag_id INTEGER);
 CREATE_MOMENTS_TABLE = (  # a chapter: a tag of a video at a moment, in whole tenths of a second
     "CREATE TABLE IF NOT EXISTS moments (item_id INTEGER, tag_id INTEGER, tenths INTEGER)"
 )
+_KEPT_MOMENTS = (  # moments of tags their item still has: a build from before chapters may have left others behind
+    "moments JOIN items ON items.id = moments.item_id"
+    " JOIN item_tags ON item_tags.item_id = moments.item_id AND item_tags.tag_id = moments.tag_id"
+)
 
 
 def tags_db_path(root):
@@ -47,6 +51,10 @@ def _upgrade(connection, to_version):
             for statement in _UPGRADES[version]:
                 connection.execute(statement)
         connection.execute("UPDATE meta SET value = ? WHERE key = 'schema_version'", (str(to_version),))
+
+
+def _tenths(seconds):
+    return round(seconds * 10)
 
 
 def _ensure_item_id(connection, rel_path, kind):
@@ -128,6 +136,10 @@ class Library:
     def _has_tag_tables(self):
         return self.schema_version >= 2  # a read-only drive left at schema 1 has none
 
+    @property
+    def _has_moments_table(self):
+        return self.schema_version >= 3  # a read-only drive left at an older schema has none
+
     def _key(self, path):
         return str(path.relative_to(self.root))
 
@@ -159,7 +171,7 @@ class Library:
         with connection:
             item_id = _ensure_item_id(connection, self._key(video), "file")
             _set_item_tags(connection, item_id, tags)
-            tenths = round(seconds * 10)
+            tenths = _tenths(seconds)
             connection.executemany(  # no second moment of a tag within a second of one it has
                 "INSERT INTO moments (item_id, tag_id, tenths) SELECT ?, id, ? FROM tags WHERE name = ?"
                 " AND NOT EXISTS (SELECT 1 FROM moments WHERE item_id = ? AND tag_id = tags.id AND abs(tenths - ?) <= 10)",
@@ -173,19 +185,17 @@ class Library:
         with connection:
             connection.execute(
                 "DELETE FROM moments WHERE tenths = ? AND item_id = (SELECT id FROM items WHERE rel_path = ?)",
-                (round(seconds * 10), self._key(video)),
+                (_tenths(seconds), self._key(video)),
             )
         connection.close()
 
     def moments(self, video):
         """The video's moments in time order."""
-        if self.schema_version < 3:
-            return []  # a read-only drive left at an older schema has no moments table
+        if not self._has_moments_table:
+            return []
         connection = sqlite3.connect(self._tags_db)
         rows = connection.execute(
-            "SELECT moments.tenths, tags.name FROM moments"
-            " JOIN items ON items.id = moments.item_id"
-            " JOIN item_tags ON item_tags.item_id = moments.item_id AND item_tags.tag_id = moments.tag_id"  # only tags it still has
+            f"SELECT moments.tenths, tags.name FROM {_KEPT_MOMENTS}"
             " JOIN tags ON tags.id = moments.tag_id"
             " WHERE items.rel_path = ? ORDER BY moments.tenths, tags.name",
             (self._key(video),),
@@ -234,13 +244,11 @@ class Library:
         return {root + rel_path: count for rel_path, count in self._moment_counts("1", ())}
 
     def _moment_counts(self, condition, parameters):
-        if self.schema_version < 3:
+        if not self._has_moments_table:
             return []
         connection = sqlite3.connect(self._tags_db)
         rows = connection.execute(
-            "SELECT items.rel_path, COUNT(DISTINCT moments.tenths) FROM moments"
-            " JOIN items ON items.id = moments.item_id"
-            " JOIN item_tags ON item_tags.item_id = moments.item_id AND item_tags.tag_id = moments.tag_id"
+            f"SELECT items.rel_path, COUNT(DISTINCT moments.tenths) FROM {_KEPT_MOMENTS}"
             f" WHERE {condition}"
             " GROUP BY items.rel_path",
             parameters,
