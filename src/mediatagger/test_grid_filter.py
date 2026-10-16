@@ -30,14 +30,19 @@ def chosen(text):
     return grid_filter
 
 
-def test_with_with_tags_chosen_a_folder_grid_hides_a_file_that_has_no_own_tags(qtbot, tmp_path):
+@pytest.mark.parametrize("text, beachs_tags, required_roots, hidden", [
+    (WITH_TAGS, "sea", (), "city.jpg"),
+    (NO_TAGS, "sea", (), "beach.jpg"),
+    (MISSING_TAGS, "type:photo", ("type:",), "beach.jpg"),
+], ids=["with tags hides a file with no own tags", "no tags hides a file with own tags", "missing tags hides a file carrying no missing mark"])
+def test_under_a_filter_a_folder_grid_hides_a_file_that_doesnt_match(qtbot, tmp_path, text, beachs_tags, required_roots, hidden):
     library = Library.create(tmp_path)
     touch(tmp_path, "beach.jpg", "city.jpg")
-    library.enter(tmp_path / "beach.jpg", "sea")
-    grid = Grid(tmp_path, library=library, grid_filter=chosen(WITH_TAGS))
+    library.enter(tmp_path / "beach.jpg", beachs_tags)
+    grid = Grid(tmp_path, library=library, required_roots=required_roots, grid_filter=chosen(text))
     qtbot.addWidget(grid)
 
-    assert "city.jpg" not in shown_tile_names(grid)
+    assert hidden not in shown_tile_names(grid)
 
 
 def test_with_with_tags_chosen_a_folder_grid_keeps_showing_a_file_that_has_own_tags(qtbot, tmp_path):
@@ -61,16 +66,6 @@ def test_with_with_tags_chosen_a_file_whose_only_tags_are_inherited_from_its_fol
     assert shown_tile_names(grid) == []
 
 
-def test_with_no_tags_chosen_a_folder_grid_hides_a_file_that_has_own_tags(qtbot, tmp_path):
-    library = Library.create(tmp_path)
-    touch(tmp_path, "beach.jpg", "city.jpg")
-    library.enter(tmp_path / "beach.jpg", "sea")
-    grid = Grid(tmp_path, library=library, grid_filter=chosen(NO_TAGS))
-    qtbot.addWidget(grid)
-
-    assert "beach.jpg" not in shown_tile_names(grid)
-
-
 def test_with_no_tags_chosen_a_folder_grid_keeps_showing_a_file_with_no_own_tags_even_one_that_inherits_tags(qtbot, tmp_path):
     library = Library.create(tmp_path)
     (tmp_path / "trip").mkdir()
@@ -81,16 +76,6 @@ def test_with_no_tags_chosen_a_folder_grid_keeps_showing_a_file_with_no_own_tags
     qtbot.addWidget(grid)
 
     assert shown_tile_names(grid) == ["beach.jpg"]
-
-
-def test_with_missing_tags_chosen_a_folder_grid_hides_a_file_that_carries_no_missing_mark(qtbot, tmp_path):
-    library = Library.create(tmp_path)
-    touch(tmp_path, "beach.jpg", "city.jpg")
-    library.enter(tmp_path / "beach.jpg", "type:photo")
-    grid = Grid(tmp_path, library=library, required_roots=("type:",), grid_filter=chosen(MISSING_TAGS))
-    qtbot.addWidget(grid)
-
-    assert "beach.jpg" not in shown_tile_names(grid)
 
 
 def test_with_missing_tags_chosen_a_folder_grid_keeps_showing_a_file_that_carries_a_missing_mark(qtbot, tmp_path):
