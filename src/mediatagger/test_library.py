@@ -19,7 +19,7 @@ def _query(root, sql):
         connection.close()
 
 
-def _read_meta(root):
+def read_meta(root):
     return dict(_query(root, "SELECT key, value FROM meta"))
 
 
@@ -137,7 +137,7 @@ def test_a_library_reports_the_same_drive_id_when_its_drive_is_mounted_at_a_diff
 def test_tags_db_of_a_newly_created_library_is_an_sqlite_database_whose_meta_table_holds_the_drive_id_and_schema_version(tmp_path):
     created = Library.create(tmp_path)
 
-    meta = _read_meta(tmp_path)
+    meta = read_meta(tmp_path)
 
     assert meta["drive_id"] == created.drive_id
     assert int(meta["schema_version"]) == Library.schema_version
@@ -287,7 +287,7 @@ def test_opening_a_schema_version_1_library_upgrades_its_tags_db_in_place_to_sch
 
     Library.open(tmp_path)
 
-    meta = _read_meta(tmp_path)
+    meta = read_meta(tmp_path)
     tables = {name for (name,) in _query(tmp_path, "SELECT name FROM sqlite_master WHERE type = 'table'")}
 
     assert meta["schema_version"] == "3"
@@ -302,7 +302,7 @@ def test_opening_a_schema_version_2_library_upgrades_it_in_place_to_schema_versi
     library = Library.open(tmp_path)
 
     tables = {name for (name,) in _query(tmp_path, "SELECT name FROM sqlite_master WHERE type = 'table'")}
-    assert _read_meta(tmp_path) == {"drive_id": "phase-17-drive", "schema_version": "3"}
+    assert read_meta(tmp_path) == {"drive_id": "phase-17-drive", "schema_version": "3"}
     assert library.schema_version == 3
     assert "moments" in tables
     assert _tag_rows(tmp_path) == rows_before
@@ -337,7 +337,7 @@ def test_opening_a_schema_version_2_library_whose_upgrade_is_blocked_by_a_lock_o
         locker.rollback()
         locker.close()
 
-    assert _read_meta(tmp_path)["schema_version"] == "2"
+    assert read_meta(tmp_path)["schema_version"] == "2"
 
 
 def test_a_schema_version_2_library_whose_upgrade_fails_partway_is_left_at_schema_version_2_with_no_moments_table_and_every_tag(tmp_path):
@@ -352,7 +352,7 @@ def test_a_schema_version_2_library_whose_upgrade_fails_partway_is_left_at_schem
         Library.open(tmp_path)
 
     tables = {name for (name,) in _query(tmp_path, "SELECT name FROM sqlite_master WHERE type = 'table'")}
-    assert _read_meta(tmp_path)["schema_version"] == "2"
+    assert read_meta(tmp_path)["schema_version"] == "2"
     assert "moments" not in tables
     assert _tag_rows(tmp_path) == rows_before
 
@@ -370,7 +370,7 @@ def test_opening_an_upgraded_schema_version_3_library_again_changes_nothing_in_i
 def test_a_newly_created_library_records_schema_version_3_in_its_tags_db(tmp_path):
     Library.create(tmp_path)
 
-    meta = _read_meta(tmp_path)
+    meta = read_meta(tmp_path)
 
     assert meta["schema_version"] == "3"
 
