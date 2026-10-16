@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-16 01:08 · `src/mediatagger/test_library.py::test_renaming_beach_to_places_beach_replaces_beach_with_places_beach_on_a_folder_tagged_beach`
+- Behavior: Renaming a tag replaces it on a folder tagged with it, as on files
+- Predicted: passes — `rename_tag` is one `UPDATE tags SET name = ? WHERE name = ?` with no item-kind condition, and folder tags live in the same `tags` table
+- Actual: passes
+- Type: passed unexpectedly
+- Resolution: The first rename item already delivered folder renames, so no right-reason failure exists. The test stays as a guard against a later rename that only touches file rows; the item needs no green step.
+
 ## 2026-10-16 01:00 · `src/mediatagger/test_library.py::test_renaming_beach_leaves_beachy_on_a_photo_tagged_beachy`
 - Behavior: Renaming a tag leaves untouched a file whose tags only resemble the old one (tagged `beachy` when renaming `beach`)
 - Predicted: passes — the previous cycle's `rename_tag` already matches names exactly (`WHERE name = ?`)

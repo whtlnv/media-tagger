@@ -936,3 +936,14 @@ def test_renaming_beach_leaves_beachy_on_a_photo_tagged_beachy(tmp_path):
     library.rename_tag("beach", "places:beach")
 
     assert library.tags(photo) == ["beachy"]
+
+
+def test_renaming_beach_to_places_beach_replaces_beach_with_places_beach_on_a_folder_tagged_beach(tmp_path):
+    library = Library.create(tmp_path)
+    folder = tmp_path / "holidays"
+    folder.mkdir()
+    library.enter(folder, "beach")
+
+    library.rename_tag("beach", "places:beach")
+
+    assert library.tags(folder) == ["places:beach"]
