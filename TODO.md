@@ -36,7 +36,7 @@
 - [x] A rename rejected by validation makes no backup
 - [x] While typing the first word, the rename prompt's autocomplete offers the library's existing tags
 - [x] While typing the second word, the rename prompt's autocomplete offers the library's existing tags
-- [ ] `↑` in the rename prompt recalls the previous applied rename, and `↓` goes back to a newer one
+- [x] `↑` in the rename prompt recalls the previous applied rename, and `↓` goes back to a newer one
 - [ ] Applied renames are remembered in `state.json` and recalled with `↑` after the app restarts
 - [ ] After a rename, the open grid's tag-count badges show the counts with the new tag
 - [ ] After a rename that merges moments, the open grid's `⏱` badge shows the merged count
