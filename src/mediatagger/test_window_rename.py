@@ -96,11 +96,7 @@ def test_after_enter_on_beach_places_beach_in_the_windows_rename_prompt_the_open
     library = Library.open(drive)
     library.add_chapter(folder / "IMG_2.mp4", "places:beach", 12.0)
     library.add_chapter(folder / "IMG_2.mp4", "beach", 12.5)
-    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
-    qtbot.addWidget(window)
-    show_exposed(qtbot, window)
-    stack = window.findChild(QStackedWidget)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
     grid = stack.currentWidget()
     prompt = rename_prompt_after_typing(qtbot, window, grid, "beach places:beach")
 
@@ -156,11 +152,7 @@ def test_enter_on_a_rename_in_the_windows_rename_prompt_on_a_read_only_drive_say
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     Library.open(drive).enter(folder / "IMG_1.png", "beach")
     with made_read_only(drive):
-        window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
-        qtbot.addWidget(window)
-        show_exposed(qtbot, window)
-        stack = window.findChild(QStackedWidget)
-        qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+        window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
         prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "beach places:beach")
 
         qtbot.keyClick(prompt, Qt.Key.Key_Return)
