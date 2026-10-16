@@ -495,6 +495,19 @@ def test_after_enter_on_beach_places_beach_in_the_windows_rename_prompt_the_open
     assert f"{MOMENTS_BADGE} 1" in painted_texts(grid, row)
 
 
+def test_after_enter_on_beach_places_beach_in_the_windows_rename_prompt_with_the_grids_cursor_on_the_item_tagged_beach_family_the_status_bar_shows_family_places_beach(qtbot, tmp_path):
+    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
+    grid = stack.currentWidget()
+    qtbot.keyClick(grid, Qt.Key.Key_Right)
+    qtbot.keyClick(grid, Qt.Key.Key_N)
+    [prompt] = visible_tag_prompts(window)
+    qtbot.keyClicks(prompt, "beach places:beach")
+
+    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+
+    assert "family places:beach" in shown_status_bar_texts(window)
+
+
 def test_enter_on_a_rename_whose_old_tag_no_item_has_in_the_windows_rename_prompt_says_there_is_no_such_tag_and_changes_nothing(qtbot, tmp_path):
     from mediatagger.status_bar import NO_SUCH_TAG_TEXT
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)

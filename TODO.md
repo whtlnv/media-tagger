@@ -41,7 +41,7 @@
 - [x] After a rename, the open grid's tag-count badges show the counts with the new tag
 - [x] After a rename that merges moments, the open grid's `⏱` badge shows the merged count
 - [x] After a rename into a required tag, a file's `✗` missing badge disappears from the open grid
-- [ ] After a rename, the status bar's tags for the tile under the cursor show the new tag
+- [x] After a rename, the status bar's tags for the tile under the cursor show the new tag
 - [ ] After a rename, open search results show their items' new tags
 - [ ] With the Missing tags filter on, a file that a rename stops leaving missing is hidden at once
 - [ ] The cheat sheet lists `n` as renaming a tag in the grid, and DESIGN.md's grid key table lists `n` the same way
