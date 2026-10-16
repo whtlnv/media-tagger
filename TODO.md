@@ -39,7 +39,7 @@
 - [x] `↑` in the rename prompt recalls the previous applied rename, and `↓` goes back to a newer one
 - [x] Applied renames are remembered in `state.json` and recalled with `↑` after the app restarts
 - [x] After a rename, the open grid's tag-count badges show the counts with the new tag
-- [ ] After a rename that merges moments, the open grid's `⏱` badge shows the merged count
+- [x] After a rename that merges moments, the open grid's `⏱` badge shows the merged count
 - [ ] After a rename into a required tag, a file's `✗` missing badge disappears from the open grid
 - [ ] After a rename, the status bar's tags for the tile under the cursor show the new tag
 - [ ] After a rename, open search results show their items' new tags

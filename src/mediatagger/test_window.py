@@ -472,6 +472,29 @@ def test_after_enter_on_beach_family_in_the_windows_rename_prompt_the_open_grids
     assert f"{TAG_BADGE}1" in painted_texts(grid, row)
 
 
+def test_after_enter_on_beach_places_beach_in_the_windows_rename_prompt_the_open_grids_video_with_beach_and_places_beach_moments_a_half_second_apart_shows_a_moments_badge_reading_1(qtbot, tmp_path):
+    from mediatagger.grid import MOMENTS_BADGE
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    (folder / "IMG_2.mp4").touch()
+    library = Library.open(drive)
+    library.add_chapter(folder / "IMG_2.mp4", "places:beach", 12.0)
+    library.add_chapter(folder / "IMG_2.mp4", "beach", 12.5)
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    grid = stack.currentWidget()
+    qtbot.keyClick(grid, Qt.Key.Key_N)
+    [prompt] = visible_tag_prompts(window)
+    qtbot.keyClicks(prompt, "beach places:beach")
+
+    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+
+    [row] = [row for row in range(grid.model().rowCount()) if grid.model().index(row, 0).data(TILE_ROLE).path.name == "IMG_2.mp4"]
+    assert f"{MOMENTS_BADGE} 1" in painted_texts(grid, row)
+
+
 def test_enter_on_a_rename_whose_old_tag_no_item_has_in_the_windows_rename_prompt_says_there_is_no_such_tag_and_changes_nothing(qtbot, tmp_path):
     from mediatagger.status_bar import NO_SUCH_TAG_TEXT
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)

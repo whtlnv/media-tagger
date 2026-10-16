@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-16 10:04 · `src/mediatagger/test_window.py::test_after_enter_on_beach_places_beach_in_the_windows_rename_prompt_the_open_grids_video_with_beach_and_places_beach_moments_a_half_second_apart_shows_a_moments_badge_reading_1`
+- Behavior: After a rename that merges moments, the open grid's `⏱` badge shows the merged count
+- Predicted: passes immediately — c7f60a0's `show_new_tags` call after a rename already re-reads moment counts along with tag counts
+- Actual: first run failed with the wrong reason (ValueError, no rename prompt: `N` went to the viewer because the grid was grabbed before Escape switched to it); after the fix it passed. With the `show_new_tags` call temporarily removed it fails with `'⏱ 1' not in [..., '⏱ 2', ...]`, so the pass is real
+- Type: wrong-reason, then passed unexpectedly
+- Resolution: fixed the test setup; the behavior already ships with the previous item's one-line fix, so this test pins it and no production change is needed
+
 ## 2026-10-16 04:14 · `src/mediatagger/test_window.py::test_esc_in_the_windows_rename_prompt_after_typing_beach_places_beach_closes_only_the_prompt_staying_in_the_grid_and_leaves_the_item_tagged_beach_family`
 - Behavior: `Esc` in the rename prompt closes it and no tag changes
 - Predicted: AssertionError — the rename prompt (a bare QLineEdit) stays visible after Esc
