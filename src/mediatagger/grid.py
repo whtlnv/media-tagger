@@ -357,6 +357,10 @@ class Grid(QListView):
             self.setRowHidden(row, _is_file(tile) and not self._filter.shows(tile.tag_count, tile.missing_roots))
         self.setCurrentIndex(self.currentIndex())  # off a tile just hidden
 
+    def shown_files(self):
+        """The files shown, in grid order: what a slideshow opened from here steps through."""
+        return [tile.path for row, tile in enumerate(self.model().tiles) if _is_file(tile) and not self.isRowHidden(row)]
+
     def setCurrentIndex(self, index):
         """A hidden tile never takes the cursor: the nearest shown one does instead."""
         if index.isValid() and self.isRowHidden(index.row()):

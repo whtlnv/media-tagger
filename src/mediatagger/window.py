@@ -293,7 +293,10 @@ class Window(QWidget):
             self._show(grid)
             self._show_current_tags()
             return
+        shown = self.stack.currentWidget().shown_files()
         self._open(path)
+        if self.grid_filter.active is not None and self.viewer.slideshow is not None:  # only the files the filter shows
+            self.viewer.slideshow = Slideshow(shown, shown.index(path))
 
     def _open_result(self, index, paths, grid):
         if not index.data(TILE_ROLE).path.exists():
@@ -304,8 +307,8 @@ class Window(QWidget):
             self._open_tile(index)
             return
         self._results = (grid, paths)
+        files = grid.shown_files()
         self._open_tile(index)
-        files = [path for path in paths if path.is_file()]
         self.viewer.slideshow = Slideshow(files, files.index(index.data(TILE_ROLE).path))
 
     def _pick_folder(self):
