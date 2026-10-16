@@ -215,6 +215,9 @@ class Library:
                 connection.execute(
                     "UPDATE item_tags SET tag_id = ? WHERE tag_id = ?", (existing[0], old_id)
                 )
+                connection.execute(
+                    "UPDATE moments SET tag_id = ? WHERE tag_id = ?", (existing[0], old_id)
+                )
         connection.close()
         return changed
 

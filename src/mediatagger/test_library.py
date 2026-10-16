@@ -1003,3 +1003,17 @@ def test_renaming_beach_into_places_beach_that_a_pier_already_has_replaces_beach
 
     assert library.tags(shore) == ["places:beach"]
     assert changed == 2
+
+
+def test_renaming_beach_into_places_beach_that_a_pier_already_has_moves_the_videos_beach_moment_at_12_5_s_to_places_beach(tmp_path):
+    library = Library.create(tmp_path)
+    video = tmp_path / "trip.mp4"
+    video.touch()
+    pier = tmp_path / "pier.jpg"
+    pier.touch()
+    library.add_chapter(video, "beach", 12.5)
+    library.enter(pier, "places:beach")
+
+    library.rename_tag("beach", "places:beach")
+
+    assert library.moments(video) == [Moment(12.5, ["places:beach"])]
