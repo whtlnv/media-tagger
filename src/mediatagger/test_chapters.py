@@ -1,3 +1,4 @@
+import pytest
 from PySide6.QtCore import Qt
 
 from mediatagger.test_video import wait_until_playing
@@ -144,3 +145,87 @@ def test_after_minus_goal_is_entered_with_t_the_ticks_of_moments_that_carried_on
     enter_in_tag_prompt(qtbot, viewer, "-goal")
 
     assert len(ticks_on_the_progress_bar(viewer)) == 1
+
+
+def viewer_paused_at(qtbot, tmp_path, seconds, moments, duration=65, tag="goal"):
+    """The viewer paused seconds into the drive's clip, which has a chapter of the tag at each of moments."""
+    drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=duration)
+    for moment in moments:
+        Library.open(drive).add_chapter(folder / "IMG_1.mp4", tag, moment)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    make_surface_ready(viewer)
+    engine = viewer.video_player.engine
+    wait_until_playing(engine)
+    engine.pause = True
+    with engine.prepare_and_wait_for_event("playback_restart", timeout=5):
+        engine.seek(seconds, reference="absolute", precision="exact")
+    return viewer
+
+
+def test_pressing_period_on_a_video_at_0_20_with_moments_at_0_10_and_0_30_seeks_to_0_30(qtbot, tmp_path):
+    viewer = viewer_paused_at(qtbot, tmp_path, 20, moments=[10, 30])
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Period)
+
+    assert viewer.video_player.engine.time_pos == pytest.approx(30, abs=0.2)
+
+
+def test_pressing_period_on_a_video_past_its_last_moment_leaves_the_playback_position_unchanged(qtbot, tmp_path):
+    viewer = viewer_paused_at(qtbot, tmp_path, 40, moments=[10, 30])
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Period)
+
+    assert viewer.video_player.engine.time_pos == pytest.approx(40, abs=0.3)
+
+
+def test_pressing_comma_on_a_video_at_0_20_with_moments_at_0_10_and_0_30_seeks_to_0_10(qtbot, tmp_path):
+    viewer = viewer_paused_at(qtbot, tmp_path, 20, moments=[10, 30])
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Comma)
+
+    assert viewer.video_player.engine.time_pos == pytest.approx(10, abs=0.2)
+
+
+def test_pressing_comma_right_after_period_landed_on_a_moment_seeks_to_the_moment_before_it(qtbot, tmp_path):
+    viewer = viewer_paused_at(qtbot, tmp_path, 20, moments=[10, 30])
+    qtbot.keyClick(viewer, Qt.Key.Key_Period)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Comma)
+
+    assert viewer.video_player.engine.time_pos == pytest.approx(10, abs=0.2)
+
+
+def test_pressing_comma_on_a_video_before_its_first_moment_leaves_the_playback_position_unchanged(qtbot, tmp_path):
+    viewer = viewer_paused_at(qtbot, tmp_path, 5, moments=[10, 30])
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Comma)
+
+    assert viewer.video_player.engine.time_pos == pytest.approx(5, abs=0.3)
+
+
+@pytest.mark.parametrize("key", [Qt.Key.Key_Period, Qt.Key.Key_Comma])
+def test_pressing_period_or_comma_on_a_video_with_no_moments_leaves_the_playback_position_unchanged(qtbot, tmp_path, key):
+    viewer = viewer_paused_at(qtbot, tmp_path, 20, moments=[])
+
+    qtbot.keyClick(viewer, key)
+
+    assert viewer.video_player.engine.time_pos == pytest.approx(20, abs=0.3)
+
+
+@pytest.mark.parametrize(("start", "key", "shown"), [(20, Qt.Key.Key_Period, "save · 0:30 / 1:05"), (40, Qt.Key.Key_Comma, "save · 0:30 / 1:05")])
+def test_a_jump_shows_the_progress_bar_reading_the_moments_tag_before_the_time(qtbot, tmp_path, start, key, shown):
+    viewer = viewer_paused_at(qtbot, tmp_path, start, moments=[30], tag="save")
+
+    qtbot.keyClick(viewer, key)
+
+    assert viewer.progress_bar.isVisible()
+    assert viewer.progress_bar.text() == shown
+
+
+def test_after_a_jump_a_key_other_than_period_or_comma_shows_the_progress_bar_without_a_tag_name(qtbot, tmp_path):
+    viewer = viewer_paused_at(qtbot, tmp_path, 20, moments=[30], tag="save")
+    qtbot.keyClick(viewer, Qt.Key.Key_Period)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_V)
+
+    assert viewer.progress_bar.text() == "0:30 / 1:05"

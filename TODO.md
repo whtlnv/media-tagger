@@ -44,14 +44,14 @@ Layout (keep cycles consistent): moments are stored in `library.py` (a `moments`
 - [x] A video with no moments draws no tick on its progress bar
 - [x] After a chapter is added with `c`, its tick shows on the progress bar at once
 - [x] After `-goal` is entered with `t`, the ticks of the moments that carried only `goal` leave the progress bar at once
-- [ ] Pressing `.` on a video at 0:20 with moments at 0:10 and 0:30 seeks to 0:30
-- [ ] Pressing `.` on a video past its last moment leaves the playback position unchanged
-- [ ] Pressing `,` on a video at 0:20 with moments at 0:10 and 0:30 seeks to 0:10
-- [ ] Pressing `,` right after `.` landed on a moment seeks to the moment before it, not the same one
-- [ ] Pressing `,` on a video before its first moment leaves the playback position unchanged
-- [ ] Pressing `.` or `,` on a video with no moments leaves the playback position unchanged
-- [ ] A jump with `.` or `,` shows the progress bar reading the moment's tag before the time (`goal · 0:30 / 1:05`)
-- [ ] After a jump, a key other than `.` or `,` shows the progress bar without a tag name
+- [x] Pressing `.` on a video at 0:20 with moments at 0:10 and 0:30 seeks to 0:30
+- [x] Pressing `.` on a video past its last moment leaves the playback position unchanged
+- [x] Pressing `,` on a video at 0:20 with moments at 0:10 and 0:30 seeks to 0:10
+- [x] Pressing `,` right after `.` landed on a moment seeks to the moment before it, not the same one
+- [x] Pressing `,` on a video before its first moment leaves the playback position unchanged
+- [x] Pressing `.` or `,` on a video with no moments leaves the playback position unchanged
+- [x] A jump with `.` or `,` shows the progress bar reading the moment's tag before the time (`goal · 0:30 / 1:05`)
+- [x] After a jump, a key other than `.` or `,` shows the progress bar without a tag name
 - [ ] Pressing `l` on a video with moments shows an overlay listing them in time order, one line per moment with its tags (`0:10 goal, people:ana`)
 - [ ] Pressing `l` on a video with no moments shows an overlay reading "No chapters"
 - [ ] A moment from an hour on is listed as `h:mm:ss` (`1:02:03 goal`)

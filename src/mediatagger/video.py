@@ -68,6 +68,9 @@ class VideoPlayer:
         if key in ("p", "Enter"):
             self.engine.pause = not self.engine.pause
 
+    def seek_to(self, seconds):
+        self._seek(seconds, reference="absolute")
+
     def _step_speed(self, step):
         index = SPEEDS.index(self.engine.speed) + step
         self.engine.speed = SPEEDS[min(max(index, 0), len(SPEEDS) - 1)]

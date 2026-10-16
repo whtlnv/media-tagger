@@ -22,6 +22,7 @@ class ProgressBar(QLabel):
     _playing = False
     _area = None  # (rect, clear_at_the_bottom) from the latest place
     _obstacles = ()
+    _label = ""
     _ticks = ()  # where the video's moments fall, as fractions of its length
     moments = staticmethod(lambda: ())  # the seconds of the shown video's moments, asked on every update
 
@@ -73,8 +74,9 @@ class ProgressBar(QLabel):
         self._ticker.stop()
         self.hide()
 
-    def wake(self):
-        """Show the bar for another hide delay, if a video is playing."""
+    def wake(self, label=""):
+        """Show the bar for another hide delay, if a video is playing, reading the label before the time if one is given."""
+        self._label = label
         if not self._playing:
             return
         self.show()
@@ -97,7 +99,8 @@ class ProgressBar(QLabel):
         with_hours = duration >= 60 * 60
         speed = self._engine.speed
         shown_speed = "" if speed == 1 else f" · {speed:g}×"
-        self.setText(f"{_clock(seconds, with_hours)} / {_clock(duration, with_hours)}{shown_speed}")
+        label = f"{self._label} · " if self._label else ""
+        self.setText(f"{label}{_clock(seconds, with_hours)} / {_clock(duration, with_hours)}{shown_speed}")
 
     def paintEvent(self, event):
         with QPainter(self) as painter:
