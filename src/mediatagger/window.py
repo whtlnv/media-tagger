@@ -298,6 +298,7 @@ class Window(QWidget):
             return
         self.session.back_up_library()
         renamed = self.session.library.rename_tag(old, new)
+        self.stack.currentWidget().show_new_tags(self.session.library)
         self.rename_prompt.close_applied()
         self.status_bar.show_background(RENAMED_TAG_TEXT.format(old, new, renamed), finished=True)
 

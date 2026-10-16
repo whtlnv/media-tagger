@@ -459,6 +459,19 @@ def test_enter_on_capitalised_beach_places_beach_in_the_windows_rename_prompt_re
     assert RENAMED_TAG_TEXT.format("beach", "places:beach", 1) in shown_status_bar_texts(window)
 
 
+def test_after_enter_on_beach_family_in_the_windows_rename_prompt_the_open_grids_tile_tagged_beach_family_shows_a_tag_badge_with_count_1(qtbot, tmp_path):
+    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
+    grid = stack.currentWidget()
+    qtbot.keyClick(grid, Qt.Key.Key_N)
+    [prompt] = visible_tag_prompts(window)
+    qtbot.keyClicks(prompt, "beach family")
+
+    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+
+    [row] = [row for row in range(grid.model().rowCount()) if grid.model().index(row, 0).data(TILE_ROLE).path.name == "IMG_2.png"]
+    assert f"{TAG_BADGE}1" in painted_texts(grid, row)
+
+
 def test_enter_on_a_rename_whose_old_tag_no_item_has_in_the_windows_rename_prompt_says_there_is_no_such_tag_and_changes_nothing(qtbot, tmp_path):
     from mediatagger.status_bar import NO_SUCH_TAG_TEXT
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
