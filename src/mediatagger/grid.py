@@ -261,6 +261,8 @@ class Grid(QListView):
             self.show_new_tags(library)
         self._filter = grid_filter
         self._apply_filter()
+        if grid_filter is not None:
+            grid_filter.changed.connect(self._apply_filter)
         self.setItemDelegate(_TileDelegate(self))
         self._generate_thumbnails(tiles, thumbnail_cache or ThumbnailCache(":memory:"))
         self.setAcceptDrops(True)

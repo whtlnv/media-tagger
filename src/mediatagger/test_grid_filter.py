@@ -110,3 +110,40 @@ def test_under_any_filter_folder_tiles_stay_shown(qtbot, tmp_path, text):
     qtbot.addWidget(grid)
 
     assert shown_tile_names(grid) == ["tagged", "untagged"]
+
+
+def grid_of_a_tagged_and_an_untagged_file(qtbot, tmp_path, grid_filter):
+    library = Library.create(tmp_path)
+    touch(tmp_path, "beach.jpg", "city.jpg")
+    library.enter(tmp_path / "beach.jpg", "sea")
+    grid = Grid(tmp_path, library=library, grid_filter=grid_filter)
+    qtbot.addWidget(grid)
+    return grid
+
+
+def test_choosing_a_second_filter_replaces_the_first(qtbot, tmp_path):
+    grid_filter = chosen(WITH_TAGS)
+    grid = grid_of_a_tagged_and_an_untagged_file(qtbot, tmp_path, grid_filter)
+
+    grid_filter.choose(NO_TAGS)
+
+    assert shown_tile_names(grid) == ["city.jpg"]
+
+
+def test_choosing_the_active_filter_again_turns_filtering_off_and_every_tile_shows_again(qtbot, tmp_path):
+    grid_filter = chosen(WITH_TAGS)
+    grid = grid_of_a_tagged_and_an_untagged_file(qtbot, tmp_path, grid_filter)
+
+    grid_filter.choose(WITH_TAGS)
+
+    assert (grid_filter.active, shown_tile_names(grid)) == (None, ["beach.jpg", "city.jpg"])
+
+
+def test_choosing_a_filter_while_a_grid_is_shown_hides_its_non_matching_files_at_once(qtbot, tmp_path):
+    grid_filter = GridFilter()
+    grid = grid_of_a_tagged_and_an_untagged_file(qtbot, tmp_path, grid_filter)
+    grid.show()
+
+    grid_filter.choose(WITH_TAGS)
+
+    assert shown_tile_names(grid) == ["beach.jpg"]
