@@ -4,6 +4,7 @@ from PySide6.QtCore import QPoint, Qt
 from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import QFileDialog, QWidget
 
+from mediatagger.chapters import Chapters
 from mediatagger.drive_session import DriveSession
 from mediatagger.folder import is_openable, is_video
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
@@ -54,6 +55,7 @@ class Viewer(QWidget):
         self.read_only_banner.hide()
         self.progress_bar = ProgressBar(self)
         self.progress_bar.avoid(self.tag_prompt.input, self.tag_prompt.shown_tags)
+        self.chapters = Chapters(self)
         self.setAcceptDrops(True)
         if path is None:
             self.placeholder.setText("Drop a folder or file here, or press o to open")

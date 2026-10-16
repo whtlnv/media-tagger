@@ -84,8 +84,10 @@ class TagPrompt:
     def has_focus(self):
         return self._host.focusWidget() is self.input and self.input.isVisible()
 
-    def open(self, library, path):
+    def open(self, library, path, enter=None):
+        """Enter saves the entry with enter(path, text), by default the library's own tag entry."""
         self._tagging = (library, path)
+        self._enter = enter
         item_tags = library.tags(path)
         tags = " ".join(item_tags)
         self.shown_tags.setText(tags)
@@ -134,7 +136,7 @@ class TagPrompt:
     def _record_tags(self):
         library, path = self._tagging
         try:
-            library.enter(path, self.input.text())
+            (self._enter or library.enter)(path, self.input.text())
         except (sqlite3.Error, OSError):
             self._status_bar.show_couldnt_save(True)
             return

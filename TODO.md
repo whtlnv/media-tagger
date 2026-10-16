@@ -31,10 +31,10 @@ Layout (keep cycles consistent): moments are stored in `library.py` (a `moments`
 - [x] Removing `goal` from a video leaves the moments of its other tags, and drops `goal` from a moment shared with another tag
 - [x] Removing a video's last tag leaves no moment of it in `tags.db`
 - [x] A moment left behind for a tag the video no longer has (as an older build removing a tag would leave it) is never reported
-- [ ] Pressing `c` on a shown video opens the tag prompt
-- [ ] Pressing `c` on a shown image opens no tag prompt
-- [ ] Pressing `c` on a video where tags can't be saved (no library, read-only drive) opens no prompt and briefly shows `Tags can't be saved here`
-- [ ] Entering `goal` in the prompt opened by `c` records a moment at the playback time when `c` was pressed, not when `Enter` was pressed
+- [x] Pressing `c` on a shown video opens the tag prompt
+- [x] Pressing `c` on a shown image opens no tag prompt
+- [x] Pressing `c` on a video where tags can't be saved (no library, read-only drive) opens no prompt and briefly shows `Tags can't be saved here`
+- [x] Entering `goal` in the prompt opened by `c` records a moment at the playback time when `c` was pressed, not when `Enter` was pressed
 - [ ] The video keeps playing while the prompt opened by `c` is open
 - [ ] `Esc` in the prompt opened by `c` closes it and records no tag and no moment
 - [ ] Entering `-goal` in the prompt opened by `c` on a video tagged `goal` leaves `goal` and its moments in place and adds no tag
