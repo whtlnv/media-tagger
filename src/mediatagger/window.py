@@ -296,7 +296,8 @@ class Window(QWidget):
         if old not in self.session.library.all_tags():
             self.status_bar.show_background(NO_SUCH_TAG_TEXT.format(old), finished=True)
             return
-        self.session.back_up_library()
+        if not self.session.back_up_library():
+            return  # without the backup, a bad rename couldn't be undone
         renamed = self.session.library.rename_tag(old, new)
         for grid in (self.stack.widget(i) for i in range(self.stack.count())):
             if isinstance(grid, Grid):  # the grid a search started from, under the results, too

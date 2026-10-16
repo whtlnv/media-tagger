@@ -125,6 +125,7 @@ class DriveSession:
         return True
 
     def back_up_library(self):
+        """Backs up the open library, saying so in the status bar; whether the backup was made."""
         self.status_bar.show_background(BACKING_UP_TEXT)
         # Paint it before the backup blocks the event loop; user input waits, so no queued key runs mid-open or mid-close.
         # Not while the window is still unshown (being built): there is nothing to paint, and a caller's timer would fire too early.
@@ -133,8 +134,9 @@ class DriveSession:
         outcome = back_up(self.library, self.backup_root, clock=self.backup_clock)
         if outcome is not None:
             self.status_bar.show_background(BACKUP_FAILED_TEXT.format(outcome.failure))
-            return
+            return False
         self.status_bar.show_background(BACKED_UP_TEXT, finished=True)
+        return True
 
     def _show_library_status(self, text, read_only):
         self.read_only = read_only

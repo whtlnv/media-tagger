@@ -1,9 +1,12 @@
+import errno
+import os
 from datetime import datetime, timezone
 
 import pytest
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QStackedWidget
 
+from mediatagger.drive_session import BACKUP_FAILED_TEXT
 from mediatagger.grid import TAG_BADGE, TILE_ROLE
 from mediatagger.library import Library
 from mediatagger.status_bar import (NO_SUCH_TAG_TEXT, RENAME_LEADING_DASH_TEXT, RENAME_NEEDS_TWO_TAGS_TEXT, RENAME_TO_SAME_TAG_TEXT,
@@ -211,6 +214,26 @@ def test_enter_on_beach_places_beach_in_the_windows_rename_prompt_backs_up_the_l
 
     assert Library.open(drive).tags(folder / "IMG_1.png") == ["places:beach"]
     assert tags_in_newest_backup(backup_root, drive, tmp_path / "restored", "Photos/IMG_1.png") == ["beach"]
+
+
+def test_enter_on_beach_places_beach_in_the_windows_rename_prompt_when_the_backup_fails_leaves_beach_shows_the_failure_and_keeps_the_prompt_open(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    backup_root = tmp_path / "backups"
+    (backup_root / Library.open(drive).drive_id / "drive.json").mkdir(parents=True)  # a directory where the backup writes a file
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False, backup_root=backup_root)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    prompt = rename_prompt_after_typing(qtbot, window, stack.currentWidget(), "beach places:beach")
+
+    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+
+    assert Library.open(drive).tags(folder / "IMG_1.png") == ["beach"]
+    assert BACKUP_FAILED_TEXT.format(os.strerror(errno.EISDIR)) in shown_status_bar_texts(window)
+    assert not [text for text in shown_status_bar_texts(window) if text.startswith("Renamed")]
+    assert [prompt.text() for prompt in visible_tag_prompts(window)] == ["beach places:beach"]
 
 
 def test_enter_on_a_rename_whose_old_tag_no_item_has_in_the_windows_rename_prompt_makes_no_backup_so_the_newest_backup_is_still_the_one_from_opening(qtbot, tmp_path):
