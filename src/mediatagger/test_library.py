@@ -958,3 +958,18 @@ def test_renaming_beach_to_places_beach_leaves_places_beach_once_on_a_photo_tagg
     library.rename_tag("beach", "places:beach")
 
     assert library.tags(photo) == ["places:beach"]
+
+
+def test_renaming_beach_to_places_beach_reports_the_two_items_tagged_beach(tmp_path):
+    library = Library.create(tmp_path)
+    shore = tmp_path / "shore.jpg"
+    shore.touch()
+    dunes = tmp_path / "dunes.jpg"
+    dunes.touch()
+    pier = tmp_path / "pier.jpg"
+    pier.touch()
+    library.enter(shore, "beach")
+    library.enter(dunes, "beach")
+    library.enter(pier, "beachy")
+
+    assert library.rename_tag("beach", "places:beach") == 2

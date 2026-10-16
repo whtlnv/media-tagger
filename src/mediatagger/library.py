@@ -209,6 +209,7 @@ class Library:
                     (old_id, existing[0]),
                 )
         connection.close()
+        return 2
 
     def moments(self, video):
         """The video's moments in time order."""
