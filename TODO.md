@@ -34,7 +34,7 @@
 - [x] `Enter` in the rename prompt on a read-only drive shows the same "tags can't be saved" message as `t`
 - [x] Right before a rename applies, the library is backed up, so the drive's newest backup still holds the old tag
 - [x] A rename rejected by validation makes no backup
-- [ ] While typing the first word, the rename prompt's autocomplete offers the library's existing tags
+- [x] While typing the first word, the rename prompt's autocomplete offers the library's existing tags
 - [ ] While typing the second word, the rename prompt's autocomplete offers the library's existing tags
 - [ ] `↑` in the rename prompt recalls the previous applied rename, and `↓` goes back to a newer one
 - [ ] Applied renames are remembered in `state.json` and recalled with `↑` after the app restarts

@@ -165,7 +165,7 @@ class Window(QWidget):
         """What a folder's grid and a results grid both do: tag the cursor's item, search again, pick a folder, show its
         tags, and count its thumbnails."""
         grid.tag.connect(lambda: self._tag(grid.currentIndex()))
-        grid.rename_tag.connect(self.rename_prompt.open)
+        grid.rename_tag.connect(lambda: self.rename_prompt.open(self.session.library.all_tags() if self.session.library else []))
         grid.search.connect(self._open_search_bar)
         grid.pick_folder.connect(self._pick_folder)
         grid.selectionModel().currentChanged.connect(self._show_tags_of)
