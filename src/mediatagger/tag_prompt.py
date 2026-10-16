@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QCompleter, QLineEdit
 from mediatagger.status_bar import CORNER_MARGIN, overlay_label
 
 _SUGGESTION_POPUP_STYLE = "QListView { color: white; background-color: rgb(64, 64, 64); border: 1px solid rgb(200, 200, 200); font-size: 18px; } QListView::item { padding: 4px 12px; }"
-_TAG_INPUT_STYLE = "color: white; background-color: rgba(64, 64, 64, 220); border: 1px solid rgb(200, 200, 200); padding: 8px 12px; border-radius: 6px; font-size: 18px;"
+TAG_INPUT_STYLE = "color: white; background-color: rgba(64, 64, 64, 220); border: 1px solid rgb(200, 200, 200); padding: 8px 12px; border-radius: 6px; font-size: 18px;"
 _TAG_PROMPT_WIDTH = 600
 
 
@@ -49,7 +49,24 @@ class _LastWordCompleter(QCompleter):
         self.widget().setText(self.pathFromIndex(self.popup().currentIndex()))
 
 
-class _TagInput(QLineEdit):
+def prompt_width(host):
+    """A prompt's input width: fixed, but never wider than the host allows."""
+    return min(_TAG_PROMPT_WIDTH, host.width() - 2 * CORNER_MARGIN)
+
+
+def place_above_the_status_bar(host, status_bar, input, label):
+    """The input at the bottom centre of the host, just above the status bar, with the label just above the input."""
+    frame = input.geometry()
+    frame.moveCenter(host.rect().center())
+    frame.moveBottom(host.mapFromGlobal(status_bar.mapToGlobal(QPoint(0, 0))).y() - 1)
+    input.setGeometry(frame)
+    label_frame = label.geometry()
+    label_frame.moveCenter(input.geometry().center())
+    label_frame.moveBottom(input.geometry().top() - CORNER_MARGIN // 2)
+    label.setGeometry(label_frame)
+
+
+class TagInput(QLineEdit):
     def keyPressEvent(self, event):
         super().keyPressEvent(event)
         if event.key() == Qt.Key.Key_Return:
@@ -68,8 +85,8 @@ class TagPrompt:
         self._tagging = None  # (library, path) of the item being tagged while the prompt is open
         self._enter = None  # what saves the entry, if not the library's own tag entry
         self._suggestions = ([], [])
-        self.input = _TagInput(host)
-        self.input.setStyleSheet(_TAG_INPUT_STYLE)
+        self.input = TagInput(host)
+        self.input.setStyleSheet(TAG_INPUT_STYLE)
         self.input.returnPressed.connect(self._record_tags)
         self.input.textEdited.connect(self._offer_suggestions)
         self.input.setCompleter(_LastWordCompleter([], self.input))
@@ -96,7 +113,7 @@ class TagPrompt:
         self.input.clear()
         self._suggestions = ([tag for tag in library.all_tags() if tag not in item_tags], item_tags)
         self._offer_suggestions("")
-        self.input.resize(min(_TAG_PROMPT_WIDTH, self._host.width() - 2 * CORNER_MARGIN), self.input.sizeHint().height())
+        self.input.resize(prompt_width(self._host), self.input.sizeHint().height())
         self.place()
         self.input.show()
         self.shown_tags.setVisible(bool(tags))
@@ -105,14 +122,7 @@ class TagPrompt:
 
     def place(self):
         """At the bottom centre of the host, just above the status bar, with the shown tags just above the input."""
-        frame = self.input.geometry()
-        frame.moveCenter(self._host.rect().center())
-        frame.moveBottom(self._host.mapFromGlobal(self._status_bar.mapToGlobal(QPoint(0, 0))).y() - 1)
-        self.input.setGeometry(frame)
-        tags_frame = self.shown_tags.geometry()
-        tags_frame.moveCenter(self.input.geometry().center())
-        tags_frame.moveBottom(self.input.geometry().top() - CORNER_MARGIN // 2)
-        self.shown_tags.setGeometry(tags_frame)
+        place_above_the_status_bar(self._host, self._status_bar, self.input, self.shown_tags)
 
     def raise_(self):
         self.input.raise_()

@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from PySide6.QtCore import QRect, Qt
-from PySide6.QtWidgets import QApplication, QLineEdit, QStackedWidget, QStyle, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QApplication, QStackedWidget, QStyle, QVBoxLayout, QWidget
 
 from mediatagger.cheat_sheet import GRID_KEYS, LAUNCH_KEYS, VIEWER_KEYS, CheatSheet
 from mediatagger.drive_session import DriveSession
@@ -9,6 +9,7 @@ from mediatagger.folder_thumbnails import GENERATING_THUMBNAILS_TEXT, progress_t
 from mediatagger.grid import TILE_ROLE, Grid
 from mediatagger.grid_filter import GridFilter
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
+from mediatagger.rename_prompt import RenamePrompt
 from mediatagger.search import search
 from mediatagger.search_bar import SearchBar
 from mediatagger.slideshow import Slideshow
@@ -49,6 +50,7 @@ class Window(QWidget):
         layout.addWidget(self.stack)
         self.status_bar = StatusBar(self)
         self.tag_prompt = TagPrompt(self, self.status_bar, on_close=self._show_saved_tags)
+        self.rename_prompt = RenamePrompt(self, self.status_bar, on_enter=self._rename_tag)
         self.session = DriveSession(self.status_bar, self, home=home or Path.home(), **session_options)
         self.viewer = Viewer(player_options=player_options, folder_picker=folder_picker, on_escape=self._escape, session=self.session,
             on_drop=self._record_state)
@@ -59,7 +61,6 @@ class Window(QWidget):
         self.stack.currentChanged.connect(lambda: self.cheat_sheet.update())  # the keys of the screen now shown
         self._forwarding = False
         self._results = None
-        self._rename_prompt = None
         self.grid_filter = GridFilter()  # shared by every grid, for as long as the app runs
         self.setAcceptDrops(True)
         geometry = remembered_geometry(self._state_file)
@@ -83,15 +84,15 @@ class Window(QWidget):
         self.status_bar.place_along_the_bottom_of(self.rect())
         self.status_bar.raise_()
         self.tag_prompt.place()
+        self.rename_prompt.place()
 
     def keyPressEvent(self, event):
         if self.tag_prompt.has_focus():
             if event.key() == Qt.Key.Key_Escape:
                 self.tag_prompt.close()
             return
-        if self._rename_prompt and event.key() == Qt.Key.Key_Escape:
-            for widget in self._rename_prompt:
-                widget.hide()
+        if self.rename_prompt.is_open() and event.key() == Qt.Key.Key_Escape:
+            self.rename_prompt.close()
             return
         self._forward_to_the_shown_page(event)
 
@@ -164,7 +165,7 @@ class Window(QWidget):
         """What a folder's grid and a results grid both do: tag the cursor's item, search again, pick a folder, show its
         tags, and count its thumbnails."""
         grid.tag.connect(lambda: self._tag(grid.currentIndex()))
-        grid.rename_tag.connect(self._open_rename_prompt)
+        grid.rename_tag.connect(self.rename_prompt.open)
         grid.search.connect(self._open_search_bar)
         grid.pick_folder.connect(self._pick_folder)
         grid.selectionModel().currentChanged.connect(self._show_tags_of)
@@ -277,16 +278,8 @@ class Window(QWidget):
             return
         self.tag_prompt.open(self.session.library, index.data(TILE_ROLE).path)
 
-    def _open_rename_prompt(self):
-        prompt = QLineEdit(self)
-        prompt.setStyleSheet(self.tag_prompt.input.styleSheet())
-        prompt.returnPressed.connect(lambda: self._rename_tag(*prompt.text().split()))
-        prompt.show()
-        label = overlay_label("Rename tag:", self)
-        label.show()
-        self._rename_prompt = (prompt, label)
-
-    def _rename_tag(self, old, new):
+    def _rename_tag(self, text):
+        old, new = text.split()
         renamed = self.session.library.rename_tag(old, new)
         self.status_bar.show_background(RENAMED_TAG_TEXT.format(old, new, renamed), finished=True)
 
