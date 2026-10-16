@@ -501,6 +501,20 @@ def test_enter_on_three_words_in_the_windows_rename_prompt_says_a_rename_needs_t
     assert RENAME_NEEDS_TWO_TAGS_TEXT in shown_status_bar_texts(window)
 
 
+def test_enter_on_a_rename_of_a_tag_to_itself_in_the_windows_rename_prompt_says_the_names_are_the_same_and_changes_nothing(qtbot, tmp_path):
+    from mediatagger.status_bar import RENAME_TO_SAME_TAG_TEXT
+    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
+    [prompt] = visible_tag_prompts(window)
+    qtbot.keyClicks(prompt, "beach Beach")
+
+    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+
+    drive = tmp_path / "MEDIATAGGER"
+    assert Library.open(drive).tags(drive / "Photos" / "IMG_2.png") == ["beach", "family"]
+    assert RENAME_TO_SAME_TAG_TEXT in shown_status_bar_texts(window)
+
+
 def test_after_enter_applies_a_rename_in_the_windows_rename_prompt_the_prompt_closes_and_arrows_move_the_grids_cursor_again(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     grid = stack.currentWidget()
