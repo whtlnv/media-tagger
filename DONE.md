@@ -1,3 +1,78 @@
+- [x] 2026-10-15 · A newly created library records schema version 3 in its `tags.db`
+  - predicted-contradiction: `src/mediatagger/test_library.py::test_a_newly_created_library_records_schema_version_2_in_its_tags_db` — asserts: a newly created library's meta records schema_version "2" — retired-by: "A newly created library records schema version 3 in its `tags.db`"
+- [x] 2026-10-15 · Opening a schema-version-2 library upgrades it in place to schema version 3, its drive id and its files' tags unchanged
+- [x] 2026-10-15 · Opening a schema-version-1 library upgrades it in place to schema version 3, its drive id unchanged
+  - predicted-contradiction: `src/mediatagger/test_library.py::test_opening_a_schema_version_1_library_upgrades_its_tags_db_in_place_to_schema_version_2` — asserts: opening a v1 library leaves its meta schema_version at "2" — retired-by: "upgrades it in place to schema version 3"
+  - predicted-contradiction: `src/mediatagger/test_library.py::test_a_schema_version_1_library_reports_schema_version_2_once_it_has_been_opened` — asserts: an opened v1 library reports schema_version == 2 — retired-by: "upgrades it in place to schema version 3"
+- [x] 2026-10-15 · Opening a schema-version-2 library on a read-only drive does not fail: nothing is written, its files still report their tags, and its videos report no moments
+- [x] 2026-10-15 · Opening a schema-version-2 library whose upgrade fails for a reason other than a read-only drive (e.g. the database is locked) raises the error instead of reporting no moments
+- [x] 2026-10-15 · An upgrade from schema version 2 that fails partway (after the moments table would be made, before the version is recorded) leaves the library at schema version 2 with no moments table and every tag intact
+- [x] 2026-10-15 · Opening a schema-version-3 library again changes nothing in its `tags.db`
+- [x] 2026-10-15 · Restoring a schema-version-2 backup onto a drive opens it at schema version 3 with every tag of the backup
+- [x] 2026-10-15 · Adding the chapter `goal` at 83.4 s to a video makes the library report the video tagged `goal` and one moment at 83.4 s carrying `goal`
+- [x] 2026-10-15 · A video with no chapters added reports no moments
+- [x] 2026-10-15 · A chapter added to one video is not reported as a moment of another video in the same folder
+- [x] 2026-10-15 · A chapter's time is kept to 0.1 s (added at 83.44 s, it is reported at 83.4 s)
+- [x] 2026-10-15 · Adding the chapter `goal` to a video already tagged `goal` keeps one `goal` tag on the video and adds the moment
+- [x] 2026-10-15 · Adding the chapter `goal` at 10 s and again at 60 s gives the video two moments carrying `goal`
+- [x] 2026-10-15 · Adding the chapter `goal` at 10.8 s to a video with a `goal` moment at 10 s adds no moment
+- [x] 2026-10-15 · Adding the chapter `goal` at 11.5 s to a video with a `goal` moment at 10 s adds a second moment
+- [x] 2026-10-15 · Adding the chapter `goal people:ana` at one time gives the video one moment carrying both tags, and both as tags of the video
+- [x] 2026-10-15 · A video's moments are reported in time order, whatever order they were added in
+- [x] 2026-10-15 · Deleting a video's moment removes it from its moments and leaves its tags on the video
+- [x] 2026-10-15 · Removing `goal` from a video (`-goal`) also removes every moment carrying only `goal`
+- [x] 2026-10-15 · Removing `goal` from a video leaves the moments of its other tags, and drops `goal` from a moment shared with another tag
+- [x] 2026-10-15 · Removing a video's last tag leaves no moment of it in `tags.db`
+- [x] 2026-10-15 · A moment left behind for a tag the video no longer has (as an older build removing a tag would leave it) is never reported
+- [x] 2026-10-15 · Pressing `c` on a shown video opens the tag prompt
+- [x] 2026-10-15 · Pressing `c` on a shown image opens no tag prompt
+- [x] 2026-10-15 · Pressing `c` on a video where tags can't be saved (no library, read-only drive) opens no prompt and briefly shows `Tags can't be saved here`
+- [x] 2026-10-15 · Entering `goal` in the prompt opened by `c` records a moment at the playback time when `c` was pressed, not when `Enter` was pressed
+- [x] 2026-10-15 · The video keeps playing while the prompt opened by `c` is open
+- [x] 2026-10-15 · `Esc` in the prompt opened by `c` closes it and records no tag and no moment
+- [x] 2026-10-15 · Entering `-goal` in the prompt opened by `c` on a video tagged `goal` leaves `goal` and its moments in place and adds no tag
+- [x] 2026-10-15 · After entering a chapter with `c`, the viewer's tag overlay lists its tag
+- [x] 2026-10-15 · While a video with a moment at half its duration is shown, its progress bar draws a tick at the middle of its track
+- [x] 2026-10-15 · A moment at a quarter of the video's duration is drawn as a tick a quarter of the way along the track
+- [x] 2026-10-15 · A video with no moments draws no tick on its progress bar
+- [x] 2026-10-15 · After a chapter is added with `c`, its tick shows on the progress bar at once
+- [x] 2026-10-15 · After `-goal` is entered with `t`, the ticks of the moments that carried only `goal` leave the progress bar at once
+- [x] 2026-10-15 · Pressing `.` on a video at 0:20 with moments at 0:10 and 0:30 seeks to 0:30
+- [x] 2026-10-15 · Pressing `.` on a video past its last moment leaves the playback position unchanged
+- [x] 2026-10-15 · Pressing `,` on a video at 0:20 with moments at 0:10 and 0:30 seeks to 0:10
+- [x] 2026-10-15 · Pressing `,` right after `.` landed on a moment seeks to the moment before it, not the same one
+- [x] 2026-10-15 · Pressing `,` on a video before its first moment leaves the playback position unchanged
+- [x] 2026-10-15 · Pressing `.` or `,` on a video with no moments leaves the playback position unchanged
+- [x] 2026-10-15 · A jump with `.` or `,` shows the progress bar reading the moment's tag before the time (`goal · 0:30 / 1:05`)
+- [x] 2026-10-15 · After a jump, a key other than `.` or `,` shows the progress bar without a tag name
+- [x] 2026-10-15 · Pressing `l` on a video with moments shows an overlay listing them in time order, one line per moment with its tags (`0:10 goal, people:ana`)
+- [x] 2026-10-15 · Pressing `l` on a video with no moments shows an overlay reading "No chapters"
+- [x] 2026-10-15 · A moment from an hour on is listed as `h:mm:ss` (`1:02:03 goal`)
+- [x] 2026-10-15 · Pressing `l` while the chapter list is shown hides it
+- [x] 2026-10-15 · Pressing `l` on a shown image shows no chapter list
+- [x] 2026-10-15 · When the chapter list opens, its first line is highlighted
+- [x] 2026-10-15 · `↓` in the chapter list highlights the next line
+- [x] 2026-10-15 · `↑` in the chapter list highlights the previous line
+- [x] 2026-10-15 · `↑` or `↓` while the chapter list is shown leaves the playback position unchanged
+- [x] 2026-10-15 · The video keeps playing while the chapter list is shown
+- [x] 2026-10-15 · `Enter` in the chapter list seeks to the highlighted moment and hides the list
+- [x] 2026-10-15 · `Enter` in the chapter list does not pause the video
+- [x] 2026-10-15 · `Esc` in the chapter list hides it and leaves the viewer showing the video, not the grid
+- [x] 2026-10-15 · `Backspace` in the chapter list deletes the highlighted moment: its line leaves the list and its tick leaves the progress bar, its tags stay on the video
+- [x] 2026-10-15 · `Backspace` in the chapter list where tags can't be saved (read-only drive) keeps the moment and briefly shows `Tags can't be saved here`
+- [x] 2026-10-15 · Moving to another item (`Space`, `←`, `→`) while the chapter list is shown hides it
+- [x] 2026-10-15 · With both the cheat sheet and the chapter list shown, `Esc` hides only the cheat sheet; a second `Esc` hides the chapter list
+- [x] 2026-10-15 · A video tile whose video has 3 distinct moments shows a `⏱ 3` badge
+- [x] 2026-10-15 · A video tile whose video has no moments shows no `⏱` badge
+- [x] 2026-10-15 · On a tile with missing-roots, tag-count and `⏱` badges, they read left to right in the top row `✗`, tag count, `⏱`, not overlapping, the `⏱` badge in the top-right corner
+- [x] 2026-10-15 · A results grid shows the `⏱` badge on a result video with moments
+- [x] 2026-10-15 · After adding a chapter with `c`, `Esc` back to the grid shows the video's tile with the updated `⏱` count
+- [x] 2026-10-15 · The viewer's cheat sheet lists `c` (add chapter), `l` (chapter list) and `.` / `,` (next / previous chapter) as DESIGN.md's viewer table does
+- [x] 2026-10-15 · The shipped `mediatagger` command on a drive whose library is at schema version 2 upgrades it and shows its tags
+- [x] 2026-10-15 · In the shipped `mediatagger` app on a drive with a library, pressing `c` on a video, typing `goal` and `Enter` records a moment in the drive's `tags.db`, and a second run of the command shows it in `l`'s chapter list (the test's driver script treats a temp folder as the mount point)
+- [x] 2026-10-15 · Keys the open tag prompt passes on (`↓`, `Backspace` on an empty prompt) never reach the chapter list behind it
+- [x] 2026-10-15 · A chapter added with `c` on a video that can't play is recorded at its start
+- [x] 2026-10-15 · A tag added back after a build from before chapters removed it does not bring back its old moments
 - [x] 2026-10-15 · In a folder grid sharing the window's filter, with no filter chosen, every file tile shows
 - [x] 2026-10-15 · With "With tags" chosen, a folder grid hides a file that has no own tags
 - [x] 2026-10-15 · With "With tags" chosen, a folder grid keeps showing a file that has own tags
