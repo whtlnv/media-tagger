@@ -259,6 +259,8 @@ class Grid(QListView):
         self.setModel(_FolderModel(tiles, self))
         if library:
             self.show_new_tags(library)
+        self._filter = grid_filter
+        self._apply_filter()
         self.setItemDelegate(_TileDelegate(self))
         self._generate_thumbnails(tiles, thumbnail_cache or ThumbnailCache(":memory:"))
         self.setAcceptDrops(True)
@@ -338,6 +340,13 @@ class Grid(QListView):
         if self._required_roots:
             _mark_missing_roots(tiles, _effective_tags(tiles, self.folder, library, self._results), self._required_roots)
         self.viewport().update()
+
+    def _apply_filter(self):
+        """Files the filter doesn't show are hidden in place; folder tiles and missing results always stay."""
+        if self._filter is None:
+            return
+        for row, tile in enumerate(self.model().tiles):
+            self.setRowHidden(row, _is_file(tile) and not self._filter.shows(tile.tag_count, tile.missing_roots))
 
     def keep_clear_at_the_bottom(self, height):
         """Room below the last row for what lies over the grid's bottom edge (the window's status bar)."""

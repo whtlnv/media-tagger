@@ -14,9 +14,9 @@ Phase 17 notes for every cycle (Phases 1–16 are delivered — see DONE.md; Pha
 
 
 - [x] In a folder grid sharing the window's filter, with no filter chosen, every file tile shows
-- [ ] With "With tags" chosen, a folder grid hides a file that has no own tags
-- [ ] With "With tags" chosen, a folder grid keeps showing a file that has own tags
-- [ ] With "With tags" chosen, a file whose only tags are inherited from its folder is hidden
+- [x] With "With tags" chosen, a folder grid hides a file that has no own tags
+- [x] With "With tags" chosen, a folder grid keeps showing a file that has own tags
+- [x] With "With tags" chosen, a file whose only tags are inherited from its folder is hidden
 - [ ] With "No tags" chosen, a folder grid hides a file that has own tags
 - [ ] With "No tags" chosen, a folder grid keeps showing a file with no own tags, even one that inherits tags
 - [ ] With "Missing tags" chosen, a folder grid hides a file that carries no `✗` mark
