@@ -258,7 +258,8 @@ def shown_filtered_grid(qtbot, tmp_path, grid_filter=None, **grid_options):
     grid.resize(800, 600)
     grid.show()
     qtbot.waitExposed(grid)
-    qtbot.waitUntil(grid.verticalScrollBar().isVisible)
+    if any(not grid.isRowHidden(row) for row in range(grid.model().rowCount())):
+        qtbot.waitUntil(grid.verticalScrollBar().isVisible)
     return grid
 
 
@@ -344,3 +345,58 @@ def test_with_a_filter_on_the_filter_buttons_tooltip_names_the_active_filter(qtb
     grid_filter.choose(MISSING_TAGS)
 
     assert MISSING_TAGS in button.toolTip()
+
+
+def popped_up_menu(grid):
+    [menu] = [menu for menu in grid.findChildren(QMenu) if menu.isVisible()]
+    return menu
+
+
+def offered(menu):
+    return [(action.text(), action.isChecked()) for action in menu.actions()]
+
+
+def test_clicking_the_filter_button_pops_up_a_menu_offering_with_tags_and_no_tags_with_the_active_filter_checked(qtbot, tmp_path):
+    grid = shown_filtered_grid(qtbot, tmp_path, chosen(NO_TAGS))
+
+    click(grid.findChild(FilterButton))
+
+    assert offered(popped_up_menu(grid)) == [(WITH_TAGS, False), (NO_TAGS, True)]
+    assert grid.findChild(FilterButton).isChecked()
+
+
+def test_the_filter_menu_offers_missing_tags_when_the_grids_library_has_required_roots(qtbot, tmp_path):
+    grid = shown_filtered_grid(qtbot, tmp_path, library=Library.create(tmp_path), required_roots=("type:",))
+
+    click(grid.findChild(FilterButton))
+
+    assert offered(popped_up_menu(grid)) == [(WITH_TAGS, False), (NO_TAGS, False), (MISSING_TAGS, False)]
+
+
+def test_the_filter_menu_doesnt_offer_missing_tags_when_the_drive_has_no_required_roots(qtbot, tmp_path):
+    grid = shown_filtered_grid(qtbot, tmp_path, library=Library.create(tmp_path))
+
+    click(grid.findChild(FilterButton))
+
+    assert MISSING_TAGS not in [text for text, _ in offered(popped_up_menu(grid))]
+
+
+def test_the_filter_menu_offers_missing_tags_when_it_is_the_active_filter_even_without_required_roots(qtbot, tmp_path):
+    grid = shown_filtered_grid(qtbot, tmp_path, chosen(MISSING_TAGS), library=Library.create(tmp_path))
+
+    click(grid.findChild(FilterButton))
+
+    assert (MISSING_TAGS, True) in offered(popped_up_menu(grid))
+
+
+def test_clicking_an_action_in_the_filter_menu_chooses_that_filter_and_closes_the_menu(qtbot, tmp_path):
+    grid_filter = GridFilter()
+    grid = shown_filtered_grid(qtbot, tmp_path, grid_filter)
+    click(grid.findChild(FilterButton))
+    menu = popped_up_menu(grid)
+    qtbot.waitExposed(menu)
+
+    [no_tags] = [action for action in menu.actions() if action.text() == NO_TAGS]
+    QTest.mouseClick(menu, Qt.MouseButton.LeftButton, pos=menu.actionGeometry(no_tags).center())
+
+    assert (grid_filter.active, menu.isVisible()) == (NO_TAGS, False)

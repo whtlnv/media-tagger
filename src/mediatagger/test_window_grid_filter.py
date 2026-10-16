@@ -1,8 +1,9 @@
 from PySide6.QtCore import Qt
+from PySide6.QtTest import QTest
 
-from mediatagger.grid_filter import MISSING_TAGS, NO_TAGS, WITH_TAGS
+from mediatagger.grid_filter import MISSING_TAGS, NO_TAGS, WITH_TAGS, FilterButton
 from mediatagger.library import Library
-from mediatagger.test_grid_filter import shown_tile_names
+from mediatagger.test_grid_filter import popped_up_menu, shown_tile_names
 from mediatagger.test_viewer import make_image
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image
 from mediatagger.test_viewer_open import make_folders
@@ -121,3 +122,17 @@ def test_saving_a_tag_that_hides_the_cursors_file_moves_the_cursor_to_the_next_s
     enter_in_the_grids_tag_prompt(qtbot, window, stack, "beach")
 
     assert cursor_name(stack) == "IMG_2.png"
+
+
+def test_with_the_cheat_sheet_shown_over_the_grid_a_click_on_the_filter_button_still_pops_up_its_menu(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_H)
+    button = stack.currentWidget().findChild(FilterButton)
+
+    clicked = window.childAt(button.mapTo(window, button.rect().center()))  # what a click there reaches, as Qt routes it
+    QTest.mouseClick(clicked, Qt.MouseButton.LeftButton)
+
+    assert (window.cheat_sheet.isVisible(), clicked) == (True, button)
+    assert popped_up_menu(stack.currentWidget()).isVisible()
+

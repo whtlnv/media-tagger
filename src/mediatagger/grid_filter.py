@@ -1,6 +1,6 @@
-from PySide6.QtCore import QEvent, QObject, QPointF, Qt, Signal
+from PySide6.QtCore import QEvent, QObject, QPoint, QPointF, Qt, Signal
 from PySide6.QtGui import QColor, QPainter, QPolygonF
-from PySide6.QtWidgets import QToolButton
+from PySide6.QtWidgets import QMenu, QToolButton
 
 WITH_TAGS = "With tags"
 
@@ -45,19 +45,35 @@ class FilterButton(QToolButton):
     """The round button floating over a grid's bottom-right corner, just inside its tiles (so above the status bar's
     clear margin and left of the scroll bar), that opens the filter menu."""
 
-    def __init__(self, grid, grid_filter):
+    def __init__(self, grid, grid_filter, offer_missing=False):
         super().__init__(grid)
-        self._filter = grid_filter
+        self._filter, self._offer_missing = grid_filter, offer_missing
         self.setFixedSize(BUTTON_SIZE, BUTTON_SIZE)
         self.setCheckable(True)  # checked while a filter is on
         grid_filter.changed.connect(self._show_filter)
         self._show_filter()
+        self.clicked.connect(self._pop_up_menu)
         grid.viewport().installEventFilter(self)  # the tiles' area moves with resizes, margins and the scroll bar
         self._place()
 
     def _show_filter(self):
         self.setChecked(self._filter.active is not None)
         self.setToolTip(f"Showing: {self._filter.active}" if self._filter.active else "Filter files")
+
+    def nextCheckState(self):
+        """A click only opens the menu: the button is checked by the filter being on, never by the click."""
+
+    def _pop_up_menu(self):
+        """Without blocking, above the button."""
+        menu = QMenu(self)
+        offered = self._offer_missing or self._filter.active == MISSING_TAGS  # an active filter can always be turned off
+        for text in (WITH_TAGS, NO_TAGS, MISSING_TAGS) if offered else (WITH_TAGS, NO_TAGS):
+            action = menu.addAction(text)
+            action.setCheckable(True)
+            action.setChecked(text == self._filter.active)
+            action.triggered.connect(lambda checked, text=text: self._filter.choose(text))
+        menu.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
+        menu.popup(self.mapToGlobal(QPoint(0, -menu.sizeHint().height())))
 
     def eventFilter(self, watched, event):
         if event.type() == QEvent.Type.Resize:

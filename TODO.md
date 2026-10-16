@@ -48,12 +48,12 @@ Phase 17 notes for every cycle (Phases 1–16 are delivered — see DONE.md; Pha
 - [x] With no filter on, the filter button is drawn with a translucent dark backing
 - [x] With a filter on, the filter button is drawn checked, opaque, in the highlight colour
 - [x] With a filter on, the filter button's tooltip names the active filter
-- [ ] Clicking the filter button pops up a menu offering "With tags" and "No tags", the active filter checked
-- [ ] The filter menu offers "Missing tags" when the grid's library has required roots
-- [ ] The filter menu doesn't offer "Missing tags" when the drive has no required roots
-- [ ] The filter menu offers "Missing tags" when it is the active filter, even without required roots
-- [ ] Triggering an action in the filter menu chooses that filter
-- [ ] With the cheat sheet shown over the grid, a click on the filter button still pops up its menu
+- [x] Clicking the filter button pops up a menu offering "With tags" and "No tags", the active filter checked
+- [x] The filter menu offers "Missing tags" when the grid's library has required roots
+- [x] The filter menu doesn't offer "Missing tags" when the drive has no required roots
+- [x] The filter menu offers "Missing tags" when it is the active filter, even without required roots
+- [x] Triggering an action in the filter menu chooses that filter
+- [x] With the cheat sheet shown over the grid, a click on the filter button still pops up its menu
 - [ ] `Enter` on a file of a filtered folder grid starts a slideshow over only the shown files, in grid order
 - [ ] After the filter is turned off again, `Enter` on a file starts a slideshow over every file of the folder
 - [ ] `Enter` on a file of a filtered results grid starts a slideshow over only the shown result files
