@@ -9,7 +9,7 @@ from mediatagger.library import Library
 from mediatagger.test_grid import painted_texts
 from mediatagger.test_grid_required_tags import missing_badge
 from mediatagger.test_viewer import SILENT, show_exposed
-from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt
+from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, visible_tag_prompts
 from mediatagger.test_viewer_open import drag_and_drop_onto
 from mediatagger.test_window import enter_in_the_grids_tag_prompt, shown_status_bar_texts, window_showing_the_grid_with_its_cursor_on_its_first_tile
 from mediatagger.test_window_search import search_for
@@ -105,6 +105,22 @@ def test_tagging_a_file_in_a_slideshow_opened_from_results_then_esc_back_to_them
 
     assert stack.currentWidget() is results
     assert (missing_badge(results, 0), f"{TAG_BADGE}2" in painted_texts(results, 0)) == (f"{MISSING_ROOTS_BADGE}1", True)
+
+
+def test_after_enter_on_photo_type_photo_in_the_windows_rename_prompt_the_open_grids_file_tagged_photo_on_a_drive_requiring_type_shows_no_missing_badge(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    write_config(drive, ["type:"])
+    Library.open(drive).enter(folder / "IMG_1.png", "photo")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    grid = stack.currentWidget()
+    before = missing_badge(grid, 0)
+    qtbot.keyClick(grid, Qt.Key.Key_N)
+    [prompt] = visible_tag_prompts(window)
+    qtbot.keyClicks(prompt, "photo type:photo")
+
+    qtbot.keyClick(prompt, Qt.Key.Key_Return)
+
+    assert (before, missing_badge(grid, 0)) == (f"{MISSING_ROOTS_BADGE}1", None)
 
 
 def test_opening_and_browsing_a_drive_with_a_config_leaves_its_root_and_its_config_untouched(qtbot, tmp_path):

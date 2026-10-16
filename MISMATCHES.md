@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-16 10:14 · `src/mediatagger/test_window_required_tags.py::test_after_enter_on_photo_type_photo_in_the_windows_rename_prompt_the_open_grids_file_tagged_photo_on_a_drive_requiring_type_shows_no_missing_badge`
+- Behavior: After a rename into a required tag, a file's `✗` missing badge disappears from the open grid
+- Predicted: AssertionError — the tile still reads `✗1` after the rename (flagged up front that it might pass, since `Grid.show_new_tags` already recomputes missing roots)
+- Actual: passed on first run
+- Type: passed unexpectedly
+- Resolution: The behavior already ships with c7f60a0: the rename's call to `show_new_tags` also re-marks missing roots. A no-op on that call at `window.py:301` made the test fail and confirmed it isn't vacuous. The test was kept as a characterization pin, and window.py was restored.
+
 ## 2026-10-16 10:04 · `src/mediatagger/test_window.py::test_after_enter_on_beach_places_beach_in_the_windows_rename_prompt_the_open_grids_video_with_beach_and_places_beach_moments_a_half_second_apart_shows_a_moments_badge_reading_1`
 - Behavior: After a rename that merges moments, the open grid's `⏱` badge shows the merged count
 - Predicted: passes immediately — c7f60a0's `show_new_tags` call after a rename already re-reads moment counts along with tag counts
