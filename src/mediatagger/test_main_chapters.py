@@ -1,5 +1,5 @@
 from mediatagger.library import Library
-from mediatagger.test_library import read_meta, create_schema_version_2_library
+from mediatagger.test_library import create_schema_version_2_library, read_meta
 from mediatagger.test_main import REPORT_SHOWN_TEXTS_ON_A_DRIVE_SCRIPT, RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT, TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT
 from mediatagger.test_viewer import make_image, run_python_offscreen
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_clip
@@ -36,7 +36,7 @@ ADD_A_CHAPTER_SCRIPT = ON_THE_PLAYING_VIDEO.replace("app = QApplication([])\n", 
 )) + RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT
 
 REPORT_THE_CHAPTER_LIST_SCRIPT = ON_THE_PLAYING_VIDEO.replace("app = QApplication([])\n", (
-    "from mediatagger.test_chapters import shown_chapter_lines\n"
+    "from mediatagger.test_chapter_list import shown_chapter_lines\n"
     "app = QApplication([])\n"
     "def then(viewer):\n"
     "    QTest.keyClick(viewer, Qt.Key.Key_L)\n"
