@@ -2,6 +2,12 @@
 
 ## Out of Scope
 
+- **[src/mediatagger/chapters.py:Chapters] Chapters reaches into six of the viewer's attributes** (added: 2026-10-15)
+  To stay out of `viewer.py` (at its 270-line budget) `Chapters` filters the viewer's keys and uses its `slideshow`, `session`, `status_bar`, `tag_prompt`, `video_player` and `progress_bar` directly, and the viewer calls `chapters.read` from `_show_tag_overlay` so moments are re-read whenever tags are. A narrower seam (the viewer handing Chapters the current item, library and player) would decouple them, but needs room in `viewer.py`.
+
+- **[src/mediatagger/library.py:_set_item_tags] A build from before chapters leaves moments behind when it removes a tag** (added: 2026-10-15)
+  Removing a tag deletes its moments only in this build. An older build (the stick's app before Phase 18) run on a schema-3 drive removes the tag but not its rows in `moments`; reads join through `item_tags`, so those rows never show, but if the same tag is later added back to the same video, its old moments reappear (and its tag id could be reused by an unrelated tag after the old one's row is deleted). Harmless once every machine runs this build; a one-off sweep of moments whose (item, tag) is not in `item_tags` on open would remove them.
+
 - **[src/mediatagger/zoom.py:37] A zoom's pan is clamped only when the wheel turns, not when the window resizes or `r` turns a video** (added: 2026-10-15)
   `Zoom.pan` is kept in fractions of the shown picture, so a zoom survives `f`/a resize/`r` centred where it was, but the no-black-edge clamp in `Zoom.wheel` is not re-run against the new fitted rect until the next wheel turn, so a zoomed picture panned to an edge can show black there after a resize or a turn. Fixing it needs the viewer to re-clamp on resize and on `r` (a `Zoom.reclamp(fitted, window)` called from `resizeEvent` and the `r` key), lines `viewer.py` has no room for under its 270-line budget.
 
