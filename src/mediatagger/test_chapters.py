@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt
 
 from mediatagger.test_video import wait_until_playing
-from mediatagger.test_viewer import make_surface_ready
+from mediatagger.test_viewer import make_surface_ready, shown_texts
 from mediatagger.library import Library
 from mediatagger.status_bar import TAGS_CANT_BE_SAVED_HERE_TEXT
 from mediatagger.test_viewer_library import (
@@ -63,3 +63,51 @@ def test_entering_goal_in_the_prompt_opened_by_c_records_a_moment_at_the_time_c_
     [moment] = Library.open(drive).moments(folder / "IMG_1.mp4")
     assert moment.tags == ["goal"]
     assert abs(moment.seconds - pressed_at) < 0.3
+
+
+def test_the_video_keeps_playing_while_the_prompt_opened_by_c_is_open(qtbot, tmp_path):
+    viewer, _drive, _folder = viewer_playing_a_clip_on_a_drive_with_a_library(qtbot, tmp_path)
+    engine = viewer.video_player.engine
+    qtbot.keyClick(viewer, Qt.Key.Key_C)
+    opened_at = engine.time_pos
+
+    qtbot.keyClicks(viewer.tag_prompt.input, "goal")
+
+    engine.wait_for_property("time-pos", lambda pos: pos is not None and pos > opened_at + 0.5, timeout=5)
+    assert engine.pause is False
+
+
+def test_esc_in_the_prompt_opened_by_c_closes_it_and_records_no_tag_and_no_moment(qtbot, tmp_path):
+    viewer, drive, folder = viewer_playing_a_clip_on_a_drive_with_a_library(qtbot, tmp_path)
+    qtbot.keyClick(viewer, Qt.Key.Key_C)
+    qtbot.keyClicks(viewer.tag_prompt.input, "goal")
+
+    qtbot.keyClick(viewer.tag_prompt.input, Qt.Key.Key_Escape)
+
+    library = Library.open(drive)
+    assert visible_tag_prompt_texts(viewer) == []
+    assert (library.tags(folder / "IMG_1.mp4"), library.moments(folder / "IMG_1.mp4")) == ([], [])
+
+
+def test_entering_minus_goal_in_the_prompt_opened_by_c_on_a_video_tagged_goal_leaves_goal_and_its_moments_and_adds_no_tag(qtbot, tmp_path):
+    viewer, drive, folder = viewer_playing_a_clip_on_a_drive_with_a_library(qtbot, tmp_path)
+    clip = folder / "IMG_1.mp4"
+    Library.open(drive).add_chapter(clip, "goal", 1)
+    qtbot.keyClick(viewer, Qt.Key.Key_C)
+
+    qtbot.keyClicks(viewer.tag_prompt.input, "-goal")
+    qtbot.keyClick(viewer.tag_prompt.input, Qt.Key.Key_Return)
+
+    library = Library.open(drive)
+    assert library.tags(clip) == ["goal"]
+    assert [moment.seconds for moment in library.moments(clip)] == [1]
+
+
+def test_after_entering_a_chapter_with_c_the_tag_overlay_lists_its_tag(qtbot, tmp_path):
+    viewer, _drive, _folder = viewer_playing_a_clip_on_a_drive_with_a_library(qtbot, tmp_path)
+    qtbot.keyClick(viewer, Qt.Key.Key_C)
+
+    qtbot.keyClicks(viewer.tag_prompt.input, "goal")
+    qtbot.keyClick(viewer.tag_prompt.input, Qt.Key.Key_Return)
+
+    assert "goal" in shown_texts(viewer)
