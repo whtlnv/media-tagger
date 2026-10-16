@@ -1,7 +1,8 @@
+import pytest
 from PySide6.QtCore import Qt
 
 from mediatagger.grid import Grid
-from mediatagger.grid_filter import WITH_TAGS, GridFilter
+from mediatagger.grid_filter import MISSING_TAGS, NO_TAGS, WITH_TAGS, GridFilter
 from mediatagger.library import Library
 from mediatagger.test_folder import touch
 
@@ -55,3 +56,57 @@ def test_with_with_tags_chosen_a_file_whose_only_tags_are_inherited_from_its_fol
     qtbot.addWidget(grid)
 
     assert shown_tile_names(grid) == []
+
+
+def test_with_no_tags_chosen_a_folder_grid_hides_a_file_that_has_own_tags(qtbot, tmp_path):
+    library = Library.create(tmp_path)
+    touch(tmp_path, "beach.jpg", "city.jpg")
+    library.enter(tmp_path / "beach.jpg", "sea")
+    grid = Grid(tmp_path, library=library, grid_filter=chosen(NO_TAGS))
+    qtbot.addWidget(grid)
+
+    assert "beach.jpg" not in shown_tile_names(grid)
+
+
+def test_with_no_tags_chosen_a_folder_grid_keeps_showing_a_file_with_no_own_tags_even_one_that_inherits_tags(qtbot, tmp_path):
+    library = Library.create(tmp_path)
+    (tmp_path / "trip").mkdir()
+    touch(tmp_path / "trip", "beach.jpg", "city.jpg")
+    library.enter(tmp_path / "trip", "holiday")
+    library.enter(tmp_path / "trip" / "city.jpg", "street")
+    grid = Grid(tmp_path / "trip", library=library, grid_filter=chosen(NO_TAGS))
+    qtbot.addWidget(grid)
+
+    assert shown_tile_names(grid) == ["beach.jpg"]
+
+
+def test_with_missing_tags_chosen_a_folder_grid_hides_a_file_that_carries_no_missing_mark(qtbot, tmp_path):
+    library = Library.create(tmp_path)
+    touch(tmp_path, "beach.jpg", "city.jpg")
+    library.enter(tmp_path / "beach.jpg", "type:photo")
+    grid = Grid(tmp_path, library=library, required_roots=("type:",), grid_filter=chosen(MISSING_TAGS))
+    qtbot.addWidget(grid)
+
+    assert "beach.jpg" not in shown_tile_names(grid)
+
+
+def test_with_missing_tags_chosen_a_folder_grid_keeps_showing_a_file_that_carries_a_missing_mark(qtbot, tmp_path):
+    library = Library.create(tmp_path)
+    touch(tmp_path, "beach.jpg", "city.jpg")
+    library.enter(tmp_path / "beach.jpg", "type:photo")
+    grid = Grid(tmp_path, library=library, required_roots=("type:",), grid_filter=chosen(MISSING_TAGS))
+    qtbot.addWidget(grid)
+
+    assert shown_tile_names(grid) == ["city.jpg"]
+
+
+@pytest.mark.parametrize("text", [WITH_TAGS, NO_TAGS, MISSING_TAGS])
+def test_under_any_filter_folder_tiles_stay_shown(qtbot, tmp_path, text):
+    library = Library.create(tmp_path)
+    (tmp_path / "tagged").mkdir()
+    (tmp_path / "untagged").mkdir()
+    library.enter(tmp_path / "tagged", "type:photo")
+    grid = Grid(tmp_path, library=library, required_roots=("type:",), grid_filter=chosen(text))
+    qtbot.addWidget(grid)
+
+    assert shown_tile_names(grid) == ["tagged", "untagged"]

@@ -26,4 +26,8 @@ class GridFilter(QObject):
         """Whether a file with this many own tags (what its tag badge counts) and missing roots is shown."""
         if self.active == WITH_TAGS:
             return tag_count > 0
+        if self.active == NO_TAGS:
+            return tag_count == 0
+        if self.active == MISSING_TAGS:
+            return missing_roots > 0
         return True

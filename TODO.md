@@ -17,11 +17,11 @@ Phase 17 notes for every cycle (Phases 1–16 are delivered — see DONE.md; Pha
 - [x] With "With tags" chosen, a folder grid hides a file that has no own tags
 - [x] With "With tags" chosen, a folder grid keeps showing a file that has own tags
 - [x] With "With tags" chosen, a file whose only tags are inherited from its folder is hidden
-- [ ] With "No tags" chosen, a folder grid hides a file that has own tags
-- [ ] With "No tags" chosen, a folder grid keeps showing a file with no own tags, even one that inherits tags
-- [ ] With "Missing tags" chosen, a folder grid hides a file that carries no `✗` mark
-- [ ] With "Missing tags" chosen, a folder grid keeps showing a file that carries a `✗` mark
-- [ ] Under any filter, folder tiles stay shown
+- [x] With "No tags" chosen, a folder grid hides a file that has own tags
+- [x] With "No tags" chosen, a folder grid keeps showing a file with no own tags, even one that inherits tags
+- [x] With "Missing tags" chosen, a folder grid hides a file that carries no `✗` mark
+- [x] With "Missing tags" chosen, a folder grid keeps showing a file that carries a `✗` mark
+- [x] Under any filter, folder tiles stay shown
 - [ ] Choosing a second filter replaces the first: only the second one's matches show
 - [ ] Choosing the active filter again turns filtering off and every tile shows again
 - [ ] Choosing a filter while a grid is shown hides its non-matching files at once
