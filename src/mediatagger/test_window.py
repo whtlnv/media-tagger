@@ -496,6 +496,24 @@ def test_enter_on_a_rename_in_the_windows_rename_prompt_with_no_library_open_say
     assert TAGS_CANT_BE_SAVED_HERE_TEXT in shown_status_bar_texts(window)
 
 
+def test_enter_on_a_rename_in_the_windows_rename_prompt_on_a_read_only_drive_says_tags_cant_be_saved_here(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    with made_read_only(drive):
+        window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+        qtbot.addWidget(window)
+        show_exposed(qtbot, window)
+        stack = window.findChild(QStackedWidget)
+        qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+        qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
+        [prompt] = visible_tag_prompts(window)
+        qtbot.keyClicks(prompt, "beach places:beach")
+
+        qtbot.keyClick(prompt, Qt.Key.Key_Return)
+
+    assert TAGS_CANT_BE_SAVED_HERE_TEXT in shown_status_bar_texts(window)
+
+
 def test_enter_on_a_single_word_in_the_windows_rename_prompt_says_a_rename_needs_two_tags_and_changes_nothing(qtbot, tmp_path):
     from mediatagger.status_bar import RENAME_NEEDS_TWO_TAGS_TEXT
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
