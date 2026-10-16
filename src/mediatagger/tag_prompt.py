@@ -49,6 +49,13 @@ class _LastWordCompleter(QCompleter):
         self.widget().setText(self.pathFromIndex(self.popup().currentIndex()))
 
 
+def give_tag_suggestions_to(input):
+    """Suggestions completing the input's last word, whatever its case, in a popup styled like the prompts."""
+    input.setCompleter(_LastWordCompleter([], input))
+    input.completer().setCaseSensitivity(Qt.CaseInsensitive)
+    input.completer().popup().setStyleSheet(_SUGGESTION_POPUP_STYLE)
+
+
 def prompt_width(host):
     """A prompt's input width: fixed, but never wider than the host allows."""
     return min(_TAG_PROMPT_WIDTH, host.width() - 2 * CORNER_MARGIN)
@@ -89,9 +96,7 @@ class TagPrompt:
         self.input.setStyleSheet(TAG_INPUT_STYLE)
         self.input.returnPressed.connect(self._record_tags)
         self.input.textEdited.connect(self._offer_suggestions)
-        self.input.setCompleter(_LastWordCompleter([], self.input))
-        self.input.completer().setCaseSensitivity(Qt.CaseInsensitive)
-        self.input.completer().popup().setStyleSheet(_SUGGESTION_POPUP_STYLE)
+        give_tag_suggestions_to(self.input)
         self.input.hide()
         self.shown_tags = overlay_label("", host)
         self.shown_tags.hide()

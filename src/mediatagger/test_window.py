@@ -661,6 +661,18 @@ def test_typing_beach_f_as_the_second_word_in_the_windows_rename_prompt_on_a_dri
     assert listed(suggestions) == ["family"]
 
 
+def test_typing_capital_b_in_the_windows_rename_prompt_lists_beach_in_a_suggestion_popup_styled_like_the_tag_prompts(qtbot, tmp_path):
+    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)
+    [prompt] = visible_tag_prompts(window)
+    qtbot.waitUntil(prompt.hasFocus)
+
+    suggestions = suggestion_popup_after_typing(qtbot, prompt, "B")
+
+    assert listed(suggestions) == ["beach"]
+    assert suggestions.styleSheet() == window.tag_prompt.input.completer().popup().styleSheet()
+
+
 def test_up_in_the_windows_rename_prompt_reopened_after_applying_beach_places_beach_recalls_beach_places_beach(qtbot, tmp_path):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_N)

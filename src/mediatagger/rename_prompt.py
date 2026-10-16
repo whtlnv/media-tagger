@@ -2,7 +2,7 @@ from PySide6.QtCore import Qt
 
 from mediatagger.state import remember_rename, remembered_renames
 from mediatagger.status_bar import overlay_label
-from mediatagger.tag_prompt import TAG_INPUT_STYLE, TagInput, _LastWordCompleter, place_above_the_status_bar, prompt_width
+from mediatagger.tag_prompt import TAG_INPUT_STYLE, TagInput, give_tag_suggestions_to, place_above_the_status_bar, prompt_width
 
 
 class _RecallingInput(TagInput):
@@ -37,7 +37,7 @@ class RenamePrompt:
         self._status_bar = status_bar
         self.input = _RecallingInput(state_file, host)
         self.input.setStyleSheet(TAG_INPUT_STYLE)
-        self.input.setCompleter(_LastWordCompleter([], self.input))
+        give_tag_suggestions_to(self.input)
         self.input.returnPressed.connect(self._enter)
         self._on_enter = on_enter
         self.input.hide()
