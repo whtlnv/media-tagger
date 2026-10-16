@@ -8,6 +8,7 @@
 - [x] Renaming a tag into one an item already has leaves that item with the new tag once
 - [x] Renaming a tag reports how many items it changed
 - [ ] Renaming a tag that no item has changes nothing and reports zero items
+- [ ] Renaming a tag into one that other items already have still replaces the old tag on the items that had only the old one, and reports every item that had the old tag
 - [ ] A video's chapter moment of the old tag becomes a moment of the new tag after the rename, at the same time
 - [ ] A moment of the old tag within 1 s of a moment of the new tag on the same video becomes one moment after the rename
 - [ ] A moment of the old tag more than 1 s from a moment of the new tag on the same video stays a separate moment after the rename
