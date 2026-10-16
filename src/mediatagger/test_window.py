@@ -110,6 +110,21 @@ def test_in_the_windows_viewer_with_the_tag_prompt_open_esc_closes_the_prompt_an
     assert stack.currentWidget() is viewer
 
 
+def test_pressing_n_in_the_windows_viewer_opens_no_rename_prompt_and_stays_in_the_viewer(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    stack = window.findChild(QStackedWidget)
+    viewer = stack.currentWidget()
+
+    qtbot.keyClick(viewer, Qt.Key.Key_N)
+
+    assert visible_tag_prompts(window) == []
+    assert "Rename tag:" not in shown_texts_outside_the_status_bar(window)
+    assert stack.currentWidget() is viewer
+
+
 def test_on_the_windows_launch_screen_esc_quits_the_app(qtbot):
     window = Window(player_options=SILENT)
     qtbot.addWidget(window)

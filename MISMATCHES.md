@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-16 04:00 · `src/mediatagger/test_window.py::test_pressing_n_in_the_windows_viewer_opens_no_rename_prompt_and_stays_in_the_viewer`
+- Behavior: Pressing `n` in the viewer opens no rename prompt
+- Predicted: passes — only `Grid.keyPressEvent` handles `Key_N` (emitting `rename_tag`); the viewer has no `n` binding
+- Actual: passes (1 passed)
+- Type: passed unexpectedly (relative to the TODO plan, which expected a separate cycle; predicted by /red)
+- Resolution: The test isn't vacuous: a temporary `Key_N` branch in `Viewer.keyPressEvent` calling `self.window()._open_rename_prompt()` made it fail (`visible_tag_prompts(window)` found a prompt). I reverted that mutation and kept the test as a characterization pin; the item needs no /green.
+
 ## 2026-10-16 03:54 · `src/mediatagger/test_window_search.py::test_pressing_n_in_the_results_grid_opens_one_empty_prompt_labelled_rename_tag_styled_like_the_tag_prompt`
 - Behavior: Pressing `n` in search results opens the `Rename tag:` prompt
 - Predicted: passes — the folder-grid cycle connected `grid.rename_tag` inside `_connect_tags_search_and_progress_of`, which the results grid also goes through
