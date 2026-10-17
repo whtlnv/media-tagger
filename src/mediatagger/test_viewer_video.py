@@ -6,7 +6,7 @@ from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from mediatagger.mpv_surface import MpvSurface
 from mediatagger.test_video import make_clip, wait_until_playing
 from mediatagger.test_viewer import (
-    centre_colour, make_image, make_surface_ready, run_python_offscreen, shown_texts, shown_viewer_on, shows_unsupported_placeholder,
+    centre_colour, make_image, make_surface_ready, run_python_offscreen, show_exposed, shown_texts, shown_viewer_on, shows_unsupported_placeholder,
     shows_video_surface, SILENT, unready_viewer_on, wait_until_loaded,
 )
 from mediatagger.viewer import UNSUPPORTED_TEXT, Viewer
@@ -289,3 +289,28 @@ def test_pressing_right_bracket_and_r_in_the_viewer_on_an_image_leaves_the_next_
 
     assert engine.path == str(clip)
     assert [engine.speed, engine.video_rotate] == [1, 0]
+
+
+def frame_stepping_viewer_on(qtbot, folder):
+    """mpv only finishes a frame step once the frame is drawn; offscreen has no GL to draw it, so mpv draws to nothing."""
+    viewer = Viewer(folder, player_options={**SILENT, "vo": "null"})
+    qtbot.addWidget(viewer)
+    show_exposed(qtbot, viewer)
+    make_surface_ready(viewer)
+    return viewer
+
+
+def test_pressing_u_in_the_viewer_on_a_paused_video_steps_it_one_frame_forward_and_keeps_it_paused(qtbot, tmp_path):
+    make_clip(tmp_path / "IMG_1.mp4", duration=30)  # 10 fps, so one frame is 0.1 s
+    make_image(tmp_path / "IMG_2.png", "red")
+    viewer = frame_stepping_viewer_on(qtbot, tmp_path)
+    engine = viewer.video_player.engine
+    wait_until_playing(engine)
+    qtbot.keyClick(viewer, Qt.Key.Key_P)
+    with engine.prepare_and_wait_for_event("playback_restart", timeout=5):  # a step pressed before the seek lands is lost
+        engine.seek(10, reference="absolute", precision="exact")
+
+    qtbot.keyClick(viewer, Qt.Key.Key_U)
+
+    engine.wait_for_property("time-pos", lambda time_pos: time_pos == pytest.approx(10.1, abs=0.01), timeout=5)
+    assert engine.pause is True

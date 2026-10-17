@@ -62,6 +62,9 @@ class VideoPlayer:
         if key == "r":
             self.engine.video_rotate = (self.engine.video_rotate + 90) % 360
             return
+        if key == "u":
+            self.engine.command("frame-step")
+            return
         if key == "m":
             self.engine.mute = not self.engine.mute
             return
