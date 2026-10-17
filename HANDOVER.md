@@ -32,6 +32,7 @@ State of the project and how it has been run, for the next session. Read `DESIGN
 | 22 Frame step | done, validated on the Mac (`6b26ed4`, 1050 tests); Pi run pending |
 | 23 `r` turns images | done, validated on the Mac (`310b482`, 1069 tests); Pi run pending |
 | 24 Viewer tags one per line | done, validated on the Mac (`78aafb3`, 1078 tests); Pi run pending |
+| 25 `1`–`9` jump in ninths | done, validated on the Mac (`5cad790`, 1083 tests); Pi run pending |
 
 Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), `grid.py`, `grid_filter.py` (the grids' shared filter and its button), `viewer.py`, `tag_prompt.py` (the `t` prompt, shared by grid and viewer), `rename_prompt.py` (the grid's `n` prompt), `status_bar.py`, `drive_session.py` (library open/create/restore/backup), `drive_config.py` (the drive's `mediatagger_config.json`: required tag roots), `library.py` (SQLite, schema v3: tags and chapter moments), `backup.py`, `state.py` (last folder, geometry, recent searches and renames; `$XDG_CONFIG_HOME`), `search.py` (query matching), `search_bar.py` (the `/` box and its `↑`/`↓` history), `folder.py`, `slideshow.py`, `thumbnails.py` (image/video/folder thumbnails, `ffmpeg`/`ffprobe`), `thumbnail_cache.py`, `thumbnail_scheduler.py` (3 workers + prefetch), `folder_thumbnails.py` (a folder's thumbnails for its grid), `video.py` + `mpv_surface.py` (libmpv render API), `video_controls.py` (video progress bar), `chapters.py` + `chapter_list.py` (the viewer's `c`, `.`/`,` and `l` chapters), `zoom.py` (mouse-wheel zoom for images and mpv), `gui_thread_gc.py`. Tests are co-located (`test_*.py`). Open structural debt is in `BACKLOG.md`.
 
@@ -45,6 +46,10 @@ Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), 
   - send the agent back with a numbered fix list if anything is off.
 - Progress is relayed to the user in chat from a `Monitor` that polls `git log`, `TODO.md` checkbox counts, `~/Library/Logs/DiagnosticReports/Python-*.ips` and `/Volumes/MEDIATAGGER`. Monitors expire every 30 min; re-arm.
 - The user asked for progress to be printed in the conversation and for questions only when a decision is genuinely theirs.
+
+## Phase 25 — done
+
+`VideoPlayer.press`: `1`–`9` seek to `(n − 1)·100/9` % (absolute-percent); `0` is ignored there (Phase 26 gives it a job). Cheat sheet "1–9 jump through in ninths (1 = start)". Cycles hand-driven from the start (worked well, ~50 min). Orchestrator check: suite twice (1083), native on a 20 s clip: `5` → 8.96, `9` → 17.84, `2` → 2.28, `1` → 0.04, `0` no change. (Native scripts: a digit's seek blocks the GUI ~0.45 s waiting for mpv, so read `time_pos` right after `keyClick`, not from a timer.)
 
 ## Phase 24 — done
 
