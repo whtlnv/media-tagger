@@ -176,28 +176,18 @@ def viewer_paused_at(qtbot, tmp_path, seconds, moments, duration=65, tag="goal")
     return viewer
 
 
-def test_pressing_period_on_a_video_at_0_20_with_moments_at_0_10_and_0_30_seeks_to_0_30(qtbot, tmp_path):
-    viewer = viewer_paused_at(qtbot, tmp_path, 20, moments=[10, 30])
+@pytest.mark.parametrize(("start", "key", "landing", "within"), [
+    pytest.param(20, Qt.Key.Key_Period, 30, 0.2, id="period at 0:20 with moments at 0:10 and 0:30 seeks to 0:30"),
+    pytest.param(40, Qt.Key.Key_Period, 40, 0.3, id="period past the last moment leaves the playback position unchanged"),
+    pytest.param(20, Qt.Key.Key_Comma, 10, 0.2, id="comma at 0:20 with moments at 0:10 and 0:30 seeks to 0:10"),
+    pytest.param(5, Qt.Key.Key_Comma, 5, 0.3, id="comma before the first moment leaves the playback position unchanged"),
+])
+def test_pressing_period_or_comma_on_a_video_with_moments_at_0_10_and_0_30_jumps_to_the_moment_beyond_if_any(qtbot, tmp_path, start, key, landing, within):
+    viewer = viewer_paused_at(qtbot, tmp_path, start, moments=[10, 30])
 
-    qtbot.keyClick(viewer, Qt.Key.Key_Period)
+    qtbot.keyClick(viewer, key)
 
-    assert viewer.video_player.engine.time_pos == pytest.approx(30, abs=0.2)
-
-
-def test_pressing_period_on_a_video_past_its_last_moment_leaves_the_playback_position_unchanged(qtbot, tmp_path):
-    viewer = viewer_paused_at(qtbot, tmp_path, 40, moments=[10, 30])
-
-    qtbot.keyClick(viewer, Qt.Key.Key_Period)
-
-    assert viewer.video_player.engine.time_pos == pytest.approx(40, abs=0.3)
-
-
-def test_pressing_comma_on_a_video_at_0_20_with_moments_at_0_10_and_0_30_seeks_to_0_10(qtbot, tmp_path):
-    viewer = viewer_paused_at(qtbot, tmp_path, 20, moments=[10, 30])
-
-    qtbot.keyClick(viewer, Qt.Key.Key_Comma)
-
-    assert viewer.video_player.engine.time_pos == pytest.approx(10, abs=0.2)
+    assert viewer.video_player.engine.time_pos == pytest.approx(landing, abs=within)
 
 
 def test_pressing_comma_right_after_period_landed_on_a_moment_seeks_to_the_moment_before_it(qtbot, tmp_path):
@@ -207,14 +197,6 @@ def test_pressing_comma_right_after_period_landed_on_a_moment_seeks_to_the_momen
     qtbot.keyClick(viewer, Qt.Key.Key_Comma)
 
     assert viewer.video_player.engine.time_pos == pytest.approx(10, abs=0.2)
-
-
-def test_pressing_comma_on_a_video_before_its_first_moment_leaves_the_playback_position_unchanged(qtbot, tmp_path):
-    viewer = viewer_paused_at(qtbot, tmp_path, 5, moments=[10, 30])
-
-    qtbot.keyClick(viewer, Qt.Key.Key_Comma)
-
-    assert viewer.video_player.engine.time_pos == pytest.approx(5, abs=0.3)
 
 
 @pytest.mark.parametrize("key", [Qt.Key.Key_Period, Qt.Key.Key_Comma])
