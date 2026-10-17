@@ -3,6 +3,7 @@ from PySide6.QtCore import Qt
 
 from mediatagger.test_video import make_clip, wait_until_playing
 from mediatagger.test_viewer import make_image, make_surface_ready, shown_viewer_on, wait_until_loaded
+from mediatagger.test_viewer_video import viewer_paused_at_10_seconds
 from mediatagger.test_viewer_zoom import viewer_playing_a_clip_in
 
 
@@ -79,3 +80,14 @@ def test_pressing_up_on_a_video_playing_backwards_seeks_10_s_later_and_it_goes_o
 
     assert engine.time_pos == pytest.approx(20, abs=1)
     engine.wait_for_property("time-pos", lambda pos: pos is not None and pos < 18.5, timeout=5)
+
+
+def test_pressing_u_on_a_paused_video_turned_backwards_shows_its_next_frame_later_in_the_video(qtbot, tmp_path):
+    viewer = viewer_paused_at_10_seconds(qtbot, tmp_path)
+    engine = viewer.video_player.engine
+    qtbot.keyClick(viewer, Qt.Key.Key_B)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_U)
+
+    engine.wait_for_property("time-pos", lambda time_pos: time_pos == pytest.approx(10.1, abs=0.01), timeout=5)
+    assert engine.pause is True
