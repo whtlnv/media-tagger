@@ -85,16 +85,16 @@ def test_scrolling_the_mouse_wheel_up_many_notches_over_an_image_stops_at_five_t
     assert picture_rows() == 5 * fitted
 
 
-def test_a_photo_larger_than_the_window_zoomed_in_to_300_percent_shows_its_own_fine_detail_rather_than_an_enlarged_fitted_copy(qtbot, tmp_path):
-    photo = QImage(900, 900, QImage.Format.Format_RGB32)
+def test_a_photo_five_times_the_window_zoomed_in_to_500_percent_shows_its_own_fine_detail_rather_than_an_enlarged_fitted_copy(qtbot, tmp_path):
+    photo = QImage(1500, 1500, QImage.Format.Format_RGB32)
     photo.fill(QColor("white"))
-    for y in range(900):
-        photo.setPixelColor(450, y, QColor("black"))  # a one-pixel line: a third of a pixel once fitted to 300x300
+    for y in range(1500):
+        photo.setPixelColor(750, y, QColor("black"))  # a one-pixel line: a fifth of a pixel once fitted to 300x300
     photo.save(str(tmp_path / "IMG_1.png"))
     viewer = square_viewer_on(qtbot, tmp_path)
     centre = viewer.rect().center()
 
-    scroll(viewer, 20, at=centre)  # 300 %: the photo's middle 300x300 pixels at one window pixel each
+    scroll(viewer, 40, at=centre)  # 500 %: the photo's middle 300x300 pixels at one window pixel each
 
     frame = viewer.grab().toImage()
     dark_columns = sum(1 for x in range(frame.width()) if frame.pixelColor(x, 100).red() < 128)
