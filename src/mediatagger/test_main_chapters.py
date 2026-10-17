@@ -1,6 +1,6 @@
 from mediatagger.library import Library
 from mediatagger.test_library import create_schema_version_2_library, read_meta
-from mediatagger.test_main import REPORT_SHOWN_TEXTS_ON_A_DRIVE_SCRIPT, RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT, TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT
+from mediatagger.test_main import REPORT_SHOWN_TEXTS_ON_A_DRIVE_SCRIPT, RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT, SILENCE_THE_VIEWERS_ENGINE, TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT
 from mediatagger.test_viewer import make_image, run_python_offscreen
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_clip
 
@@ -8,10 +8,8 @@ ON_THE_PLAYING_VIDEO = TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT + (
     "from PySide6.QtCore import Qt, QTimer\n"
     "from PySide6.QtTest import QTest\n"
     "from PySide6.QtWidgets import QApplication, QStackedWidget\n"
-    "import mediatagger.viewer\n"
-    "from mediatagger.test_viewer import SILENT, make_surface_ready\n"
-    "unsilenced_engine = mediatagger.viewer.new_engine\n"
-    "mediatagger.viewer.new_engine = lambda **options: unsilenced_engine(**{**options, **SILENT})\n"
+) + SILENCE_THE_VIEWERS_ENGINE + (
+    "from mediatagger.test_viewer import make_surface_ready\n"
     "app = QApplication([])\n"
     "def shown_viewer():\n"
     "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"

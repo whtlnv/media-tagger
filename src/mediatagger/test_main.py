@@ -19,6 +19,13 @@ RUN_MEDIATAGGER_COMMAND = (
     "command.load()()\n"
 )
 
+SILENCE_THE_VIEWERS_ENGINE = (
+    "import mediatagger.viewer\n"
+    "from mediatagger.test_viewer import SILENT\n"
+    "unsilenced_engine = mediatagger.viewer.new_engine\n"
+    "mediatagger.viewer.new_engine = lambda **options: unsilenced_engine(**{**options, **SILENT})\n"
+)
+
 REPORT_SHOWN_WINDOW_SCRIPT = (
     "import sys\n"
     "from PySide6.QtCore import QTimer\n"
@@ -505,11 +512,9 @@ REPORT_THE_PLAYING_VIDEO_SCRIPT = (
     "import sys\n"
     "from PySide6.QtCore import QTimer\n"
     "from PySide6.QtWidgets import QApplication, QStackedWidget\n"
-    "import mediatagger.viewer\n"
-    "from mediatagger.test_viewer import SILENT, make_surface_ready\n"
+) + SILENCE_THE_VIEWERS_ENGINE + (
+    "from mediatagger.test_viewer import make_surface_ready\n"
     "from mediatagger.video_controls import ProgressBar\n"
-    "unsilenced_engine = mediatagger.viewer.new_engine\n"
-    "mediatagger.viewer.new_engine = lambda **options: unsilenced_engine(**{**options, **SILENT})\n"
     "app = QApplication([])\n"
     "def shown():\n"
     "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
@@ -545,10 +550,8 @@ SPEED_UP_THEN_PRESS_0_AND_REPORT_THE_SPEED_SCRIPT = (
     "from PySide6.QtCore import Qt, QTimer\n"
     "from PySide6.QtTest import QTest\n"
     "from PySide6.QtWidgets import QApplication, QStackedWidget\n"
-    "import mediatagger.viewer\n"
-    "from mediatagger.test_viewer import SILENT, make_surface_ready\n"
-    "unsilenced_engine = mediatagger.viewer.new_engine\n"
-    "mediatagger.viewer.new_engine = lambda **options: unsilenced_engine(**{**options, **SILENT})\n"
+) + SILENCE_THE_VIEWERS_ENGINE + (
+    "from mediatagger.test_viewer import make_surface_ready\n"
     "app = QApplication([])\n"
     "def shown_viewer():\n"
     "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"

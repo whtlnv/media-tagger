@@ -3,7 +3,7 @@ import subprocess
 import sys
 import time
 
-from mediatagger.test_main import RUN_MEDIATAGGER_COMMAND
+from mediatagger.test_main import RUN_MEDIATAGGER_COMMAND, SILENCE_THE_VIEWERS_ENGINE
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import make_image, offscreen_environment
 from mediatagger.test_viewer_backup import tags_in_newest_backup
@@ -75,10 +75,8 @@ SAY_QUITTING_THEN_CLOSE_THE_WINDOW_WHILE_THE_VIDEO_PLAYS_SCRIPT = (
     "import sys\n"
     "from PySide6.QtCore import QTimer\n"
     "from PySide6.QtWidgets import QApplication, QStackedWidget\n"
-    "import mediatagger.viewer\n"
-    "from mediatagger.test_viewer import SILENT, make_surface_ready\n"
-    "unsilenced_engine = mediatagger.viewer.new_engine\n"
-    "mediatagger.viewer.new_engine = lambda **options: unsilenced_engine(**{**options, **SILENT})\n"
+) + SILENCE_THE_VIEWERS_ENGINE + (
+    "from mediatagger.test_viewer import make_surface_ready\n"
     "app = QApplication([])\n"
     "def shown():\n"
     "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
