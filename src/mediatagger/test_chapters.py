@@ -93,6 +93,7 @@ def test_typing_u_and_e_in_the_prompt_opened_by_c_over_a_paused_video_types_them
     qtbot.wait(500)  # longer than a frame step takes to land
     assert viewer.video_player.engine.time_pos == 10
 
+
 def test_esc_in_the_prompt_opened_by_c_closes_it_and_records_no_tag_and_no_moment(qtbot, tmp_path):
     viewer, drive, folder = viewer_playing_a_clip_on_a_drive_with_a_library(qtbot, tmp_path)
     qtbot.keyClick(viewer, Qt.Key.Key_C)

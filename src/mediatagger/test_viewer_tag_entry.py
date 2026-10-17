@@ -198,6 +198,7 @@ def test_typing_u_and_e_in_the_tag_prompt_open_over_a_paused_video_types_them_an
     qtbot.wait(500)  # longer than a frame step takes to land
     assert viewer.video_player.engine.time_pos == 10
 
+
 def test_pressing_enter_in_the_tag_prompt_over_a_playing_video_saves_the_tags_without_pausing_it(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=30)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
