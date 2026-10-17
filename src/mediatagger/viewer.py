@@ -1,14 +1,14 @@
 from pathlib import Path
 
 from PySide6.QtCore import QPoint, Qt
-from PySide6.QtGui import QPainter, QTransform
+from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import QFileDialog, QWidget
 
 from mediatagger.chapters import Chapters
 from mediatagger.drive_session import DriveSession
 from mediatagger.folder import is_openable, is_video
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
-from mediatagger.image_fit import decode_fitted, fitted_rect
+from mediatagger.image_fit import decode_fitted, draw_turned, fitted_rect
 from mediatagger.mpv_surface import MpvSurface
 from mediatagger.status_bar import CORNER_MARGIN, StatusBar, TagOverlay, centre_in, overlay_label, pin_top_centre
 from mediatagger.slideshow import Slideshow
@@ -96,10 +96,7 @@ class Viewer(QWidget):
         painter.fillRect(self.rect(), Qt.GlobalColor.black)
         if self.slideshow is None:
             return
-        image = self._current_image()
-        if self._turn:
-            image = image.transformed(QTransform().rotate(self._turn))
-        painter.drawImage(self.zoom.shown(self._image_fitted(), self.rect()), image)
+        draw_turned(painter, self._current_image(), self.zoom.shown(self._image_fitted(), self.rect()), self._turn)
 
     def _image_fitted(self):
         """Where the current image, turned as r turned it, is fitted in the viewer."""
