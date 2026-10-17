@@ -50,6 +50,8 @@ class TagOverlay:
         self.own = overlay_label("", parent)
         self.inherited = overlay_label("", parent)
         self.inherited.setStyleSheet(_DIMMED_LABEL_STYLE)
+        for label in (self.own, self.inherited):
+            label.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.hide()
 
     def show(self, tags):

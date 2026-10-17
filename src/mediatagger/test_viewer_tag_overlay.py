@@ -274,3 +274,26 @@ def test_a_file_tagged_apple_beach_sunset_shows_three_lines_apple_beach_sunset_t
 
     [tag_overlay] = shown_labels(viewer)
     assert tag_overlay.text().splitlines() == ["apple", "beach", "sunset"]
+
+
+def rightmost_text_pixel_of_each_line(viewer, label, lines):
+    """The rightmost near-white pixel in each of a label's lines of text, read from a screenshot."""
+    frame = frame_in(viewer, label)
+    image = viewer.grab().toImage()
+    line_height = frame.height() // lines
+    return [
+        max(x for x in range(frame.left(), frame.right() + 1) for y in range(frame.top() + line * line_height, frame.top() + (line + 1) * line_height) if image.pixelColor(x, y).lightness() > 240)
+        for line in range(lines)
+    ]
+
+
+def test_in_the_tag_overlay_the_lines_of_a_short_tag_and_a_long_one_both_end_a_corner_margin_from_the_right_edge(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "zoo grandmother")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    resize_and_wait(qtbot, viewer, 1600, 900)
+
+    [tag_overlay] = shown_labels(viewer)
+    long_line_end, short_line_end = rightmost_text_pixel_of_each_line(viewer, tag_overlay, 2)
+    assert frame_in(viewer, tag_overlay).right() == viewer.rect().right() - CORNER_MARGIN
+    assert abs(short_line_end - long_line_end) <= 3
