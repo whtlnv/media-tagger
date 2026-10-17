@@ -4,7 +4,7 @@ there as an empty square."""
 from enum import StrEnum
 from functools import lru_cache
 
-from PySide6.QtCore import QPointF, Qt
+from PySide6.QtCore import QPointF, QRectF, Qt
 from PySide6.QtGui import QColor, QImage, QPainter, QPainterPath, QPen
 
 ICON_KEY = "icon"  # an icon's image carries its name under this key
@@ -14,6 +14,7 @@ class Icon(StrEnum):
     TAG = "<tag>"
     STOPWATCH = "<stopwatch>"
     FOLDER = "<folder>"
+    PICTURE = "<picture>"
 
 
 def draw_icon(painter, rect, icon, color):
@@ -82,4 +83,22 @@ def _paint_folder(painter, s, color):
     painter.drawPath(folder)
 
 
-_PAINTS = {Icon.TAG: _paint_tag, Icon.STOPWATCH: _paint_stopwatch, Icon.FOLDER: _paint_folder}
+def _paint_picture(painter, s, color):
+    """A framed picture of two hills under a sun."""
+    painter.setPen(QPen(color, max(1.0, 0.08 * s)))
+    painter.setBrush(Qt.BrushStyle.NoBrush)
+    painter.drawRect(QRectF(0.08 * s, 0.18 * s, 0.84 * s, 0.64 * s))
+    hills = QPainterPath()
+    hills.moveTo(0.14 * s, 0.76 * s)
+    hills.lineTo(0.4 * s, 0.42 * s)
+    hills.lineTo(0.58 * s, 0.62 * s)
+    hills.lineTo(0.68 * s, 0.52 * s)
+    hills.lineTo(0.86 * s, 0.76 * s)
+    hills.closeSubpath()
+    painter.setPen(Qt.PenStyle.NoPen)
+    painter.setBrush(color)
+    painter.drawPath(hills)
+    painter.drawEllipse(QPointF(0.7 * s, 0.34 * s), 0.07 * s, 0.07 * s)
+
+
+_PAINTS = {Icon.TAG: _paint_tag, Icon.STOPWATCH: _paint_stopwatch, Icon.FOLDER: _paint_folder, Icon.PICTURE: _paint_picture}
