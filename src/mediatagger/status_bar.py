@@ -44,7 +44,7 @@ def pin_top_centre(label, bounds):
 
 
 class TagOverlay:
-    """A file's own tags and, dimmed to their right, its inherited tags: two labels over the parent's top-right corner."""
+    """A file's own tags and, dimmed below them, its inherited tags, one per line: two labels over the parent's top-right corner."""
 
     def __init__(self, parent):
         self.own = overlay_label("", parent)
@@ -70,11 +70,11 @@ class TagOverlay:
         self.inherited.raise_()
 
     def pin(self, pin_top_right):
-        """Inherited tags sit in the top-right corner with the file's own tags just to their left."""
-        pin_top_right(self.inherited)
+        """The file's own tags sit in the top-right corner with its inherited tags just below them."""
         pin_top_right(self.own)
-        if not self.inherited.isHidden():
-            self.own.move(self.inherited.x() - self.own.width(), self.own.y())
+        pin_top_right(self.inherited)
+        if not self.own.isHidden():
+            self.inherited.move(self.inherited.x(), self.own.geometry().bottom() + 1)
 
 
 class StatusBar(QWidget):

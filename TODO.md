@@ -17,10 +17,10 @@
   - predicted-contradiction: `src/mediatagger/test_main_chapters.py::test_the_mediatagger_command_on_a_drive_whose_library_is_at_schema_version_2_upgrades_it_and_shows_its_tags` — asserts: the shipped command reports a single shown line "beach family" — retired-by: "shows `beach` and `sunset` in the top-right tag overlay on two separate lines"
 - [x] In the viewer, a file tagged `apple beach sunset` shows three lines in the tag overlay, top to bottom `apple`, `beach`, `sunset`
 - [x] In the viewer's tag overlay, the lines of a short tag (`zoo`) and a long one (`grandmother`) both end a corner margin from the window's right edge
-- [ ] In the viewer, a file tagged `beach` in a folder tagged `aunt zoo` shows `aunt` and `zoo` on their own lines below `beach`
+- [x] In the viewer, a file tagged `beach` in a folder tagged `aunt zoo` shows `aunt` and `zoo` on their own lines below `beach`
   - predicted-contradiction: `src/mediatagger/test_viewer_tag_overlay.py::test_in_the_tag_overlay_an_inherited_tag_is_drawn_dimmer_than_an_own_tag` — asserts: own tag "beach" sits left and inherited "aunt" right on one row, so the right third of the overlay is dim — retired-by: "shows `aunt` and `zoo` on their own lines below `beach`"
 - [ ] In the viewer, a file with no own tags in a folder tagged `aunt zoo` shows `aunt` on the top line, a corner margin from the top, with `zoo` below it
-- [ ] In the viewer's tag column, an inherited tag's line is drawn dimmer than an own tag's line
+- [x] In the viewer's tag column, an inherited tag's line is drawn dimmer than an own tag's line
 - [ ] In the viewer, moving with `Space` from a file with three tags to a file with one shows a single line in the tag overlay
 - [ ] In the viewer, a file with twelve tags shows all twelve, each on its own line with its whole text
 - [ ] With the info overlay and the read-only banner showing, a three-tag column in the tag overlay overlaps neither

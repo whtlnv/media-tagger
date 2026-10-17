@@ -185,7 +185,7 @@ def test_the_tag_overlay_shows_the_files_own_tags_alphabetically_then_its_inheri
     assert [line for text in shown_texts(viewer) for line in text.splitlines()] == ["beach", "sunset", "aunt", "zoo"]
 
 
-def test_in_the_tag_overlay_an_inherited_tag_is_drawn_dimmer_than_an_own_tag(qtbot, tmp_path):
+def test_in_the_tag_overlay_an_inherited_tags_line_is_drawn_dimmer_than_an_own_tags_line(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     library = Library.open(drive)
     library.enter(folder, "aunt")
@@ -193,18 +193,12 @@ def test_in_the_tag_overlay_an_inherited_tag_is_drawn_dimmer_than_an_own_tag(qtb
 
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
-    frames = [frame_in(viewer, label) for label in shown_labels(viewer) if "beach" in label.text() or "aunt" in label.text()]
-    left = min(frame.left() for frame in frames)
-    right = max(frame.right() for frame in frames)
-    top = min(frame.top() for frame in frames)
-    bottom = max(frame.bottom() for frame in frames)
     image = viewer.grab().toImage()
 
-    def brightest_in(columns):
-        return max(image.pixelColor(x, y).lightness() for x in columns for y in range(top, bottom + 1))
-    width = right - left
-    own_brightness = brightest_in(range(left, left + width // 4))  # "beach", shown first
-    inherited_brightness = brightest_in(range(right - width // 3, right))  # "aunt", shown last
+    def brightest_in(frame):
+        return max(image.pixelColor(x, y).lightness() for x in range(frame.left(), frame.right() + 1) for y in range(frame.top(), frame.bottom() + 1))
+    own_brightness = brightest_in(frame_in(viewer, shown_label_reading(viewer, "beach")))  # the top line
+    inherited_brightness = brightest_in(frame_in(viewer, shown_label_reading(viewer, "aunt")))  # the line below it
     assert own_brightness > 240
     assert inherited_brightness < own_brightness - 60
 
@@ -297,3 +291,16 @@ def test_in_the_tag_overlay_the_lines_of_a_short_tag_and_a_long_one_both_end_a_c
     long_line_end, short_line_end = rightmost_text_pixel_of_each_line(viewer, tag_overlay, 2)
     assert frame_in(viewer, tag_overlay).right() == viewer.rect().right() - CORNER_MARGIN
     assert abs(short_line_end - long_line_end) <= 3
+
+
+def test_a_file_tagged_beach_in_a_folder_tagged_aunt_zoo_shows_aunt_and_zoo_on_their_own_lines_below_beach(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    library = Library.open(drive)
+    library.enter(folder, "aunt zoo")
+    library.enter(folder / "IMG_1.png", "beach")
+
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    own = shown_label_reading(viewer, "beach")
+    inherited = shown_label_reading(viewer, "aunt\nzoo")
+    assert frame_in(viewer, inherited).top() > frame_in(viewer, own).bottom()
