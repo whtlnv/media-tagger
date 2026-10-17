@@ -35,6 +35,7 @@ State of the project and how it has been run, for the next session. Read `DESIGN
 | 25 `1`–`9` jump in ninths | done, validated on the Mac (`5cad790`, 1083 tests); Pi run pending |
 | 26 `0` back to normal | done, validated on the Mac (`351d7fc`, 1093 tests); Pi run pending |
 | 27 Painted badge icons | done, validated on the Mac (`f7ce45f`, 1097 tests); Pi run pending |
+| 28 `b` plays backwards | done, validated on the Mac (`db3bf4a`, 1112 tests); Pi run pending |
 
 Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), `grid.py`, `grid_filter.py` (the grids' shared filter and its button), `viewer.py`, `tag_prompt.py` (the `t` prompt, shared by grid and viewer), `rename_prompt.py` (the grid's `n` prompt), `status_bar.py`, `drive_session.py` (library open/create/restore/backup), `drive_config.py` (the drive's `mediatagger_config.json`: required tag roots), `library.py` (SQLite, schema v3: tags and chapter moments), `backup.py`, `state.py` (last folder, geometry, recent searches and renames; `$XDG_CONFIG_HOME`), `search.py` (query matching), `search_bar.py` (the `/` box and its `↑`/`↓` history), `folder.py`, `slideshow.py`, `thumbnails.py` (image/video/folder thumbnails, `ffmpeg`/`ffprobe`), `thumbnail_cache.py`, `thumbnail_scheduler.py` (3 workers + prefetch), `folder_thumbnails.py` (a folder's thumbnails for its grid), `video.py` + `mpv_surface.py` (libmpv render API), `video_controls.py` (video progress bar), `chapters.py` + `chapter_list.py` (the viewer's `c`, `.`/`,` and `l` chapters), `zoom.py` (mouse-wheel zoom for images and mpv), `gui_thread_gc.py`. Tests are co-located (`test_*.py`). Open structural debt is in `BACKLOG.md`.
 
@@ -48,6 +49,12 @@ Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), 
   - send the agent back with a numbered fix list if anything is off.
 - Progress is relayed to the user in chat from a `Monitor` that polls `git log`, `TODO.md` checkbox counts, `~/Library/Logs/DiagnosticReports/Python-*.ips` and `/Volumes/MEDIATAGGER`. Monitors expire every 30 min; re-arm.
 - The user asked for progress to be printed in the conversation and for questions only when a decision is genuinely theirs.
+
+## Phase 28 — done
+
+`b` → `VideoPlayer._play_towards` sets mpv `play_direction` and waits only for mpv's `seek` event (not `playback_restart`: on a silent clip that needs a frame drawn on the blocked GUI thread → 5 s freeze). Every stop (Space/→/←, drop, `o`, Esc) first turns the still-loaded player forwards (setting the direction while idle doesn't take; the next clip would play backwards). `0` also sets forwards. Backwards, `u`/`e` swap mpv's step commands so `u` stays the later frame; `.` skips a moment passed < 1 s ago. **`demuxer_thread: "no"`** added to the viewer's player options: with the default demuxer thread, a long-GOP silent clip played backwards stalled for good under load. `b` on an image is ignored. Spike: works with mpv defaults; ~+700 MB RSS while backwards (mpv's 1 GiB `video-reversal-buffer`; 256 MiB froze), flat while backwards; `cache=yes` broke the last keyframe range. First delivery failed the orchestrator's native check (`b` froze 5 s and the clip never reversed) → fix round `5d129b4`, `467bdc0`. Mid-phase, 8 crash reports 15:49–15:52 came from an uncommitted half-green (a 2-arg lambda into a 3-arg `_jump`; an exception in a Qt event filter makes the next test segfault building a QWidget — pre-existing weakness). Orchestrator check: suite twice (1112), native on a 20 s 640×360 silent clip (keyframes 0/10 s), twice: `b` 0.02 s, 8.96 → 7.44 in 2 s backwards, `0` forwards at once, `b` on an image ignored; Phase 22 frame step re-checked.
+
+- **Pi to check:** memory while a phone clip plays backwards (`free`; the Pi 4's RAM size is unknown — ≤ 2 GB may not cope); smoothness of software-decoded HEVC backwards; forward 4K/HEVC from the USB drive for stutter now that the demuxer runs on mpv's playback thread; `↑`/`↓`/digits backwards block ~1 s (the existing seek wait).
 
 ## Phase 27 — done
 
