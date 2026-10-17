@@ -27,4 +27,5 @@
 - [x] In the grid, the status bar still shows the cursor tile's tags side by side on one line
   - covered by the existing `test_window.py::test_moving_the_windows_grid_cursor_onto_a_tagged_item_shows_its_own_tags_space_separated_in_the_status_bar` (grid status bar is `window.py`'s own `" ".join`, untouched by this phase); no new test
 - [x] Running the shipped `mediatagger <folder>` command on a folder whose first file is tagged `beach sunset` shows `beach` above `sunset` in the viewer's tag overlay
-- [ ] Acceptance: a screenshot of `mediatagger <folder>` on the Mac shows a file's own tags stacked in the top-right corner with its dimmed inherited tags below them
+- [x] Acceptance: a screenshot of `mediatagger <folder>` on the Mac shows a file's own tags stacked in the top-right corner with its dimmed inherited tags below them
+  - shipped console-script entry point run on-screen on the Mac (drive name treated as mount point): `beach`/`family`/`sunset` stacked right-aligned top-right, dimmed `aunt`/`zoo` below
