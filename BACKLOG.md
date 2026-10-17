@@ -2,6 +2,9 @@
 
 ## Out of Scope
 
+- **[src/mediatagger/test_main.py:640] Qt-warning tests could move to their own test_main_warnings.py** (added: 2026-10-17)
+  transformation broke the suite: test_main_quitting.py::test_pressing_esc_to_quit_the_mediatagger_command_from_a_grid_whose_thumbnails_are_still_generating_ends_the_process_within_3_s — three gate runs failed only on the load-sensitive 3 s quit tests (see the timing-flake entry), never on the moved tests; retry the move on an idle machine to bring test_main.py (673 lines) toward its 500-line budget.
+
 - **[src/mediatagger/test_search.py:181] Test imports test_library's private `_create_schema_version_1_library` and `_read_only_drive`** (added: 2026-10-16; location corrected 2026-10-17)
   The read-only schema-version-1 search test reaches two private helpers of `test_library.py`; no public equivalent exists (`made_read_only` locks only the drive root, not `.mediatagger` and `tags.db`, so the upgrade would still write), and making them public needs a rename in `test_library.py`, outside the 29bbecd..HEAD range.
 
