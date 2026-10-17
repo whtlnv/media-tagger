@@ -6,7 +6,7 @@
 - [x] In the viewer on a photo turned once with `r`, `0` shows it unturned
 - [x] In the viewer on a photo turned with `r` and then zoomed in, `0` shows it unturned at 100 %, centred, in one press
 - [x] In the viewer on a video playing at 2×, `0` sets its speed back to 1×
-- [ ] In the viewer on a video zoomed in with the mouse wheel, `0` shows it back at 100 %, centred
+- [x] In the viewer on a video zoomed in with the mouse wheel, `0` shows it back at 100 %, centred
 - [ ] In the viewer on a video turned once with `r`, `0` shows it unturned
 - [ ] In the viewer on a video paused at about 0:30, `0` leaves it paused at about 0:30
 - [ ] In the viewer with the tag prompt open on a zoomed photo, `0` types `0` into the prompt and leaves the zoom as it was

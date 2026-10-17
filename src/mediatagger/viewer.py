@@ -19,7 +19,7 @@ from mediatagger.zoom import Zoom, video_fitted
 
 _PLAYER_OPTIONS = {"vo": "libmpv", "vd_lavc_dr": "no"}  # mpv_surface hands mpv no GL fences, which direct rendering needs
 _VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up", Qt.Key.Key_Down: "Down", Qt.Key.Key_Return: "Enter"}
-_VIDEO_KEYS |= {Qt.Key.Key_0 + digit: str(digit) for digit in range(10)}
+_VIDEO_KEYS |= {Qt.Key.Key_0 + digit: str(digit) for digit in range(1, 10)}
 _VIDEO_KEYS |= {Qt.Key.Key_BracketRight: "]", Qt.Key.Key_BracketLeft: "[", Qt.Key.Key_R: "r", Qt.Key.Key_U: "u", Qt.Key.Key_E: "e"}
 _SLIDESHOW_KEYS = {Qt.Key.Key_Left: "Left", Qt.Key.Key_Right: "Right", Qt.Key.Key_Space: "Space"}
 UNSUPPORTED_TEXT = "Unsupported"
@@ -157,8 +157,11 @@ class Viewer(QWidget):
             return
         if self.tag_prompt.has_focus():
             return  # keys the open tag prompt ignores must not reach the slideshow or video
-        if event.key() == Qt.Key.Key_0 and not is_video(self.slideshow.current):
+        if event.key() == Qt.Key.Key_0:
             self.zoom, self._turn = Zoom(), 0
+            if is_video(self.slideshow.current):
+                self.zoom.apply_to(self.video_player.engine)
+                self.video_player.press("0")
             self.update()
             return
         if event.key() == Qt.Key.Key_R and not is_video(self.slideshow.current):

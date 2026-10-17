@@ -73,3 +73,12 @@ def test_pressing_0_on_a_video_sped_up_to_2x_plays_it_at_1x_again(qtbot, tmp_pat
     qtbot.keyClick(viewer, Qt.Key.Key_0)
 
     assert engine.speed == 1
+
+
+def test_pressing_0_on_a_video_zoomed_in_off_its_centre_shows_it_fitted_and_centred_again(qtbot, tmp_path):
+    viewer, engine = viewer_playing_a_clip_in(qtbot, tmp_path)
+    scroll(viewer, 3, at=QPoint(20, 20))
+
+    qtbot.keyClick(viewer, Qt.Key.Key_0)
+
+    assert (engine.video_zoom, engine.video_pan_x, engine.video_pan_y) == (0, 0, 0)
