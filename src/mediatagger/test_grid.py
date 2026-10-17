@@ -57,8 +57,8 @@ class RecordingPainter(QPainter):
 
     def drawText(self, *args):
         texts = [arg for arg in args if isinstance(arg, str)]
-        if texts and self._icon and isinstance(args[0], QRect) and args[0].contains(self.icon_rects[self._icon]):
-            texts[0], self._icon = self._icon + texts[0], ""
+        if texts and (icon := self._icon_drawn_into(args[0])):
+            texts[0], self._icon = icon + texts[0], ""
         self._flush_icon()
         self.texts.extend(texts)
         super().drawText(*args)
@@ -66,6 +66,10 @@ class RecordingPainter(QPainter):
     def end(self):
         self._flush_icon()
         return super().end()
+
+    def _icon_drawn_into(self, rect):
+        """The icon painted just before, if rect is a rectangle around it: then it belongs to the text drawn there."""
+        return self._icon if self._icon and isinstance(rect, QRect) and rect.contains(self.icon_rects[self._icon]) else ""
 
     def _flush_icon(self):
         if self._icon:

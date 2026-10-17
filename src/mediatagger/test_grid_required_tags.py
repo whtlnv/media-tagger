@@ -1,12 +1,11 @@
 from PySide6.QtCore import QRect, Qt
-from PySide6.QtGui import QFontMetrics, QGuiApplication, QImage, QPainter
+from PySide6.QtGui import QFontMetrics, QGuiApplication, QImage
 from PySide6.QtWidgets import QStyleOptionViewItem
 
 from mediatagger.grid import MISSING_ROOTS_BADGE, TAG_BADGE, TILE_ROLE, Grid
-from mediatagger.icons import ICON_KEY
 from mediatagger.library import Library
 from mediatagger.test_folder import touch
-from mediatagger.test_grid import painted_texts, painted_tile
+from mediatagger.test_grid import RecordingPainter, painted_texts, painted_tile
 
 ROOTS = ("type:", "size:")
 
@@ -64,27 +63,18 @@ def test_a_grid_with_no_required_roots_or_no_library_has_no_missing_badge(qtbot,
     assert [missing_badge(grid, 0) for grid in grids] == [None, None]
 
 
-class PlacementRecordingPainter(QPainter):
-    """Records where each text lands: the rectangle it takes up inside the one it was drawn into. An icon painted just
-    before a text drawn into a rectangle around it joins that text, as `RecordingPainter` reads them: a tag badge lands
-    as `<tag>2`, icon and number together."""
+class PlacementRecordingPainter(RecordingPainter):
+    """Records where each text lands: the rectangle it takes up inside the one it was drawn into. An icon joins the
+    text it belongs to, as `RecordingPainter` reads them: a tag badge lands as `<tag>2`, icon and number together."""
 
     def __init__(self, device):
         super().__init__(device)
         self.placed = {}
-        self._icon = ("", QRect())
-
-    def drawImage(self, *args):
-        if isinstance(args[0], QRect) and isinstance(args[1], QImage) and args[1].text(ICON_KEY):
-            self._icon = (args[1].text(ICON_KEY), args[0])
-        super().drawImage(*args)
 
     def drawText(self, *args):
         if isinstance(args[0], QRect) and len(args) == 3:
-            (icon, icon_rect), self._icon = self._icon, ("", QRect())
-            if not args[0].contains(icon_rect):  # not this text's icon
-                icon, icon_rect = "", QRect()
-            self.placed[icon + args[2]] = self.boundingRect(*args).united(icon_rect)
+            icon = self._icon_drawn_into(args[0])
+            self.placed[icon + args[2]] = self.boundingRect(*args).united(self.icon_rects.get(icon, QRect()))
         super().drawText(*args)
 
 
