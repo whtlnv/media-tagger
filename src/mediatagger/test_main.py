@@ -540,6 +540,44 @@ def test_running_the_mediatagger_command_on_a_relative_path_to_a_video_opens_a_n
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == f"fullscreen=False playing={clip} bars=['1:05']"
 
+SPEED_UP_THEN_PRESS_0_AND_REPORT_THE_SPEED_SCRIPT = (
+    "import sys\n"
+    "from PySide6.QtCore import Qt, QTimer\n"
+    "from PySide6.QtTest import QTest\n"
+    "from PySide6.QtWidgets import QApplication, QStackedWidget\n"
+    "import mediatagger.viewer\n"
+    "from mediatagger.test_viewer import SILENT, make_surface_ready\n"
+    "unsilenced_engine = mediatagger.viewer.new_engine\n"
+    "mediatagger.viewer.new_engine = lambda **options: unsilenced_engine(**{**options, **SILENT})\n"
+    "app = QApplication([])\n"
+    "def shown_viewer():\n"
+    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    return window.findChild(QStackedWidget).currentWidget()\n"
+    "def stand_in_for_the_video_surface_becoming_ready():\n"
+    "    make_surface_ready(shown_viewer())\n"
+    "    QTimer.singleShot(1500, speed_up_then_press_0)\n"
+    "def speed_up_then_press_0():\n"
+    "    viewer = shown_viewer()\n"
+    "    QTest.keyClick(viewer, Qt.Key.Key_BracketRight)\n"
+    "    sped_up = viewer.video_player.engine.speed\n"
+    "    QTest.keyClick(viewer, Qt.Key.Key_0)\n"
+    "    print(f'sped_up={sped_up} after_0={viewer.video_player.engine.speed}', flush=True)\n"
+    "    QApplication.closeAllWindows()\n"
+    "    QApplication.quit()\n"
+    "QTimer.singleShot(1000, stand_in_for_the_video_surface_becoming_ready)\n"
+    "sys.argv = ['mediatagger', sys.argv[1]]\n"
+) + RUN_MEDIATAGGER_COMMAND
+
+
+def test_in_the_mediatagger_command_on_a_video_pressing_close_bracket_then_0_plays_it_at_1x_again(tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4", duration=30)
+    result = subprocess.run(
+        [sys.executable, "-c", SPEED_UP_THEN_PRESS_0_AND_REPORT_THE_SPEED_SCRIPT, str(clip)],
+        capture_output=True, text=True, timeout=30, env=offscreen_environment(),
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "sped_up=1.25 after_0=1.0"
+
 SEARCH_FROM_THE_GRID_THEN_REPORT_THE_BREADCRUMB_AND_TILES_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT + (
     "from PySide6.QtCore import Qt, QTimer\n"
     "from PySide6.QtTest import QTest\n"
