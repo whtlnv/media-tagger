@@ -51,8 +51,10 @@ class VideoPlayer:
         if key == "Down":
             self._seek(-10)
             return
-        if key.isdigit():  # 0-9 jump to 0 %-90 % of the video
-            self._seek(int(key) * 10, reference="absolute-percent")
+        if key == "0":
+            self._seek(0, reference="absolute-percent")
+        elif key.isdigit():  # 1-9 jump to the start of the video's first to ninth ninth
+            self._seek((int(key) - 1) * 100 / 9, reference="absolute-percent")
             return
         if key == "]":
             self._step_speed(1)

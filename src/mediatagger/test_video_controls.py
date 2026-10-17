@@ -193,7 +193,7 @@ def test_destroying_a_shown_progress_bar_that_avoids_a_shown_sibling_after_the_g
     pytest.param(65, Qt.Key.Key_V, r"\d:\d\d / 1:05", id="v shows the bar"),
     pytest.param(65, Qt.Key.Key_Up, r"0:10 / 1:05", id="up shows the bar at the new position"),
     pytest.param(65, Qt.Key.Key_BracketRight, r"\d:\d\d / 1:05 · 1\.25×", id="] shows the bar reading its new speed"),
-    pytest.param(64, Qt.Key.Key_5, r"0:32 / 1:04", id="5 seeks to half its length and shows the bar"),
+    pytest.param(90, Qt.Key.Key_5, r"0:40 / 1:30", id="5 seeks to four ninths of its length and shows the bar"),
 ])
 def test_a_key_on_a_playing_video_whose_progress_bar_is_hidden_shows_the_bar_at_once_reading_any_change(qtbot, tmp_path, duration, key, text):
     clip = make_clip(tmp_path / "IMG_1.mp4", duration=duration)
@@ -233,11 +233,28 @@ def test_v_on_a_playing_video_leaves_its_pause_mute_position_speed_rotation_and_
     assert viewer.slideshow.current == clip
 
 
+def playing_at_30_seconds(viewer):
+    engine = viewer.video_player.engine
+    wait_until_playing(engine)
+    engine.seek(30, reference="absolute", precision="exact")
+    engine.wait_for_property("time-pos", lambda pos: pos is not None and pos >= 30, timeout=5)
+
+
+def test_one_on_a_90_s_video_playing_at_0_30_jumps_back_to_the_start(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4", duration=90)
+    viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
+    playing_at_30_seconds(viewer)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_1)
+
+    assert bar.text() == "0:00 / 1:30"
+
+
 def test_zero_on_a_playing_video_seeks_back_to_the_start(qtbot, tmp_path):
     clip = make_clip(tmp_path / "IMG_1.mp4", duration=64)
     viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
     qtbot.keyClick(viewer, Qt.Key.Key_5)
-    assert bar.text() == "0:32 / 1:04"
+    assert bar.text() == "0:28 / 1:04"
 
     qtbot.keyClick(viewer, Qt.Key.Key_0)
 
