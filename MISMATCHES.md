@@ -2,6 +2,13 @@
 
 Append-only audit log of `/red` prediction mismatches and their resolutions. Newest first. Never edit or delete prior entries — that destroys the audit trail.
 
+## 2026-10-17 08:05 · `src/mediatagger/test_viewer_tag_overlay.py::test_a_file_tagged_apple_beach_sunset_shows_three_lines_apple_beach_sunset_top_to_bottom`
+- Behavior: In the viewer, a file tagged `apple beach sunset` shows three lines in the tag overlay, top to bottom `apple`, `beach`, `sunset`
+- Predicted: passes on first run — e0d7561 already joins any number of own tags with `\n` in `TagOverlay.show`
+- Actual: passed on first run, as predicted
+- Type: passed unexpectedly
+- Resolution: The two-tag item's green was already general enough to cover three tags, so no production code is missing. Kept the test as a three-line pin instead of rigging a failure.
+
 ## 2026-10-16 10:35 · `src/mediatagger/test_window_search.py::test_after_enter_on_beach_family_in_the_rename_prompt_over_search_results_esc_returns_to_a_folder_grid_whose_tile_tagged_beach_family_shows_a_tag_badge_with_count_1`
 - Behavior: After a rename, open search results show their items' new tags
 - Predicted: AssertionError — the results grid's tile still shows `🏷2` after renaming `beach` → `family` from the results

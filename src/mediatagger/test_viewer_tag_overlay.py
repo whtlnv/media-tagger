@@ -264,3 +264,13 @@ def test_a_file_tagged_beach_sunset_shows_beach_and_sunset_on_two_separate_lines
 
     [tag_overlay] = shown_labels(viewer)
     assert tag_overlay.text().splitlines() == ["beach", "sunset"]
+
+
+def test_a_file_tagged_apple_beach_sunset_shows_three_lines_apple_beach_sunset_top_to_bottom(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "apple beach sunset")
+
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    [tag_overlay] = shown_labels(viewer)
+    assert tag_overlay.text().splitlines() == ["apple", "beach", "sunset"]
