@@ -7,8 +7,8 @@
 - [x] Pressing `r` four times on an image shows it unrotated again, drawn exactly where it was fitted before the first press
 - [x] A landscape image turned once in a wide viewer is fitted whole: its turned height fills the viewer's height and it is centred across the width
 - [x] After pressing `r` on an image, moving to the next image shows that image unrotated
-- [ ] After pressing `r` on an image, moving to the next item and back shows the first image unrotated again
-- [ ] After pressing `r` on a video, moving to the next item shows an image there unrotated
+- [x] After pressing `r` on an image, moving to the next item and back shows the first image unrotated again
+- [x] After pressing `r` on a video, moving to the next item shows an image there unrotated
 - [ ] Pressing `r` on an image leaves the image file's bytes and modification time unchanged
 - [ ] After pressing `r` on an image and `Esc` to the grid, that image's tile shows the same thumbnail as before the press
 - [ ] Typing `r` in the tag prompt open over an image types `r` and leaves the image unturned

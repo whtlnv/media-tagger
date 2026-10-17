@@ -1,7 +1,8 @@
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QImage
 
-from mediatagger.test_viewer import shown_viewer_on
+from mediatagger.test_video import make_clip, wait_until_playing
+from mediatagger.test_viewer import make_surface_ready, shown_viewer_on
 from mediatagger.test_viewer_zoom import square_viewer_on
 
 
@@ -75,3 +76,31 @@ def test_after_pressing_r_on_an_image_the_next_image_shows_unrotated(qtbot, tmp_
     qtbot.keyClick(viewer, Qt.Key.Key_Space)
 
     assert viewer.grab().toImage() == unrotated
+
+
+def test_after_pressing_r_on_an_image_moving_to_the_next_item_and_back_shows_it_unrotated_again(qtbot, tmp_path):
+    make_corner_marked_landscape(tmp_path / "IMG_1.png")
+    make_corner_marked_landscape(tmp_path / "IMG_2.png")
+    viewer = square_viewer_on(qtbot, tmp_path)
+    unrotated = viewer.grab().toImage()
+    qtbot.keyClick(viewer, Qt.Key.Key_R)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Right)
+    qtbot.keyClick(viewer, Qt.Key.Key_Left)
+
+    assert viewer.grab().toImage() == unrotated
+
+
+def test_after_pressing_r_on_a_video_the_next_image_shows_unrotated(qtbot, tmp_path):
+    make_clip(tmp_path / "IMG_1.mp4", duration=30)
+    make_corner_marked_landscape(tmp_path / "IMG_2.png")
+    viewer = square_viewer_on(qtbot, tmp_path)
+    make_surface_ready(viewer)
+    wait_until_playing(viewer.video_player.engine)
+    qtbot.keyClick(viewer, Qt.Key.Key_R)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Space)
+
+    frame = viewer.grab().toImage()  # unrotated 200x100 fitted 300x150 at y 75..224, its blue corner at x 0..29, y 75..104
+    assert frame.pixelColor(15, 90) == QColor("blue")
+    assert frame.pixelColor(285, 210) == QColor("red")
