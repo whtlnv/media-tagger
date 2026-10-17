@@ -1,3 +1,14 @@
+- [x] 2026-10-16 · Pressing `u` on a paused video shows its next frame (its position moves forward by one frame and it stays paused)
+- [x] 2026-10-16 · Pressing `u` on a playing video does not step a frame (it keeps playing, its position not jumped)
+- [x] 2026-10-16 · Pressing `e` on a paused video shows its previous frame (its position moves back by one frame and it stays paused)
+- [x] 2026-10-16 · Pressing `e` on a playing video does not step a frame (it keeps playing, its position not jumped)
+- [x] 2026-10-16 · After `u` on a paused video, the progress bar shows and reads the stepped position
+- [x] 2026-10-16 · After `e` on a paused video, the progress bar shows and reads the stepped position
+- [x] 2026-10-16 · With the tag prompt open over a paused video, typing `u` and `e` puts those letters in the prompt and leaves the video's frame unchanged
+- [x] 2026-10-16 · With the chapter (`c`) prompt open over a paused video, typing `u` and `e` puts those letters in the prompt and leaves the video's frame unchanged
+- [x] 2026-10-16 · Pressing `u` or `e` on an image changes nothing (no error, the image stays shown)
+- [x] 2026-10-16 · The `h` cheat sheet lists `u` (next frame) and `e` (previous frame) among the viewer's keys, matching new rows in DESIGN.md's viewer key table (the pinned test compares the two, so both change together)
+- [x] 2026-10-16 · In the shipped `mediatagger` app on a drive, `u` on a paused video steps it one frame forward
 - [x] 2026-10-16 · Scrolling the mouse wheel up many notches over an image stops at five times its fitted size
 - [x] 2026-10-16 · Scrolling the mouse wheel up many notches over a playing video stops at five times its fitted size
   - predicted-contradiction: `src/mediatagger/test_viewer_zoom.py::test_scrolling_the_mouse_wheel_up_many_notches_over_a_video_stops_at_three_times_its_fitted_size` — asserts: 30 wheel notches up over a video leave mpv's video-zoom at log2(3), capped at 300 % — retired-by: "stops at five times its fitted size"
