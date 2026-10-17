@@ -165,6 +165,8 @@ class Viewer(QWidget):
             self.zoom.keep_covering(self._image_fitted(), self.rect())
             self.update()
             return
+        if event.key() == Qt.Key.Key_B and not is_video(self.slideshow.current):
+            return  # the idle player keeps playing forwards for the next video
         if event.key() in _VIDEO_KEYS:
             self.video_player.press(_VIDEO_KEYS[event.key()])
             self.progress_bar.wake()
