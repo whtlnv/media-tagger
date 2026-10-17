@@ -18,6 +18,7 @@ from mediatagger.video_controls import ProgressBar
 from mediatagger.zoom import Zoom, video_fitted
 
 _PLAYER_OPTIONS = {"vo": "libmpv", "vd_lavc_dr": "no"}  # mpv_surface hands mpv no GL fences, which direct rendering needs
+_PLAYER_OPTIONS["demuxer_thread"] = "no"  # its demuxer thread can stall a silent clip played backwards (b) for good
 _VIDEO_KEYS = {Qt.Key.Key_M: "m", Qt.Key.Key_P: "p", Qt.Key.Key_Up: "Up", Qt.Key.Key_Down: "Down", Qt.Key.Key_Return: "Enter"}
 _VIDEO_KEYS |= {Qt.Key.Key_0 + digit: str(digit) for digit in range(1, 10)}
 _VIDEO_KEYS |= {Qt.Key.Key_BracketRight: "]", Qt.Key.Key_BracketLeft: "[", Qt.Key.Key_R: "r", Qt.Key.Key_U: "u", Qt.Key.Key_E: "e", Qt.Key.Key_B: "b"}

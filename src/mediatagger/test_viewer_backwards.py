@@ -8,6 +8,7 @@ from mediatagger.test_video import make_clip, wait_until_playing
 from mediatagger.test_viewer import make_image, make_surface_ready, shown_viewer_on, wait_until_loaded
 from mediatagger.test_viewer_video import frame_stepping_viewer_on, viewer_paused_at_10_seconds
 from mediatagger.test_viewer_zoom import viewer_playing_a_clip_in
+from mediatagger.viewer import Viewer
 
 
 def make_silent_long_gop_clip(path):
@@ -132,3 +133,12 @@ def test_pressing_b_on_a_silent_clip_mid_way_between_its_keyframes_returns_at_on
 
     assert time.monotonic() - pressed < 0.3  # mpv's restart can wait on a frame drawn by the very thread b blocks
     engine.wait_for_property("time-pos", lambda pos: pos is not None and pos < 8.5, timeout=5)
+
+
+def test_the_viewers_player_demuxes_on_its_own_playback_thread(qtbot):
+    viewer = Viewer(player_options={"ao": "null"})
+    qtbot.addWidget(viewer)
+
+    # mpv 0.41's demuxer thread can miss the request for the packets before a keyframe when a silent clip starts playing
+    # backwards through the render API, and the clip then never moves (seen under load on the Mac)
+    assert viewer.video_player.engine["demuxer-thread"] is False
