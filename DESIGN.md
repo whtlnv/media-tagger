@@ -90,7 +90,7 @@ Rules:
 4. Opening a directory from results shows that folder normally (all contents, unfiltered).
 5. `Enter` on a file in results starts a slideshow **over the result list** (with a filter on, only the files it shows), starting at that file.
 
-Results show under a `Search: <query>` breadcrumb, shown only with the results grid: a file opened from the results hides it and `Esc` back to the results shows it again; a result whose path no longer exists is drawn as a missing tile (❓ and its name).
+Results show under a `Search: <query>` breadcrumb, shown only with the results grid: a file opened from the results hides it and `Esc` back to the results shows it again; a result whose path no longer exists is drawn as a missing tile (`?` and its name).
 
 `↑`/`↓` in the search box step through the 50 most recent searches, remembered in `state.json`.
 
@@ -176,9 +176,9 @@ Results show under a `Search: <query>` breadcrumb, shown only with the results g
 | `o` | open a folder (picker), as if dropped |
 | `h` | show / hide the key cheat sheet |
 
-- Tiles ~200 px: thumbnail (a large type glyph until it arrives, or when there is none), truncated filename, tag-count badge when the item has own tags.
+- Tiles ~200 px: thumbnail (a large painted type icon — folder, picture or video — until it arrives, or when there is none), truncated filename, tag-count badge (a painted tag and the count) when the item has own tags. Symbols are painted icons or characters DejaVu Sans has: the Pi has no emoji font.
 - A file missing required roots (none of its effective tags — own and inherited — starts with the root) shows `✗<n>`, the number of roots it lacks, styled like the tag-count badge, in the top-right corner just left of it (left to right: missing, tags). A file missing none, and every folder tile, shows nothing. Marks show in folder grids and search results, and change at once when tagging changes them (back from a results slideshow too).
-- Video tiles: frame at ~10%, ▶ badge, duration; with chapters, `⏱ <n>` (its moments) in the top-right corner right of the tag-count badge (left to right: missing, tags, moments).
+- Video tiles: frame at ~10%, ▶ badge, duration; with chapters, a painted stopwatch and `<n>` (its moments) in the top-right corner right of the tag-count badge (left to right: missing, tags, moments).
 - Folder tiles: first image directly inside (natural order); none there, no thumbnail.
 - Selected item's own tags shown in the status bar, followed by its inherited tags dimmed.
 - Filter (mouse only): a round button with a funnel in the bottom-right corner of the tiles pops up a menu — **With tags** (own tags), **No tags** (no own tags), and **Missing tags** (files with a `✗` mark; offered only when the drive has required roots and a library is open, or while it is on). One filter at a time, for every folder grid and search results, until the app quits; choosing the active one again turns it off. While one is on the button is in the highlight colour and its tooltip names it. Non-matching files are hidden at once (also when tagging makes a file stop matching); folder tiles and missing results always stay. A hidden tile never holds the cursor: it moves to the next shown tile, else the nearest before it.
