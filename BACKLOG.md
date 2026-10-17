@@ -2,6 +2,9 @@
 
 ## Out of Scope
 
+- **[src/mediatagger/test_main.py:654] The three Qt-warning tests could fold into one parameterized test** (added: 2026-10-17)
+  transformation broke the suite: drive/test_run.py::test_run_with_a_real_python3_starts_the_real_app_from_the_drive_app_and_the_drive_gains_no_files — the load-sensitive 8 s drive-run test (see the timing-flake entry) failed at load ~6 while the folded table itself passed 3/3; retry the fold (by category name, extra `QT_LOGGING_RULES`, expected `warnings=`) on an idle machine.
+
 - **[src/mediatagger/test_main.py:640] Qt-warning tests could move to their own test_main_warnings.py** (added: 2026-10-17)
   transformation broke the suite: test_main_quitting.py::test_pressing_esc_to_quit_the_mediatagger_command_from_a_grid_whose_thumbnails_are_still_generating_ends_the_process_within_3_s — three gate runs failed only on the load-sensitive 3 s quit tests (see the timing-flake entry), never on the moved tests; retry the move on an idle machine to bring test_main.py (673 lines) toward its 500-line budget.
 
