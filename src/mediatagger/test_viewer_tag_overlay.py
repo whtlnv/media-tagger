@@ -333,3 +333,16 @@ def test_moving_with_space_from_a_file_with_three_tags_to_a_file_with_one_shows_
     [tag_overlay] = shown_labels(viewer)
     assert tag_overlay.text() == "zoo"
     assert tag_overlay.height() < three_lines_height / 2
+
+
+def test_a_file_with_twelve_tags_shows_all_twelve_each_on_its_own_line_with_its_whole_text(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    twelve = ["apple", "beach", "birthday", "cousins", "family", "grandmother", "holiday", "picnic", "sunset", "uncle", "waterfall", "zoo"]
+    Library.open(drive).enter(folder / "IMG_1.png", " ".join(twelve))
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    resize_and_wait(qtbot, viewer, 1600, 900)
+
+    [tag_overlay] = shown_labels(viewer)
+    assert tag_overlay.text().splitlines() == twelve
+    assert tag_overlay.size().expandedTo(tag_overlay.sizeHint()) == tag_overlay.size()
+    assert viewer.rect().contains(frame_in(viewer, tag_overlay))
