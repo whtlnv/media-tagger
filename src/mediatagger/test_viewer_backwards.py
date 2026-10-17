@@ -1,10 +1,24 @@
+import subprocess
+import time
+
 import pytest
 from PySide6.QtCore import Qt
 
 from mediatagger.test_video import make_clip, wait_until_playing
 from mediatagger.test_viewer import make_image, make_surface_ready, shown_viewer_on, wait_until_loaded
-from mediatagger.test_viewer_video import viewer_paused_at_10_seconds
+from mediatagger.test_viewer_video import frame_stepping_viewer_on, viewer_paused_at_10_seconds
 from mediatagger.test_viewer_zoom import viewer_playing_a_clip_in
+
+
+def make_silent_long_gop_clip(path):
+    """20 s at 25 fps with no sound and keyframes only at 0:00 and 0:10, like a camera's: mpv reverses such a file only
+    from its demuxer cache."""
+    subprocess.run(
+        ["ffmpeg", "-loglevel", "error", "-f", "lavfi", "-i", "testsrc=duration=20:size=64x48:rate=25", "-c:v", "libx264",
+         "-g", "250", "-pix_fmt", "yuv420p", str(path)],
+        check=True,
+    )
+    return path
 
 
 def test_pressing_b_in_the_viewer_on_a_playing_video_makes_it_play_backwards_its_position_going_down(qtbot, tmp_path):
@@ -85,7 +99,8 @@ def test_pressing_up_on_a_video_playing_backwards_seeks_10_s_later_and_it_goes_o
 def test_pressing_u_on_a_paused_video_turned_backwards_shows_its_next_frame_later_in_the_video(qtbot, tmp_path):
     viewer = viewer_paused_at_10_seconds(qtbot, tmp_path)
     engine = viewer.video_player.engine
-    qtbot.keyClick(viewer, Qt.Key.Key_B)
+    with engine.prepare_and_wait_for_event("playback_restart", timeout=5):  # a step pressed before the turn lands is lost
+        qtbot.keyClick(viewer, Qt.Key.Key_B)
 
     qtbot.keyClick(viewer, Qt.Key.Key_U)
 
@@ -96,9 +111,24 @@ def test_pressing_u_on_a_paused_video_turned_backwards_shows_its_next_frame_late
 def test_pressing_e_on_a_paused_video_turned_backwards_shows_its_previous_frame_earlier_in_the_video(qtbot, tmp_path):
     viewer = viewer_paused_at_10_seconds(qtbot, tmp_path)
     engine = viewer.video_player.engine
-    qtbot.keyClick(viewer, Qt.Key.Key_B)
+    with engine.prepare_and_wait_for_event("playback_restart", timeout=5):  # a step pressed before the turn lands is lost
+        qtbot.keyClick(viewer, Qt.Key.Key_B)
 
     qtbot.keyClick(viewer, Qt.Key.Key_E)
 
     engine.wait_for_property("time-pos", lambda time_pos: time_pos == pytest.approx(9.9, abs=0.01), timeout=5)
     assert engine.pause is True
+
+
+def test_pressing_b_on_a_silent_clip_mid_way_between_its_keyframes_returns_at_once_and_plays_it_backwards(qtbot, tmp_path):
+    make_silent_long_gop_clip(tmp_path / "IMG_1.mp4")
+    viewer = frame_stepping_viewer_on(qtbot, tmp_path)
+    engine = viewer.video_player.engine
+    wait_until_playing(engine)
+    viewer.video_player.seek_to(9)
+
+    pressed = time.monotonic()
+    qtbot.keyClick(viewer, Qt.Key.Key_B)
+
+    assert time.monotonic() - pressed < 0.3  # mpv's restart can wait on a frame drawn by the very thread b blocks
+    engine.wait_for_property("time-pos", lambda pos: pos is not None and pos < 8.5, timeout=5)

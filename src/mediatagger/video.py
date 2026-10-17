@@ -98,12 +98,13 @@ class VideoPlayer:
             pass  # nothing loaded to step, as on an image shown after a paused video
 
     def _play_towards(self, direction):
-        """mpv turns round with a seek; wait for it, as a stop or another turn racing it leaves mpv's own direction
-        behind its play-direction property, and the next clip then plays backwards whatever the property says."""
+        """mpv turns round with a seek; wait until it starts that seek, as a stop or another turn racing it leaves mpv's own
+        direction behind its play-direction property, and the next clip then plays backwards whatever the property says.
+        Not until playback restarts: with no sound, that waits on a frame drawn by the GUI thread this call blocks."""
         if self.engine.play_direction == direction:
             return
         try:
-            with self.engine.prepare_and_wait_for_event("playback_restart", timeout=self.timeout):
+            with self.engine.prepare_and_wait_for_event("seek", timeout=self.timeout):
                 self.engine.play_direction = direction
         except TimeoutError:
             pass  # the viewer stays responsive; mpv turns round when it can
