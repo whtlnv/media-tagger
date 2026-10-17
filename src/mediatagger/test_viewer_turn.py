@@ -208,3 +208,20 @@ def test_a_portrait_photo_turned_once_in_a_wide_viewer_is_drawn_with_every_row_o
 
     frame = viewer.grab().toImage()  # turned 400x100 fitted 400x100 at y 50..149, one photo row per column
     assert [frame.pixelColor(x, 100).name() for x in (200, 201, 202)] == [QColor("red").name(), QColor("blue").name(), QColor("red").name()]
+
+
+def test_pressing_r_on_an_image_shown_after_a_paused_video_turns_the_image_and_leaves_the_idle_players_rotation_alone(qtbot, tmp_path):
+    from mediatagger.test_viewer_video import frame_stepping_viewer_on, pause_at_10_seconds
+
+    make_clip(tmp_path / "IMG_1.mp4", duration=30)
+    make_corner_marked_landscape(tmp_path / "IMG_2.png")
+    viewer = frame_stepping_viewer_on(qtbot, tmp_path)
+    pause_at_10_seconds(qtbot, viewer)
+    qtbot.keyClick(viewer, Qt.Key.Key_Space)
+    viewer.resize(300, 300)
+    qtbot.waitUntil(lambda: viewer.width() == viewer.height())
+
+    qtbot.keyClick(viewer, Qt.Key.Key_R)
+
+    assert viewer.grab().toImage().pixelColor(210, 15) == QColor("blue")  # turned: its blue corner at the top right
+    assert viewer.video_player.engine.video_rotate == 0
