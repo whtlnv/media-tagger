@@ -158,11 +158,7 @@ class Viewer(QWidget):
         if self.tag_prompt.has_focus():
             return  # keys the open tag prompt ignores must not reach the slideshow or video
         if event.key() == Qt.Key.Key_0:
-            self.zoom, self._turn = Zoom(), 0
-            if is_video(self.slideshow.current):
-                self.zoom.apply_to(self.video_player.engine)
-                self.video_player.press("0")
-            self.update()
+            self._back_to_normal()
             return
         if event.key() == Qt.Key.Key_R and not is_video(self.slideshow.current):
             self._turn = (self._turn + 90) % 360
@@ -180,6 +176,14 @@ class Viewer(QWidget):
         self.video_player.press(key)
         self._refresh()
         self._show_current_tags()
+
+    def _back_to_normal(self):
+        """Zoom, turn and a video's speed as the item first opened; where a video plays and whether it is paused stay."""
+        self.zoom, self._turn = Zoom(), 0
+        if is_video(self.slideshow.current):
+            self.zoom.apply_to(self.video_player.engine)
+            self.video_player.press("0")
+        self.update()
 
     def _show_current_tags(self):
         if self.session.library:
