@@ -1,3 +1,5 @@
+- [x] 2026-10-16 · Opening an image from search results hides the `Search: <query>` label
+- [x] 2026-10-16 · `Esc` from a file opened from search results shows the `Search: <query>` label again with the same query
 - [x] 2026-10-16 · Renaming a tag in the library replaces it with the new tag on a file tagged with exactly the old tag
 - [x] 2026-10-16 · Renaming a tag leaves untouched a file whose tags only resemble the old one (tagged `beachy` when renaming `beach`)
 - [x] 2026-10-16 · Renaming a tag replaces it on a folder tagged with it, as on files
