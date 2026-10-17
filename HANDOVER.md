@@ -31,6 +31,7 @@ State of the project and how it has been run, for the next session. Read `DESIGN
 | 21 Zoom to 500 % | done, validated on the Mac (`3b32673`, 1040 tests); Pi run pending |
 | 22 Frame step | done, validated on the Mac (`6b26ed4`, 1050 tests); Pi run pending |
 | 23 `r` turns images | done, validated on the Mac (`310b482`, 1069 tests); Pi run pending |
+| 24 Viewer tags one per line | done, validated on the Mac (`78aafb3`, 1078 tests); Pi run pending |
 
 Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), `grid.py`, `grid_filter.py` (the grids' shared filter and its button), `viewer.py`, `tag_prompt.py` (the `t` prompt, shared by grid and viewer), `rename_prompt.py` (the grid's `n` prompt), `status_bar.py`, `drive_session.py` (library open/create/restore/backup), `drive_config.py` (the drive's `mediatagger_config.json`: required tag roots), `library.py` (SQLite, schema v3: tags and chapter moments), `backup.py`, `state.py` (last folder, geometry, recent searches and renames; `$XDG_CONFIG_HOME`), `search.py` (query matching), `search_bar.py` (the `/` box and its `↑`/`↓` history), `folder.py`, `slideshow.py`, `thumbnails.py` (image/video/folder thumbnails, `ffmpeg`/`ffprobe`), `thumbnail_cache.py`, `thumbnail_scheduler.py` (3 workers + prefetch), `folder_thumbnails.py` (a folder's thumbnails for its grid), `video.py` + `mpv_surface.py` (libmpv render API), `video_controls.py` (video progress bar), `chapters.py` + `chapter_list.py` (the viewer's `c`, `.`/`,` and `l` chapters), `zoom.py` (mouse-wheel zoom for images and mpv), `gui_thread_gc.py`. Tests are co-located (`test_*.py`). Open structural debt is in `BACKLOG.md`.
 
@@ -44,6 +45,10 @@ Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), 
   - send the agent back with a numbered fix list if anything is off.
 - Progress is relayed to the user in chat from a `Monitor` that polls `git log`, `TODO.md` checkbox counts, `~/Library/Logs/DiagnosticReports/Python-*.ips` and `/Volumes/MEDIATAGGER`. Monitors expire every 30 min; re-arm.
 - The user asked for progress to be printed in the conversation and for questions only when a decision is genuinely theirs.
+
+## Phase 24 — done
+
+From the user's second Pi notes (`results/findings.txt`, rewritten 2026-10-17 → Phases 24–28, done easiest first). `TagOverlay` joins tags with `\n`, right-aligns both labels, pins own tags top-right and inherited (dimmed) right below. 13 tests migrated from the one-line form. The 3 s quit tests moved to `test_main_quitting.py`. Headless `/tdd-cycle` idle-killed again; hand-driven; `tdd-commit.sh` refused twice on load flakes (its `/tmp/tdd-commit-tests.log` is shared with another project). Orchestrator check: suite twice (1078), native: own tags stacked right-aligned top-right, inherited dimmed below.
 
 ## Phase 23 — done
 
