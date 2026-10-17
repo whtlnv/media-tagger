@@ -1,7 +1,7 @@
 from PySide6.QtGui import QColor
 
 from mediatagger.library import Library
-from mediatagger.test_main import DEFINE_SHOWN_WINDOW_AND_ITS_PAGE, RUN_MEDIATAGGER_COMMAND, RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT, TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT
+from mediatagger.test_main import DEFINE_SHOWN_WINDOW, DEFINE_SHOWN_WINDOW_AND_ITS_PAGE, RUN_MEDIATAGGER_COMMAND, RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT, TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT
 from mediatagger.test_viewer import make_image, run_python_offscreen
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image
 
@@ -12,8 +12,9 @@ PRESS_ESC_THEN_REPORT_THE_FIRST_TILES_THUMBNAIL_ONCE_IT_ARRIVES_SCRIPT = (
     "from PySide6.QtWidgets import QApplication\n"
     "from mediatagger.grid import TILE_ROLE, Grid\n"
     "app = QApplication([])\n"
+) + DEFINE_SHOWN_WINDOW + (
     "def first_tiles_thumbnail():\n"
-    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    window = shown_window()\n"
     "    (grid,) = [grid for grid in window.findChildren(Grid) if grid.isVisible()]\n"
     "    return grid.model().index(0, 0).data(TILE_ROLE).thumbnail\n"
     "def report():\n"
@@ -31,7 +32,7 @@ PRESS_ESC_THEN_REPORT_THE_FIRST_TILES_THUMBNAIL_ONCE_IT_ARRIVES_SCRIPT = (
     "polling = QTimer()\n"
     "polling.timeout.connect(report_once_arrived)\n"
     "def press_esc_then_poll():\n"
-    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    window = shown_window()\n"
     "    QTest.keyClick(window, Qt.Key.Key_Escape)\n"
     "    polling.start(100)\n"
     "    QTimer.singleShot(10000, report)\n"
@@ -159,13 +160,14 @@ PRESS_ESC_THEN_O_IN_THE_GRID_THEN_REPORT_THE_PICKER_SCRIPT = (
     "from PySide6.QtTest import QTest\n"
     "from PySide6.QtWidgets import QApplication, QFileDialog, QListView\n"
     "app = QApplication([])\n"
+) + DEFINE_SHOWN_WINDOW + (
     "def report_the_picker():\n"
     "    pickers = [widget for widget in QApplication.topLevelWidgets() if isinstance(widget, QFileDialog) and widget.isVisible()]\n"
     "    print(f'pickers={len(pickers)} folders={[picker.fileMode() == QFileDialog.FileMode.Directory for picker in pickers]}', flush=True)\n"
     "    for picker in pickers:\n"
     "        picker.reject()\n"
     "def press_esc_then_o_in_the_grid():\n"
-    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    window = shown_window()\n"
     "    QTest.keyClick(window, Qt.Key.Key_Escape)\n"
     "    (grid,) = [grid for grid in window.findChildren(QListView) if grid.isVisible()]\n"
     "    QTimer.singleShot(500, report_the_picker)\n"
