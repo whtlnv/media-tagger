@@ -180,6 +180,20 @@ def test_typing_brackets_r_and_v_in_the_tag_prompt_open_over_a_playing_video_typ
     assert [engine.speed, engine.video_rotate] == [1, 0]
 
 
+def test_typing_b_in_the_tag_prompt_open_over_a_playing_video_types_it_and_leaves_the_video_playing_forwards(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=30)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    make_surface_ready(viewer)
+    engine = viewer.video_player.engine
+    wait_until_playing(engine)
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    qtbot.keyClicks(viewer.tag_prompt.input, "b")
+
+    assert visible_tag_prompt_texts(viewer) == ["b"]
+    assert engine.play_direction == "forward"
+
+
 def viewer_paused_at_10_seconds_on_a_drive(qtbot, tmp_path):
     """The viewer on a drive with a library, its one 30 s clip (one frame is 0.1 s) paused at exactly 10 s."""
     drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=30)
