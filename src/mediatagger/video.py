@@ -39,6 +39,7 @@ class VideoPlayer:
 
     def press(self, key):
         if key in ("Space", "Right", "Left"):
+            self.engine.play_direction = "forward"  # while the clip is loaded: mpv set to it when idle plays the next one backwards
             self.engine.stop()
             try:
                 self.engine.wait_for_property("path", lambda path: path is None, timeout=self.timeout)
