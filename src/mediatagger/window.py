@@ -341,13 +341,12 @@ class Window(QWidget):
     def _open_result(self, index, paths, grid):
         if not index.data(TILE_ROLE).path.exists():
             return
+        self.breadcrumb.hide()  # the label belongs to the results grid, not to a folder or the viewer opened from it
         if index.data(TILE_ROLE).path.is_dir():
-            self.breadcrumb.hide()
             self._results = None
             self._open_tile(index)
             return
         self._results = (grid, paths)
-        self.breadcrumb.hide()  # the label belongs to the results grid, not to the viewer
         files = grid.shown_files()
         self._open_tile(index)
         self.viewer.slideshow = Slideshow(files, files.index(index.data(TILE_ROLE).path))
