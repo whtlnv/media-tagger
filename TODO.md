@@ -11,7 +11,7 @@
 - [x] After pressing `r` on a video, moving to the next item shows an image there unrotated
 - [x] Pressing `r` on an image leaves the image file's bytes and modification time unchanged
 - [x] After pressing `r` on an image and `Esc` to the grid, that image's tile shows the same thumbnail as before the press
-- [ ] Typing `r` in the tag prompt open over an image types `r` and leaves the image unturned
+- [x] Typing `r` in the tag prompt open over an image types `r` and leaves the image unturned
 - [ ] Pressing `r` on an image zoomed in one notch shows it turned and still at 110 % of its turned fitted size
 - [ ] Zooming in on a turned image with the mouse off its centre keeps the picture point under the mouse under the mouse
 - [ ] Zooming a turned image back out to fitted after zooming in with the mouse off its centre shows it exactly where it was fitted, centred

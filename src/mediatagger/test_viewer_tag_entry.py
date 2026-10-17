@@ -1,5 +1,6 @@
 import pytest
 from PySide6.QtCore import QPoint, Qt
+from PySide6.QtGui import QColor
 
 from mediatagger.library import Library
 from mediatagger.test_video import wait_until_playing
@@ -315,3 +316,20 @@ def test_dropping_a_folder_while_the_tag_prompt_is_open_closes_it_without_saving
 
     assert visible_tag_prompt_texts(viewer) == []
     assert Library.open(first_drive).tags(viewed / "IMG_1.png") == []
+
+
+def test_typing_r_in_the_tag_prompt_open_over_an_image_types_it_and_leaves_the_image_unturned(qtbot, tmp_path):
+    from mediatagger.test_viewer_turn import make_corner_marked_landscape
+
+    drive = make_tag_library_drive(tmp_path / "MEDIATAGGER")
+    [folder] = make_folders(drive, "Photos")
+    make_corner_marked_landscape(folder / "IMG_1.png")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    resize_and_wait(qtbot, viewer, 300, 300)
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    qtbot.keyClicks(viewer.tag_prompt.input, "r")
+
+    assert visible_tag_prompt_texts(viewer) == ["r"]
+    frame = viewer.grab().toImage()  # unturned 200x100 fitted 300x150 at y 75..224, its blue corner at x 0..29, y 75..104
+    assert frame.pixelColor(15, 90) == QColor("blue")
