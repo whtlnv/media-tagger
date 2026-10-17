@@ -99,13 +99,18 @@ class Viewer(QWidget):
         image = self._current_image()
         if self._turn:
             image = image.transformed(QTransform().rotate(self._turn))
-        painter.drawImage(self.zoom.shown(fitted_rect(image.size(), self.rect()), self.rect()), image)
+        painter.drawImage(self.zoom.shown(self._image_fitted(), self.rect()), image)
+
+    def _image_fitted(self):
+        """Where the current image, turned as r turned it, is fitted in the viewer."""
+        size = self._current_image().size()
+        return fitted_rect(size.transposed() if self._turn % 180 else size, self.rect())
 
     def wheelEvent(self, event):
         if self.slideshow is None:
             return
         video, engine = is_video(self.slideshow.current), self.video_player.engine
-        fitted = video_fitted(engine, self.rect()) if video else fitted_rect(self._current_image().size(), self.rect())
+        fitted = video_fitted(engine, self.rect()) if video else self._image_fitted()
         self.zoom.wheel(event.angleDelta().y(), event.position(), fitted, self.rect())
         if video:
             self.zoom.apply_to(engine)
