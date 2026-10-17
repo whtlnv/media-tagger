@@ -3,11 +3,12 @@ import time
 
 import pytest
 from PySide6.QtCore import QMimeData, QPointF, QRect, Qt, QUrl
-from PySide6.QtGui import QDragMoveEvent, QFontMetrics, QGuiApplication, QImage, QPainter
+from PySide6.QtGui import QColor, QDragMoveEvent, QFontMetrics, QGuiApplication, QImage, QPainter
 from PySide6.QtWidgets import QApplication, QStyle, QStyleOptionViewItem
 
 from mediatagger.folder import folder_entries
 from mediatagger.grid import FOLDER_GLYPH, IMAGE_GLYPH, TAG_BADGE, TILE_ROLE, VIDEO_BADGE, VIDEO_GLYPH, Grid
+from mediatagger.icons import ICON_KEY, Icon
 from mediatagger.library import Library
 from mediatagger.test_folder import touch
 from mediatagger.test_thumbnail_cache import solid_thumbnail
@@ -35,23 +36,56 @@ def shown_two_tile_grid(qtbot, tmp_path, width):
 
 
 class RecordingPainter(QPainter):
+    """Records the texts drawn and the icons painted. An icon reads as its name (`Icon.TAG` is `<tag>`), joined to the
+    text drawn right after it: a tag badge reads `<tag>3`."""
+
     def __init__(self, device):
         super().__init__(device)
         self.texts = []
+        self.icons = {}
+        self._icon = ""
+
+    def drawImage(self, *args):
+        name = next((arg.text(ICON_KEY) for arg in args if isinstance(arg, QImage) and arg.text(ICON_KEY)), "")
+        if name:
+            self.icons[name] = next(arg for arg in args if isinstance(arg, QImage))
+            self._flush_icon()
+            self._icon = name
+        super().drawImage(*args)
 
     def drawText(self, *args):
-        self.texts.extend(arg for arg in args if isinstance(arg, str))
+        texts = [arg for arg in args if isinstance(arg, str)]
+        if texts:
+            texts[0], self._icon = self._icon + texts[0], ""
+        self.texts.extend(texts)
         super().drawText(*args)
 
+    def end(self):
+        self._flush_icon()
+        return super().end()
 
-def painted_texts(grid, row):
+    def _flush_icon(self):
+        if self._icon:
+            self.texts.append(self._icon)
+            self._icon = ""
+
+
+def tile_recording(grid, row):
     image = QImage(200, 200, QImage.Format.Format_ARGB32)
     painter = RecordingPainter(image)
     option = QStyleOptionViewItem()
     option.rect = QRect(0, 0, 200, 200)
     grid.itemDelegate().paint(painter, option, grid.model().index(row, 0))
     painter.end()
-    return painter.texts
+    return painter
+
+
+def painted_texts(grid, row):
+    return tile_recording(grid, row).texts
+
+
+def opaque_colours(image):
+    return {image.pixel(x, y) for x in range(image.width()) for y in range(image.height()) if image.pixelColor(x, y).alpha() == 255}
 
 
 def test_the_grid_of_a_folder_shows_one_tile_per_listed_entry_subfolders_first_in_listing_order(qtbot, tmp_path):
@@ -123,14 +157,17 @@ def test_a_tile_whose_filename_fits_shows_it_whole_with_no_ellipsis(qtbot, tmp_p
     assert not any("…" in text for text in texts)
 
 
-def test_a_tile_for_an_item_with_3_own_tags_shows_a_tag_badge_with_its_count(qtbot, tmp_path):
+def test_a_tile_with_3_own_tags_shows_a_badge_with_a_painted_white_tag_icon_before_3_and_no_tag_character(qtbot, tmp_path):
     library = Library.create(tmp_path)
     touch(tmp_path, "beach.jpg")
     library.enter(tmp_path / "beach.jpg", "beach family summer")
     grid = Grid(tmp_path, library=library)
     qtbot.addWidget(grid)
+    painter = tile_recording(grid, 0)
 
-    assert f"{TAG_BADGE}3" in painted_texts(grid, 0)
+    assert f"{Icon.TAG}3" in painter.texts
+    assert not any("\U0001F3F7" in text for text in painter.texts)
+    assert opaque_colours(painter.icons[Icon.TAG]) == {QColor("white").rgba()}
 
 
 def test_a_folder_tile_whose_folder_has_2_own_tags_shows_a_tag_badge_with_its_count(qtbot, tmp_path):

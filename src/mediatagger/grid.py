@@ -11,6 +11,7 @@ from mediatagger.drive_config import missing_roots
 from mediatagger.folder import is_video_name, subfolder_and_media_names
 from mediatagger.folder_thumbnails import FolderThumbnails
 from mediatagger.grid_filter import FilterButton
+from mediatagger.icons import Icon, draw_icon
 from mediatagger.thumbnail_cache import ThumbnailCache
 from mediatagger.thumbnails import format_duration, thumbnail_and_duration
 
@@ -24,7 +25,7 @@ MISSING_GLYPH = "❓"
 
 VIDEO_BADGE = "▶"
 
-TAG_BADGE = "🏷"
+TAG_BADGE = Icon.TAG
 
 MISSING_ROOTS_BADGE = "✗"
 MOMENTS_BADGE = "⏱"
@@ -192,7 +193,7 @@ class _TileDelegate(QStyledItemDelegate):
             moments_badge = _draw_backed_badge(painter, top_right, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{MOMENTS_BADGE} {tile.moments}")
             top_right = top_right.adjusted(0, 0, moments_badge.left() - top_right.right(), 0)
         if tile.tag_count:
-            tag_badge = _draw_backed_badge(painter, top_right, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{TAG_BADGE}{tile.tag_count}")
+            tag_badge = _draw_backed_badge(painter, top_right, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, str(tile.tag_count), TAG_BADGE)
             top_right = top_right.adjusted(0, 0, tag_badge.left() - top_right.right(), 0)  # a badge's padding apart
         if tile.missing_roots:
             _draw_backed_badge(painter, top_right, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{MISSING_ROOTS_BADGE}{tile.missing_roots}")
@@ -232,19 +233,27 @@ def _draw_glyph(painter, area, glyph):
     painter.restore()
 
 
-def _draw_backed_badge(painter, rect, flags, badge):
-    """White text on a dark, rounded backing: reads over a white picture, a black one, and anything between. Returns
-    where the backing went."""
+def _draw_backed_badge(painter, rect, flags, badge, icon=None):
+    """White text, after a white painted icon if given, on a dark, rounded backing: reads over a white picture, a black
+    one, and anything between. Returns where the backing went."""
     painter.save()
     font = painter.font()
     font.setBold(True)
     painter.setFont(font)
     inside = rect.adjusted(2 * BADGE_PADDING, BADGE_PADDING, -2 * BADGE_PADDING, -BADGE_PADDING)  # off the tile's edges
-    backing = painter.boundingRect(inside, flags, badge).adjusted(-BADGE_PADDING, 0, BADGE_PADDING, 0)
+    text_area = painter.boundingRect(inside, flags, badge)
+    content = text_area
+    if icon is not None:  # as tall as the text, just left of it
+        side = painter.fontMetrics().height()
+        icon_rect = QRect(text_area.left() - side // 6 - side, text_area.top(), side, side)
+        content = text_area.united(icon_rect)
+    backing = content.adjusted(-BADGE_PADDING, 0, BADGE_PADDING, 0)
     painter.setRenderHint(QPainter.RenderHint.Antialiasing)
     painter.setPen(Qt.PenStyle.NoPen)
     painter.setBrush(BADGE_BACKING)
     painter.drawRoundedRect(backing, BADGE_PADDING, BADGE_PADDING)
+    if icon is not None:
+        draw_icon(painter, icon_rect, icon, Qt.GlobalColor.white)
     painter.setPen(Qt.GlobalColor.white)
     painter.drawText(inside, flags, badge)
     painter.restore()
