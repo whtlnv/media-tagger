@@ -6,7 +6,7 @@ from mediatagger.chapter_list import ChapterList
 from mediatagger.folder import is_video
 
 _LANDED = 0.5  # a jump lands this close to its moment, give or take a frame: the next jump goes past it
-_REPLAYING = 1.0  # `,` within this long after a moment goes to the one before it
+_REPLAYING = 1.0  # `,` within this long after a moment goes to the one before it; so does `.` within this long before one, backwards
 
 
 def _next(moments, now, backwards=False):
