@@ -1,22 +1,21 @@
 from mediatagger.library import Library
 from mediatagger.test_library import create_schema_version_2_library, read_meta
-from mediatagger.test_main import REPORT_SHOWN_TEXTS_ON_A_DRIVE_SCRIPT, RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT, SILENCE_THE_VIEWERS_ENGINE, TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT
+from mediatagger.test_main import DEFINE_SHOWN_WINDOW_AND_ITS_PAGE, REPORT_SHOWN_TEXTS_ON_A_DRIVE_SCRIPT, RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT, SILENCE_THE_VIEWERS_ENGINE, TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT
 from mediatagger.test_viewer import make_image, run_python_offscreen
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_clip
 
 ON_THE_PLAYING_VIDEO = TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT + (
     "from PySide6.QtCore import Qt, QTimer\n"
     "from PySide6.QtTest import QTest\n"
-    "from PySide6.QtWidgets import QApplication, QStackedWidget\n"
+    "from PySide6.QtWidgets import QApplication\n"
 ) + SILENCE_THE_VIEWERS_ENGINE + (
     "from mediatagger.test_viewer import make_surface_ready\n"
     "app = QApplication([])\n"
-    "def shown_viewer():\n"
-    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
-    "    return window.findChild(QStackedWidget).currentWidget()\n"
+) + DEFINE_SHOWN_WINDOW_AND_ITS_PAGE + (
     "def stand_in_for_the_video_surface_becoming_ready():\n"
-    "    make_surface_ready(shown_viewer())\n"
-    "    QTimer.singleShot(1500, lambda: then(shown_viewer()))\n"
+    "    window, viewer = shown()\n"
+    "    make_surface_ready(viewer)\n"
+    "    QTimer.singleShot(1500, lambda: then(shown()[1]))\n"
     "def quit():\n"
     "    QApplication.closeAllWindows()\n"
     "    QApplication.quit()\n"
