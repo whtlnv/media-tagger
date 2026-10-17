@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from PySide6.QtCore import QCoreApplication, QEvent, QPoint, QPointF, Qt
-from PySide6.QtGui import QWheelEvent
+from PySide6.QtGui import QColor, QWheelEvent
 from PySide6.QtWidgets import QApplication, QLabel, QStackedWidget
 
 from mediatagger.backup import back_up
@@ -908,3 +908,18 @@ def test_in_the_window_the_mediatagger_command_builds_scrolling_the_wheel_up_ove
     QApplication.sendEvent(window.windowHandle(), wheel)  # as the system does: Qt hands it to the widget under the mouse
 
     assert viewer.video_player.engine.video_zoom > 0
+
+
+def test_pressing_r_in_the_windows_viewer_on_a_landscape_image_shows_it_turned_clockwise_fitted_whole(qtbot, tmp_path):
+    from mediatagger.test_viewer_turn import make_corner_marked_landscape
+    from mediatagger.test_window_cheat_sheet import window_on
+
+    make_corner_marked_landscape(tmp_path / "a.png")
+    window = window_on(qtbot, tmp_path)
+    viewer = window.viewer
+    qtbot.waitUntil(lambda: viewer.size() == window.size())
+
+    qtbot.keyClick(viewer, Qt.Key.Key_R)
+
+    frame = viewer.grab().toImage()  # turned 100x200 fitted 300x600 at x 350..649, its blue corner at x 590..649, y 0..59
+    assert [frame.pixelColor(x, 30) for x in (345, 360, 620, 655)] == [QColor("black"), QColor("red"), QColor("blue"), QColor("black")]
