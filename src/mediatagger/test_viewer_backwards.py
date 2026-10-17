@@ -12,8 +12,8 @@ from mediatagger.viewer import Viewer
 
 
 def make_silent_long_gop_clip(path):
-    """20 s at 25 fps with no sound and keyframes only at 0:00 and 0:10, like a camera's: mpv reverses such a file only
-    from its demuxer cache."""
+    """20 s at 25 fps with no sound and keyframes only at 0:00 and 0:10: with no sound, mpv restarts playback only once
+    a frame is drawn, and it reverses a whole keyframe range at a time."""
     subprocess.run(
         ["ffmpeg", "-loglevel", "error", "-f", "lavfi", "-i", "testsrc=duration=20:size=64x48:rate=25", "-c:v", "libx264",
          "-g", "250", "-pix_fmt", "yuv420p", str(path)],
