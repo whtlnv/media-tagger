@@ -192,3 +192,19 @@ def test_pressing_r_on_a_zoomed_in_image_whose_turned_picture_still_covers_the_w
         qtbot.keyClick(viewer, Qt.Key.Key_R)
 
     assert viewer.grab().toImage() == zoomed
+
+
+def test_a_portrait_photo_turned_once_in_a_wide_viewer_is_drawn_with_every_row_of_its_long_side(qtbot, tmp_path):
+    picture = QImage(100, 400, QImage.Format.Format_RGB32)  # rows alternate red and blue: only a full-detail drawing keeps them apart
+    for y in range(400):
+        for x in range(100):
+            picture.setPixelColor(x, y, QColor("red" if y % 2 else "blue"))
+    picture.save(str(tmp_path / "IMG_1.png"))
+    viewer = shown_viewer_on(qtbot, tmp_path)
+    viewer.resize(400, 200)
+    qtbot.waitUntil(lambda: viewer.width() == 400)  # unturned it is fitted 50x200, so decoded no bigger
+
+    qtbot.keyClick(viewer, Qt.Key.Key_R)
+
+    frame = viewer.grab().toImage()  # turned 400x100 fitted 400x100 at y 50..149, one photo row per column
+    assert [frame.pixelColor(x, 100).name() for x in (200, 201, 202)] == [QColor("red").name(), QColor("blue").name(), QColor("red").name()]

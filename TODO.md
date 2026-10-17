@@ -18,6 +18,6 @@
 - [x] Zooming out of a turned image that covers the window with the mouse near a window edge never leaves black between that edge and the image
 - [x] Pressing `r` on a zoomed-in image panned to a window edge leaves no black between that edge and the turned image (backlog: src/mediatagger/zoom.py:37 A zoom's pan is clamped only when the wheel turns, not when the window resizes or `r` turns a video)
 - [x] Pressing `r` on a zoomed-in image whose turned picture still covers the window where it lies keeps it at the same pan (backlog: src/mediatagger/zoom.py:37 A zoom's pan is clamped only when the wheel turns, not when the window resizes or `r` turns a video)
-- [ ] A landscape photo larger than the viewer, turned once, is drawn sharp at the viewer's full height: decoded to fit the turned picture, not the unturned one
+- [x] A landscape photo larger than the viewer, turned once, is drawn sharp at the viewer's full height: decoded to fit the turned picture, not the unturned one
 - [ ] Pressing `r` on an image shown after a paused video turns the image and leaves the idle player's rotation unchanged
 - [ ] In the window opened on a folder of a landscape image, pressing `r` in the viewer shows the image turned 90° clockwise, fitted whole

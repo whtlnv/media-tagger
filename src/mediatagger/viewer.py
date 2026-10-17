@@ -251,10 +251,12 @@ class Viewer(QWidget):
         self.info.setVisible(bool(self.slideshow.overlay))
 
     def _current_image(self):
-        """The current item decoded to fit the window, sharp enough for the zoom: once per item, window size and detail."""
-        key = (self.slideshow.current, self.size(), self.zoom.detail())
+        """The current item decoded to fit the window as it is turned, sharp enough for the zoom: once per item, window
+        size, detail and whether it lies on its side."""
+        bounds = self.size() * self.zoom.detail()
+        key = (self.slideshow.current, bounds.transposed() if self._turn % 180 else bounds)
         if self._decoded_key != key:
-            self._decoded_key, self._decoded = key, decode_fitted(self.slideshow.current, self.size() * self.zoom.detail())
+            self._decoded_key, self._decoded = key, decode_fitted(*key)
         return self._decoded
 
     def _play(self, clip):
