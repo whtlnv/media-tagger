@@ -137,6 +137,7 @@ Results show under a `Search: <query>` breadcrumb, shown only with the results g
 | `Esc` | back to grid, cursor on the current file |
 | `f` | toggle fullscreen |
 | `p` / `Enter` | play/pause (video) |
+| `u` / `e` | next / previous frame of a paused video; nothing while it plays |
 | `↑` / `↓` | seek ±10 s (video) |
 | `0`–`9` | jump to 0 %–90 % of the video |
 | `m` | mute |

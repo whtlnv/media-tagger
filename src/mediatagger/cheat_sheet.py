@@ -24,6 +24,7 @@ VIEWER_KEYS = [
     ("Esc", "back to the grid"),
     ("f", "fullscreen"),
     ("p / Enter", "play / pause"),
+    ("u / e", "next / previous frame (paused)"),
     ("↑ / ↓", "back / ahead 10 s"),
     ("0–9", "jump to 0 %–90 %"),
     ("m", "mute"),
