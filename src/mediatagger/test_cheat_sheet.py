@@ -32,7 +32,7 @@ def test_the_grid_cheat_sheet_and_designs_grid_table_both_list_n_for_renaming_a_
     assert dict(design_table_rows("Grid"))["n"] == "rename a tag"
 
 
-def test_the_viewer_cheat_sheet_and_designs_viewer_table_both_list_1_to_9_as_jumping_in_ninths_and_no_key_for_0():
+def test_the_viewer_cheat_sheet_and_designs_viewer_table_both_list_1_to_9_as_jumping_in_ninths_and_0_as_back_to_normal():
     for rows in (VIEWER_KEYS, design_table_rows("Viewer")):
         assert dict(rows)["1–9"] == "jump through in ninths (1 = start)"
-        assert not any("0" in key for key, _ in rows)
+        assert dict(rows)["0"] == "back to normal: zoom, turn, speed"

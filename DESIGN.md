@@ -140,6 +140,7 @@ Results show under a `Search: <query>` breadcrumb, shown only with the results g
 | `u` / `e` | next / previous frame of a paused video; nothing while it plays |
 | `↑` / `↓` | seek ±10 s (video) |
 | `1`–`9` | jump through in ninths (1 = start) |
+| `0` | back to normal: zoom, turn, speed |
 | `m` | mute |
 | `]` / `[` | faster / slower (video): 0.25×–8×, stopping at the ends |
 | `r` | turn 90° clockwise, still fitted whole to the screen |

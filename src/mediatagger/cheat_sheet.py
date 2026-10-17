@@ -27,6 +27,7 @@ VIEWER_KEYS = [
     ("u / e", "next / previous frame (paused)"),
     ("↑ / ↓", "back / ahead 10 s"),
     ("1–9", "jump through in ninths (1 = start)"),
+    ("0", "back to normal: zoom, turn, speed"),
     ("m", "mute"),
     ("] / [", "faster / slower"),
     ("r", "turn 90°"),
