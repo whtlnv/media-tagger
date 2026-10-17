@@ -252,7 +252,7 @@ def test_after_adding_a_chapter_with_c_esc_back_to_the_grid_shows_the_videos_til
     qtbot.keyClick(viewer, Qt.Key.Key_Escape)
 
     grid = window.stack.currentWidget()
-    assert f"{MOMENTS_BADGE} 2" in painted_texts(grid, 0)
+    assert f"{MOMENTS_BADGE}2" in painted_texts(grid, 0)
 
 
 def test_a_chapter_added_with_c_on_a_video_that_cannot_play_is_recorded_at_its_start(qtbot, tmp_path):

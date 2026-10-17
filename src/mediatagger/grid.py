@@ -28,7 +28,7 @@ VIDEO_BADGE = "▶"
 TAG_BADGE = Icon.TAG
 
 MISSING_ROOTS_BADGE = "✗"
-MOMENTS_BADGE = "⏱"
+MOMENTS_BADGE = Icon.STOPWATCH
 
 TILE_SIZE = QSize(200, 200)
 
@@ -190,7 +190,7 @@ class _TileDelegate(QStyledItemDelegate):
             _draw_backed_badge(painter, picture_area, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignRight, badge)
         top_right = picture_area  # the top-right badges read, left to right: missing roots, tags, moments
         if tile.moments:
-            moments_badge = _draw_backed_badge(painter, top_right, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{MOMENTS_BADGE} {tile.moments}")
+            moments_badge = _draw_backed_badge(painter, top_right, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, str(tile.moments), MOMENTS_BADGE)
             top_right = top_right.adjusted(0, 0, moments_badge.left() - top_right.right(), 0)
         if tile.tag_count:
             tag_badge = _draw_backed_badge(painter, top_right, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, str(tile.tag_count), TAG_BADGE)

@@ -121,7 +121,7 @@ def test_after_enter_on_beach_places_beach_in_the_windows_rename_prompt_the_open
     qtbot.keyClick(prompt, Qt.Key.Key_Return)
 
     [row] = [row for row in range(grid.model().rowCount()) if grid.model().index(row, 0).data(TILE_ROLE).path.name == "IMG_2.mp4"]
-    assert f"{MOMENTS_BADGE} 1" in painted_texts(grid, row)
+    assert f"{MOMENTS_BADGE}1" in painted_texts(grid, row)
 
 
 def test_after_enter_on_beach_places_beach_in_the_windows_rename_prompt_with_the_grids_cursor_on_the_item_tagged_beach_family_the_status_bar_shows_family_places_beach(qtbot, tmp_path):
