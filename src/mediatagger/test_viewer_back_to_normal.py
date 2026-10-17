@@ -3,7 +3,7 @@ from PySide6.QtCore import QPoint, QSize, Qt
 from mediatagger.image_fit import decode_fitted
 from mediatagger.test_viewer import make_image, shown_viewer_on
 from mediatagger.test_viewer_turn import make_corner_marked_landscape
-from mediatagger.test_viewer_zoom import scroll, square_viewer_on
+from mediatagger.test_viewer_zoom import scroll, square_viewer_on, viewer_playing_a_clip_in
 
 
 def test_pressing_0_on_a_photo_zoomed_in_off_its_centre_shows_it_exactly_as_it_was_first_fitted(qtbot, tmp_path):
@@ -62,3 +62,14 @@ def test_pressing_0_on_a_large_photo_turned_then_zoomed_in_in_a_wide_viewer_deco
     viewer.grab()
 
     assert decoded_sizes == [QSize(600, 300)]  # turned, it would fit 300x600: 300x150
+
+
+def test_pressing_0_on_a_video_sped_up_to_2x_plays_it_at_1x_again(qtbot, tmp_path):
+    viewer, engine = viewer_playing_a_clip_in(qtbot, tmp_path)
+    for _ in range(3):
+        qtbot.keyClick(viewer, Qt.Key.Key_BracketRight)
+    assert engine.speed == 2
+
+    qtbot.keyClick(viewer, Qt.Key.Key_0)
+
+    assert engine.speed == 1
