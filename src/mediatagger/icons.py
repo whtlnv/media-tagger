@@ -15,6 +15,7 @@ class Icon(StrEnum):
     STOPWATCH = "<stopwatch>"
     FOLDER = "<folder>"
     PICTURE = "<picture>"
+    VIDEO = "<video>"
 
 
 def draw_icon(painter, rect, icon, color):
@@ -101,4 +102,25 @@ def _paint_picture(painter, s, color):
     painter.drawEllipse(QPointF(0.7 * s, 0.34 * s), 0.07 * s, 0.07 * s)
 
 
-_PAINTS = {Icon.TAG: _paint_tag, Icon.STOPWATCH: _paint_stopwatch, Icon.FOLDER: _paint_folder, Icon.PICTURE: _paint_picture}
+def _paint_video(painter, s, color):
+    """A screen with a play triangle in it."""
+    painter.setPen(QPen(color, max(1.0, 0.08 * s)))
+    painter.setBrush(Qt.BrushStyle.NoBrush)
+    painter.drawRoundedRect(QRectF(0.08 * s, 0.18 * s, 0.84 * s, 0.64 * s), 0.08 * s, 0.08 * s)
+    play = QPainterPath()
+    play.moveTo(0.4 * s, 0.34 * s)
+    play.lineTo(0.66 * s, 0.5 * s)
+    play.lineTo(0.4 * s, 0.66 * s)
+    play.closeSubpath()
+    painter.setPen(Qt.PenStyle.NoPen)
+    painter.setBrush(color)
+    painter.drawPath(play)
+
+
+_PAINTS = {
+    Icon.TAG: _paint_tag,
+    Icon.STOPWATCH: _paint_stopwatch,
+    Icon.FOLDER: _paint_folder,
+    Icon.PICTURE: _paint_picture,
+    Icon.VIDEO: _paint_video,
+}

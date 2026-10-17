@@ -313,6 +313,17 @@ def test_an_image_tile_with_no_picture_yet_paints_a_large_picture_icon_centred_i
     assert not any("\U0001F5BC" in text for text in painter.texts)
 
 
+def test_a_video_tile_with_no_picture_yet_paints_a_large_video_icon_centred_in_its_picture_and_no_clapperboard_character(qtbot, tmp_path):
+    touch(tmp_path, "clip.mp4")
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+    painter = tile_recording(grid, 0)
+    icon = painter.icon_rects[Icon.VIDEO]
+
+    assert (abs(icon.center().x() - 100) <= 1, icon.height() >= 40) == (True, True)
+    assert not any("\U0001F3AC" in text for text in painter.texts)
+
+
 def test_repainting_the_grid_after_its_files_are_deleted_from_disk_still_paints_their_tiles_without_reading_them(qtbot, tmp_path):
     (tmp_path / "day1").mkdir()
     touch(tmp_path, "clip.mp4", "photo.jpg")
