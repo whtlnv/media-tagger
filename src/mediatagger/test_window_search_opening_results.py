@@ -146,3 +146,14 @@ def test_after_esc_ends_a_search_esc_in_a_slideshow_from_the_folder_returns_to_t
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
 
     assert tile_names(stack.currentWidget()) == ["IMG_1.png", "IMG_2.png"]
+
+
+def test_opening_a_result_file_hides_the_search_label(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    search_for(qtbot, window, stack, "beach")
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+
+    assert (isinstance(stack.currentWidget(), Viewer), window.breadcrumb.isVisible()) == (True, False)

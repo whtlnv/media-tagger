@@ -347,6 +347,7 @@ class Window(QWidget):
             self._open_tile(index)
             return
         self._results = (grid, paths)
+        self.breadcrumb.hide()  # the label belongs to the results grid, not to the viewer
         files = grid.shown_files()
         self._open_tile(index)
         self.viewer.slideshow = Slideshow(files, files.index(index.data(TILE_ROLE).path))
