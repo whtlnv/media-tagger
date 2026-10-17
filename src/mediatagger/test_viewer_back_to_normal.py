@@ -3,6 +3,7 @@ from PySide6.QtCore import QPoint, QSize, Qt
 
 from mediatagger.image_fit import decode_fitted
 from mediatagger.test_viewer import make_image, shown_viewer_on
+from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, shown_viewer_on_drive, visible_tag_prompt_texts
 from mediatagger.test_viewer_turn import make_corner_marked_landscape
 from mediatagger.test_viewer_zoom import scroll, square_viewer_on, viewer_playing_a_clip_in
 
@@ -108,3 +109,20 @@ def test_pressing_0_on_a_sped_up_video_paused_at_0_20_leaves_it_paused_at_0_20(q
 
     # offscreen mpv renders no frames, so a speed change on a paused video lets it take one more: 0.1 s in this clip
     assert (engine.pause, engine.time_pos, engine.speed) == (True, pytest.approx(paused_at, abs=0.25), 1)
+
+
+def test_typing_0_in_the_tag_prompt_open_on_a_zoomed_in_photo_types_it_and_leaves_the_photo_zoomed_in(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_corner_marked_landscape(folder / "IMG_1.png")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    viewer.resize(300, 300)
+    qtbot.waitUntil(lambda: viewer.width() == 300)
+    scroll(viewer, 3, at=QPoint(60, 100))
+    zoomed_in = viewer.grab().toImage()
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    qtbot.keyClicks(viewer.tag_prompt.input, "0")
+
+    assert visible_tag_prompt_texts(viewer) == ["0"]
+    qtbot.keyClick(viewer.tag_prompt.input, Qt.Key.Key_Escape)
+    assert viewer.grab().toImage() == zoomed_in
