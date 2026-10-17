@@ -228,6 +228,15 @@ def test_after_a_jump_a_key_other_than_period_or_comma_shows_the_progress_bar_wi
     assert viewer.progress_bar.text() == "0:30 / 1:05"
 
 
+def test_after_a_chapter_jump_on_a_paused_video_1_shows_the_progress_bar_at_the_start_without_the_tag_name(qtbot, tmp_path):
+    viewer = viewer_paused_at(qtbot, tmp_path, 20, moments=[30], tag="save")
+    qtbot.keyClick(viewer, Qt.Key.Key_Period)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_1)
+
+    assert viewer.progress_bar.text() == "0:00 / 1:05"
+
+
 def test_after_adding_a_chapter_with_c_esc_back_to_the_grid_shows_the_videos_tile_with_its_moments_badge(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=30)
     Library.open(drive).add_chapter(folder / "IMG_1.mp4", "kickoff", 0)
