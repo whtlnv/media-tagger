@@ -349,7 +349,7 @@ def test_running_the_mediatagger_command_on_a_drive_whose_tags_db_is_garbage_wit
     assert result.returncode == 0, result.stderr
     asked, *shown = result.stdout.splitlines()
     assert asked == "viewer_shown_when_asked=[True]"
-    assert "beach" in shown
+    assert shown == ["beach"]
 
 
 def test_running_the_mediatagger_command_with_xdg_data_home_set_on_a_drive_with_a_library_leaves_a_backup_holding_the_entered_tag_under_its_drive_id_after_closing(tmp_path, monkeypatch):
