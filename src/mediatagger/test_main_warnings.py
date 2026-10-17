@@ -1,8 +1,10 @@
 import subprocess
 import sys
 
+import pytest
+
 from mediatagger.test_main import RUN_MEDIATAGGER_COMMAND
-from mediatagger.test_viewer import offscreen_environment, run_python_offscreen
+from mediatagger.test_viewer import offscreen_environment
 
 
 def script_reporting_whether_the_mediatagger_command_enables_warnings_for(category_name):
@@ -21,23 +23,19 @@ def script_reporting_whether_the_mediatagger_command_enables_warnings_for(catego
     ) + RUN_MEDIATAGGER_COMMAND
 
 
-def test_the_mediatagger_command_starts_with_wayland_textinput_warnings_disabled():
-    result = run_python_offscreen(script_reporting_whether_the_mediatagger_command_enables_warnings_for("qt.qpa.wayland.textinput"))
-    assert result.returncode == 0, result.stderr
-    assert result.stdout.strip() == "warnings=False"
-
-
-def test_the_mediatagger_command_leaves_wayland_warnings_enabled():
-    result = run_python_offscreen(script_reporting_whether_the_mediatagger_command_enables_warnings_for("qt.qpa.wayland"))
-    assert result.returncode == 0, result.stderr
-    assert result.stdout.strip() == "warnings=True"
-
-
-def test_the_mediatagger_command_started_with_textinput_warnings_enabled_in_qt_logging_rules_keeps_them_enabled():
+@pytest.mark.parametrize(("category_name", "logging_rules", "expected"), [
+    pytest.param("qt.qpa.wayland.textinput", {}, "warnings=False", id="starts with wayland textinput warnings disabled"),
+    pytest.param("qt.qpa.wayland", {}, "warnings=True", id="leaves wayland warnings enabled"),
+    pytest.param(
+        "qt.qpa.wayland.textinput", {"QT_LOGGING_RULES": "qt.qpa.wayland.textinput=true"}, "warnings=True",
+        id="started with textinput warnings enabled in QT_LOGGING_RULES keeps them enabled",
+    ),
+])
+def test_the_mediatagger_command_disables_only_wayland_textinput_warnings_unless_qt_logging_rules_enables_them(category_name, logging_rules, expected):
     result = subprocess.run(
-        [sys.executable, "-c", script_reporting_whether_the_mediatagger_command_enables_warnings_for("qt.qpa.wayland.textinput")],
+        [sys.executable, "-c", script_reporting_whether_the_mediatagger_command_enables_warnings_for(category_name)],
         capture_output=True, text=True, timeout=30,
-        env={**offscreen_environment(), "QT_LOGGING_RULES": "qt.qpa.wayland.textinput=true"},
+        env={**offscreen_environment(), **logging_rules},
     )
     assert result.returncode == 0, result.stderr
-    assert result.stdout.strip() == "warnings=True"
+    assert result.stdout.strip() == expected
