@@ -14,8 +14,8 @@
 - [x] Typing `r` in the tag prompt open over an image types `r` and leaves the image unturned
 - [x] Pressing `r` on an image zoomed in one notch shows it turned and still at 110 % of its turned fitted size
 - [x] Zooming in on a turned image with the mouse off its centre keeps the picture point under the mouse under the mouse
-- [ ] Zooming a turned image back out to fitted after zooming in with the mouse off its centre shows it exactly where it was fitted, centred
-- [ ] Zooming out of a turned image that covers the window with the mouse near a window edge never leaves black between that edge and the image
+- [x] Zooming a turned image back out to fitted after zooming in with the mouse off its centre shows it exactly where it was fitted, centred
+- [x] Zooming out of a turned image that covers the window with the mouse near a window edge never leaves black between that edge and the image
 - [ ] Pressing `r` on a zoomed-in image panned to a window edge leaves no black between that edge and the turned image (backlog: src/mediatagger/zoom.py:37 A zoom's pan is clamped only when the wheel turns, not when the window resizes or `r` turns a video)
 - [ ] Pressing `r` on a zoomed-in image whose turned picture still covers the window where it lies keeps it at the same pan (backlog: src/mediatagger/zoom.py:37 A zoom's pan is clamped only when the wheel turns, not when the window resizes or `r` turns a video)
 - [ ] A landscape photo larger than the viewer, turned once, is drawn sharp at the viewer's full height: decoded to fit the turned picture, not the unturned one

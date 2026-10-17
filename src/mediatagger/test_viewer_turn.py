@@ -139,3 +139,27 @@ def test_zooming_in_on_a_turned_image_with_the_mouse_off_its_centre_keeps_the_pi
     frame = viewer.grab().toImage()  # 165x330 from (72.5, -5) keeps (100, 50) put: blue corner at x 204.5..237.5, y -5..28
     assert frame.pixelColor(220, 0) == QColor("blue")
     assert frame.pixelColor(220, 31) == QColor("red")
+
+
+def test_zooming_a_turned_image_back_out_to_fitted_after_zooming_in_off_its_centre_shows_it_where_it_was_fitted(qtbot, tmp_path):
+    make_corner_marked_landscape(tmp_path / "IMG_1.png")
+    viewer = square_viewer_on(qtbot, tmp_path)
+    qtbot.keyClick(viewer, Qt.Key.Key_R)
+    fitted = viewer.grab().toImage()
+    scroll(viewer, 3, at=QPoint(100, 50))
+
+    scroll(viewer, -3, at=QPoint(200, 250))
+
+    assert viewer.grab().toImage() == fitted
+
+
+def test_zooming_out_of_a_turned_image_that_covers_the_window_with_the_mouse_near_an_edge_leaves_no_black_at_the_other_edge(qtbot, tmp_path):
+    make_corner_marked_landscape(tmp_path / "IMG_1.png")
+    viewer = square_viewer_on(qtbot, tmp_path)
+    qtbot.keyClick(viewer, Qt.Key.Key_R)
+    scroll(viewer, 15, at=QPoint(299, 150))  # turned 150x300 at 250 % is 375x750, held against the right edge
+
+    scroll(viewer, -1, at=QPoint(2, 150))
+
+    frame = viewer.grab().toImage()
+    assert [frame.pixelColor(x, 150) == QColor("black") for x in (0, 299)] == [False, False]
