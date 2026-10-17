@@ -304,3 +304,15 @@ def test_a_file_tagged_beach_in_a_folder_tagged_aunt_zoo_shows_aunt_and_zoo_on_t
     own = shown_label_reading(viewer, "beach")
     inherited = shown_label_reading(viewer, "aunt\nzoo")
     assert frame_in(viewer, inherited).top() > frame_in(viewer, own).bottom()
+
+
+def test_a_file_with_no_own_tags_in_a_folder_tagged_aunt_zoo_shows_aunt_on_the_top_line_a_corner_margin_from_the_top_with_zoo_below_it(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder, "aunt zoo")
+
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    resize_and_wait(qtbot, viewer, 1600, 900)
+
+    [tag_overlay] = shown_labels(viewer)
+    assert tag_overlay.text().splitlines() == ["aunt", "zoo"]
+    assert_in_top_right_corner(viewer, tag_overlay)

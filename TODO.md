@@ -19,7 +19,7 @@
 - [x] In the viewer's tag overlay, the lines of a short tag (`zoo`) and a long one (`grandmother`) both end a corner margin from the window's right edge
 - [x] In the viewer, a file tagged `beach` in a folder tagged `aunt zoo` shows `aunt` and `zoo` on their own lines below `beach`
   - predicted-contradiction: `src/mediatagger/test_viewer_tag_overlay.py::test_in_the_tag_overlay_an_inherited_tag_is_drawn_dimmer_than_an_own_tag` — asserts: own tag "beach" sits left and inherited "aunt" right on one row, so the right third of the overlay is dim — retired-by: "shows `aunt` and `zoo` on their own lines below `beach`"
-- [ ] In the viewer, a file with no own tags in a folder tagged `aunt zoo` shows `aunt` on the top line, a corner margin from the top, with `zoo` below it
+- [x] In the viewer, a file with no own tags in a folder tagged `aunt zoo` shows `aunt` on the top line, a corner margin from the top, with `zoo` below it
 - [x] In the viewer's tag column, an inherited tag's line is drawn dimmer than an own tag's line
 - [ ] In the viewer, moving with `Space` from a file with three tags to a file with one shows a single line in the tag overlay
 - [ ] In the viewer, a file with twelve tags shows all twelve, each on its own line with its whole text
