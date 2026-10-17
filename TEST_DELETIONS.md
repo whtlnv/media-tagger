@@ -74,3 +74,13 @@ Append-only record of tests removed because a delivered change retired the behav
 - `test_opening_a_schema_version_1_library_upgrades_its_tags_db_in_place_to_schema_version_2` and `test_a_schema_version_1_library_reports_schema_version_2_once_it_has_been_opened` asserted a schema-1 library opens at version 2.
 - Retired by: Phase 18 item "Opening a schema-version-1 library upgrades it in place to schema version 3, its drive id unchanged" — a library is now upgraded straight to the current version.
 - Confirmed: both failed with `'3' == '2'` / `3 == 2` once the upgrade went to 3; migrated in place to expect 3 (setups unchanged).
+
+## 2026-10-17 · deleted · `src/mediatagger/test_video_controls.py::test_zero_on_a_playing_video_seeks_back_to_the_start`
+- Asserted: `0` on a playing video seeks back to 0:00.
+- Retired by: Phase 25 item "In the viewer on a 90 s video playing at 0:30, `0` leaves it playing at about 0:30" (`1` is now the jump to 0:00; Phase 26 gives `0` a new job).
+- Confirmed: failed with the bar reading `0:28 / 1:04` instead of `0:00 / 1:04` once `0` stopped seeking; replaced by the `0`-does-nothing test.
+
+## 2026-10-17 · migrated · `src/mediatagger/test_video_controls.py::test_a_key_on_a_playing_video_whose_progress_bar_is_hidden_shows_the_bar_at_once_reading_any_change[5 …]`
+- Asserted: `5` on a 64 s clip seeks to 0:32 (50 %) and shows the bar.
+- Retired by: Phase 25 item "In the viewer on a 90 s video, `2` jumps to 0:10" — digits now jump in ninths.
+- Migrated in place: a 90 s clip, `5` shows the bar at `0:40 / 1:30` (four ninths); the bar-shows-on-a-digit coverage is kept.

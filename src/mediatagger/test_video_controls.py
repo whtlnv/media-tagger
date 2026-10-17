@@ -250,15 +250,14 @@ def test_one_on_a_90_s_video_playing_at_0_30_jumps_back_to_the_start(qtbot, tmp_
     assert bar.text() == "0:00 / 1:30"
 
 
-def test_zero_on_a_playing_video_seeks_back_to_the_start(qtbot, tmp_path):
-    clip = make_clip(tmp_path / "IMG_1.mp4", duration=64)
+def test_zero_on_a_90_s_video_playing_at_0_30_leaves_it_playing_on_from_there(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4", duration=90)
     viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
-    qtbot.keyClick(viewer, Qt.Key.Key_5)
-    assert bar.text() == "0:28 / 1:04"
+    playing_at_30_seconds(viewer)
 
     qtbot.keyClick(viewer, Qt.Key.Key_0)
 
-    assert bar.text() == "0:00 / 1:04"
+    assert re.fullmatch(r"0:3\d / 1:30", bar.text())
 
 
 def test_waking_the_progress_bar_while_it_shows_keeps_it_visible_for_the_full_hide_delay_after_the_latest_wake(qtbot):
