@@ -42,6 +42,13 @@ def viewer_playing_with_its_progress_bar(qtbot, folder, clip):
     return viewer, bar
 
 
+def playing_at_30_seconds(viewer):
+    engine = viewer.video_player.engine
+    wait_until_playing(engine)
+    engine.seek(30, reference="absolute", precision="exact")
+    engine.wait_for_property("time-pos", lambda pos: pos is not None and pos >= 30, timeout=5)
+
+
 def shown_progress_bar(qtbot, hide_delay=HIDE_DELAY_MS):
     """A bar in a shown parent of its own. The parent comes back too: once nothing holds it, Qt deletes it with the bar."""
     parent = QWidget()
@@ -231,13 +238,6 @@ def test_v_on_a_playing_video_leaves_its_pause_mute_position_speed_rotation_and_
     assert (engine.pause, engine.mute, engine.speed, engine.video_rotate) == (True, True, 2, 90)
     assert engine.time_pos == pytest.approx(position, abs=0.05)
     assert viewer.slideshow.current == clip
-
-
-def playing_at_30_seconds(viewer):
-    engine = viewer.video_player.engine
-    wait_until_playing(engine)
-    engine.seek(30, reference="absolute", precision="exact")
-    engine.wait_for_property("time-pos", lambda pos: pos is not None and pos >= 30, timeout=5)
 
 
 def test_one_on_a_90_s_video_playing_at_0_30_jumps_back_to_the_start(qtbot, tmp_path):
