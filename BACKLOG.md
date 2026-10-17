@@ -2,6 +2,9 @@
 
 ## Out of Scope
 
+- **[src/mediatagger/chapters.py:_previous] Backwards jumps: `,` keeps the forwards margins, and test_viewer_backwards repeats its turn-round staging** (added: 2026-10-17)
+  Left LOW by the Phase 28 loops (stopped after 2 refactor passes, 1 test-quality pass): `_previous` takes a `backwards` flag it never reads, so `,` played backwards still skips a moment less than 1 s ahead where `.` forwards skips one less than 0.5 s ahead (mirroring it would be a behaviour change, untested); in `test_viewer_backwards.py` the seek-to-15 / `b` / wait-below-14 staging is written out twice, and the `b`-again/`0` and `u`/`e` tests are near-identical pairs.
+
 - **[src/mediatagger/icons.py:_paint_picture] The painted icons repeat their fill set-up and the picture/video frame** (added: 2026-10-17)
   Left LOW by the Phase 27 refactor loop (stopped after 2 passes): four paint functions each write `setPen(NoPen)` / `setBrush(color)` / `drawPath`, and `_paint_picture` and `_paint_video` draw the same frame rectangle at the same pen width; in `grid.py` the badge's icon-to-text gap `side // 6` is written twice. Fold them when another icon is added.
 
