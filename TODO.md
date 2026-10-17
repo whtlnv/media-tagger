@@ -2,7 +2,7 @@
 
 ## Phase 27 — Badge symbols that show on the Pi
 
-- [ ] A tile with 3 tags shows a top-right badge with a painted tag icon before `3`, in the white the badge text uses, and no tag emoji character in the badge
+- [x] A tile with 3 tags shows a top-right badge with a painted tag icon before `3`, in the white the badge text uses, and no tag emoji character in the badge
 - [ ] A video tile with 2 chapters shows a top-right badge with a painted stopwatch icon before `2`, in the white the badge text uses, and no stopwatch emoji character in the badge
 - [ ] A folder tile with no thumbnail shows a painted folder icon at the centre of its picture area, with no folder emoji character drawn
 - [ ] An image tile with no thumbnail yet shows a painted picture icon at the centre of its picture area, with no picture emoji character drawn
