@@ -45,12 +45,21 @@ class Zoom:
             return
         scale = level / self.level
         at = QPointF(at)
-        after = QRectF(at + (before.topLeft() - at) * scale, before.size() * scale)
+        self.level = level
+        self._pan_to(QRectF(at + (before.topLeft() - at) * scale, before.size() * scale), window)
+
+    def keep_covering(self, fitted, window):
+        """Move the picture, now fitted at fitted (as after a turn), as little as it takes to leave no black between it
+        and a window edge."""
+        self._pan_to(self.shown(fitted, window), window)
+
+    def _pan_to(self, shown, window):
+        """Pan to show the picture at shown, moved to leave no black between it and a window edge."""
         window = QRectF(window)
-        after.moveLeft(_within(after.left(), window.left(), window.right() - after.width()))
-        after.moveTop(_within(after.top(), window.top(), window.bottom() - after.height()))
-        offset = after.center() - window.center()
-        self.level, self.pan = level, QPointF(offset.x() / after.width(), offset.y() / after.height())
+        shown.moveLeft(_within(shown.left(), window.left(), window.right() - shown.width()))
+        shown.moveTop(_within(shown.top(), window.top(), window.bottom() - shown.height()))
+        offset = shown.center() - window.center()
+        self.pan = QPointF(offset.x() / shown.width(), offset.y() / shown.height())
 
 
 def _within(edge, first, last):

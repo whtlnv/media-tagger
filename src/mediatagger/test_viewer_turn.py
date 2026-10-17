@@ -163,3 +163,14 @@ def test_zooming_out_of_a_turned_image_that_covers_the_window_with_the_mouse_nea
 
     frame = viewer.grab().toImage()
     assert [frame.pixelColor(x, 150) == QColor("black") for x in (0, 299)] == [False, False]
+
+
+def test_pressing_r_on_a_zoomed_in_image_panned_to_a_window_edge_leaves_no_black_between_that_edge_and_the_turned_image(qtbot, tmp_path):
+    make_corner_marked_landscape(tmp_path / "IMG_1.png")
+    viewer = square_viewer_on(qtbot, tmp_path)
+    scroll(viewer, 15, at=QPoint(299, 150))  # fitted 300x150 at 250 % is 750x375, panned to its right edge
+
+    qtbot.keyClick(viewer, Qt.Key.Key_R)
+
+    frame = viewer.grab().toImage()  # turned 375x750 would end at x 226 where it was; held against the right edge it covers the row
+    assert [frame.pixelColor(x, 150) == QColor("black") for x in (0, 299)] == [False, False]
