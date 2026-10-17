@@ -140,9 +140,10 @@ Results show under a `Search: <query>` breadcrumb, shown only with the results g
 | `u` / `e` | next / previous frame of a paused video; nothing while it plays |
 | `↑` / `↓` | seek ±10 s (video) |
 | `1`–`9` | jump through in ninths (1 = start) |
-| `0` | back to normal: zoom, turn, speed |
+| `0` | back to normal: zoom, turn, speed, forwards |
 | `m` | mute |
 | `]` / `[` | faster / slower (video): 0.25×–8×, stopping at the ends |
+| `b` | play backwards / forwards |
 | `r` | turn 90° clockwise, still fitted whole to the screen |
 | `v` | show the progress bar (video), nothing else |
 | `c` | add a chapter: a tag prompt like `t` whose words become tags of the video at the moment `c` was pressed (video) |
@@ -154,7 +155,8 @@ Results show under a `Search: <query>` breadcrumb, shown only with the results g
 
 - Images fit to screen.
 - Zoom: the picture point under the mouse stays under it, except that a picture bigger than the window always covers it and a smaller one stays inside it (no black between picture and edge). Back at 100 % it is centred again. Every item opens at 100 % and unturned (a turn is never saved, thumbnails stay as they are); `r` keeps the zoom. No zoom indicator.
-- Video autoplays **with sound**, loops, at 1× and unrotated. Space never pauses.
+- Video autoplays **with sound**, loops, at 1×, unrotated and forwards. Space never pauses.
+- `b` plays a video backwards (mpv `play-direction`), looping from its start to its end; `b` again or `0` plays it forwards. Backwards, seeks, digits, chapters and the progress bar keep to the video's own time (`↑` is still 10 s later), and `u` / `e` still step to the later / earlier frame.
 - While a video plays, a progress bar (`1:23 / 4:56`, `0:00:05 / 1:02:03` from an hour, `1:23 / 4:56 · 1.25×` when not at 1×) sits along its bottom above the status bar; any key shows it, and it hides after 3 s without input. Each chapter moment is a tick on it; a `.` / `,` jump shows it with the moment's tags (`goal · 1:23 / 4:56`).
 - Tag overlay in the top-right corner, one tag per line, right-aligned: own tags normal, then inherited tags dimmed below them.
 - Manual advance only.

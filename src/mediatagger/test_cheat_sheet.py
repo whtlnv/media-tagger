@@ -35,4 +35,9 @@ def test_the_grid_cheat_sheet_and_designs_grid_table_both_list_n_for_renaming_a_
 def test_the_viewer_cheat_sheet_and_designs_viewer_table_both_list_1_to_9_as_jumping_in_ninths_and_0_as_back_to_normal():
     for rows in (VIEWER_KEYS, design_table_rows("Viewer")):
         assert dict(rows)["1–9"] == "jump through in ninths (1 = start)"
-        assert dict(rows)["0"] == "back to normal: zoom, turn, speed"
+        assert dict(rows)["0"] == "back to normal: zoom, turn, speed, forwards"
+
+
+def test_the_viewer_cheat_sheet_and_designs_viewer_table_both_list_b_as_playing_backwards_or_forwards():
+    for rows in (VIEWER_KEYS, design_table_rows("Viewer")):
+        assert dict(rows)["b"] == "play backwards / forwards"
