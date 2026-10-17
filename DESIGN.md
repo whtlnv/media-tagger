@@ -142,7 +142,7 @@ Results show under a `Search: <query>` breadcrumb, shown only with the results g
 | `0`–`9` | jump to 0 %–90 % of the video |
 | `m` | mute |
 | `]` / `[` | faster / slower (video): 0.25×–8×, stopping at the ends |
-| `r` | turn 90° clockwise (video), still fitted whole to the screen |
+| `r` | turn 90° clockwise, still fitted whole to the screen |
 | `v` | show the progress bar (video), nothing else |
 | `c` | add a chapter: a tag prompt like `t` whose words become tags of the video at the moment `c` was pressed (video) |
 | `.` / `,` | jump to the next / previous chapter (video) |
@@ -152,7 +152,7 @@ Results show under a `Search: <query>` breadcrumb, shown only with the results g
 | `h` | show / hide the key cheat sheet |
 
 - Images fit to screen.
-- Zoom: the picture point under the mouse stays under it, except that a picture bigger than the window always covers it and a smaller one stays inside it (no black between picture and edge). Back at 100 % it is centred again. Every item opens at 100 %; `r` keeps the zoom. No zoom indicator.
+- Zoom: the picture point under the mouse stays under it, except that a picture bigger than the window always covers it and a smaller one stays inside it (no black between picture and edge). Back at 100 % it is centred again. Every item opens at 100 % and unturned (a turn is never saved, thumbnails stay as they are); `r` keeps the zoom. No zoom indicator.
 - Video autoplays **with sound**, loops, at 1× and unrotated. Space never pauses.
 - While a video plays, a progress bar (`1:23 / 4:56`, `0:00:05 / 1:02:03` from an hour, `1:23 / 4:56 · 1.25×` when not at 1×) sits along its bottom above the status bar; any key shows it, and it hides after 3 s without input. Each chapter moment is a tick on it; a `.` / `,` jump shows it with the moment's tags (`goal · 1:23 / 4:56`).
 - Tag overlay in a corner: own tags normal, inherited tags dimmed.
