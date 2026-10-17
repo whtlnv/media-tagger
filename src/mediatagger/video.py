@@ -10,6 +10,7 @@ def new_engine(**options):
 
 
 SPEEDS = (0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 3, 4, 6, 8)  # ] and [ step through these, stopping at the ends
+_FRAME_STEPS = {"u": "frame-step", "e": "frame-back-step"}  # next / previous frame of a paused video
 WAIT_SECONDS = 5  # longest the UI waits on mpv; a file that takes longer counts as unplayable
 
 
@@ -62,12 +63,9 @@ class VideoPlayer:
         if key == "r":
             self.engine.video_rotate = (self.engine.video_rotate + 90) % 360
             return
-        if key == "u":
+        if key in _FRAME_STEPS:
             if self.engine.pause:  # stepping a playing video would pause it
-                self.engine.command("frame-step")
-            return
-        if key == "e":
-            self.engine.command("frame-back-step")
+                self.engine.command(_FRAME_STEPS[key])
             return
         if key == "m":
             self.engine.mute = not self.engine.mute

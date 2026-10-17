@@ -5,7 +5,7 @@
 - [x] Pressing `u` on a paused video shows its next frame (its position moves forward by one frame and it stays paused)
 - [x] Pressing `u` on a playing video does not step a frame (it keeps playing, its position not jumped)
 - [x] Pressing `e` on a paused video shows its previous frame (its position moves back by one frame and it stays paused)
-- [ ] Pressing `e` on a playing video does not step a frame (it keeps playing, its position not jumped)
+- [x] Pressing `e` on a playing video does not step a frame (it keeps playing, its position not jumped)
 - [ ] After `u` on a paused video, the progress bar shows and reads the stepped position
 - [ ] After `e` on a paused video, the progress bar shows and reads the stepped position
 - [ ] With the tag prompt open over a paused video, typing `u` and `e` puts those letters in the prompt and leaves the video's frame unchanged
