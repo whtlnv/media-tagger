@@ -4,8 +4,8 @@
 
 - [x] Pressing `r` on a landscape image in a square viewer shows it turned 90° clockwise (its top-left corner now drawn at the top-right) and drawn whole across the viewer's full height
 - [x] Pressing `r` twice on an image shows it upside down (its top-left corner drawn at the bottom-right)
-- [ ] Pressing `r` four times on an image shows it unrotated again, drawn exactly where it was fitted before the first press
-- [ ] A landscape image turned once in a wide viewer is fitted whole: its turned height fills the viewer's height and it is centred across the width
+- [x] Pressing `r` four times on an image shows it unrotated again, drawn exactly where it was fitted before the first press
+- [x] A landscape image turned once in a wide viewer is fitted whole: its turned height fills the viewer's height and it is centred across the width
 - [ ] After pressing `r` on an image, moving to the next image shows that image unrotated
 - [ ] After pressing `r` on an image, moving to the next item and back shows the first image unrotated again
 - [ ] After pressing `r` on a video, moving to the next item shows an image there unrotated
