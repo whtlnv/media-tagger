@@ -4,13 +4,7 @@ Delivery phases, in order. Decisions, key maps and rules live in `DESIGN.md`; ev
 Each phase must end with its behavior reachable from the shipped `mediatagger` command, not only from tests.
 
 
-Phases 1–23 are delivered. Their specs are in git history (`PLAN.md` at `fcd5d3b` for 1–11, at `ca048de` for 12, at `76e644f` for 13, at `5ba4a0a` for 14, at `9a27389` for 15, at `213f913` for 16, at `f1a53c2` for 17, at `4cc0f4e` for 18, at `a2d1a4e` for 19, at `65d51a2` for 20, at `37d3379` for 21, at `37d3379` for 22, at `37d3379` for 23) and their items in `DONE.md`.
-
-## Phase 24 — Viewer tags one per line
-
-From the user's Pi notes of 2026-10-17 (`results/findings.txt`): "please make the tags in the viewer stack vertically, not horizontally".
-
-- The viewer's tag overlay (top-right) shows one tag per line, right-aligned in the corner: the file's own tags first, then its inherited tags (still dimmed) below them. Same font, colours and corner. Many tags just make a longer column; nothing is cut. The grid's status-bar tags are unchanged.
+Phases 1–24 are delivered. Their specs are in git history (`PLAN.md` at `fcd5d3b` for 1–11, at `ca048de` for 12, at `76e644f` for 13, at `5ba4a0a` for 14, at `9a27389` for 15, at `213f913` for 16, at `f1a53c2` for 17, at `4cc0f4e` for 18, at `a2d1a4e` for 19, at `65d51a2` for 20, at `37d3379` for 21, at `37d3379` for 22, at `37d3379` for 23, at `cc98ca5` for 24) and their items in `DONE.md`.
 
 ## Phase 25 — `1`–`9` jump through the video in ninths
 
