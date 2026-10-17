@@ -9,11 +9,13 @@ _LANDED = 0.5  # a jump lands this close to its moment, give or take a frame: th
 _REPLAYING = 1.0  # `,` within this long after a moment goes to the one before it
 
 
-def _next(moments, now):
-    return next((moment for moment in moments if moment.seconds > now + _LANDED), None)
+def _next(moments, now, backwards=False):
+    """Playing backwards, a moment passed within the last second is the one just landed on: the next goes past it."""
+    landed = _REPLAYING if backwards else _LANDED
+    return next((moment for moment in moments if moment.seconds > now + landed), None)
 
 
-def _previous(moments, now):
+def _previous(moments, now, backwards=False):
     return next((moment for moment in reversed(moments) if moment.seconds < now - _REPLAYING), None)
 
 
@@ -61,7 +63,8 @@ class Chapters(QObject):
                 self.list.show_moments(self._moments())
             return True
         if event.key() in _JUMPS:
-            self._jump(_JUMPS[event.key()])
+            jump, backwards = _JUMPS[event.key()], self._viewer.video_player.engine.play_direction == "backward"
+            self._jump(lambda moments, now: jump(moments, now, backwards))
             return True
         return False
 

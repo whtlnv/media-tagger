@@ -200,6 +200,18 @@ def test_pressing_comma_right_after_period_landed_on_a_moment_seeks_to_the_momen
     assert viewer.video_player.engine.time_pos == pytest.approx(10, abs=0.2)
 
 
+def test_pressing_period_again_within_a_second_of_a_period_jump_on_a_video_playing_backwards_jumps_on_to_the_next_moment(qtbot, tmp_path):
+    viewer = viewer_paused_at(qtbot, tmp_path, 5, moments=[10, 20, 30])
+    qtbot.keyClick(viewer, Qt.Key.Key_P)
+    qtbot.keyClick(viewer, Qt.Key.Key_B)
+    qtbot.keyClick(viewer, Qt.Key.Key_Period)
+    qtbot.wait(700)  # long enough to play back past the half second a forwards jump allows for, under the second
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Period)
+
+    assert viewer.video_player.engine.time_pos == pytest.approx(20, abs=0.3)
+
+
 @pytest.mark.parametrize("key", [Qt.Key.Key_Period, Qt.Key.Key_Comma])
 def test_pressing_period_or_comma_on_a_video_with_no_moments_leaves_the_playback_position_unchanged(qtbot, tmp_path, key):
     viewer = viewer_paused_at(qtbot, tmp_path, 20, moments=[])
