@@ -65,7 +65,7 @@ class VideoPlayer:
             return
         if key in _FRAME_STEPS:
             if self.engine.pause:  # stepping a playing video would pause it
-                self.engine.command(_FRAME_STEPS[key])
+                self._step_frame(_FRAME_STEPS[key])
             return
         if key == "m":
             self.engine.mute = not self.engine.mute
@@ -75,6 +75,12 @@ class VideoPlayer:
 
     def seek_to(self, seconds):
         self._seek(seconds, reference="absolute")
+
+    def _step_frame(self, command):
+        try:
+            self.engine.command(command)
+        except SystemError:
+            pass  # nothing loaded to step, as on an image shown after a paused video
 
     def _step_speed(self, step):
         index = SPEEDS.index(self.engine.speed) + step

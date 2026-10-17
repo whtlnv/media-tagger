@@ -366,3 +366,14 @@ def test_pressing_e_in_the_viewer_on_a_playing_video_leaves_it_playing_without_j
 
     engine.wait_for_property("time-pos", lambda time_pos: time_pos > before + 0.5, timeout=5)
     assert engine.pause is False
+
+
+def test_pressing_u_and_e_on_an_image_shown_after_a_paused_video_leaves_the_image_shown_and_raises_nothing(qtbot, tmp_path):
+    viewer = viewer_paused_at_10_seconds(qtbot, tmp_path)  # IMG_2 is a red image
+    qtbot.keyClick(viewer, Qt.Key.Key_Space)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_U)
+    qtbot.keyClick(viewer, Qt.Key.Key_E)
+
+    assert not shows_video_surface(viewer)
+    assert centre_colour(viewer) == QColor("red")
