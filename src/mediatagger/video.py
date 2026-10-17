@@ -39,7 +39,7 @@ class VideoPlayer:
 
     def press(self, key):
         if key in ("Space", "Right", "Left"):
-            self.engine.play_direction = "forward"  # while the clip is loaded: mpv set to it when idle plays the next one backwards
+            self._play_towards("forward")  # while the clip is loaded: mpv turned round when idle plays the next one backwards
             self.engine.stop()
             try:
                 self.engine.wait_for_property("path", lambda path: path is None, timeout=self.timeout)
@@ -52,9 +52,10 @@ class VideoPlayer:
         if key == "Down":
             self._seek(-10)
             return
-        if key == "0":  # back to normal: unturned, at 1x
+        if key == "0":  # back to normal: unturned, at 1x, forwards
             self.engine.video_rotate = 0
             self.engine.speed = 1
+            self._play_towards("forward")
             return
         if key.isdigit():  # 1-9 jump to the start of the video's first to ninth ninth
             self._seek((int(key) - 1) * 100 / 9, reference="absolute-percent")
@@ -73,7 +74,7 @@ class VideoPlayer:
                 self._step_frame(_FRAME_STEPS[key])
             return
         if key == "b":
-            self.engine.play_direction = "forward" if self.engine.play_direction == "backward" else "backward"
+            self._play_towards("forward" if self.engine.play_direction == "backward" else "backward")
             return
         if key == "m":
             self.engine.mute = not self.engine.mute
@@ -89,6 +90,17 @@ class VideoPlayer:
             self.engine.command(command)
         except SystemError:
             pass  # nothing loaded to step, as on an image shown after a paused video
+
+    def _play_towards(self, direction):
+        """mpv turns round with a seek; wait for it, as a stop or another turn racing it leaves mpv's own direction
+        behind its play-direction property, and the next clip then plays backwards whatever the property says."""
+        if self.engine.play_direction == direction:
+            return
+        try:
+            with self.engine.prepare_and_wait_for_event("playback_restart", timeout=self.timeout):
+                self.engine.play_direction = direction
+        except TimeoutError:
+            pass  # the viewer stays responsive; mpv turns round when it can
 
     def _step_speed(self, step):
         index = SPEEDS.index(self.engine.speed) + step

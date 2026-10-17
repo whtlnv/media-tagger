@@ -47,3 +47,14 @@ def test_a_video_shown_after_one_playing_backwards_starts_from_its_beginning_pla
 
     assert engine.play_direction == "forward"
     assert engine.time_pos < 5
+
+
+def test_pressing_0_in_the_viewer_on_a_video_playing_backwards_plays_it_forwards_its_position_going_up(qtbot, tmp_path):
+    viewer, engine = viewer_playing_a_clip_in(qtbot, tmp_path)
+    viewer.video_player.seek_to(15)
+    qtbot.keyClick(viewer, Qt.Key.Key_B)
+    engine.wait_for_property("time-pos", lambda pos: pos is not None and pos < 14, timeout=5)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_0)
+
+    engine.wait_for_property("time-pos", lambda pos: pos is not None and pos > 15, timeout=5)
