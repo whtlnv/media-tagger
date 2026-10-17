@@ -23,7 +23,7 @@ from mediatagger.test_viewer import (
 )
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_clip
 from mediatagger.test_viewer_open import drag_and_drop_onto
-from mediatagger.test_viewer_video import viewer_paused_at_10_seconds
+from mediatagger.test_viewer_video import FRAME_STEPPING, pause_at_10_seconds, viewer_paused_at_10_seconds
 from mediatagger.video_controls import HIDE_DELAY_MS, ProgressBar
 from mediatagger.viewer import UNSUPPORTED_TEXT
 from mediatagger.window import Window
@@ -491,3 +491,17 @@ def test_e_on_a_paused_video_whose_progress_bar_is_hidden_shows_the_bar_reading_
 
     assert bar.isVisible()
     qtbot.waitUntil(lambda: bar.text() == "0:09 / 0:30", timeout=5000)
+
+
+def test_in_the_window_on_a_drive_u_on_a_paused_video_steps_it_one_frame_forward(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=30)  # 10 fps, so one frame is 0.1 s
+    window = Window(folder, player_options=FRAME_STEPPING, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    viewer = window.findChild(QStackedWidget).currentWidget()
+    make_surface_ready(viewer)
+    pause_at_10_seconds(qtbot, viewer)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_U)
+
+    viewer.video_player.engine.wait_for_property("time-pos", lambda time_pos: time_pos == pytest.approx(10.1, abs=0.01), timeout=5)
