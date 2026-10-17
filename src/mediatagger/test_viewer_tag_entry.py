@@ -152,13 +152,19 @@ def test_typing_space_i_p_f_m_in_the_open_tag_prompt_goes_into_it_and_leaves_the
     assert viewer.windowState() == window_state
 
 
-def test_typing_p_and_m_in_the_tag_prompt_open_over_a_playing_video_neither_pauses_nor_mutes_it(qtbot, tmp_path):
+def viewer_with_the_tag_prompt_open_over_a_playing_video(qtbot, tmp_path):
+    """The viewer on a drive with a library, its one 30 s clip playing forwards at 1x, unturned and unmuted, with `t`'s tag prompt open."""
     drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=30)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     make_surface_ready(viewer)
     engine = viewer.video_player.engine
     wait_until_playing(engine)
     qtbot.keyClick(viewer, Qt.Key.Key_T)
+    return viewer, engine
+
+
+def test_typing_p_and_m_in_the_tag_prompt_open_over_a_playing_video_neither_pauses_nor_mutes_it(qtbot, tmp_path):
+    viewer, engine = viewer_with_the_tag_prompt_open_over_a_playing_video(qtbot, tmp_path)
 
     qtbot.keyClicks(viewer.focusWidget(), "pm")
 
@@ -167,12 +173,7 @@ def test_typing_p_and_m_in_the_tag_prompt_open_over_a_playing_video_neither_paus
 
 
 def test_typing_brackets_r_and_v_in_the_tag_prompt_open_over_a_playing_video_types_them_and_neither_speeds_nor_turns_it(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=30)
-    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
-    make_surface_ready(viewer)
-    engine = viewer.video_player.engine
-    wait_until_playing(engine)
-    qtbot.keyClick(viewer, Qt.Key.Key_T)
+    viewer, engine = viewer_with_the_tag_prompt_open_over_a_playing_video(qtbot, tmp_path)
 
     qtbot.keyClicks(viewer.tag_prompt.input, "][rv")
 
@@ -181,12 +182,7 @@ def test_typing_brackets_r_and_v_in_the_tag_prompt_open_over_a_playing_video_typ
 
 
 def test_typing_b_in_the_tag_prompt_open_over_a_playing_video_types_it_and_leaves_the_video_playing_forwards(qtbot, tmp_path):
-    drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=30)
-    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
-    make_surface_ready(viewer)
-    engine = viewer.video_player.engine
-    wait_until_playing(engine)
-    qtbot.keyClick(viewer, Qt.Key.Key_T)
+    viewer, engine = viewer_with_the_tag_prompt_open_over_a_playing_video(qtbot, tmp_path)
 
     qtbot.keyClicks(viewer.tag_prompt.input, "b")
 
