@@ -10,6 +10,6 @@
 - [x] In the viewer on a 90 s video, `9` jumps to 1:20 (the start of the last ninth), not the end
 - [x] The cheat sheet lists `1–9` as jumping through the video in ninths and no longer lists `0` as a jump
 - [x] Running the shipped `mediatagger` command on a 90 s video and pressing `9` shows the progress bar at 1:20
-  - covered in-process through the real key path (`viewer._VIDEO_KEYS` → `VideoPlayer.press` → progress bar): `test_video_controls.py::test_nine_on_a_90_s_video_jumps_to_the_start_of_its_last_ninth_at_1_20_not_the_end`; no extra subprocess test (the subprocess tests flake under load). Also pinned: `1` after a `.` chapter jump drops the tag name from the bar (`test_chapters.py`)
+  - covered in-process through the real key path (`viewer._VIDEO_KEYS` → `VideoPlayer.press` → progress bar): `test_video_controls.py::test_a_digit_on_a_90_s_video_playing_at_0_30_jumps_to_the_start_of_that_ninth[9 …]`; no extra subprocess test (the subprocess tests flake under load). Also pinned: `1` after a `.` chapter jump drops the tag name from the bar (`test_chapters.py`)
 - [x] Acceptance: a screenshot of `mediatagger <folder>` on the Mac shows the cheat sheet's `1–9` ninths row
   - offscreen grab of the real `Window` on an image folder after `h`: the viewer sheet reads `1–9  jump through in ninths (1 = start)` between `↑ / ↓` and `m`, no `0` row

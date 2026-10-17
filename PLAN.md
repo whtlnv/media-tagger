@@ -4,13 +4,7 @@ Delivery phases, in order. Decisions, key maps and rules live in `DESIGN.md`; ev
 Each phase must end with its behavior reachable from the shipped `mediatagger` command, not only from tests.
 
 
-Phases 1–24 are delivered. Their specs are in git history (`PLAN.md` at `fcd5d3b` for 1–11, at `ca048de` for 12, at `76e644f` for 13, at `5ba4a0a` for 14, at `9a27389` for 15, at `213f913` for 16, at `f1a53c2` for 17, at `4cc0f4e` for 18, at `a2d1a4e` for 19, at `65d51a2` for 20, at `37d3379` for 21, at `37d3379` for 22, at `37d3379` for 23, at `cc98ca5` for 24) and their items in `DONE.md`.
-
-## Phase 25 — `1`–`9` jump through the video in ninths
-
-From the same notes: "0 is at the end of the line in the keyboard yet it takes me to the beginning. Let's try jumping through the video using 1-9 where 1 is 0:00 and each number advances the video (100/9)% until 9 that loads not the end of the video, but the last segment".
-
-- In the viewer on a video, `n` (1–9) jumps to (n − 1)/9 of the video: `1` = 0:00, `2` = 11.1 %, … `9` = 88.9 % (the start of the last ninth). `0` no longer jumps (Phase 26 gives it a new job). DESIGN.md and the cheat sheet updated.
+Phases 1–25 are delivered. Their specs are in git history (`PLAN.md` at `fcd5d3b` for 1–11, at `ca048de` for 12, at `76e644f` for 13, at `5ba4a0a` for 14, at `9a27389` for 15, at `213f913` for 16, at `f1a53c2` for 17, at `4cc0f4e` for 18, at `a2d1a4e` for 19, at `65d51a2` for 20, at `37d3379` for 21, at `37d3379` for 22, at `37d3379` for 23, at `cc98ca5` for 24, at `cc98ca5` for 25) and their items in `DONE.md`.
 
 ## Phase 26 — `0` puts the view back to normal
 
