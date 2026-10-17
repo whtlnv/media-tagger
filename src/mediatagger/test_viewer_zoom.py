@@ -1,7 +1,7 @@
 import math
 
 import pytest
-from PySide6.QtCore import QPoint, QPointF, Qt
+from PySide6.QtCore import QPoint, QPointF, QSize, Qt
 from PySide6.QtGui import QColor, QImage, QWheelEvent
 from PySide6.QtWidgets import QApplication
 
@@ -223,6 +223,26 @@ def test_scrolling_several_notches_over_a_zoomed_in_photo_larger_than_the_window
         viewer.grab()
 
     assert len(decodes) <= 1
+
+
+def test_a_photo_smaller_than_five_times_the_window_zoomed_in_is_decoded_no_larger_than_its_own_pixel_size(qtbot, tmp_path, monkeypatch):
+    make_image(tmp_path / "IMG_1.png", "red", width=900, height=450)  # zoomed in, decoded for up to 1500x1500
+    decoded_sizes = []
+
+    def recorded_decode_fitted(path, bounds):
+        decoded = decode_fitted(path, bounds)
+        decoded_sizes.append(decoded.size())
+        return decoded
+
+    monkeypatch.setattr("mediatagger.viewer.decode_fitted", recorded_decode_fitted)
+    viewer = square_viewer_on(qtbot, tmp_path)
+    viewer.grab()
+    decoded_sizes.clear()
+
+    scroll(viewer, 40, at=viewer.rect().center())
+    viewer.grab()
+
+    assert decoded_sizes == [QSize(900, 450)]
 
 
 def test_moving_to_the_next_item_after_zooming_in_on_an_image_then_back_shows_that_image_fitted_again(qtbot, tmp_path):
