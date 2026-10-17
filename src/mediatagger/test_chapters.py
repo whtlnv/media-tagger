@@ -12,6 +12,7 @@ from mediatagger.test_viewer_library import (
     drive_with_a_tag_library_holding_one_clip, drive_with_a_tag_library_holding_one_image, enter_in_tag_prompt, made_read_only, make_tag_library_drive, shown_viewer_on_drive, status_bar_texts,
     visible_tag_prompt_texts,
 )
+from mediatagger.test_viewer_tag_entry import viewer_paused_at_10_seconds_on_a_drive
 from mediatagger.test_window_cheat_sheet import window_on_the_drive
 
 
@@ -81,6 +82,16 @@ def test_the_video_keeps_playing_while_the_prompt_opened_by_c_is_open(qtbot, tmp
     engine.wait_for_property("time-pos", lambda pos: pos is not None and pos > opened_at + 0.5, timeout=5)
     assert engine.pause is False
 
+
+def test_typing_u_and_e_in_the_prompt_opened_by_c_over_a_paused_video_types_them_and_steps_no_frame(qtbot, tmp_path):
+    viewer = viewer_paused_at_10_seconds_on_a_drive(qtbot, tmp_path)
+    qtbot.keyClick(viewer, Qt.Key.Key_C)
+
+    qtbot.keyClicks(viewer.tag_prompt.input, "ue")
+
+    assert visible_tag_prompt_texts(viewer) == ["ue"]
+    qtbot.wait(500)  # longer than a frame step takes to land
+    assert viewer.video_player.engine.time_pos == 10
 
 def test_esc_in_the_prompt_opened_by_c_closes_it_and_records_no_tag_and_no_moment(qtbot, tmp_path):
     viewer, drive, folder = viewer_playing_a_clip_on_a_drive_with_a_library(qtbot, tmp_path)

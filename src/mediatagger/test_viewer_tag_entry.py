@@ -9,6 +9,7 @@ from mediatagger.test_viewer_library import (
     shown_viewer_on_drive, shown_viewer_on_drives, visible_tag_prompt_texts, visible_tag_prompts,
 )
 from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
+from mediatagger.test_viewer_video import FRAME_STEPPING, pause_at_10_seconds
 
 
 def test_pressing_t_in_the_viewer_on_a_file_with_no_tags_opens_the_tag_prompt_showing_no_tags(qtbot, tmp_path):
@@ -177,6 +178,25 @@ def test_typing_brackets_r_and_v_in_the_tag_prompt_open_over_a_playing_video_typ
     assert visible_tag_prompt_texts(viewer) == ["][rv"]
     assert [engine.speed, engine.video_rotate] == [1, 0]
 
+
+def viewer_paused_at_10_seconds_on_a_drive(qtbot, tmp_path):
+    """The viewer on a drive with a library, its one 30 s clip (one frame is 0.1 s) paused at exactly 10 s."""
+    drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=30)
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False, player_options=FRAME_STEPPING)
+    make_surface_ready(viewer)
+    pause_at_10_seconds(qtbot, viewer)
+    return viewer
+
+
+def test_typing_u_and_e_in_the_tag_prompt_open_over_a_paused_video_types_them_and_steps_no_frame(qtbot, tmp_path):
+    viewer = viewer_paused_at_10_seconds_on_a_drive(qtbot, tmp_path)
+    qtbot.keyClick(viewer, Qt.Key.Key_T)
+
+    qtbot.keyClicks(viewer.tag_prompt.input, "ue")
+
+    assert visible_tag_prompt_texts(viewer) == ["ue"]
+    qtbot.wait(500)  # longer than a frame step takes to land
+    assert viewer.video_player.engine.time_pos == 10
 
 def test_pressing_enter_in_the_tag_prompt_over_a_playing_video_saves_the_tags_without_pausing_it(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=30)
