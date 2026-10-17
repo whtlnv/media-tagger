@@ -153,7 +153,8 @@ def test_typing_space_i_p_f_m_in_the_open_tag_prompt_goes_into_it_and_leaves_the
 
 
 def viewer_with_the_tag_prompt_open_over_a_playing_video(qtbot, tmp_path):
-    """The viewer on a drive with a library, its one 30 s clip playing forwards at 1x, unturned and unmuted, with `t`'s tag prompt open."""
+    """The viewer on a drive with a library, its one 30 s clip playing forwards at 1x, unturned and unmuted, with
+    `t`'s tag prompt open."""
     drive, folder = drive_with_a_tag_library_holding_one_clip(tmp_path, duration=30)
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     make_surface_ready(viewer)
