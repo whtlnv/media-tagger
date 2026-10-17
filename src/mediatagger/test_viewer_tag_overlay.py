@@ -346,3 +346,19 @@ def test_a_file_with_twelve_tags_shows_all_twelve_each_on_its_own_line_with_its_
     assert tag_overlay.text().splitlines() == twelve
     assert tag_overlay.size().expandedTo(tag_overlay.sizeHint()) == tag_overlay.size()
     assert viewer.rect().contains(frame_in(viewer, tag_overlay))
+
+
+def test_with_the_info_overlay_and_the_read_only_banner_showing_a_three_tag_column_overlaps_neither(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    library = Library.open(drive)
+    library.enter(folder, "zoo")
+    library.enter(folder / "IMG_1.png", "apple beach")
+    with made_read_only(drive):
+        viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    qtbot.keyClick(viewer, Qt.Key.Key_I)
+
+    column = [frame_in(viewer, shown_label_reading(viewer, text)) for text in ("apple\nbeach", "zoo")]
+    assert viewer.info.isVisible() and viewer.read_only_banner.isVisible()
+    for frame in column:
+        assert not frame.intersects(frame_in(viewer, viewer.info))
+        assert not frame.intersects(frame_in(viewer, viewer.read_only_banner))

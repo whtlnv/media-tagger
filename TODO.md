@@ -23,7 +23,7 @@
 - [x] In the viewer's tag column, an inherited tag's line is drawn dimmer than an own tag's line
 - [x] In the viewer, moving with `Space` from a file with three tags to a file with one shows a single line in the tag overlay
 - [x] In the viewer, a file with twelve tags shows all twelve, each on its own line with its whole text
-- [ ] With the info overlay and the read-only banner showing, a three-tag column in the tag overlay overlaps neither
+- [x] With the info overlay and the read-only banner showing, a three-tag column in the tag overlay overlaps neither
 - [ ] In the grid, the status bar still shows the cursor tile's tags side by side on one line
 - [ ] Running the shipped `mediatagger <folder>` command on a folder whose first file is tagged `beach sunset` shows `beach` above `sunset` in the viewer's tag overlay
 - [ ] Acceptance: a screenshot of `mediatagger <folder>` on the Mac shows a file's own tags stacked in the top-right corner with its dimmed inherited tags below them
