@@ -300,8 +300,9 @@ def frame_stepping_viewer_on(qtbot, folder):
     return viewer
 
 
-def test_pressing_u_in_the_viewer_on_a_paused_video_steps_it_one_frame_forward_and_keeps_it_paused(qtbot, tmp_path):
-    make_clip(tmp_path / "IMG_1.mp4", duration=30)  # 10 fps, so one frame is 0.1 s
+def viewer_paused_at_10_seconds(qtbot, tmp_path):
+    """A viewer on a 10 fps clip (one frame is 0.1 s), paused with p at exactly 10 s."""
+    make_clip(tmp_path / "IMG_1.mp4", duration=30)
     make_image(tmp_path / "IMG_2.png", "red")
     viewer = frame_stepping_viewer_on(qtbot, tmp_path)
     engine = viewer.video_player.engine
@@ -309,6 +310,12 @@ def test_pressing_u_in_the_viewer_on_a_paused_video_steps_it_one_frame_forward_a
     qtbot.keyClick(viewer, Qt.Key.Key_P)
     with engine.prepare_and_wait_for_event("playback_restart", timeout=5):  # a step pressed before the seek lands is lost
         engine.seek(10, reference="absolute", precision="exact")
+    return viewer
+
+
+def test_pressing_u_in_the_viewer_on_a_paused_video_steps_it_one_frame_forward_and_keeps_it_paused(qtbot, tmp_path):
+    viewer = viewer_paused_at_10_seconds(qtbot, tmp_path)
+    engine = viewer.video_player.engine
 
     qtbot.keyClick(viewer, Qt.Key.Key_U)
 
@@ -331,14 +338,8 @@ def test_pressing_u_in_the_viewer_on_a_playing_video_leaves_it_playing(qtbot, tm
 
 
 def test_pressing_e_in_the_viewer_on_a_paused_video_steps_it_one_frame_back_and_keeps_it_paused(qtbot, tmp_path):
-    make_clip(tmp_path / "IMG_1.mp4", duration=30)  # 10 fps, so one frame is 0.1 s
-    make_image(tmp_path / "IMG_2.png", "red")
-    viewer = frame_stepping_viewer_on(qtbot, tmp_path)
+    viewer = viewer_paused_at_10_seconds(qtbot, tmp_path)
     engine = viewer.video_player.engine
-    wait_until_playing(engine)
-    qtbot.keyClick(viewer, Qt.Key.Key_P)
-    with engine.prepare_and_wait_for_event("playback_restart", timeout=5):  # a step pressed before the seek lands is lost
-        engine.seek(10, reference="absolute", precision="exact")
 
     qtbot.keyClick(viewer, Qt.Key.Key_E)
 
