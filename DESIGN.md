@@ -147,7 +147,7 @@ Results show under a `Search: <query>` breadcrumb, shown only with the results g
 | `.` / `,` | jump to the next / previous chapter (video) |
 | `l` | show / hide the chapter list (video): `↑`/`↓` highlight, `Enter` jump there, `Backspace` delete it, `Esc` close |
 | `o` | open a folder (picker), as if dropped |
-| mouse wheel | zoom in (up) / out (down) about the point under the mouse: 100 %–300 % in steps of 10 points (images and videos) |
+| mouse wheel | zoom in (up) / out (down) about the point under the mouse: 100 %–500 % in steps of 10 points (images and videos) |
 | `h` | show / hide the key cheat sheet |
 
 - Images fit to screen.
