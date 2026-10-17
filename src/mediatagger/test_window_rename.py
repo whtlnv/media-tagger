@@ -288,34 +288,19 @@ def test_enter_on_a_rename_whose_old_tag_no_item_has_in_the_windows_rename_promp
     assert tags_in_newest_backup(backup_root, drive, tmp_path / "restored", "Photos/IMG_1.png") == []
 
 
-def test_typing_b_as_the_first_word_in_the_windows_rename_prompt_on_a_drive_whose_library_has_beach_family_lists_beach_in_the_suggestion_popup(qtbot, tmp_path):
+@pytest.mark.parametrize("typed, suggested", [
+    pytest.param("b", ["beach"], id="first word"),
+    pytest.param("beach f", ["family"], id="second word"),
+    pytest.param("B", ["beach"], id="capital"),
+])
+def test_typing_in_the_windows_rename_prompt_on_a_drive_whose_library_has_beach_family_lists_the_matching_tag_in_a_suggestion_popup_styled_like_the_tag_prompts(qtbot, tmp_path, typed, suggested):
     window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
     prompt = opened_rename_prompt(qtbot, window, stack.currentWidget())
     qtbot.waitUntil(prompt.hasFocus)
 
-    suggestions = suggestion_popup_after_typing(qtbot, prompt, "b")
+    suggestions = suggestion_popup_after_typing(qtbot, prompt, typed)
 
-    assert listed(suggestions) == ["beach"]
-
-
-def test_typing_beach_f_as_the_second_word_in_the_windows_rename_prompt_on_a_drive_whose_library_has_beach_family_lists_family_in_the_suggestion_popup(qtbot, tmp_path):
-    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
-    prompt = opened_rename_prompt(qtbot, window, stack.currentWidget())
-    qtbot.waitUntil(prompt.hasFocus)
-
-    suggestions = suggestion_popup_after_typing(qtbot, prompt, "beach f")
-
-    assert listed(suggestions) == ["family"]
-
-
-def test_typing_capital_b_in_the_windows_rename_prompt_lists_beach_in_a_suggestion_popup_styled_like_the_tag_prompts(qtbot, tmp_path):
-    window, stack = window_showing_the_grid_of_a_folder_whose_second_item_is_tagged_beach_family(qtbot, tmp_path)
-    prompt = opened_rename_prompt(qtbot, window, stack.currentWidget())
-    qtbot.waitUntil(prompt.hasFocus)
-
-    suggestions = suggestion_popup_after_typing(qtbot, prompt, "B")
-
-    assert listed(suggestions) == ["beach"]
+    assert listed(suggestions) == suggested
     assert suggestions.styleSheet() == window.tag_prompt.input.completer().popup().styleSheet()
 
 
