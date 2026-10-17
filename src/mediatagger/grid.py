@@ -17,8 +17,6 @@ from mediatagger.thumbnails import format_duration, thumbnail_and_duration
 
 FOLDER_GLYPH = Icon.FOLDER
 
-FOLDER_BADGE = "📁"
-
 IMAGE_GLYPH = Icon.PICTURE
 
 VIDEO_GLYPH = Icon.VIDEO
@@ -200,7 +198,7 @@ class _TileDelegate(QStyledItemDelegate):
         if tile.missing_roots:
             _draw_backed_badge(painter, top_right, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{MISSING_ROOTS_BADGE}{tile.missing_roots}")
         if tile.kind is _Kind.FOLDER and tile.thumbnail is not None:  # its first image: marked so it can't pass for one
-            _draw_backed_badge(painter, picture_area, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft, FOLDER_BADGE)
+            _draw_backed_badge(painter, picture_area, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft, "", FOLDER_GLYPH)
 
 
 def _draw_cursor(painter, picture, name_band, color):
@@ -253,7 +251,12 @@ def _draw_backed_badge(painter, rect, flags, badge, icon=None):
     content = text_area
     if icon is not None:  # as tall as the text, just left of it
         side = painter.fontMetrics().height()
-        icon_rect = QRect(text_area.left() - side // 6 - side, text_area.top(), side, side)
+        if flags & Qt.AlignmentFlag.AlignRight:
+            icon_rect = QRect(text_area.left() - side // 6 - side, text_area.top(), side, side)
+        else:
+            icon_rect = QRect(inside.left(), text_area.top(), side, side)
+            inside = inside.adjusted(side + side // 6, 0, 0, 0)
+            text_area = painter.boundingRect(inside, flags, badge)
         content = text_area.united(icon_rect)
     backing = content.adjusted(-BADGE_PADDING, 0, BADGE_PADDING, 0)
     painter.setRenderHint(QPainter.RenderHint.Antialiasing)

@@ -7,7 +7,7 @@ from PySide6.QtGui import QColor, QDragMoveEvent, QFontMetrics, QGuiApplication,
 from PySide6.QtWidgets import QApplication, QStyle, QStyleOptionViewItem
 
 from mediatagger.folder import folder_entries
-from mediatagger.grid import FOLDER_BADGE, FOLDER_GLYPH, IMAGE_GLYPH, TAG_BADGE, TILE_ROLE, VIDEO_BADGE, VIDEO_GLYPH, Grid
+from mediatagger.grid import FOLDER_GLYPH, IMAGE_GLYPH, TAG_BADGE, TILE_ROLE, VIDEO_BADGE, VIDEO_GLYPH, Grid
 from mediatagger.icons import ICON_KEY, Icon
 from mediatagger.library import Library
 from mediatagger.test_folder import touch
@@ -439,13 +439,17 @@ def test_the_grid_cursor_outlines_the_tiles_picture_on_all_four_sides_over_the_p
     assert [selected.pixelColor(x, y).name() for x, y in edges] == [highlight.name()] * 4
 
 
-def test_a_folder_tile_showing_a_picture_carries_the_folder_badge_so_it_cannot_pass_for_an_image(qtbot, tmp_path):
+def test_a_folder_tile_showing_a_picture_carries_a_painted_white_folder_badge_top_left_so_it_cannot_pass_for_an_image(qtbot, tmp_path):
     (tmp_path / "beach").mkdir()
     grid = Grid(tmp_path)
     qtbot.addWidget(grid)
     give_red_thumbnail(grid, 0)
+    painter = tile_recording(grid, 0)
+    icon = painter.icon_rects[Icon.FOLDER]
 
-    assert FOLDER_BADGE in painted_texts(grid, 0)
+    assert (icon.right() < 50, icon.bottom() < 50) == (True, True)
+    assert opaque_colours(painter.icons[Icon.FOLDER]) == {QColor("white").rgba()}
+    assert not any("\U0001F4C1" in text for text in painter.texts)
 
 
 def painted_red_area(image):
