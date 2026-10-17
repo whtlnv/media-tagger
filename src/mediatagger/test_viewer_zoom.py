@@ -69,7 +69,7 @@ def test_scrolling_the_mouse_wheel_down_one_notch_over_a_zoomed_in_image_shows_i
     assert fitted < shown_height(viewer, centre.x()) < zoomed_in
 
 
-def test_scrolling_the_mouse_wheel_up_many_notches_over_an_image_stops_at_three_times_its_fitted_size(qtbot, tmp_path):
+def test_scrolling_the_mouse_wheel_up_many_notches_over_an_image_stops_at_five_times_its_fitted_size(qtbot, tmp_path):
     make_image(tmp_path / "IMG_1.png", "red", width=200, height=20)
     viewer = square_viewer_on(qtbot, tmp_path)
     centre = viewer.rect().center()
@@ -78,11 +78,11 @@ def test_scrolling_the_mouse_wheel_up_many_notches_over_an_image_stops_at_three_
         frame = viewer.grab().toImage()
         return sum(1 for y in range(250) if frame.pixelColor(centre.x(), y).red() > 128)
 
-    fitted = picture_rows()  # fitted 300x30 at y 135..164, so 3x is 90 rows at y 105..194
+    fitted = picture_rows()  # fitted 300x30 at y 135..164, so 5x is 150 rows at y 75..224
 
-    scroll(viewer, 20, at=centre)
+    scroll(viewer, 50, at=centre)
 
-    assert picture_rows() == 3 * fitted
+    assert picture_rows() == 5 * fitted
 
 
 def test_a_photo_larger_than_the_window_zoomed_in_to_300_percent_shows_its_own_fine_detail_rather_than_an_enlarged_fitted_copy(qtbot, tmp_path):
@@ -271,12 +271,12 @@ def test_scrolling_the_mouse_wheel_down_one_notch_over_a_zoomed_in_video_shows_i
     assert 0 < engine.video_zoom < zoomed_in
 
 
-def test_scrolling_the_mouse_wheel_up_many_notches_over_a_video_stops_at_three_times_its_fitted_size(qtbot, tmp_path):
+def test_scrolling_the_mouse_wheel_up_many_notches_over_a_video_stops_at_five_times_its_fitted_size(qtbot, tmp_path):
     viewer, engine = viewer_playing_a_clip_in(qtbot, tmp_path)
 
-    scroll(viewer, 30, at=viewer.rect().center())
+    scroll(viewer, 50, at=viewer.rect().center())
 
-    assert engine.video_zoom == pytest.approx(math.log2(3))
+    assert engine.video_zoom == pytest.approx(math.log2(5))
 
 
 def test_pressing_r_on_a_zoomed_in_video_turns_it_and_keeps_it_zoomed_in(qtbot, tmp_path):

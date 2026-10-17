@@ -6,11 +6,11 @@ from mediatagger.image_fit import fitted_rect
 
 _WHEEL_NOTCH = 120  # angleDelta units per mouse-wheel notch
 _ZOOM_STEP = 0.1  # of the fitted size per notch
-_MAX_ZOOM = 3  # times the fitted size
+_MAX_ZOOM = 5  # times the fitted size
 
 
 class Zoom:
-    """How far the viewer's picture is zoomed in from its fitted size (level 1 is fitted, 3 the most) and where it is
+    """How far the viewer's picture is zoomed in from its fitted size (level 1 is fitted, 5 the most) and where it is
     panned: pan is the shown picture's centre from the window's centre, in fractions of the shown picture's size —
     the units of mpv's video-pan-x/y, so a video can be zoomed the same way."""
 
