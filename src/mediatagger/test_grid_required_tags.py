@@ -66,7 +66,8 @@ def test_a_grid_with_no_required_roots_or_no_library_has_no_missing_badge(qtbot,
 
 class PlacementRecordingPainter(QPainter):
     """Records where each text lands: the rectangle it takes up inside the one it was drawn into. An icon painted just
-    before a text joins it, as `RecordingPainter` reads them: a tag badge lands as `<tag>2`, icon and number."""
+    before a text drawn into a rectangle around it joins that text, as `RecordingPainter` reads them: a tag badge lands
+    as `<tag>2`, icon and number together."""
 
     def __init__(self, device):
         super().__init__(device)
@@ -81,6 +82,8 @@ class PlacementRecordingPainter(QPainter):
     def drawText(self, *args):
         if isinstance(args[0], QRect) and len(args) == 3:
             (icon, icon_rect), self._icon = self._icon, ("", QRect())
+            if not args[0].contains(icon_rect):  # not this text's icon
+                icon, icon_rect = "", QRect()
             self.placed[icon + args[2]] = self.boundingRect(*args).united(icon_rect)
         super().drawText(*args)
 

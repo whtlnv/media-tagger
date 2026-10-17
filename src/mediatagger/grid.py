@@ -15,7 +15,9 @@ from mediatagger.icons import Icon, draw_icon
 from mediatagger.thumbnail_cache import ThumbnailCache
 from mediatagger.thumbnails import format_duration, thumbnail_and_duration
 
-FOLDER_GLYPH = "📁"
+FOLDER_GLYPH = Icon.FOLDER
+
+FOLDER_BADGE = "📁"
 
 IMAGE_GLYPH = "🖼"
 
@@ -198,7 +200,7 @@ class _TileDelegate(QStyledItemDelegate):
         if tile.missing_roots:
             _draw_backed_badge(painter, top_right, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, f"{MISSING_ROOTS_BADGE}{tile.missing_roots}")
         if tile.kind is _Kind.FOLDER and tile.thumbnail is not None:  # its first image: marked so it can't pass for one
-            _draw_backed_badge(painter, picture_area, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft, FOLDER_GLYPH)
+            _draw_backed_badge(painter, picture_area, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft, FOLDER_BADGE)
 
 
 def _draw_cursor(painter, picture, name_band, color):
@@ -225,6 +227,12 @@ def _tile_layout(cell, line_height):
 
 def _draw_glyph(painter, area, glyph):
     """Large enough to read across the room: about a third of the picture area's height."""
+    if isinstance(glyph, Icon):
+        side = max(12, area.height() // 3)
+        square = QRect(0, 0, side, side)
+        square.moveCenter(area.center())
+        draw_icon(painter, square, glyph, painter.pen().color())
+        return
     painter.save()
     font = painter.font()
     font.setPixelSize(max(12, area.height() // 3))

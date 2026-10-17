@@ -13,6 +13,7 @@ ICON_KEY = "icon"  # an icon's image carries its name under this key
 class Icon(StrEnum):
     TAG = "<tag>"
     STOPWATCH = "<stopwatch>"
+    FOLDER = "<folder>"
 
 
 def draw_icon(painter, rect, icon, color):
@@ -66,4 +67,19 @@ def _paint_stopwatch(painter, s, color):
     painter.drawLine(centre, QPointF(0.66 * s, 0.57 * s))
 
 
-_PAINTS = {Icon.TAG: _paint_tag, Icon.STOPWATCH: _paint_stopwatch}
+def _paint_folder(painter, s, color):
+    """A folder with its tab top-left."""
+    folder = QPainterPath()
+    folder.moveTo(0.05 * s, 0.2 * s)
+    folder.lineTo(0.4 * s, 0.2 * s)
+    folder.lineTo(0.48 * s, 0.3 * s)
+    folder.lineTo(0.95 * s, 0.3 * s)
+    folder.lineTo(0.95 * s, 0.82 * s)
+    folder.lineTo(0.05 * s, 0.82 * s)
+    folder.closeSubpath()
+    painter.setPen(Qt.PenStyle.NoPen)
+    painter.setBrush(color)
+    painter.drawPath(folder)
+
+
+_PAINTS = {Icon.TAG: _paint_tag, Icon.STOPWATCH: _paint_stopwatch, Icon.FOLDER: _paint_folder}

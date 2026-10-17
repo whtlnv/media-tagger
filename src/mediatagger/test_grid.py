@@ -7,7 +7,7 @@ from PySide6.QtGui import QColor, QDragMoveEvent, QFontMetrics, QGuiApplication,
 from PySide6.QtWidgets import QApplication, QStyle, QStyleOptionViewItem
 
 from mediatagger.folder import folder_entries
-from mediatagger.grid import FOLDER_GLYPH, IMAGE_GLYPH, TAG_BADGE, TILE_ROLE, VIDEO_BADGE, VIDEO_GLYPH, Grid
+from mediatagger.grid import FOLDER_BADGE, FOLDER_GLYPH, IMAGE_GLYPH, TAG_BADGE, TILE_ROLE, VIDEO_BADGE, VIDEO_GLYPH, Grid
 from mediatagger.icons import ICON_KEY, Icon
 from mediatagger.library import Library
 from mediatagger.test_folder import touch
@@ -37,26 +37,29 @@ def shown_two_tile_grid(qtbot, tmp_path, width):
 
 class RecordingPainter(QPainter):
     """Records the texts drawn and the icons painted. An icon reads as its name (`Icon.TAG` is `<tag>`), joined to the
-    text drawn right after it: a tag badge reads `<tag>3`."""
+    text drawn next into a rectangle around it: a tag badge reads `<tag>3`."""
 
     def __init__(self, device):
         super().__init__(device)
         self.texts = []
         self.icons = {}
+        self.icon_rects = {}
         self._icon = ""
 
     def drawImage(self, *args):
         name = next((arg.text(ICON_KEY) for arg in args if isinstance(arg, QImage) and arg.text(ICON_KEY)), "")
         if name:
             self.icons[name] = next(arg for arg in args if isinstance(arg, QImage))
+            self.icon_rects[name] = args[0]
             self._flush_icon()
             self._icon = name
         super().drawImage(*args)
 
     def drawText(self, *args):
         texts = [arg for arg in args if isinstance(arg, str)]
-        if texts:
+        if texts and self._icon and isinstance(args[0], QRect) and args[0].contains(self.icon_rects[self._icon]):
             texts[0], self._icon = self._icon + texts[0], ""
+        self._flush_icon()
         self.texts.extend(texts)
         super().drawText(*args)
 
@@ -288,6 +291,17 @@ def test_in_the_grid_pressing_minus_repeatedly_stops_shrinking_the_tiles_at_abou
     assert abs(tile_width(grid) - 100) <= 20
 
 
+def test_a_folder_tile_with_no_picture_paints_a_large_folder_icon_centred_in_its_picture_and_no_folder_character(qtbot, tmp_path):
+    (tmp_path / "day1").mkdir()
+    grid = Grid(tmp_path)
+    qtbot.addWidget(grid)
+    painter = tile_recording(grid, 0)
+    icon = painter.icon_rects[Icon.FOLDER]
+
+    assert (abs(icon.center().x() - 100) <= 1, icon.height() >= 40) == (True, True)
+    assert not any("\U0001F4C1" in text for text in painter.texts)
+
+
 def test_repainting_the_grid_after_its_files_are_deleted_from_disk_still_paints_their_tiles_without_reading_them(qtbot, tmp_path):
     (tmp_path / "day1").mkdir()
     touch(tmp_path, "clip.mp4", "photo.jpg")
@@ -409,7 +423,7 @@ def test_a_folder_tile_showing_a_picture_carries_the_folder_badge_so_it_cannot_p
     qtbot.addWidget(grid)
     give_red_thumbnail(grid, 0)
 
-    assert FOLDER_GLYPH in painted_texts(grid, 0)
+    assert FOLDER_BADGE in painted_texts(grid, 0)
 
 
 def painted_red_area(image):
