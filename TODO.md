@@ -3,7 +3,7 @@
 ## Phase 22 — Frame step on a paused video
 
 - [x] Pressing `u` on a paused video shows its next frame (its position moves forward by one frame and it stays paused)
-- [ ] Pressing `u` on a playing video does not step a frame (it keeps playing, its position not jumped)
+- [x] Pressing `u` on a playing video does not step a frame (it keeps playing, its position not jumped)
 - [ ] Pressing `e` on a paused video shows its previous frame (its position moves back by one frame and it stays paused)
 - [ ] Pressing `e` on a playing video does not step a frame (it keeps playing, its position not jumped)
 - [ ] After `u` on a paused video, the progress bar shows and reads the stepped position

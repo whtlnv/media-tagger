@@ -314,3 +314,17 @@ def test_pressing_u_in_the_viewer_on_a_paused_video_steps_it_one_frame_forward_a
 
     engine.wait_for_property("time-pos", lambda time_pos: time_pos == pytest.approx(10.1, abs=0.01), timeout=5)
     assert engine.pause is True
+
+
+def test_pressing_u_in_the_viewer_on_a_playing_video_leaves_it_playing(qtbot, tmp_path):
+    make_clip(tmp_path / "IMG_1.mp4", duration=30)
+    make_image(tmp_path / "IMG_2.png", "red")
+    viewer = frame_stepping_viewer_on(qtbot, tmp_path)
+    engine = viewer.video_player.engine
+    wait_until_playing(engine)
+    before = engine.time_pos
+
+    qtbot.keyClick(viewer, Qt.Key.Key_U)
+
+    engine.wait_for_property("time-pos", lambda time_pos: time_pos > before + 0.5, timeout=5)
+    assert engine.pause is False
