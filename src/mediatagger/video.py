@@ -72,17 +72,21 @@ class VideoPlayer:
             return
         if key in _FRAME_STEPS:
             if self.engine.pause:  # stepping a playing video would pause it
-                steps = _FRAME_STEPS_BACKWARDS if self.engine.play_direction == "backward" else _FRAME_STEPS
+                steps = _FRAME_STEPS_BACKWARDS if self.backwards else _FRAME_STEPS
                 self._step_frame(steps[key])
             return
         if key == "b":
-            self._play_towards("forward" if self.engine.play_direction == "backward" else "backward")
+            self._play_towards("forward" if self.backwards else "backward")
             return
         if key == "m":
             self.engine.mute = not self.engine.mute
             return
         if key in ("p", "Enter"):
             self.engine.pause = not self.engine.pause
+
+    @property
+    def backwards(self):
+        return self.engine.play_direction == "backward"
 
     def seek_to(self, seconds):
         self._seek(seconds, reference="absolute")

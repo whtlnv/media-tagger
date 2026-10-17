@@ -63,7 +63,7 @@ class Chapters(QObject):
                 self.list.show_moments(self._moments())
             return True
         if event.key() in _JUMPS:
-            jump, backwards = _JUMPS[event.key()], self._viewer.video_player.engine.play_direction == "backward"
+            jump, backwards = _JUMPS[event.key()], self._viewer.video_player.backwards
             self._jump(lambda moments, now: jump(moments, now, backwards))
             return True
         return False
