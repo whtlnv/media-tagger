@@ -23,7 +23,7 @@ From the same Pi notes.
 
 From the same Pi notes ("next and previous frames using 'p' and 'y' if available, if not maybe 'e' and 'u'"; `p` is play/pause).
 
-- With a video paused, `e` shows the next frame and `u` the previous one. While playing they do nothing. The progress bar follows. Added to DESIGN.md's viewer table and the cheat sheet; typed into the tag prompt they type letters.
+- With a video paused, `u` shows the next frame and `e` the previous one (Dvorak: `e` sits left of `u`). While playing they do nothing. The progress bar follows. Added to DESIGN.md's viewer table and the cheat sheet; typed into the tag prompt they type letters.
 
 ## Phase 23 — `r` turns images too
 
