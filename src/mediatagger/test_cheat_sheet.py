@@ -27,17 +27,12 @@ def test_a_screens_cheat_sheet_lists_exactly_the_keys_of_designs_table_for_that_
     assert "h" in keys
 
 
-def test_the_grid_cheat_sheet_and_designs_grid_table_both_list_n_for_renaming_a_tag():
-    assert dict(GRID_KEYS)["n"] == "rename a tag"
-    assert dict(design_table_rows("Grid"))["n"] == "rename a tag"
-
-
-def test_the_viewer_cheat_sheet_and_designs_viewer_table_both_list_1_to_9_as_jumping_in_ninths_and_0_as_back_to_normal():
-    for rows in (VIEWER_KEYS, design_table_rows("Viewer")):
-        assert dict(rows)["1–9"] == "jump through in ninths (1 = start)"
-        assert dict(rows)["0"] == "back to normal: zoom, turn, speed, forwards"
-
-
-def test_the_viewer_cheat_sheet_and_designs_viewer_table_both_list_b_as_playing_backwards_or_forwards():
-    for rows in (VIEWER_KEYS, design_table_rows("Viewer")):
-        assert dict(rows)["b"] == "play backwards / forwards"
+@pytest.mark.parametrize(("sheet", "screen", "key", "meaning"), [
+    pytest.param(GRID_KEYS, "Grid", "n", "rename a tag", id="grid n renames a tag"),
+    pytest.param(VIEWER_KEYS, "Viewer", "1–9", "jump through in ninths (1 = start)", id="viewer 1-9 jumps in ninths"),
+    pytest.param(VIEWER_KEYS, "Viewer", "0", "back to normal: zoom, turn, speed, forwards", id="viewer 0 is back to normal"),
+    pytest.param(VIEWER_KEYS, "Viewer", "b", "play backwards / forwards", id="viewer b plays backwards or forwards"),
+])
+def test_a_screens_cheat_sheet_and_designs_table_for_that_screen_both_give_a_key_the_same_meaning(sheet, screen, key, meaning):
+    for rows in (sheet, design_table_rows(screen)):
+        assert dict(rows)[key] == meaning
