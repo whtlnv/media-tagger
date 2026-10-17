@@ -58,3 +58,12 @@ def test_pressing_0_in_the_viewer_on_a_video_playing_backwards_plays_it_forwards
     qtbot.keyClick(viewer, Qt.Key.Key_0)
 
     engine.wait_for_property("time-pos", lambda pos: pos is not None and pos > 15, timeout=5)
+
+
+def test_a_video_playing_backwards_that_reaches_its_start_goes_on_playing_backwards_from_near_its_end(qtbot, tmp_path):
+    viewer, engine = viewer_playing_a_clip_in(qtbot, tmp_path)
+    viewer.video_player.seek_to(1)
+    qtbot.keyClick(viewer, Qt.Key.Key_B)
+
+    engine.wait_for_property("time-pos", lambda pos: pos is not None and pos > 25, timeout=5)
+    engine.wait_for_property("time-pos", lambda pos: pos is not None and pos < 29, timeout=5)
