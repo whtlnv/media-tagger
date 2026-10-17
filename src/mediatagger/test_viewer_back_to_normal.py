@@ -82,3 +82,12 @@ def test_pressing_0_on_a_video_zoomed_in_off_its_centre_shows_it_fitted_and_cent
     qtbot.keyClick(viewer, Qt.Key.Key_0)
 
     assert (engine.video_zoom, engine.video_pan_x, engine.video_pan_y) == (0, 0, 0)
+
+
+def test_pressing_0_on_a_video_turned_once_shows_it_unturned(qtbot, tmp_path):
+    viewer, engine = viewer_playing_a_clip_in(qtbot, tmp_path)
+    qtbot.keyClick(viewer, Qt.Key.Key_R)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_0)
+
+    assert engine.video_rotate == 0

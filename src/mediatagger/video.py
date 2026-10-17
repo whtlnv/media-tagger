@@ -51,7 +51,8 @@ class VideoPlayer:
         if key == "Down":
             self._seek(-10)
             return
-        if key == "0":
+        if key == "0":  # back to normal: unturned, at 1x
+            self.engine.video_rotate = 0
             self.engine.speed = 1
             return
         if key.isdigit():  # 1-9 jump to the start of the video's first to ninth ninth
