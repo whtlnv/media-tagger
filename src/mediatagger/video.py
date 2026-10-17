@@ -72,7 +72,7 @@ class VideoPlayer:
                 self._step_frame(_FRAME_STEPS[key])
             return
         if key == "b":
-            self.engine.play_direction = "backward"
+            self.engine.play_direction = "forward" if self.engine.play_direction == "backward" else "backward"
             return
         if key == "m":
             self.engine.mute = not self.engine.mute
