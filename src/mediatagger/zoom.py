@@ -2,7 +2,7 @@ import math
 
 from PySide6.QtCore import QPointF, QRectF, QSize
 
-from mediatagger.image_fit import fitted_rect
+from mediatagger.image_fit import fitted_rect, turned
 
 _WHEEL_NOTCH = 120  # angleDelta units per mouse-wheel notch
 _ZOOM_STEP = 0.1  # of the fitted size per notch
@@ -70,4 +70,4 @@ def _within(edge, first, last):
 def video_fitted(engine, window):
     """Where the video an mpv engine plays is fitted in window, turned as mpv turns it."""
     size = QSize(engine.dwidth or 0, engine.dheight or 0)
-    return fitted_rect(size.transposed() if engine.video_rotate % 180 else size, window)
+    return fitted_rect(turned(size, engine.video_rotate), window)

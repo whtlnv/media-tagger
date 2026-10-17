@@ -8,11 +8,16 @@ def fitted_rect(size, bounds):
     return target
 
 
+def turned(size, turn):
+    """size as it lies turned turn degrees clockwise (a multiple of 90): a quarter turn swaps its sides."""
+    return size.transposed() if turn % 180 else size
+
+
 def draw_turned(painter, image, target, turn):
     """Draw image turned turn degrees clockwise (a multiple of 90) so that it fills target, without copying it turned."""
     painter.translate(target.center())
     painter.rotate(turn)
-    upright = QRectF(QPointF(), target.size().transposed() if turn % 180 else target.size())
+    upright = QRectF(QPointF(), turned(target.size(), turn))
     upright.moveCenter(QPointF())
     painter.drawImage(upright, image)
 

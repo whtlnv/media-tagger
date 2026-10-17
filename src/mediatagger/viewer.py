@@ -8,7 +8,7 @@ from mediatagger.chapters import Chapters
 from mediatagger.drive_session import DriveSession
 from mediatagger.folder import is_openable, is_video
 from mediatagger.gui_thread_gc import collect_garbage_on_the_gui_thread
-from mediatagger.image_fit import decode_fitted, draw_turned, fitted_rect
+from mediatagger.image_fit import decode_fitted, draw_turned, fitted_rect, turned
 from mediatagger.mpv_surface import MpvSurface
 from mediatagger.status_bar import CORNER_MARGIN, StatusBar, TagOverlay, centre_in, overlay_label, pin_top_centre
 from mediatagger.slideshow import Slideshow
@@ -100,8 +100,7 @@ class Viewer(QWidget):
 
     def _image_fitted(self):
         """Where the current image, turned as r turned it, is fitted in the viewer."""
-        size = self._current_image().size()
-        return fitted_rect(size.transposed() if self._turn % 180 else size, self.rect())
+        return fitted_rect(turned(self._current_image().size(), self._turn), self.rect())
 
     def wheelEvent(self, event):
         if self.slideshow is None:
@@ -250,8 +249,7 @@ class Viewer(QWidget):
     def _current_image(self):
         """The current item decoded to fit the window as it is turned, sharp enough for the zoom: once per item, window
         size, detail and whether it lies on its side."""
-        bounds = self.size() * self.zoom.detail()
-        key = (self.slideshow.current, bounds.transposed() if self._turn % 180 else bounds)
+        key = (self.slideshow.current, turned(self.size() * self.zoom.detail(), self._turn))
         if self._decoded_key != key:
             self._decoded_key, self._decoded = key, decode_fitted(*key)
         return self._decoded
