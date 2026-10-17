@@ -2,14 +2,8 @@
 
 ## Out of Scope
 
-- **[src/mediatagger/test_main.py:47] Command scripts still each write out their own ending and staging** (added: 2026-10-17)
-  Left by the Phase 26 refactor loop, stopped at the orchestrator's request: the `QApplication.closeAllWindows()` / `QApplication.quit()` ending is written out in about 15 command scripts across the test_main*.py files, `ENTER_A_TAG…_ON_A_DRIVE_SCRIPT` in test_main_quitting.py differs in shape from the shared `DEFINE_SHOWN_WINDOW`, about 15 script constants have one blank line before them instead of two, and test_main.py sits at its 500-line budget. Hoist a shared ending when these files are next touched for behaviour.
-
-- **[src/mediatagger/test_main.py:654] The three Qt-warning tests could fold into one parameterized test** (added: 2026-10-17)
-  transformation broke the suite: drive/test_run.py::test_run_with_a_real_python3_starts_the_real_app_from_the_drive_app_and_the_drive_gains_no_files — the load-sensitive 8 s drive-run test (see the timing-flake entry) failed at load ~6 while the folded table itself passed 3/3; retry the fold (by category name, extra `QT_LOGGING_RULES`, expected `warnings=`) on an idle machine.
-
-- **[src/mediatagger/test_main.py:640] Qt-warning tests could move to their own test_main_warnings.py** (added: 2026-10-17)
-  transformation broke the suite: test_main_quitting.py::test_pressing_esc_to_quit_the_mediatagger_command_from_a_grid_whose_thumbnails_are_still_generating_ends_the_process_within_3_s — three gate runs failed only on the load-sensitive 3 s quit tests (see the timing-flake entry), never on the moved tests; retry the move on an idle machine to bring test_main.py (673 lines) toward its 500-line budget.
+- **[src/mediatagger/test_main.py:54] Command scripts still each write out their own ending and blank-line spacing** (added: 2026-10-17; rescoped 2026-10-17)
+  Left by the Phase 26 refactor loop, stopped at the orchestrator's request: the `QApplication.closeAllWindows()` / `QApplication.quit()` ending is written out in about 19 command scripts across the test_main*.py files, about 30 script constants have one blank line before them instead of two, and test_main.py (507 lines) is past its 500-line budget. Hoist a shared ending when these files are next touched for behaviour.
 
 - **[src/mediatagger/test_search.py:181] Test imports test_library's private `_create_schema_version_1_library` and `_read_only_drive`** (added: 2026-10-16; location corrected 2026-10-17)
   The read-only schema-version-1 search test reaches two private helpers of `test_library.py`; no public equivalent exists (`made_read_only` locks only the drive root, not `.mediatagger` and `tags.db`, so the upgrade would still write), and making them public needs a rename in `test_library.py`, outside the 29bbecd..HEAD range.
@@ -17,16 +11,16 @@
 - **[src/mediatagger/rename_prompt.py:_RecallingInput] The rename input's ↑/↓ recall repeats the search bar's** (added: 2026-10-16)
   `_RecallingInput.keyPressEvent` re-implements `SearchBar.recall_older_search`/`recall_newer_search` (step back through a remembered list, empty past the newest) over `remembered_renames` instead of `remembered_searches`. Unifying them needs a new shared recall helper that `search_bar.py`, outside the 29bbecd..HEAD range, would adopt; hoist it when the search bar is next touched.
 
-- **[src/mediatagger/chapters.py:Chapters] Chapters reaches into six of the viewer's attributes** (added: 2026-10-15; description corrected 2026-10-17)
-  To stay out of `viewer.py` (279 lines, past its 270-line budget) `Chapters` filters the viewer's keys and uses its `slideshow`, `session`, `status_bar`, `tag_prompt`, `video_player` and `progress_bar` directly, and the viewer calls `chapters.read` from `_show_tag_overlay` so moments are re-read whenever tags are. A narrower seam (the viewer handing Chapters the current item, library and player) would decouple them, but needs room in `viewer.py`.
+- **[src/mediatagger/chapters.py:Chapters] Chapters reaches into six of the viewer's attributes** (added: 2026-10-15; description corrected 2026-10-17; location corrected 2026-10-17)
+  To stay out of `viewer.py` (290 lines, past its 270-line budget) `Chapters` filters the viewer's keys and uses its `slideshow`, `session`, `status_bar`, `tag_prompt`, `video_player` and `progress_bar` directly, and the viewer calls `chapters.read` from `_show_tag_overlay` so moments are re-read whenever tags are. A narrower seam (the viewer handing Chapters the current item, library and player) would decouple them, but needs room in `viewer.py`.
 
 - **[src/mediatagger/library.py:_set_item_tags] Moments an older build leaves behind stay in `tags.db` until that video's tags are next saved** (added: 2026-10-15)
   A build from before Phase 18 run on a schema-3 drive removes a tag without its `moments` rows. Reads join through `item_tags`, so those rows never show, and the next save of that video's tags in this build deletes them before anything is added (so a tag added back never revives them). Only a few stray rows on disk; a sweep on open would remove them sooner, at the cost of a write on every open.
 
-- **[src/mediatagger/viewer.py:75] A zoom's pan is clamped only when the wheel turns or `r` turns a photo, not when the window resizes or `r` turns a video** (added: 2026-10-15; rescoped 2026-10-17)
-  `Zoom.pan` is kept in fractions of the shown picture, so a zoom survives `f`/a resize/`r` centred where it was. `r` on a photo now re-runs the no-black-edge clamp through `Zoom.keep_covering` (`viewer.py:162`), but `resizeEvent` does not, nor does `r` on a video (passed to `VideoPlayer.press`, which only turns `video_rotate`), so a zoomed picture panned to an edge can show black there after a resize or a video's turn until the next wheel turn. Fixing it needs the viewer to call `Zoom.keep_covering` from `resizeEvent` and after a video's `r` (with `video_fitted` and `Zoom.apply_to`), lines `viewer.py` (279 lines, past its 270-line budget) has no room for.
+- **[src/mediatagger/viewer.py:75] A zoom's pan is clamped only when the wheel turns or `r` turns a photo, not when the window resizes or `r` turns a video** (added: 2026-10-15; rescoped 2026-10-17; location corrected 2026-10-17)
+  `Zoom.pan` is kept in fractions of the shown picture, so a zoom survives `f`/a resize/`r` centred where it was. `r` on a photo now re-runs the no-black-edge clamp through `Zoom.keep_covering` (`viewer.py:165`), but `resizeEvent` does not, nor does `r` on a video (passed to `VideoPlayer.press`, which only turns `video_rotate`), so a zoomed picture panned to an edge can show black there after a resize or a video's turn until the next wheel turn. Fixing it needs the viewer to call `Zoom.keep_covering` from `resizeEvent` and after a video's `r` (with `video_fitted` and `Zoom.apply_to`), lines `viewer.py` (290 lines, past its 270-line budget) has no room for.
 
-- **[src/mediatagger/viewer.py:241] Zooming a photo decodes it at up to 5x the window** (added: 2026-10-15; description corrected 2026-10-16)
+- **[src/mediatagger/viewer.py:260] Zooming a photo decodes it at up to 5x the window** (added: 2026-10-15; description corrected 2026-10-16; location corrected 2026-10-17)
   `Zoom.detail()` makes `_current_image` decode once more, no larger than five times the window (`_MAX_ZOOM`) (and never larger than the photo), on the first notch past 100 %. On a 2560x1080 screen that is a 12 MP photo decoded whole (~48 MB of RGB32), one extra full decode; unmeasured on the Pi. If it lags there, decode at the window size times the current level only after the wheel settles.
 
 - **[src/mediatagger/test_video_controls.py:335] Window staging (`Window(…, player_options=SILENT)`, `addWidget`, `show_exposed`) is repeated with no shared helper** (added: 2026-10-14; location corrected 2026-10-14; location corrected 2026-10-16; location corrected 2026-10-16)
@@ -44,7 +38,7 @@
 - **[src/mediatagger/backup.py:51] `_back_up` reads the private `Library._tags_db`** (added: 2026-10-10; rescoped 2026-10-10)
   The database copy goes through `library._tags_db`, the path `library.tags_db_path` lays out; the fix is for `Library` to expose its database path publicly (as it now does its drive root through `Library.root`), which needs a change in `library.py`, outside the e41159b..HEAD range.
 
-- **[src/mediatagger/test_main.py:53] Standalone executable test asserts only that the process is still alive** (added: 2026-10-08)
+- **[src/mediatagger/test_main.py:82] Standalone executable test asserts only that the process is still alive** (added: 2026-10-08; location corrected 2026-10-17)
   `assert still_running` checks the process did not exit but not the "viewer open" its name promises; observing the viewer of an independently launched `mediatagger` process needs a production-side report hook, which this pass may not add.
 
 - **[src/mediatagger/thumbnail_cache.py:generate_through_cache] A video whose frame fails is stored as a plain failure, losing its duration** (added: 2026-10-11)
@@ -83,8 +77,8 @@
 - **[src/mediatagger/grid.py:Grid.show_new_tags] Every tag save re-reads the whole grid's tag counts and marks** (added: 2026-10-15; description corrected 2026-10-15)
   So that a change one item's tags make to what others inherit shows at once, each save from the tag prompt re-reads the shown folder's tag counts, moment counts, own tags and inherited tags (four bulk queries), or for results every tagged item; with required roots a 5,000-file folder opens in ~70 ms on the Mac against ~60 ms without them. Unmeasured on the Pi; if saving a tag lags there in a big folder, update only the saved item's tile when it is a file.
 
-- **[src/mediatagger/window.py:Window._open_tile] A slideshow opened from a filtered grid (or from results) drops the info overlay's state** (added: 2026-10-15; description corrected 2026-10-17)
-  `viewer.open(path)` builds the folder's slideshow (carrying `i`'s overlay over), then the window replaces it with `Slideshow(shown, …)`, whose overlay starts off — so with `i` on, opening a file from a filtered grid or from results shows no filename/position until `i` is pressed again (results did this before Phase 17). Passing the files to `Viewer.open` instead would fix it, but `viewer.py` is 279 lines, past its 270-line budget.
+- **[src/mediatagger/window.py:Window._open_tile] A slideshow opened from a filtered grid (or from results) drops the info overlay's state** (added: 2026-10-15; description corrected 2026-10-17; location corrected 2026-10-17)
+  `viewer.open(path)` builds the folder's slideshow (carrying `i`'s overlay over), then the window replaces it with `Slideshow(shown, …)`, whose overlay starts off — so with `i` on, opening a file from a filtered grid or from results shows no filename/position until `i` is pressed again (results did this before Phase 17). Passing the files to `Viewer.open` instead would fix it, but `viewer.py` is 290 lines, past its 270-line budget.
 
 - **[src/mediatagger/folder_thumbnails.py:FolderThumbnails.start] Background prefetch still generates thumbnails for files a filter hides** (added: 2026-10-15)
   A filtered grid never asks for a hidden tile's thumbnail, but the prefetch of the rest of the folder still generates them, so on the Pi a filtered big folder does the same background work as an unfiltered one. Harmless (they are cached for when the filter goes off); skip hidden files in the prefetch if it matters there.
