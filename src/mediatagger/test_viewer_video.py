@@ -291,13 +291,24 @@ def test_pressing_right_bracket_and_r_in_the_viewer_on_an_image_leaves_the_next_
     assert [engine.speed, engine.video_rotate] == [1, 0]
 
 
+FRAME_STEPPING = {**SILENT, "vo": "null"}  # mpv only finishes a frame step once the frame is drawn; offscreen has no GL, so draw to nothing
+
+
 def frame_stepping_viewer_on(qtbot, folder):
-    """mpv only finishes a frame step once the frame is drawn; offscreen has no GL to draw it, so mpv draws to nothing."""
-    viewer = Viewer(folder, player_options={**SILENT, "vo": "null"})
+    viewer = Viewer(folder, player_options=FRAME_STEPPING)
     qtbot.addWidget(viewer)
     show_exposed(qtbot, viewer)
     make_surface_ready(viewer)
     return viewer
+
+
+def pause_at_10_seconds(qtbot, viewer):
+    """Pause the viewer's playing video with p and put it at exactly 10 s."""
+    engine = viewer.video_player.engine
+    wait_until_playing(engine)
+    qtbot.keyClick(viewer, Qt.Key.Key_P)
+    with engine.prepare_and_wait_for_event("playback_restart", timeout=5):  # a step pressed before the seek lands is lost
+        engine.seek(10, reference="absolute", precision="exact")
 
 
 def viewer_paused_at_10_seconds(qtbot, tmp_path, rate=10):
@@ -305,11 +316,7 @@ def viewer_paused_at_10_seconds(qtbot, tmp_path, rate=10):
     make_clip(tmp_path / "IMG_1.mp4", duration=30, rate=rate)
     make_image(tmp_path / "IMG_2.png", "red")
     viewer = frame_stepping_viewer_on(qtbot, tmp_path)
-    engine = viewer.video_player.engine
-    wait_until_playing(engine)
-    qtbot.keyClick(viewer, Qt.Key.Key_P)
-    with engine.prepare_and_wait_for_event("playback_restart", timeout=5):  # a step pressed before the seek lands is lost
-        engine.seek(10, reference="absolute", precision="exact")
+    pause_at_10_seconds(qtbot, viewer)
     return viewer
 
 

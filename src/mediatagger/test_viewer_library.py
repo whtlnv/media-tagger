@@ -68,9 +68,9 @@ def app_package_on(drive):
     return drive / "mediatagger" / "app" / "mediatagger"
 
 
-def viewer_on_drives(qtbot, folder, drives, ask_to_create_library, app_location=APP_PACKAGE):
+def viewer_on_drives(qtbot, folder, drives, ask_to_create_library, app_location=APP_PACKAGE, player_options=SILENT):
     viewer = Viewer(
-        folder, player_options=SILENT, is_mount_point=lambda path: path in drives,
+        folder, player_options=player_options, is_mount_point=lambda path: path in drives,
         ask_to_create_library=ask_to_create_library, app_location=app_location,
     )
     qtbot.addWidget(viewer)
@@ -81,14 +81,14 @@ def viewer_on_drive(qtbot, folder, drive, ask_to_create_library, app_location=AP
     return viewer_on_drives(qtbot, folder, (drive,), ask_to_create_library, app_location)
 
 
-def shown_viewer_on_drives(qtbot, folder, drives, ask_to_create_library, app_location=APP_PACKAGE):
-    viewer = viewer_on_drives(qtbot, folder, drives, ask_to_create_library, app_location)
+def shown_viewer_on_drives(qtbot, folder, drives, ask_to_create_library, app_location=APP_PACKAGE, player_options=SILENT):
+    viewer = viewer_on_drives(qtbot, folder, drives, ask_to_create_library, app_location, player_options)
     show_exposed(qtbot, viewer)
     return viewer
 
 
-def shown_viewer_on_drive(qtbot, folder, drive, ask_to_create_library, app_location=APP_PACKAGE):
-    return shown_viewer_on_drives(qtbot, folder, (drive,), ask_to_create_library, app_location)
+def shown_viewer_on_drive(qtbot, folder, drive, ask_to_create_library, app_location=APP_PACKAGE, player_options=SILENT):
+    return shown_viewer_on_drives(qtbot, folder, (drive,), ask_to_create_library, app_location, player_options)
 
 
 def visible_tag_prompts(viewer):
