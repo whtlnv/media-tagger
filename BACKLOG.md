@@ -2,6 +2,9 @@
 
 ## Out of Scope
 
+- **[src/mediatagger/test_window.py:915] The window test file imports `window_on` from the cheat-sheet tests, closing an import cycle** (added: 2026-10-17)
+  The new `r`-in-the-window test imports `test_window_cheat_sheet.window_on`, which (with `test_window_state`, `test_window_search` and `test_window_rename`) imports `test_window`, so `test_window → test_window_cheat_sheet → test_window`. architectural: breaking it moves `window_on` out of `test_window_cheat_sheet.py` into `test_window.py` or a shared test helper module.
+
 - **[src/mediatagger/test_window_search.py:487] Test imports test_library's private `_create_schema_version_1_library` and `_read_only_drive`** (added: 2026-10-16)
   The read-only schema-version-1 search test reaches two private helpers of `test_library.py`; no public equivalent exists (`made_read_only` locks only the drive root, not `.mediatagger` and `tags.db`, so the upgrade would still write), and making them public needs a rename in `test_library.py`, outside the 29bbecd..HEAD range.
 
