@@ -2,6 +2,9 @@
 
 ## Out of Scope
 
+- **[src/mediatagger/icons.py:_paint_picture] The painted icons repeat their fill set-up and the picture/video frame** (added: 2026-10-17)
+  Left LOW by the Phase 27 refactor loop (stopped after 2 passes): four paint functions each write `setPen(NoPen)` / `setBrush(color)` / `drawPath`, and `_paint_picture` and `_paint_video` draw the same frame rectangle at the same pen width; in `grid.py` the badge's icon-to-text gap `side // 6` is written twice. Fold them when another icon is added.
+
 - **[src/mediatagger/test_main.py:54] Command scripts still each write out their own ending and blank-line spacing** (added: 2026-10-17; rescoped 2026-10-17)
   Left by the Phase 26 refactor loop, stopped at the orchestrator's request: the `QApplication.closeAllWindows()` / `QApplication.quit()` ending is written out in about 19 command scripts across the test_main*.py files, about 30 script constants have one blank line before them instead of two, and test_main.py (507 lines) is past its 500-line budget. Hoist a shared ending when these files are next touched for behaviour.
 
