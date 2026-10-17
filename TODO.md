@@ -10,4 +10,4 @@
 - [x] A folder tile whose first image is its thumbnail shows a painted folder icon in its top-left badge, with no folder emoji character drawn
 - [x] A missing search result's tile shows a plain `?` at the centre of its picture area instead of `❓`
 - [x] No text the UI draws — tile badges and placeholders, cheat sheet, status bar messages, filter menu, chapter list, tag/rename/search prompts, video progress bar — contains a character outside DejaVu Sans's coverage
-- [ ] Acceptance: a screenshot of the shipped `mediatagger <folder>` grid on the Mac shows a tagged, chaptered video tile with painted tag and stopwatch icons beside their counts
+- [x] Acceptance: a screenshot of the shipped `mediatagger <folder>` grid on the Mac shows a tagged, chaptered video tile with painted tag and stopwatch icons beside their counts
