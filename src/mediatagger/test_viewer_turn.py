@@ -26,3 +26,15 @@ def test_pressing_r_on_a_landscape_image_in_a_square_viewer_shows_it_turned_cloc
     assert frame.pixelColor(150, 245) == QColor("red")  # clear of the status bar
     assert frame.pixelColor(60, 150) == QColor("black")
     assert frame.pixelColor(240, 150) == QColor("black")
+
+
+def test_pressing_r_twice_on_an_image_shows_it_upside_down(qtbot, tmp_path):
+    make_corner_marked_landscape(tmp_path / "IMG_1.png")
+    viewer = square_viewer_on(qtbot, tmp_path)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_R)
+    qtbot.keyClick(viewer, Qt.Key.Key_R)
+
+    frame = viewer.grab().toImage()  # upside down 200x100 fitted 300x150 at y 75..224, its blue corner at x 270..299, y 195..224
+    assert frame.pixelColor(285, 210) == QColor("blue")
+    assert frame.pixelColor(15, 90) == QColor("red")

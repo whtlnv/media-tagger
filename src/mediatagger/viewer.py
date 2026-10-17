@@ -45,7 +45,7 @@ class Viewer(QWidget):
         self.surface = None
         self._decoded_key = self._decoded = None
         self.zoom = Zoom()
-        self._turned = False
+        self._turn = 0  # degrees clockwise the current image is turned by r
         self.tag_prompt = TagPrompt(self, self.status_bar, on_close=self._show_tag_overlay)
         self.tag_overlay = TagOverlay(self)
         self.info = overlay_label("", self)
@@ -97,8 +97,8 @@ class Viewer(QWidget):
         if self.slideshow is None:
             return
         image = self._current_image()
-        if self._turned:
-            image = image.transformed(QTransform().rotate(90))
+        if self._turn:
+            image = image.transformed(QTransform().rotate(self._turn))
         painter.drawImage(self.zoom.shown(fitted_rect(image.size(), self.rect()), self.rect()), image)
 
     def wheelEvent(self, event):
@@ -157,7 +157,7 @@ class Viewer(QWidget):
         if self.tag_prompt.has_focus():
             return  # keys the open tag prompt ignores must not reach the slideshow or video
         if event.key() == Qt.Key.Key_R and not is_video(self.slideshow.current):
-            self._turned = True
+            self._turn = (self._turn + 90) % 360
             self.update()
             return
         if event.key() in _VIDEO_KEYS:
