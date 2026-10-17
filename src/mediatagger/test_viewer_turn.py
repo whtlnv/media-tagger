@@ -174,3 +174,21 @@ def test_pressing_r_on_a_zoomed_in_image_panned_to_a_window_edge_leaves_no_black
 
     frame = viewer.grab().toImage()  # turned 375x750 would end at x 226 where it was; held against the right edge it covers the row
     assert [frame.pixelColor(x, 150) == QColor("black") for x in (0, 299)] == [False, False]
+
+
+def test_pressing_r_on_a_zoomed_in_image_whose_turned_picture_still_covers_the_window_keeps_it_panned_where_it_was(qtbot, tmp_path):
+    picture = QImage(200, 100, QImage.Format.Format_RGB32)
+    picture.fill(QColor("red"))
+    # a 10x10 blue mark just off the centre shows where the zoomed picture lies
+    for y in range(50, 60):
+        for x in range(105, 115):
+            picture.setPixelColor(x, y, QColor("blue"))
+    picture.save(str(tmp_path / "IMG_1.png"))
+    viewer = square_viewer_on(qtbot, tmp_path)
+    scroll(viewer, 15, at=QPoint(180, 150))  # 750x375 at x -270..480, the mark at x 124..161; turned 375x750 at x -60..315, covering too
+    zoomed = viewer.grab().toImage()
+
+    for _ in range(4):
+        qtbot.keyClick(viewer, Qt.Key.Key_R)
+
+    assert viewer.grab().toImage() == zoomed
