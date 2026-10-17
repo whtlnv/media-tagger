@@ -912,10 +912,13 @@ def test_in_the_window_the_mediatagger_command_builds_scrolling_the_wheel_up_ove
 
 def test_pressing_r_in_the_windows_viewer_on_a_landscape_image_shows_it_turned_clockwise_fitted_whole(qtbot, tmp_path):
     from mediatagger.test_viewer_turn import make_corner_marked_landscape
-    from mediatagger.test_window_cheat_sheet import window_on
 
     make_corner_marked_landscape(tmp_path / "a.png")
-    window = window_on(qtbot, tmp_path)
+    window = Window(tmp_path, player_options=SILENT)
+    qtbot.addWidget(window)
+    window.resize(1000, 600)
+    window.show()
+    qtbot.waitExposed(window)
     viewer = window.viewer
     qtbot.waitUntil(lambda: viewer.size() == window.size())
 
