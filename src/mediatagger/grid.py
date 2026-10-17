@@ -400,7 +400,8 @@ class Grid(QListView):
             self.setGridSize((self.gridSize() - ZOOM_STEP).expandedTo(MIN_TILE_SIZE))
             return
         if event.key() == Qt.Key.Key_Return:
-            self.activated.emit(self.currentIndex())
+            if self.currentIndex().isValid():  # an empty grid has no cursor, so nothing to open
+                self.activated.emit(self.currentIndex())
             return
         if event.key() == Qt.Key.Key_Backspace:
             self.up.emit()

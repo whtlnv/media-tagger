@@ -169,3 +169,15 @@ def test_esc_from_a_result_file_shows_the_search_label_again_with_the_same_query
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
 
     assert (window.breadcrumb.isVisible(), window.breadcrumb.text()) == (True, "Search: beach")
+
+
+def test_enter_on_a_search_with_no_results_does_nothing_and_keeps_the_search_label(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    search_for(qtbot, window, stack, "mountain")
+    results = stack.currentWidget()
+
+    qtbot.keyClick(results, Qt.Key.Key_Return)
+
+    assert (stack.currentWidget() is results, window.breadcrumb.isVisible(), window.breadcrumb.text()) == (True, True, "Search: mountain")
