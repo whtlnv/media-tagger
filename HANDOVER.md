@@ -34,6 +34,7 @@ State of the project and how it has been run, for the next session. Read `DESIGN
 | 24 Viewer tags one per line | done, validated on the Mac (`78aafb3`, 1078 tests); Pi run pending |
 | 25 `1`–`9` jump in ninths | done, validated on the Mac (`5cad790`, 1083 tests); Pi run pending |
 | 26 `0` back to normal | done, validated on the Mac (`351d7fc`, 1093 tests); Pi run pending |
+| 27 Painted badge icons | done, validated on the Mac (`f7ce45f`, 1097 tests); Pi run pending |
 
 Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), `grid.py`, `grid_filter.py` (the grids' shared filter and its button), `viewer.py`, `tag_prompt.py` (the `t` prompt, shared by grid and viewer), `rename_prompt.py` (the grid's `n` prompt), `status_bar.py`, `drive_session.py` (library open/create/restore/backup), `drive_config.py` (the drive's `mediatagger_config.json`: required tag roots), `library.py` (SQLite, schema v3: tags and chapter moments), `backup.py`, `state.py` (last folder, geometry, recent searches and renames; `$XDG_CONFIG_HOME`), `search.py` (query matching), `search_bar.py` (the `/` box and its `↑`/`↓` history), `folder.py`, `slideshow.py`, `thumbnails.py` (image/video/folder thumbnails, `ffmpeg`/`ffprobe`), `thumbnail_cache.py`, `thumbnail_scheduler.py` (3 workers + prefetch), `folder_thumbnails.py` (a folder's thumbnails for its grid), `video.py` + `mpv_surface.py` (libmpv render API), `video_controls.py` (video progress bar), `chapters.py` + `chapter_list.py` (the viewer's `c`, `.`/`,` and `l` chapters), `zoom.py` (mouse-wheel zoom for images and mpv), `gui_thread_gc.py`. Tests are co-located (`test_*.py`). Open structural debt is in `BACKLOG.md`.
 
@@ -47,6 +48,13 @@ Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), 
   - send the agent back with a numbered fix list if anything is off.
 - Progress is relayed to the user in chat from a `Monitor` that polls `git log`, `TODO.md` checkbox counts, `~/Library/Logs/DiagnosticReports/Python-*.ips` and `/Volumes/MEDIATAGGER`. Monitors expire every 30 min; re-arm.
 - The user asked for progress to be printed in the conversation and for questions only when a decision is genuinely theirs.
+
+## Phase 27 — done
+
+The Pi's fonts (DejaVu) have no emoji: `🏷 ⏱ 📁 🖼 🎬 ❓` showed as squares. New `icons.py`: `Icon` (TAG, STOPWATCH, FOLDER, PICTURE, VIDEO) painted with QPainter shapes into a cached image per icon/size/colour/pixel ratio; badges draw the icon left of the count in the same backing; no-picture tiles draw a large icon; a missing result shows `?`. `test_ui_characters.py` fails on any UI string character outside a DejaVu-checked list (° · × – — … ← ↑ → ↓ ▶ ✓ ✗ ⟳ are fine). Test painters record icons as `<tag>`, `<stopwatch>` text so badge assertions read `<tag>3`. The agent rebased its own unpushed commits to add trailers (while the orchestrator's suite was running — re-run afterwards). Orchestrator check: suite four times (1097; one load flake each in two runs: the 3 s quit test, and `test_video_controls`'s digit-at-0:30 jump, 5/5 alone), native: folder, tag, stopwatch, folder-marker icons drawn on the grid.
+
+- **Flaky under load, add to the list:** `test_video_controls.py::test_a_digit_on_a_90_s_video_playing_at_0_30_jumps…`.
+- **Pi to check:** badges no longer squares; icons sharp at the Pi's size.
 
 ## Phase 26 — done
 
