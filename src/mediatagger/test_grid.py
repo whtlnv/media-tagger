@@ -295,37 +295,20 @@ def test_in_the_grid_pressing_minus_repeatedly_stops_shrinking_the_tiles_at_abou
     assert abs(tile_width(grid) - 100) <= 20
 
 
-def test_a_folder_tile_with_no_picture_paints_a_large_folder_icon_centred_in_its_picture_and_no_folder_character(qtbot, tmp_path):
-    (tmp_path / "day1").mkdir()
+@pytest.mark.parametrize("make_entry, icon_name, character", [
+    pytest.param(lambda folder: (folder / "day1").mkdir(), Icon.FOLDER, "\U0001F4C1", id="folder"),
+    pytest.param(lambda folder: touch(folder, "photo.jpg"), Icon.PICTURE, "\U0001F5BC", id="image"),
+    pytest.param(lambda folder: touch(folder, "clip.mp4"), Icon.VIDEO, "\U0001F3AC", id="video"),
+])
+def test_a_tile_with_no_picture_yet_paints_its_kinds_large_icon_centred_in_its_picture_and_not_its_emoji(qtbot, tmp_path, make_entry, icon_name, character):
+    make_entry(tmp_path)
     grid = Grid(tmp_path)
     qtbot.addWidget(grid)
     painter = tile_recording(grid, 0)
-    icon = painter.icon_rects[Icon.FOLDER]
+    icon = painter.icon_rects[icon_name]
 
     assert (abs(icon.center().x() - 100) <= 1, icon.height() >= 40) == (True, True)
-    assert not any("\U0001F4C1" in text for text in painter.texts)
-
-
-def test_an_image_tile_with_no_picture_yet_paints_a_large_picture_icon_centred_in_its_picture_and_no_picture_character(qtbot, tmp_path):
-    touch(tmp_path, "photo.jpg")
-    grid = Grid(tmp_path)
-    qtbot.addWidget(grid)
-    painter = tile_recording(grid, 0)
-    icon = painter.icon_rects[Icon.PICTURE]
-
-    assert (abs(icon.center().x() - 100) <= 1, icon.height() >= 40) == (True, True)
-    assert not any("\U0001F5BC" in text for text in painter.texts)
-
-
-def test_a_video_tile_with_no_picture_yet_paints_a_large_video_icon_centred_in_its_picture_and_no_clapperboard_character(qtbot, tmp_path):
-    touch(tmp_path, "clip.mp4")
-    grid = Grid(tmp_path)
-    qtbot.addWidget(grid)
-    painter = tile_recording(grid, 0)
-    icon = painter.icon_rects[Icon.VIDEO]
-
-    assert (abs(icon.center().x() - 100) <= 1, icon.height() >= 40) == (True, True)
-    assert not any("\U0001F3AC" in text for text in painter.texts)
+    assert not any(character in text for text in painter.texts)
 
 
 def test_repainting_the_grid_after_its_files_are_deleted_from_disk_still_paints_their_tiles_without_reading_them(qtbot, tmp_path):
