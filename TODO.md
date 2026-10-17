@@ -2,7 +2,7 @@
 
 ## Phase 23 — `r` turns images too
 
-- [ ] Pressing `r` on a landscape image in a square viewer shows it turned 90° clockwise (its top-left corner now drawn at the top-right) and drawn whole across the viewer's full height
+- [x] Pressing `r` on a landscape image in a square viewer shows it turned 90° clockwise (its top-left corner now drawn at the top-right) and drawn whole across the viewer's full height
 - [ ] Pressing `r` twice on an image shows it upside down (its top-left corner drawn at the bottom-right)
 - [ ] Pressing `r` four times on an image shows it unrotated again, drawn exactly where it was fitted before the first press
 - [ ] A landscape image turned once in a wide viewer is fitted whole: its turned height fills the viewer's height and it is centred across the width

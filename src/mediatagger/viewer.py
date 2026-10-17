@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from PySide6.QtCore import QPoint, Qt
-from PySide6.QtGui import QPainter
+from PySide6.QtGui import QPainter, QTransform
 from PySide6.QtWidgets import QFileDialog, QWidget
 
 from mediatagger.chapters import Chapters
@@ -45,6 +45,7 @@ class Viewer(QWidget):
         self.surface = None
         self._decoded_key = self._decoded = None
         self.zoom = Zoom()
+        self._turned = False
         self.tag_prompt = TagPrompt(self, self.status_bar, on_close=self._show_tag_overlay)
         self.tag_overlay = TagOverlay(self)
         self.info = overlay_label("", self)
@@ -96,6 +97,8 @@ class Viewer(QWidget):
         if self.slideshow is None:
             return
         image = self._current_image()
+        if self._turned:
+            image = image.transformed(QTransform().rotate(90))
         painter.drawImage(self.zoom.shown(fitted_rect(image.size(), self.rect()), self.rect()), image)
 
     def wheelEvent(self, event):
@@ -153,6 +156,10 @@ class Viewer(QWidget):
             return
         if self.tag_prompt.has_focus():
             return  # keys the open tag prompt ignores must not reach the slideshow or video
+        if event.key() == Qt.Key.Key_R and not is_video(self.slideshow.current):
+            self._turned = True
+            self.update()
+            return
         if event.key() in _VIDEO_KEYS:
             self.video_player.press(_VIDEO_KEYS[event.key()])
             self.progress_bar.wake()
