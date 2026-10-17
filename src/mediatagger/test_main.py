@@ -279,6 +279,16 @@ def test_tags_entered_in_the_mediatagger_command_on_a_drive_with_a_tag_library_a
     assert shown.returncode == 0, shown.stderr
     assert shown.stdout.splitlines() == ["beach"]
 
+
+def test_the_mediatagger_command_on_a_folder_whose_first_file_is_tagged_beach_sunset_shows_beach_above_sunset_in_the_viewers_tag_overlay(tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach sunset")
+
+    shown = run_python_offscreen(REPORT_SHOWN_TEXTS_ON_A_DRIVE_SCRIPT, str(drive), str(folder))
+
+    assert shown.returncode == 0, shown.stderr
+    assert shown.stdout.splitlines() == ["beach", "sunset"]
+
 REPORT_SUGGESTIONS_AFTER_TYPING_IN_THE_TAG_PROMPT_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT + (
     "from PySide6.QtCore import Qt, QTimer\n"
     "from PySide6.QtTest import QTest\n"
