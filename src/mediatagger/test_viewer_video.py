@@ -300,9 +300,9 @@ def frame_stepping_viewer_on(qtbot, folder):
     return viewer
 
 
-def viewer_paused_at_10_seconds(qtbot, tmp_path):
-    """A viewer on a 10 fps clip (one frame is 0.1 s), paused with p at exactly 10 s."""
-    make_clip(tmp_path / "IMG_1.mp4", duration=30)
+def viewer_paused_at_10_seconds(qtbot, tmp_path, rate=10):
+    """A viewer on a 30 s clip of rate frames a second (by default one frame is 0.1 s), paused with p at exactly 10 s."""
+    make_clip(tmp_path / "IMG_1.mp4", duration=30, rate=rate)
     make_image(tmp_path / "IMG_2.png", "red")
     viewer = frame_stepping_viewer_on(qtbot, tmp_path)
     engine = viewer.video_player.engine

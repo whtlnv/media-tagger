@@ -23,6 +23,7 @@ from mediatagger.test_viewer import (
 )
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_clip
 from mediatagger.test_viewer_open import drag_and_drop_onto
+from mediatagger.test_viewer_video import viewer_paused_at_10_seconds
 from mediatagger.video_controls import HIDE_DELAY_MS, ProgressBar
 from mediatagger.viewer import UNSUPPORTED_TEXT
 from mediatagger.window import Window
@@ -468,3 +469,25 @@ def test_a_video_with_no_moments_shows_no_tick_on_its_progress_bar(qtbot):
     image = frame.grab(bar.geometry()).toImage()
 
     assert not any(is_tick_coloured(image.pixelColor(x, 18)) for x in range(400))
+
+
+def test_u_on_a_paused_video_whose_progress_bar_is_hidden_shows_the_bar_reading_the_next_frames_time(qtbot, tmp_path):
+    viewer = viewer_paused_at_10_seconds(qtbot, tmp_path, rate=1)  # one frame a second, so the step shows in the time
+    bar = viewer.findChild(ProgressBar)
+    bar.hide()  # as when the hide delay runs out
+
+    qtbot.keyClick(viewer, Qt.Key.Key_U)
+
+    assert bar.isVisible()
+    qtbot.waitUntil(lambda: bar.text() == "0:11 / 0:30", timeout=5000)
+
+
+def test_e_on_a_paused_video_whose_progress_bar_is_hidden_shows_the_bar_reading_the_previous_frames_time(qtbot, tmp_path):
+    viewer = viewer_paused_at_10_seconds(qtbot, tmp_path, rate=1)  # one frame a second, so the step shows in the time
+    bar = viewer.findChild(ProgressBar)
+    bar.hide()  # as when the hide delay runs out
+
+    qtbot.keyClick(viewer, Qt.Key.Key_E)
+
+    assert bar.isVisible()
+    qtbot.waitUntil(lambda: bar.text() == "0:09 / 0:30", timeout=5000)

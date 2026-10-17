@@ -8,9 +8,9 @@ import pytest
 from mediatagger.video import VideoPlayer, new_engine
 
 
-def make_clip(path, duration=2):
+def make_clip(path, duration=2, rate=10):
     subprocess.run(
-        ["ffmpeg", "-loglevel", "error", "-f", "lavfi", "-i", f"testsrc=duration={duration}:size=64x48:rate=10",
+        ["ffmpeg", "-loglevel", "error", "-f", "lavfi", "-i", f"testsrc=duration={duration}:size=64x48:rate={rate}",
          "-f", "lavfi", "-i", f"sine=duration={duration}", "-shortest", str(path)],
         check=True,
     )

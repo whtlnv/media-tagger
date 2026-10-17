@@ -6,8 +6,8 @@
 - [x] Pressing `u` on a playing video does not step a frame (it keeps playing, its position not jumped)
 - [x] Pressing `e` on a paused video shows its previous frame (its position moves back by one frame and it stays paused)
 - [x] Pressing `e` on a playing video does not step a frame (it keeps playing, its position not jumped)
-- [ ] After `u` on a paused video, the progress bar shows and reads the stepped position
-- [ ] After `e` on a paused video, the progress bar shows and reads the stepped position
+- [x] After `u` on a paused video, the progress bar shows and reads the stepped position
+- [x] After `e` on a paused video, the progress bar shows and reads the stepped position
 - [ ] With the tag prompt open over a paused video, typing `u` and `e` puts those letters in the prompt and leaves the video's frame unchanged
 - [ ] With the chapter (`c`) prompt open over a paused video, typing `u` and `e` puts those letters in the prompt and leaves the video's frame unchanged
 - [ ] Pressing `u` or `e` on an image changes nothing (no error, the image stays shown)
