@@ -91,3 +91,14 @@ def test_pressing_u_on_a_paused_video_turned_backwards_shows_its_next_frame_late
 
     engine.wait_for_property("time-pos", lambda time_pos: time_pos == pytest.approx(10.1, abs=0.01), timeout=5)
     assert engine.pause is True
+
+
+def test_pressing_e_on_a_paused_video_turned_backwards_shows_its_previous_frame_earlier_in_the_video(qtbot, tmp_path):
+    viewer = viewer_paused_at_10_seconds(qtbot, tmp_path)
+    engine = viewer.video_player.engine
+    qtbot.keyClick(viewer, Qt.Key.Key_B)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_E)
+
+    engine.wait_for_property("time-pos", lambda time_pos: time_pos == pytest.approx(9.9, abs=0.01), timeout=5)
+    assert engine.pause is True
