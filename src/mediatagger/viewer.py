@@ -157,6 +157,10 @@ class Viewer(QWidget):
             return
         if self.tag_prompt.has_focus():
             return  # keys the open tag prompt ignores must not reach the slideshow or video
+        if event.key() == Qt.Key.Key_0 and not is_video(self.slideshow.current):
+            self.zoom = Zoom()
+            self.update()
+            return
         if event.key() == Qt.Key.Key_R and not is_video(self.slideshow.current):
             self._turn = (self._turn + 90) % 360
             self.zoom.keep_covering(self._image_fitted(), self.rect())
