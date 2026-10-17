@@ -4,7 +4,7 @@
 
 - [x] Pressing `u` on a paused video shows its next frame (its position moves forward by one frame and it stays paused)
 - [x] Pressing `u` on a playing video does not step a frame (it keeps playing, its position not jumped)
-- [ ] Pressing `e` on a paused video shows its previous frame (its position moves back by one frame and it stays paused)
+- [x] Pressing `e` on a paused video shows its previous frame (its position moves back by one frame and it stays paused)
 - [ ] Pressing `e` on a playing video does not step a frame (it keeps playing, its position not jumped)
 - [ ] After `u` on a paused video, the progress bar shows and reads the stepped position
 - [ ] After `e` on a paused video, the progress bar shows and reads the stepped position

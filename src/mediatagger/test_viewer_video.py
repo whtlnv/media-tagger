@@ -328,3 +328,19 @@ def test_pressing_u_in_the_viewer_on_a_playing_video_leaves_it_playing(qtbot, tm
 
     engine.wait_for_property("time-pos", lambda time_pos: time_pos > before + 0.5, timeout=5)
     assert engine.pause is False
+
+
+def test_pressing_e_in_the_viewer_on_a_paused_video_steps_it_one_frame_back_and_keeps_it_paused(qtbot, tmp_path):
+    make_clip(tmp_path / "IMG_1.mp4", duration=30)  # 10 fps, so one frame is 0.1 s
+    make_image(tmp_path / "IMG_2.png", "red")
+    viewer = frame_stepping_viewer_on(qtbot, tmp_path)
+    engine = viewer.video_player.engine
+    wait_until_playing(engine)
+    qtbot.keyClick(viewer, Qt.Key.Key_P)
+    with engine.prepare_and_wait_for_event("playback_restart", timeout=5):  # a step pressed before the seek lands is lost
+        engine.seek(10, reference="absolute", precision="exact")
+
+    qtbot.keyClick(viewer, Qt.Key.Key_E)
+
+    engine.wait_for_property("time-pos", lambda time_pos: time_pos == pytest.approx(9.9, abs=0.01), timeout=5)
+    assert engine.pause is True
