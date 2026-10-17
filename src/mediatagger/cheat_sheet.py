@@ -26,7 +26,7 @@ VIEWER_KEYS = [
     ("p / Enter", "play / pause"),
     ("u / e", "next / previous frame (paused)"),
     ("↑ / ↓", "back / ahead 10 s"),
-    ("0–9", "jump to 0 %–90 %"),
+    ("1–9", "jump through in ninths (1 = start)"),
     ("m", "mute"),
     ("] / [", "faster / slower"),
     ("r", "turn 90°"),

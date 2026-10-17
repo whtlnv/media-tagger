@@ -30,3 +30,9 @@ def test_a_screens_cheat_sheet_lists_exactly_the_keys_of_designs_table_for_that_
 def test_the_grid_cheat_sheet_and_designs_grid_table_both_list_n_for_renaming_a_tag():
     assert dict(GRID_KEYS)["n"] == "rename a tag"
     assert dict(design_table_rows("Grid"))["n"] == "rename a tag"
+
+
+def test_the_viewer_cheat_sheet_and_designs_viewer_table_both_list_1_to_9_as_jumping_in_ninths_and_no_key_for_0():
+    for rows in (VIEWER_KEYS, design_table_rows("Viewer")):
+        assert dict(rows)["1–9"] == "jump through in ninths (1 = start)"
+        assert not any("0" in key for key, _ in rows)
