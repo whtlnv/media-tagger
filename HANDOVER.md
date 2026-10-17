@@ -27,6 +27,7 @@ State of the project and how it has been run, for the next session. Read `DESIGN
 | 17 Grid filters | done, validated on the Mac (`0b28e39`, 908 tests); Pi run pending |
 | 18 Video chapters | done, validated on the Mac (`1c4d945`, 982 tests); Pi run pending |
 | 19 Rename a tag | done, validated on the Mac (`2872de9`, 1035 tests); Pi run pending |
+| 20 Search label leaves the viewer | done, validated on the Mac (`42203b7`, 1039 tests); Pi run pending |
 
 Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), `grid.py`, `grid_filter.py` (the grids' shared filter and its button), `viewer.py`, `tag_prompt.py` (the `t` prompt, shared by grid and viewer), `rename_prompt.py` (the grid's `n` prompt), `status_bar.py`, `drive_session.py` (library open/create/restore/backup), `drive_config.py` (the drive's `mediatagger_config.json`: required tag roots), `library.py` (SQLite, schema v3: tags and chapter moments), `backup.py`, `state.py` (last folder, geometry, recent searches and renames; `$XDG_CONFIG_HOME`), `search.py` (query matching), `search_bar.py` (the `/` box and its `↑`/`↓` history), `folder.py`, `slideshow.py`, `thumbnails.py` (image/video/folder thumbnails, `ffmpeg`/`ffprobe`), `thumbnail_cache.py`, `thumbnail_scheduler.py` (3 workers + prefetch), `folder_thumbnails.py` (a folder's thumbnails for its grid), `video.py` + `mpv_surface.py` (libmpv render API), `video_controls.py` (video progress bar), `chapters.py` + `chapter_list.py` (the viewer's `c`, `.`/`,` and `l` chapters), `zoom.py` (mouse-wheel zoom for images and mpv), `gui_thread_gc.py`. Tests are co-located (`test_*.py`). Open structural debt is in `BACKLOG.md`.
 
@@ -40,6 +41,10 @@ Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), 
   - send the agent back with a numbered fix list if anything is off.
 - Progress is relayed to the user in chat from a `Monitor` that polls `git log`, `TODO.md` checkbox counts, `~/Library/Logs/DiagnosticReports/Python-*.ips` and `/Volumes/MEDIATAGGER`. Monitors expire every 30 min; re-arm.
 - The user asked for progress to be printed in the conversation and for questions only when a decision is genuinely theirs.
+
+## Phase 20 — done
+
+From the user's Pi notes (`results/findings.txt`, 2026-10-16), split by the user into Phases 20–23, done easiest to hardest. `Window._open_result` hides `breadcrumb` for any result; `_show_results` shows it again (text kept). Fix round from the native check: Enter on an empty grid (no results, or empty folder) raised `AttributeError` in `_open_result`/`_open_tile`; `Grid.keyPressEvent` now emits `activated` only for a valid index. Orchestrator check: suite twice (1037, then 1039), native: label hidden in the viewer and on Space, back on Esc, gone at the folder. Headless `/tdd-cycle` stalled again; cycles were hand-driven.
 
 ## Phase 19 — done
 
