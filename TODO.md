@@ -3,7 +3,7 @@
 ## Phase 26 — `0` puts the view back to normal
 
 - [x] In the viewer on a photo zoomed in with the mouse wheel, `0` shows it back at 100 %, centred, as it first opened
-- [ ] In the viewer on a photo turned once with `r`, `0` shows it unturned
+- [x] In the viewer on a photo turned once with `r`, `0` shows it unturned
 - [ ] In the viewer on a photo turned with `r` and then zoomed in, `0` shows it unturned at 100 %, centred, in one press
 - [ ] In the viewer on a video playing at 2×, `0` sets its speed back to 1×
 - [ ] In the viewer on a video zoomed in with the mouse wheel, `0` shows it back at 100 %, centred
