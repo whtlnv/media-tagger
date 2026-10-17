@@ -433,6 +433,20 @@ def test_pressing_t_in_the_windows_grid_of_an_empty_folder_opens_no_tag_prompt_a
     assert visible_tag_prompts(window) == []
 
 
+def test_pressing_enter_in_the_windows_grid_of_an_empty_folder_stays_on_that_grid_and_raises_nothing(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    [empty] = make_folders(drive, "Empty")
+    remember(state_file(Path.home()), empty, drive)
+    window = Window(player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    stack = window.findChild(QStackedWidget)
+    grid = stack.currentWidget()
+
+    qtbot.keyClick(grid, Qt.Key.Key_Return)
+
+    assert (stack.currentWidget() is grid, grid.folder) == (True, empty)
+
 def test_pressing_enter_in_the_windows_grid_on_an_empty_folder_tile_tagged_beach_family_shows_its_empty_grid_with_no_tags_in_the_status_bar(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     [empty] = make_folders(folder, "Empty")
