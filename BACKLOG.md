@@ -2,6 +2,9 @@
 
 ## Out of Scope
 
+- **[src/mediatagger/test_main.py:47] Command scripts still each write out their own ending and staging** (added: 2026-10-17)
+  Left by the Phase 26 refactor loop, stopped at the orchestrator's request: the `QApplication.closeAllWindows()` / `QApplication.quit()` ending is written out in about 15 command scripts across the test_main*.py files, `ENTER_A_TAG…_ON_A_DRIVE_SCRIPT` in test_main_quitting.py differs in shape from the shared `DEFINE_SHOWN_WINDOW`, about 15 script constants have one blank line before them instead of two, and test_main.py sits at its 500-line budget. Hoist a shared ending when these files are next touched for behaviour.
+
 - **[src/mediatagger/test_main.py:654] The three Qt-warning tests could fold into one parameterized test** (added: 2026-10-17)
   transformation broke the suite: drive/test_run.py::test_run_with_a_real_python3_starts_the_real_app_from_the_drive_app_and_the_drive_gains_no_files — the load-sensitive 8 s drive-run test (see the timing-flake entry) failed at load ~6 while the folded table itself passed 3/3; retry the fold (by category name, extra `QT_LOGGING_RULES`, expected `warnings=`) on an idle machine.
 
