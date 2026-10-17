@@ -316,3 +316,20 @@ def test_a_file_with_no_own_tags_in_a_folder_tagged_aunt_zoo_shows_aunt_on_the_t
     [tag_overlay] = shown_labels(viewer)
     assert tag_overlay.text().splitlines() == ["aunt", "zoo"]
     assert_in_top_right_corner(viewer, tag_overlay)
+
+
+def test_moving_with_space_from_a_file_with_three_tags_to_a_file_with_one_shows_a_single_line_in_the_tag_overlay(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    make_image(folder / "IMG_2.png", "blue")
+    library = Library.open(drive)
+    library.enter(folder / "IMG_1.png", "apple beach sunset")
+    library.enter(folder / "IMG_2.png", "zoo")
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+    [three_lines] = shown_labels(viewer)
+    three_lines_height = three_lines.height()
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Space)
+
+    [tag_overlay] = shown_labels(viewer)
+    assert tag_overlay.text() == "zoo"
+    assert tag_overlay.height() < three_lines_height / 2

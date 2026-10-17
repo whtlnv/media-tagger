@@ -21,7 +21,7 @@
   - predicted-contradiction: `src/mediatagger/test_viewer_tag_overlay.py::test_in_the_tag_overlay_an_inherited_tag_is_drawn_dimmer_than_an_own_tag` — asserts: own tag "beach" sits left and inherited "aunt" right on one row, so the right third of the overlay is dim — retired-by: "shows `aunt` and `zoo` on their own lines below `beach`"
 - [x] In the viewer, a file with no own tags in a folder tagged `aunt zoo` shows `aunt` on the top line, a corner margin from the top, with `zoo` below it
 - [x] In the viewer's tag column, an inherited tag's line is drawn dimmer than an own tag's line
-- [ ] In the viewer, moving with `Space` from a file with three tags to a file with one shows a single line in the tag overlay
+- [x] In the viewer, moving with `Space` from a file with three tags to a file with one shows a single line in the tag overlay
 - [ ] In the viewer, a file with twelve tags shows all twelve, each on its own line with its whole text
 - [ ] With the info overlay and the read-only banner showing, a three-tag column in the tag overlay overlaps neither
 - [ ] In the grid, the status bar still shows the cursor tile's tags side by side on one line
