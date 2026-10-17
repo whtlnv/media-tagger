@@ -3,7 +3,7 @@ import subprocess
 import sys
 import time
 
-from mediatagger.test_main import DEFINE_SHOWN_WINDOW_AND_ITS_PAGE, RUN_MEDIATAGGER_COMMAND, SILENCE_THE_VIEWERS_ENGINE
+from mediatagger.test_main import DEFINE_SHOWN_WINDOW, DEFINE_SHOWN_WINDOW_AND_ITS_PAGE, RUN_MEDIATAGGER_COMMAND, SILENCE_THE_VIEWERS_ENGINE
 from mediatagger.test_video import make_clip
 from mediatagger.test_viewer import make_image, offscreen_environment
 from mediatagger.test_viewer_backup import tags_in_newest_backup
@@ -15,9 +15,7 @@ PRESS_ESC_THEN_SAY_QUITTING_THEN_ESC_IN_THE_GRID_SCRIPT = (
     "from PySide6.QtTest import QTest\n"
     "from PySide6.QtWidgets import QApplication\n"
     "app = QApplication([])\n"
-    "def shown_window():\n"
-    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
-    "    return window\n"
+) + DEFINE_SHOWN_WINDOW + (
     "def quit_from_the_grid():\n"
     "    print('quitting', flush=True)\n"
     "    QTest.keyClick(shown_window(), Qt.Key.Key_Escape)\n"
@@ -107,9 +105,7 @@ ENTER_A_TAG_THEN_ESC_THEN_SAY_QUITTING_THEN_ESC_IN_THE_GRID_ON_A_DRIVE_SCRIPT = 
     "from PySide6.QtTest import QTest\n"
     "from PySide6.QtWidgets import QApplication\n"
     "app = QApplication([])\n"
-    "def shown_window():\n"
-    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
-    "    return window\n"
+) + DEFINE_SHOWN_WINDOW + (
     "def quit_from_the_grid():\n"
     "    print('quitting', flush=True)\n"
     "    QTest.keyClick(shown_window(), Qt.Key.Key_Escape)\n"

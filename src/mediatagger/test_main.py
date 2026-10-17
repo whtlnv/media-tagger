@@ -26,10 +26,17 @@ SILENCE_THE_VIEWERS_ENGINE = (
     "mediatagger.viewer.new_engine = lambda **options: unsilenced_engine(**{**options, **SILENT})\n"
 )
 
-DEFINE_SHOWN_WINDOW_AND_ITS_PAGE = (
-    "from PySide6.QtWidgets import QApplication, QStackedWidget\n"
-    "def shown():\n"
+DEFINE_SHOWN_WINDOW = (
+    "from PySide6.QtWidgets import QApplication\n"
+    "def shown_window():\n"
     "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    return window\n"
+)
+
+DEFINE_SHOWN_WINDOW_AND_ITS_PAGE = DEFINE_SHOWN_WINDOW + (
+    "from PySide6.QtWidgets import QStackedWidget\n"
+    "def shown():\n"
+    "    window = shown_window()\n"
     "    return window, window.findChild(QStackedWidget).currentWidget()\n"
 )
 
