@@ -240,32 +240,19 @@ def test_v_on_a_playing_video_leaves_its_pause_mute_position_speed_rotation_and_
     assert viewer.slideshow.current == clip
 
 
-def test_one_on_a_90_s_video_playing_at_0_30_jumps_back_to_the_start(qtbot, tmp_path):
+@pytest.mark.parametrize("key, text", [
+    pytest.param(Qt.Key.Key_1, "0:00 / 1:30", id="1 jumps back to the start"),
+    pytest.param(Qt.Key.Key_2, "0:10 / 1:30", id="2 jumps one ninth in to 0:10"),
+    pytest.param(Qt.Key.Key_9, "1:20 / 1:30", id="9 jumps to the start of its last ninth at 1:20, not the end"),
+])
+def test_a_digit_on_a_90_s_video_playing_at_0_30_jumps_to_the_start_of_that_ninth(qtbot, tmp_path, key, text):
     clip = make_clip(tmp_path / "IMG_1.mp4", duration=90)
     viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
     playing_at_30_seconds(viewer)
 
-    qtbot.keyClick(viewer, Qt.Key.Key_1)
+    qtbot.keyClick(viewer, key)
 
-    assert bar.text() == "0:00 / 1:30"
-
-
-def test_two_on_a_90_s_video_jumps_one_ninth_in_to_0_10(qtbot, tmp_path):
-    clip = make_clip(tmp_path / "IMG_1.mp4", duration=90)
-    viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
-
-    qtbot.keyClick(viewer, Qt.Key.Key_2)
-
-    assert bar.text() == "0:10 / 1:30"
-
-
-def test_nine_on_a_90_s_video_jumps_to_the_start_of_its_last_ninth_at_1_20_not_the_end(qtbot, tmp_path):
-    clip = make_clip(tmp_path / "IMG_1.mp4", duration=90)
-    viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
-
-    qtbot.keyClick(viewer, Qt.Key.Key_9)
-
-    assert bar.text() == "1:20 / 1:30"
+    assert bar.text() == text
 
 
 def test_zero_on_a_90_s_video_playing_at_0_30_leaves_it_playing_on_from_there(qtbot, tmp_path):
