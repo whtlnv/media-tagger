@@ -71,6 +71,9 @@ class VideoPlayer:
             if self.engine.pause:  # stepping a playing video would pause it
                 self._step_frame(_FRAME_STEPS[key])
             return
+        if key == "b":
+            self.engine.play_direction = "backward"
+            return
         if key == "m":
             self.engine.mute = not self.engine.mute
             return
