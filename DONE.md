@@ -1,3 +1,15 @@
+- [x] 2026-10-17 · Pressing `b` in the viewer on a playing video makes it play backwards: its position goes down as time passes
+- [x] 2026-10-17 · Pressing `b` again in the viewer on a video playing backwards makes it play forwards again: its position goes up as time passes
+- [x] 2026-10-17 · Pressing `b` in the viewer on an image changes nothing, raises nothing and leaves the idle player playing forwards
+- [x] 2026-10-17 · Typing `b` in the tag prompt open over a playing video types it and leaves the video playing forwards
+- [x] 2026-10-17 · A video shown after one that was playing backwards starts playing forwards
+- [x] 2026-10-17 · Pressing `0` in the viewer on a video playing backwards makes it play forwards
+- [x] 2026-10-17 · A video playing backwards that reaches 0:00 goes on playing backwards from near its end
+- [x] 2026-10-17 · Pressing `↑` on a video playing backwards seeks 10 s later in the video and it keeps playing backwards
+- [x] 2026-10-17 · Pressing `u` on a paused video that was playing backwards shows the next frame (a later position)
+- [x] 2026-10-17 · Pressing `e` on a paused video that was playing backwards shows the previous frame (an earlier position)
+- [x] 2026-10-17 · The cheat sheet's viewer keys and DESIGN.md's viewer table list `b` as playing backwards / forwards
+- [x] 2026-10-17 · Pressing `.` again within a second of a `.` jump on a video playing backwards jumps on to the moment after the one it landed on
 - [x] 2026-10-17 · A tile with 3 tags shows a top-right badge with a painted tag icon before `3`, in the white the badge text uses, and no tag emoji character in the badge
 - [x] 2026-10-17 · A video tile with 2 chapters shows a top-right badge with a painted stopwatch icon before `2`, in the white the badge text uses, and no stopwatch emoji character in the badge
 - [x] 2026-10-17 · A folder tile with no thumbnail shows a painted folder icon at the centre of its picture area, with no folder emoji character drawn
