@@ -164,31 +164,18 @@ def viewer_with_the_tag_prompt_open_over_a_playing_video(qtbot, tmp_path):
     return viewer, engine
 
 
-def test_typing_p_and_m_in_the_tag_prompt_open_over_a_playing_video_neither_pauses_nor_mutes_it(qtbot, tmp_path):
+@pytest.mark.parametrize(("typed", "left_alone"), [
+    pytest.param("pm", {"pause": False, "mute": False}, id="p and m neither pause nor mute it"),
+    pytest.param("][rv", {"speed": 1, "video_rotate": 0}, id="brackets r and v neither speed nor turn it"),
+    pytest.param("b", {"play_direction": "forward"}, id="b leaves it playing forwards"),
+])
+def test_typing_viewer_keys_in_the_tag_prompt_open_over_a_playing_video_types_them_and_leaves_the_video_as_it_was(qtbot, tmp_path, typed, left_alone):
     viewer, engine = viewer_with_the_tag_prompt_open_over_a_playing_video(qtbot, tmp_path)
 
-    qtbot.keyClicks(viewer.focusWidget(), "pm")
+    qtbot.keyClicks(viewer.tag_prompt.input, typed)
 
-    assert visible_tag_prompt_texts(viewer) == ["pm"]
-    assert [engine.pause, engine.mute] == [False, False]
-
-
-def test_typing_brackets_r_and_v_in_the_tag_prompt_open_over_a_playing_video_types_them_and_neither_speeds_nor_turns_it(qtbot, tmp_path):
-    viewer, engine = viewer_with_the_tag_prompt_open_over_a_playing_video(qtbot, tmp_path)
-
-    qtbot.keyClicks(viewer.tag_prompt.input, "][rv")
-
-    assert visible_tag_prompt_texts(viewer) == ["][rv"]
-    assert [engine.speed, engine.video_rotate] == [1, 0]
-
-
-def test_typing_b_in_the_tag_prompt_open_over_a_playing_video_types_it_and_leaves_the_video_playing_forwards(qtbot, tmp_path):
-    viewer, engine = viewer_with_the_tag_prompt_open_over_a_playing_video(qtbot, tmp_path)
-
-    qtbot.keyClicks(viewer.tag_prompt.input, "b")
-
-    assert visible_tag_prompt_texts(viewer) == ["b"]
-    assert engine.play_direction == "forward"
+    assert visible_tag_prompt_texts(viewer) == [typed]
+    assert {name: getattr(engine, name) for name in left_alone} == left_alone
 
 
 def viewer_paused_at_10_seconds_on_a_drive(qtbot, tmp_path):
