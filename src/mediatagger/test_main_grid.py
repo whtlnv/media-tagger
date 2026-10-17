@@ -1,7 +1,7 @@
 from PySide6.QtGui import QColor
 
 from mediatagger.library import Library
-from mediatagger.test_main import RUN_MEDIATAGGER_COMMAND, RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT, TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT
+from mediatagger.test_main import DEFINE_SHOWN_WINDOW_AND_ITS_PAGE, RUN_MEDIATAGGER_COMMAND, RUN_MEDIATAGGER_COMMAND_ON_THE_SECOND_ARGUMENT, TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT
 from mediatagger.test_viewer import make_image, run_python_offscreen
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image
 
@@ -49,14 +49,12 @@ def test_the_grid_of_the_mediatagger_command_launched_on_a_folder_shows_a_genera
 TAG_A_FOLDER_IN_THE_GRID_THEN_OPEN_A_FILE_INSIDE_IT_AND_REPORT_THE_TAG_OVERLAY_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT + (
     "from PySide6.QtCore import Qt, QTimer\n"
     "from PySide6.QtTest import QTest\n"
-    "from PySide6.QtWidgets import QApplication, QStackedWidget\n"
+    "from PySide6.QtWidgets import QApplication\n"
     "from mediatagger.test_viewer import shown_labels\n"
     "from mediatagger.test_viewer_library import frame_in, visible_tag_prompts\n"
     "app = QApplication([])\n"
     "tags = sys.argv[3]\n"
-    "def shown():\n"
-    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
-    "    return window, window.findChild(QStackedWidget).currentWidget()\n"
+) + DEFINE_SHOWN_WINDOW_AND_ITS_PAGE + (
     "def tag_the_folder_tile_then_open_a_file_inside_it():\n"
     "    window, grid = shown()\n"
     "    QTest.keyClick(grid, Qt.Key.Key_Escape)\n"
@@ -99,13 +97,11 @@ def test_in_the_mediatagger_command_entering_beach_for_a_folder_tile_in_the_grid
 SEARCH_FROM_THE_GRID_THEN_REPORT_THE_BREADCRUMB_AND_TILES_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT + (
     "from PySide6.QtCore import Qt, QTimer\n"
     "from PySide6.QtTest import QTest\n"
-    "from PySide6.QtWidgets import QApplication, QLabel, QStackedWidget\n"
+    "from PySide6.QtWidgets import QApplication, QLabel\n"
     "from mediatagger.test_grid import tile_names\n"
     "app = QApplication([])\n"
     "query = sys.argv[3]\n"
-    "def shown():\n"
-    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
-    "    return window, window.findChild(QStackedWidget).currentWidget()\n"
+) + DEFINE_SHOWN_WINDOW_AND_ITS_PAGE + (
     "def search_then_report():\n"
     "    window, viewer = shown()\n"
     "    QTest.keyClick(viewer, Qt.Key.Key_Escape)\n"
@@ -133,12 +129,10 @@ def test_running_the_mediatagger_command_on_a_folder_of_a_drive_with_a_tagged_li
 RENAME_A_TAG_FROM_THE_GRID_SCRIPT = TREAT_FIRST_ARGUMENT_AS_A_MOUNT_POINT + (
     "from PySide6.QtCore import Qt, QTimer\n"
     "from PySide6.QtTest import QTest\n"
-    "from PySide6.QtWidgets import QApplication, QStackedWidget\n"
+    "from PySide6.QtWidgets import QApplication\n"
     "app = QApplication([])\n"
     "typed = sys.argv[3]\n"
-    "def shown():\n"
-    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
-    "    return window, window.findChild(QStackedWidget).currentWidget()\n"
+) + DEFINE_SHOWN_WINDOW_AND_ITS_PAGE + (
     "def rename_from_the_grid():\n"
     "    window, viewer = shown()\n"
     "    QTest.keyClick(viewer, Qt.Key.Key_Escape)\n"

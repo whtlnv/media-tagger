@@ -26,6 +26,13 @@ SILENCE_THE_VIEWERS_ENGINE = (
     "mediatagger.viewer.new_engine = lambda **options: unsilenced_engine(**{**options, **SILENT})\n"
 )
 
+DEFINE_SHOWN_WINDOW_AND_ITS_PAGE = (
+    "from PySide6.QtWidgets import QApplication, QStackedWidget\n"
+    "def shown():\n"
+    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
+    "    return window, window.findChild(QStackedWidget).currentWidget()\n"
+)
+
 REPORT_SHOWN_WINDOW_SCRIPT = (
     "import sys\n"
     "from PySide6.QtCore import QTimer\n"
@@ -420,14 +427,12 @@ def test_pressing_esc_in_the_slideshow_and_then_esc_in_the_grid_of_the_mediatagg
 REPORT_THE_PLAYING_VIDEO_SCRIPT = (
     "import sys\n"
     "from PySide6.QtCore import QTimer\n"
-    "from PySide6.QtWidgets import QApplication, QStackedWidget\n"
+    "from PySide6.QtWidgets import QApplication\n"
 ) + SILENCE_THE_VIEWERS_ENGINE + (
     "from mediatagger.test_viewer import make_surface_ready\n"
     "from mediatagger.video_controls import ProgressBar\n"
     "app = QApplication([])\n"
-    "def shown():\n"
-    "    (window,) = [window for window in QApplication.topLevelWidgets() if window.isVisible()]\n"
-    "    return window, window.findChild(QStackedWidget).currentWidget()\n"
+) + DEFINE_SHOWN_WINDOW_AND_ITS_PAGE + (
     "def stand_in_for_the_video_surface_becoming_ready():\n"
     "    window, viewer = shown()\n"
     "    make_surface_ready(viewer)\n"
