@@ -250,6 +250,24 @@ def test_one_on_a_90_s_video_playing_at_0_30_jumps_back_to_the_start(qtbot, tmp_
     assert bar.text() == "0:00 / 1:30"
 
 
+def test_two_on_a_90_s_video_jumps_one_ninth_in_to_0_10(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4", duration=90)
+    viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_2)
+
+    assert bar.text() == "0:10 / 1:30"
+
+
+def test_nine_on_a_90_s_video_jumps_to_the_start_of_its_last_ninth_at_1_20_not_the_end(qtbot, tmp_path):
+    clip = make_clip(tmp_path / "IMG_1.mp4", duration=90)
+    viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_9)
+
+    assert bar.text() == "1:20 / 1:30"
+
+
 def test_zero_on_a_90_s_video_playing_at_0_30_leaves_it_playing_on_from_there(qtbot, tmp_path):
     clip = make_clip(tmp_path / "IMG_1.mp4", duration=90)
     viewer, bar = viewer_playing_with_its_progress_bar(qtbot, tmp_path, clip)
