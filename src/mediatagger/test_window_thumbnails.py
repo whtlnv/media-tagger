@@ -267,3 +267,24 @@ def hold_thumbnail_generation(monkeypatch, held):
 
     monkeypatch.setattr(grid_module, "thumbnail_and_duration", generate)
     return started, release, finished
+
+
+def test_turning_an_image_with_r_in_the_viewer_leaves_its_tile_thumbnail_unturned_back_in_the_grid(qtbot, tmp_path):
+    from mediatagger.test_viewer_turn import make_corner_marked_landscape
+
+    make_corner_marked_landscape(tmp_path / "a.png")
+    window, _, shown = window_on_the_grid_of(qtbot, tmp_path / "a.png")
+    qtbot.waitUntil(lambda: "✓ Thumbnails ready" in shown())
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_R)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    tile = stack.currentWidget().model().index(0, 0).data(TILE_ROLE)
+    qtbot.waitUntil(lambda: tile.thumbnail is not None)
+    thumbnail = tile.thumbnail
+    top_left, top_right = thumbnail.pixelColor(2, 2), thumbnail.pixelColor(thumbnail.width() - 3, 2)
+    assert thumbnail.width() > thumbnail.height()
+    assert (top_left.blue() > 200, top_left.red() < 60) == (True, True)
+    assert (top_right.red() > 200, top_right.blue() < 60) == (True, True)

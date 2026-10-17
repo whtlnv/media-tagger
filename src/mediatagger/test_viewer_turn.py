@@ -104,3 +104,15 @@ def test_after_pressing_r_on_a_video_the_next_image_shows_unrotated(qtbot, tmp_p
     frame = viewer.grab().toImage()  # unrotated 200x100 fitted 300x150 at y 75..224, its blue corner at x 0..29, y 75..104
     assert frame.pixelColor(15, 90) == QColor("blue")
     assert frame.pixelColor(285, 210) == QColor("red")
+
+
+def test_pressing_r_on_an_image_leaves_its_file_bytes_and_modification_time_unchanged(qtbot, tmp_path):
+    path = tmp_path / "IMG_1.png"
+    make_corner_marked_landscape(path)
+    before = (path.read_bytes(), path.stat().st_mtime_ns)
+    viewer = square_viewer_on(qtbot, tmp_path)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_R)
+    qtbot.keyClick(viewer, Qt.Key.Key_Space)
+
+    assert (path.read_bytes(), path.stat().st_mtime_ns) == before
