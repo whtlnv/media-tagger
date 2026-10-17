@@ -54,7 +54,7 @@ class TagOverlay:
 
     def show(self, tags):
         for label, shown in ((self.own, tags.own), (self.inherited, tags.inherited)):
-            label.setText(" ".join(shown))
+            label.setText("\n".join(shown))
             label.adjustSize()
             label.setVisible(bool(shown))
             label.raise_()

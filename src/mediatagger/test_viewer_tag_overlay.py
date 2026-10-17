@@ -35,7 +35,7 @@ def test_after_entering_beach_family_in_the_tag_prompt_a_tag_overlay_shows_beach
     enter_in_tag_prompt(qtbot, viewer, "beach family")
 
     assert visible_tag_prompts(viewer) == []
-    assert shown_texts(viewer) == ["beach family"]
+    assert shown_texts(viewer) == ["beach\nfamily"]
 
 
 def test_after_esc_closes_the_tag_prompt_on_a_file_tagged_beach_family_the_tag_overlay_shows_beach_family_again(qtbot, tmp_path):
@@ -47,7 +47,7 @@ def test_after_esc_closes_the_tag_prompt_on_a_file_tagged_beach_family_the_tag_o
     qtbot.keyClick(viewer.focusWidget(), Qt.Key.Key_Escape)
 
     assert visible_tag_prompts(viewer) == []
-    assert shown_texts(viewer) == ["beach family"]
+    assert shown_texts(viewer) == ["beach\nfamily"]
 
 
 def test_after_esc_closes_the_tag_prompt_on_a_file_with_no_tags_the_tag_overlay_is_hidden(qtbot, tmp_path):
@@ -71,7 +71,7 @@ def test_moving_with_space_from_a_file_tagged_beach_family_to_an_untagged_one_hi
     assert shown_texts(viewer) == []
 
     qtbot.keyClick(viewer, Qt.Key.Key_Left)
-    assert shown_texts(viewer) == ["beach family"]
+    assert shown_texts(viewer) == ["beach\nfamily"]
 
 
 def test_opening_a_folder_whose_first_file_was_tagged_beach_family_in_an_earlier_viewer_shows_beach_family_in_the_tag_overlay(qtbot, tmp_path):
@@ -82,7 +82,7 @@ def test_opening_a_folder_whose_first_file_was_tagged_beach_family_in_an_earlier
 
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
-    assert shown_texts(viewer) == ["beach family"]
+    assert shown_texts(viewer) == ["beach\nfamily"]
 
 
 def test_the_tag_overlay_sits_in_the_top_right_corner_a_corner_margin_from_the_top_and_right_edges(qtbot, tmp_path):
@@ -117,7 +117,7 @@ def test_the_tag_overlay_has_the_same_look_as_the_info_overlay(qtbot, tmp_path):
     viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
     [tag_overlay] = shown_labels(viewer)
-    assert tag_overlay.text() == "beach family"
+    assert tag_overlay.text() == "beach\nfamily"
     assert tag_overlay.styleSheet() == viewer.info.styleSheet()
 
 
@@ -140,7 +140,7 @@ def test_with_the_info_overlay_and_the_read_only_banner_showing_the_tag_overlay_
         viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
     qtbot.keyClick(viewer, Qt.Key.Key_I)
 
-    tag_overlay = shown_label_reading(viewer, "beach family")
+    tag_overlay = shown_label_reading(viewer, "beach\nfamily")
     assert viewer.info.isVisible() and viewer.read_only_banner.isVisible()
     assert not frame_in(viewer, tag_overlay).intersects(frame_in(viewer, viewer.info))
     assert not frame_in(viewer, tag_overlay).intersects(frame_in(viewer, viewer.read_only_banner))
@@ -155,7 +155,7 @@ def test_moving_with_space_from_an_image_to_a_video_tagged_beach_family_shows_th
     qtbot.keyClick(viewer, Qt.Key.Key_Space)
     qtbot.waitUntil(lambda: shows_video_surface(viewer))
 
-    assert_shown_on_top(viewer, "beach family")
+    assert_shown_on_top(viewer, "beach\nfamily")
 
 
 def test_a_file_tagged_beach_family_in_a_viewer_shows_beach_family_in_the_tag_overlay_of_a_viewer_on_a_copy_of_the_drive_at_another_root(qtbot, tmp_path):
@@ -168,7 +168,7 @@ def test_a_file_tagged_beach_family_in_a_viewer_shows_beach_family_in_the_tag_ov
 
     viewer = shown_viewer_on_drive(qtbot, other_drive / "Photos", other_drive, lambda question: False)
 
-    assert shown_texts(viewer) == ["beach family"]
+    assert shown_texts(viewer) == ["beach\nfamily"]
 
 
 def test_the_tag_overlay_shows_the_files_own_tags_alphabetically_then_its_inherited_tags_alphabetically(qtbot, tmp_path):
@@ -182,7 +182,7 @@ def test_the_tag_overlay_shows_the_files_own_tags_alphabetically_then_its_inheri
 
     viewer = shown_viewer_on_drive(qtbot, trip, drive, lambda question: False)
 
-    assert " ".join(shown_texts(viewer)) == "beach sunset aunt zoo"
+    assert [line for text in shown_texts(viewer) for line in text.splitlines()] == ["beach", "sunset", "aunt", "zoo"]
 
 
 def test_in_the_tag_overlay_an_inherited_tag_is_drawn_dimmer_than_an_own_tag(qtbot, tmp_path):
@@ -254,3 +254,13 @@ def test_a_file_with_no_own_tags_in_an_untagged_folder_next_to_a_folder_tagged_z
     viewer = shown_viewer_on_drive(qtbot, trip2, drive, lambda question: False)
 
     assert shown_texts(viewer) == []
+
+
+def test_a_file_tagged_beach_sunset_shows_beach_and_sunset_on_two_separate_lines_beach_above_sunset(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach sunset")
+
+    viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
+
+    [tag_overlay] = shown_labels(viewer)
+    assert tag_overlay.text().splitlines() == ["beach", "sunset"]

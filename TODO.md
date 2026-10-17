@@ -2,7 +2,7 @@
 
 ## Phase 24 — Viewer tags one per line
 
-- [ ] In the viewer, a file tagged `beach sunset` shows `beach` and `sunset` in the top-right tag overlay on two separate lines, `beach` above `sunset`
+- [x] In the viewer, a file tagged `beach sunset` shows `beach` and `sunset` in the top-right tag overlay on two separate lines, `beach` above `sunset`
   - predicted-contradiction: `src/mediatagger/test_viewer_tag_overlay.py::test_after_entering_beach_family_in_the_tag_prompt_a_tag_overlay_shows_beach_family_while_the_prompt_is_closed` — asserts: the tag overlay's shown texts are exactly ["beach family"], both tags on one line — retired-by: "shows `beach` and `sunset` in the top-right tag overlay on two separate lines"
   - predicted-contradiction: `src/mediatagger/test_viewer_tag_overlay.py::test_after_esc_closes_the_tag_prompt_on_a_file_tagged_beach_family_the_tag_overlay_shows_beach_family_again` — asserts: the tag overlay's shown texts are exactly ["beach family"], both tags on one line — retired-by: "shows `beach` and `sunset` in the top-right tag overlay on two separate lines"
   - predicted-contradiction: `src/mediatagger/test_viewer_tag_overlay.py::test_moving_with_space_from_a_file_tagged_beach_family_to_an_untagged_one_hides_the_tag_overlay_and_left_back_shows_beach_family_again` — asserts: after Left back, the shown texts are exactly ["beach family"], both tags on one line — retired-by: "shows `beach` and `sunset` in the top-right tag overlay on two separate lines"

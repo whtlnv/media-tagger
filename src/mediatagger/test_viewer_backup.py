@@ -284,7 +284,7 @@ def test_answering_yes_to_the_restore_question_opens_the_library_with_the_backed
         viewer = viewer_backing_up_into(qtbot, backup_root, folder, drive, ask_to_restore_library=lambda question: True)
         show_exposed(qtbot, viewer)
 
-    assert shown_texts(viewer) == ["beach family"]
+    assert shown_texts(viewer) == ["beach\nfamily"]
     assert "✓ Restored backup from 2026-10-09 09:30" in status_bar_texts(viewer)
 
 
@@ -342,7 +342,7 @@ def test_answering_yes_to_the_restore_question_for_a_missing_tags_db_opens_the_l
     viewer = viewer_backing_up_into(qtbot, backup_root, folder, drive, ask_to_restore_library=lambda question: True)
     show_exposed(qtbot, viewer)
 
-    assert shown_texts(viewer) == ["beach family"]
+    assert shown_texts(viewer) == ["beach\nfamily"]
     assert RESTORED_BACKUP_TEXT.format(taken_at.astimezone()) in status_bar_texts(viewer)
 
 

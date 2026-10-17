@@ -67,5 +67,5 @@ def test_the_mediatagger_command_on_a_drive_whose_library_is_at_schema_version_2
     shown = run_python_offscreen(REPORT_SHOWN_TEXTS_ON_A_DRIVE_SCRIPT, str(drive), str(drive / "Photos"))
 
     assert shown.returncode == 0, shown.stderr
-    assert shown.stdout.splitlines() == ["beach family"]
+    assert shown.stdout.splitlines() == ["beach", "family"]
     assert read_meta(drive)["schema_version"] == "3"  # read as stored: opening a Library would upgrade it itself

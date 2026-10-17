@@ -165,7 +165,7 @@ def test_on_a_read_only_drive_with_a_tag_library_the_tag_overlay_still_shows_a_f
     with made_read_only(drive):
         viewer = shown_viewer_on_drive(qtbot, folder, drive, lambda question: False)
 
-        assert sorted(shown_texts(viewer)) == sorted([READ_ONLY_BANNER_TEXT, "beach family"])
+        assert sorted(shown_texts(viewer)) == sorted([READ_ONLY_BANNER_TEXT, "beach\nfamily"])
 
 
 def test_pressing_t_on_a_read_only_drive_with_a_tag_library_says_tags_cant_be_saved_here_in_the_status_bar(qtbot, tmp_path):
