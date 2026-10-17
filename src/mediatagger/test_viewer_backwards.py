@@ -1,3 +1,4 @@
+import pytest
 from PySide6.QtCore import Qt
 
 from mediatagger.test_video import make_clip, wait_until_playing
@@ -67,3 +68,14 @@ def test_a_video_playing_backwards_that_reaches_its_start_goes_on_playing_backwa
 
     engine.wait_for_property("time-pos", lambda pos: pos is not None and pos > 25, timeout=5)
     engine.wait_for_property("time-pos", lambda pos: pos is not None and pos < 29, timeout=5)
+
+
+def test_pressing_up_on_a_video_playing_backwards_seeks_10_s_later_and_it_goes_on_playing_backwards(qtbot, tmp_path):
+    viewer, engine = viewer_playing_a_clip_in(qtbot, tmp_path)
+    viewer.video_player.seek_to(10)
+    qtbot.keyClick(viewer, Qt.Key.Key_B)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Up)
+
+    assert engine.time_pos == pytest.approx(20, abs=1)
+    engine.wait_for_property("time-pos", lambda pos: pos is not None and pos < 18.5, timeout=5)
