@@ -330,14 +330,14 @@ def test_typing_n_into_the_search_bar_types_an_n_and_opens_no_rename_prompt(qtbo
     assert "Rename tag:" not in shown_texts_outside_the_status_bar(window)
 
 
-def test_a_result_whose_path_no_longer_exists_is_drawn_as_a_missing_tile_with_a_distinct_glyph_and_its_name(qtbot, tmp_path):
+def test_a_result_whose_path_no_longer_exists_is_drawn_as_a_missing_tile_with_a_plain_question_mark_and_its_name(qtbot, tmp_path):
     drive, folder = drive_with_a_missing_image_tagged(tmp_path, "beach")
     window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
 
     search_for(qtbot, window, stack, "beach")
 
     texts = painted_texts(stack.currentWidget(), 0)
-    assert (MISSING_GLYPH in texts, "IMG_2.png" in texts, MISSING_GLYPH not in (IMAGE_GLYPH, FOLDER_GLYPH, VIDEO_GLYPH)) == (True, True, True)
+    assert ("?" in texts, "IMG_2.png" in texts, "?" not in (IMAGE_GLYPH, FOLDER_GLYPH, VIDEO_GLYPH)) == (True, True, True)
 
 
 def test_a_result_whose_path_exists_is_not_drawn_as_missing(qtbot, tmp_path):
