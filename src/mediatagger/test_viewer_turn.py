@@ -63,3 +63,15 @@ def test_a_landscape_image_turned_once_in_a_wide_viewer_fills_its_height_centred
     frame = viewer.grab().toImage()  # turned 100x200 fitted 150x300 at x 225..374
     assert [frame.pixelColor(x, 150) == QColor("black") for x in (223, 227, 372, 376)] == [True, False, False, True]
     assert frame.pixelColor(300, 1) == QColor("red")
+
+
+def test_after_pressing_r_on_an_image_the_next_image_shows_unrotated(qtbot, tmp_path):
+    make_corner_marked_landscape(tmp_path / "IMG_1.png")
+    make_corner_marked_landscape(tmp_path / "IMG_2.png")
+    viewer = square_viewer_on(qtbot, tmp_path)
+    unrotated = viewer.grab().toImage()
+    qtbot.keyClick(viewer, Qt.Key.Key_R)
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Space)
+
+    assert viewer.grab().toImage() == unrotated

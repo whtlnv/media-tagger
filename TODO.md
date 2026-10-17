@@ -6,7 +6,7 @@
 - [x] Pressing `r` twice on an image shows it upside down (its top-left corner drawn at the bottom-right)
 - [x] Pressing `r` four times on an image shows it unrotated again, drawn exactly where it was fitted before the first press
 - [x] A landscape image turned once in a wide viewer is fitted whole: its turned height fills the viewer's height and it is centred across the width
-- [ ] After pressing `r` on an image, moving to the next image shows that image unrotated
+- [x] After pressing `r` on an image, moving to the next image shows that image unrotated
 - [ ] After pressing `r` on an image, moving to the next item and back shows the first image unrotated again
 - [ ] After pressing `r` on a video, moving to the next item shows an image there unrotated
 - [ ] Pressing `r` on an image leaves the image file's bytes and modification time unchanged

@@ -259,7 +259,7 @@ class Viewer(QWidget):
         self.progress_bar.start(self.video_player.engine)
 
     def _show_current(self):
-        self.zoom = Zoom()  # every item opens fitted
+        self.zoom, self._turn = Zoom(), 0  # every item opens fitted and unturned
         video = is_video(self.slideshow.current)
         self.placeholder.setVisible(not video and self._current_image().isNull())
         if video:
