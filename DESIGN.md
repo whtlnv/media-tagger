@@ -90,7 +90,7 @@ Rules:
 4. Opening a directory from results shows that folder normally (all contents, unfiltered).
 5. `Enter` on a file in results starts a slideshow **over the result list** (with a filter on, only the files it shows), starting at that file.
 
-Results show under a `Search: <query>` breadcrumb; a result whose path no longer exists is drawn as a missing tile (❓ and its name).
+Results show under a `Search: <query>` breadcrumb, shown only with the results grid: a file opened from the results hides it and `Esc` back to the results shows it again; a result whose path no longer exists is drawn as a missing tile (❓ and its name).
 
 `↑`/`↓` in the search box step through the 50 most recent searches, remembered in `state.json`.
 
