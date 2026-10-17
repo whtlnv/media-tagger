@@ -571,10 +571,7 @@ SPEED_UP_THEN_PRESS_0_AND_REPORT_THE_SPEED_SCRIPT = (
 
 def test_in_the_mediatagger_command_on_a_video_pressing_close_bracket_then_0_plays_it_at_1x_again(tmp_path):
     clip = make_clip(tmp_path / "IMG_1.mp4", duration=30)
-    result = subprocess.run(
-        [sys.executable, "-c", SPEED_UP_THEN_PRESS_0_AND_REPORT_THE_SPEED_SCRIPT, str(clip)],
-        capture_output=True, text=True, timeout=30, env=offscreen_environment(),
-    )
+    result = run_python_offscreen(SPEED_UP_THEN_PRESS_0_AND_REPORT_THE_SPEED_SCRIPT, str(clip))
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == "sped_up=1.25 after_0=1.0"
 
