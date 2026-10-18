@@ -299,6 +299,7 @@ class Window(QWidget):
                 self.status_bar.show_background(COULDNT_DELETE_TEXT)
                 return
             self.session.library.forget_gone(path)
+            self._show_folder_again(path.parent, index.row())
             return
         if not self.session.ask_to_delete(DELETE_QUESTION.format(path.name)):
             return

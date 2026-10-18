@@ -241,6 +241,20 @@ def test_deleting_a_folder_from_a_folder_grid_removes_its_own_tags_and_its_files
     assert Library.open(folder.parent).all_tags() == []
 
 
+def test_after_deleting_a_folder_tile_the_grid_shows_its_parent_without_it_the_cursor_and_status_bar_on_the_tile_that_took_its_place(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: True)
+    [videos] = make_folders(folder.parent, "Videos")
+    window.session.library.enter(videos, "family")
+    cursor_on_the_folder_tile(qtbot, stack, folder)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    grid = stack.currentWidget()
+    assert [tile.path for tile in grid.model().tiles] == [videos]
+    assert grid.currentIndex().data(TILE_ROLE).path == videos
+    assert "family" in shown_status_bar_texts(window)
+
+
 def test_del_on_a_file_in_search_results_asks_nothing_and_leaves_the_file_on_the_drive(qtbot, tmp_path):
     questions = []
     window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: questions.append(question) or True)
