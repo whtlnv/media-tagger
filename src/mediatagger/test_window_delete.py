@@ -370,6 +370,18 @@ def test_del_on_a_folder_in_search_results_answered_yes_deletes_it_and_its_tags_
     assert results.currentIndex().data(TILE_ROLE).path == videos
 
 
+def test_esc_from_search_results_after_deleting_the_folder_searched_from_shows_its_parent_without_it(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: True)
+    videos = results_of_holidays_holding_two_folders(qtbot, window, stack, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    grid = stack.currentWidget()
+    assert (grid.folder, [tile.path for tile in grid.model().tiles]) == (folder.parent, [videos])
+    assert grid.currentIndex().data(TILE_ROLE).path == videos
+
+
 def answer_the_delete_question_with(qtbot, grid, key):
     """Del on the grid, then the key pressed in whatever modal the window opens; the modal it was, or None."""
     modals = []
