@@ -27,3 +27,12 @@ def test_del_on_an_image_tile_in_a_folder_grid_answered_yes_deletes_the_file_fro
 
     assert not (folder / "IMG_1.png").exists()
     assert (folder / "IMG_2.png").exists()
+
+
+def test_del_on_an_image_tile_in_a_folder_grid_asks_whether_to_delete_it_naming_it_and_saying_it_cant_be_undone(qtbot, tmp_path):
+    questions = []
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: questions.append(question))
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    assert questions == ['Delete "IMG_1.png"? It can\'t be undone.']

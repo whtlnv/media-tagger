@@ -5,7 +5,7 @@
 - [x] Forgetting a tagged file in the library leaves it with no tags, and a tag name only it used is gone from the library's tags
 - [x] Forgetting a video in the library removes its chapter moments
 - [x] Pressing `Del` in a folder grid on an image tile, answering yes to the question, deletes the file from the drive
-- [ ] Pressing `Del` in a folder grid on an image tile asks `Delete "IMG_1.png"? It can't be undone.`
+- [x] Pressing `Del` in a folder grid on an image tile asks `Delete "IMG_1.png"? It can't be undone.`
 - [ ] Pressing `Del` in a folder grid on an image tile, answering no, keeps the file and its tags
 - [ ] Deleting a tagged image from a folder grid removes its tags from the drive's library
 - [ ] After deleting a tile from a folder grid, the grid shows the folder without it, the cursor on the tile that took its place

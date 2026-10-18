@@ -5,7 +5,7 @@ from PySide6.QtCore import QRect, Qt
 from PySide6.QtWidgets import QApplication, QStackedWidget, QStyle, QVBoxLayout, QWidget
 
 from mediatagger.cheat_sheet import GRID_KEYS, LAUNCH_KEYS, VIEWER_KEYS, CheatSheet
-from mediatagger.drive_session import DriveSession
+from mediatagger.drive_session import DELETE_QUESTION, DriveSession
 from mediatagger.folder_thumbnails import GENERATING_THUMBNAILS_TEXT, progress_text
 from mediatagger.grid import TILE_ROLE, Grid
 from mediatagger.grid_filter import GridFilter
@@ -285,7 +285,7 @@ class Window(QWidget):
         if not index.isValid():
             return
         path = index.data(TILE_ROLE).path
-        if self.session.ask_to_delete(""):
+        if self.session.ask_to_delete(DELETE_QUESTION.format(path.name)):
             path.unlink()
 
     def _rename_tag(self, text):
