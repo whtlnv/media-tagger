@@ -210,6 +210,16 @@ def test_the_folder_delete_question_counts_every_file_at_any_depth_leaving_out_h
     assert questions == [f'Delete folder "{folder.name}" and the 4 files in it? It can\'t be undone.']
 
 
+def test_del_on_a_folder_tile_answered_no_keeps_the_folder_its_files_and_their_tags(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: False)
+    cursor_on_the_folder_tile(qtbot, stack, folder)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    assert sorted(path.name for path in folder.iterdir()) == ["IMG_1.png", "IMG_2.png"]
+    assert window.session.library.tags(folder / "IMG_1.png") == ["beach"]
+
+
 def test_del_on_a_file_in_search_results_asks_nothing_and_leaves_the_file_on_the_drive(qtbot, tmp_path):
     questions = []
     window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: questions.append(question) or True)
