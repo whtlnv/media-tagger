@@ -285,6 +285,28 @@ def test_del_on_a_file_in_search_results_answered_yes_deletes_it_from_the_drive_
     assert Library.open(folder.parent).all_tags() == []
 
 
+def results_of_beach_holding_both_images(qtbot, window, stack, folder):
+    """Search results for beach: IMG_1.png and IMG_2.png (tagged beach and family), the cursor on IMG_1.png; untagged
+    IMG_3.png lies beside them in their folder."""
+    (folder / "IMG_3.png").write_bytes((folder / "IMG_1.png").read_bytes())
+    window.session.library.enter(folder / "IMG_2.png", "beach family")
+    search_for(qtbot, window, stack, "beach")
+    assert [tile.path for tile in stack.currentWidget().model().tiles] == [folder / "IMG_1.png", folder / "IMG_2.png"]
+
+
+def test_after_deleting_a_file_from_search_results_the_same_search_shows_without_it_the_cursor_and_tags_on_the_result_that_took_its_place(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: True)
+    results_of_beach_holding_both_images(qtbot, window, stack, folder)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    results = stack.currentWidget()
+    assert [tile.path for tile in results.model().tiles] == [folder / "IMG_2.png"]
+    assert results.currentIndex().data(TILE_ROLE).path == folder / "IMG_2.png"
+    assert (window.breadcrumb.isVisible(), window.breadcrumb.text()) == (True, "Search: beach")
+    assert "beach family" in shown_status_bar_texts(window)
+
+
 def answer_the_delete_question_with(qtbot, grid, key):
     """Del on the grid, then the key pressed in whatever modal the window opens; the modal it was, or None."""
     modals = []

@@ -220,20 +220,31 @@ class Window(QWidget):
         searched_from = getattr(shown, "searched_from", shown)  # searching again from results still returns to the folder
         if shown is not searched_from:
             self._drop_results(shown)
-        paths = search(self.session.library, query)
+        grid = self._show_results_of(search(self.session.library, query), searched_from)
+        self.breadcrumb.setText(f"Search: {query}")
+        self.breadcrumb.show()
+        grid.setCurrentIndex(grid.model().index(0, 0))
+        self._show_current_tags()  # no results: no cursor, so the last item's tags go
+        grid.setFocus()
+
+    def _show_results_of(self, paths, searched_from):
         grid = Grid(self.session.drive, library=self.session.library, thumbnail_cache=self.session.thumbnail_cache(), paths=paths,
             cheat_sheet=self.cheat_sheet, required_roots=self.session.required_roots, grid_filter=self.grid_filter)
         grid.searched_from = searched_from
         grid.activated.connect(lambda index: self._open_result(index, paths, grid))
         grid.escaped.connect(lambda: self._end_search(searched_from))
-        grid.delete.connect(lambda: self._delete(grid.currentIndex()))
+        grid.delete.connect(lambda: self._delete(grid.currentIndex(), lambda gone, row: self._show_results_again(grid, paths, gone, row)))
         self._connect_tags_search_and_progress_of(grid)
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
-        self.breadcrumb.setText(f"Search: {query}")
-        self.breadcrumb.show()
-        grid.setCurrentIndex(grid.model().index(0, 0))
-        self._show_current_tags()  # no results: no cursor, so the last item's tags go
+        return grid
+
+    def _show_results_again(self, results, paths, gone, row):
+        """The same search's results without what was deleted, the cursor as in a folder's grid shown again."""
+        self._drop_results(results)
+        grid = self._show_results_of([path for path in paths if not path.is_relative_to(gone)], results.searched_from)
+        grid.setCurrentIndex(grid.model().index(min(row, grid.model().rowCount() - 1), 0))
+        self._show_current_tags()
         grid.setFocus()
 
     def _end_search(self, searched_from):
@@ -284,7 +295,9 @@ class Window(QWidget):
             return
         self.tag_prompt.open(self.session.library, index.data(TILE_ROLE).path)
 
-    def _delete(self, index):
+    def _delete(self, index, show_again=None):
+        """Del on the cursor's tile; show_again(gone, row) shows the grid afresh once it is gone (its folder's, unless given)."""
+        show_again = show_again or (lambda gone, row: self._show_folder_again(gone.parent, row))
         path = index.data(TILE_ROLE).path if index.isValid() else None
         if path is None:  # nothing under the cursor
             return
@@ -293,26 +306,26 @@ class Window(QWidget):
             return
         if path.is_dir():
             if self.session.ask_to_delete(delete_folder_question(path.name, file_count_under(path))):
-                self._delete_folder(path, index.row())
+                self._delete_folder(path, index.row(), show_again)
         elif self.session.ask_to_delete(DELETE_QUESTION.format(path.name)):
-            self._delete_file(path, index.row())
+            self._delete_file(path, index.row(), show_again)
 
-    def _delete_file(self, path, row):
+    def _delete_file(self, path, row, show_again):
         try:
             path.unlink()
         except OSError:  # the drive gone, or the file not ours to delete: its rows stay with it
             self.status_bar.show_background(COULDNT_DELETE_TEXT)
             return
         self._forget(self.session.library.forget, path)
-        self._show_folder_again(path.parent, row)
+        show_again(path, row)
 
-    def _delete_folder(self, folder, row):
+    def _delete_folder(self, folder, row, show_again):
         """As much of the folder as will go; what is left stays on the drive with its rows."""
         failures = []
         shutil.rmtree(folder, onexc=lambda *failure: failures.append(failure))  # on past what won't go
         if folder.parent.is_dir():  # else the drive is gone: nothing to forget or show again
             self._forget(self.session.library.forget_gone, folder)
-            self._show_folder_again(folder.parent, row)
+            show_again(folder, row)
         if failures:
             self.status_bar.show_background(COULDNT_DELETE_TEXT)
 
