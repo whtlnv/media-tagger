@@ -106,3 +106,18 @@ def test_del_in_the_grid_of_an_empty_folder_asks_nothing_and_raises_nothing(qtbo
     qtbot.keyClick(grid, Qt.Key.Key_Delete)
 
     assert (questions, grid.folder) == ([], empty)
+
+
+def test_del_in_the_viewer_asks_nothing_and_leaves_the_file_on_the_drive(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    questions = []
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False,
+        ask_to_delete=lambda question: questions.append(question))
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    viewer = window.findChild(QStackedWidget).currentWidget()
+
+    qtbot.keyClick(viewer, Qt.Key.Key_Delete)
+
+    assert questions == []
+    assert (folder / "IMG_1.png").exists()
