@@ -274,16 +274,15 @@ def test_deleting_a_folder_whose_subfolder_wont_let_go_of_a_file_deletes_the_res
     assert stack.currentWidget().currentIndex().data(TILE_ROLE).path == folder
 
 
-def test_del_on_a_file_in_search_results_asks_nothing_and_leaves_the_file_on_the_drive(qtbot, tmp_path):
-    questions = []
-    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: questions.append(question) or True)
+def test_del_on_a_file_in_search_results_answered_yes_deletes_it_from_the_drive_and_its_tags_from_the_library(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: True)
     search_for(qtbot, window, stack, "beach")
     assert stack.currentWidget().currentIndex().data(TILE_ROLE).path == folder / "IMG_1.png"
 
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
 
-    assert questions == []
-    assert (folder / "IMG_1.png").exists()
+    assert not (folder / "IMG_1.png").exists()
+    assert Library.open(folder.parent).all_tags() == []
 
 
 def answer_the_delete_question_with(qtbot, grid, key):

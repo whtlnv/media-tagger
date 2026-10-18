@@ -2,7 +2,7 @@
 
 ## Phase 31 — Del in search results
 
-- [ ] `Del` on a file in search results, answered yes, deletes the file from the drive and its rows from the library
+- [x] `Del` on a file in search results, answered yes, deletes the file from the drive and its rows from the library
   - predicted-contradiction: test_window_delete.py::test_del_on_a_file_in_search_results_asks_nothing_and_leaves_the_file_on_the_drive — retired by "Del on a file in search results … deletes the file"
 - [ ] After deleting a file from search results, the results of the same search are shown without it (breadcrumb kept), the cursor on the result that took its place, its tags in the status bar
 - [ ] After deleting the last result, the cursor is on the result before it

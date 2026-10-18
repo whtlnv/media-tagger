@@ -226,6 +226,7 @@ class Window(QWidget):
         grid.searched_from = searched_from
         grid.activated.connect(lambda index: self._open_result(index, paths, grid))
         grid.escaped.connect(lambda: self._end_search(searched_from))
+        grid.delete.connect(lambda: self._delete(grid.currentIndex()))
         self._connect_tags_search_and_progress_of(grid)
         self.stack.addWidget(grid)
         self.stack.setCurrentWidget(grid)
