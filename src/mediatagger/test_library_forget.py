@@ -102,3 +102,22 @@ def test_forgetting_what_is_gone_of_a_removed_folder_takes_its_tags_and_chapters
     assert _rows(tmp_path, "SELECT * FROM moments") == []
     assert _rows(tmp_path, "SELECT COUNT(*) FROM item_tags") == [(1,)]
     assert _rows(tmp_path, "SELECT name FROM tags") == [("family",)]
+
+
+def test_forgetting_what_is_gone_of_a_folder_keeps_the_rows_of_a_file_it_cant_look_at_and_still_removes_what_is_gone(tmp_path):
+    library = Library.create(tmp_path)
+    holidays = tmp_path / "Holidays"
+    locked = holidays / "Locked"
+    locked.mkdir(parents=True)
+    (holidays / "IMG_1.jpg").touch()
+    (locked / "IMG_2.jpg").touch()
+    library.enter(holidays / "IMG_1.jpg", "family")
+    library.enter(locked / "IMG_2.jpg", "sand")
+    (holidays / "IMG_1.jpg").unlink()
+    locked.chmod(0o000)
+    try:
+        library.forget_gone(holidays)
+    finally:
+        locked.chmod(0o755)
+
+    assert _rows(tmp_path, "SELECT rel_path FROM items") == [("Holidays/Locked/IMG_2.jpg",)]

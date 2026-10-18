@@ -124,6 +124,17 @@ class Moment(NamedTuple):
     tags: list
 
 
+def _is_gone(path):
+    """Whether the path is surely no longer on the drive; one that can't be looked at may still be there."""
+    try:
+        path.lstat()
+    except (FileNotFoundError, NotADirectoryError):
+        return True
+    except OSError:
+        return False
+    return False
+
+
 def _forget_items(connection, keys):
     """The items' rows go: their tags, their moments, and the tag names nobody else uses. keys: (rel_path,) rows."""
     for table in ("item_tags", "moments"):
@@ -256,7 +267,7 @@ class Library:
         connection = sqlite3.connect(self._tags_db)
         with connection:
             rows = connection.execute("SELECT rel_path FROM items WHERE rel_path = ? OR substr(rel_path, 1, ?) = ?", (key, len(prefix), prefix))
-            _forget_items(connection, [(rel_path,) for (rel_path,) in rows.fetchall() if not (self.root / rel_path).exists()])
+            _forget_items(connection, [(rel_path,) for (rel_path,) in rows.fetchall() if _is_gone(self.root / rel_path)])
         connection.close()
 
     def moments(self, video):

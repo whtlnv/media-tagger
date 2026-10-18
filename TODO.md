@@ -18,3 +18,4 @@
 - [x] Deleting a folder whose library rows can't be removed still shows the parent without it and says tags couldn't be saved
 - [x] Pressing `Del` on a folder tile on a drive without a library asks nothing, keeps the folder and says `Can't delete here`
 - [x] The grid's cheat sheet row for `Del` reads `delete the picture, video or folder (asks first)`
+- [x] Forgetting what is gone of a folder keeps the rows of a file in a subfolder that can't be looked into (it may still be there), and still removes the rows of what is gone
