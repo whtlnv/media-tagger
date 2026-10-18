@@ -401,6 +401,18 @@ def test_del_on_a_missing_search_result_asks_whether_to_forget_it_saying_its_tag
     assert questions == ['Forget "IMG_2.png"? Its tags are removed.']
 
 
+def test_a_missing_search_result_answered_yes_loses_its_tags_and_leaves_the_results(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: True)
+    results_of_beach_with_the_cursor_on_a_missing_image(qtbot, window, stack, folder)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    assert Library.open(folder.parent).all_tags() == ["beach"]
+    results = stack.currentWidget()
+    assert [tile.path for tile in results.model().tiles] == [folder / "IMG_1.png"]
+    assert results.currentIndex().data(TILE_ROLE).path == folder / "IMG_1.png"
+
+
 def answer_the_delete_question_with(qtbot, grid, key):
     """Del on the grid, then the key pressed in whatever modal the window opens; the modal it was, or None."""
     modals = []

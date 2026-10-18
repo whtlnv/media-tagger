@@ -328,13 +328,17 @@ class Window(QWidget):
             self.status_bar.flash_cant_save(CANT_DELETE_HERE_TEXT)
             return
         if not path.exists() and self.session.drive.is_dir():  # a missing result: only its rows are left
-            self.session.ask_to_delete(FORGET_QUESTION.format(path.name))
-            return
-        if path.is_dir():
-            if self.session.ask_to_delete(delete_folder_question(path.name, file_count_under(path))):
-                self._delete_folder(path, index.row(), show_again)
-        elif self.session.ask_to_delete(DELETE_QUESTION.format(path.name)):
-            self._delete_file(path, index.row(), show_again)
+            question, delete = FORGET_QUESTION.format(path.name), self._forget_missing
+        elif path.is_dir():
+            question, delete = delete_folder_question(path.name, file_count_under(path)), self._delete_folder
+        else:
+            question, delete = DELETE_QUESTION.format(path.name), self._delete_file
+        if self.session.ask_to_delete(question):
+            delete(path, index.row(), show_again)
+
+    def _forget_missing(self, path, row, show_again):
+        self._forget(self.session.library.forget_gone, path)  # a file's rows, or a folder's and all under it
+        show_again(path, row)
 
     def _delete_file(self, path, row, show_again):
         try:
