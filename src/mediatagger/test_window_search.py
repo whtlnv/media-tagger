@@ -170,6 +170,22 @@ def test_esc_in_the_results_grid_shows_the_folder_searched_from_with_the_cursor_
     assert (tile_names(shown), shown.currentIndex().data(Qt.ItemDataRole.DisplayRole), window.focusWidget() is shown) == (names, "IMG_2.png", True)
 
 
+def test_esc_in_the_results_grid_shows_the_tags_of_the_tile_under_the_folder_grids_cursor_in_the_status_bar(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    library = Library.open(drive)
+    make_image(folder / "IMG_2.png", "blue")
+    library.enter(folder / "IMG_1.png", "beach")
+    library.enter(folder / "IMG_2.png", "goal")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
+    search_for(qtbot, window, stack, "beach")
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    texts = shown_status_bar_texts(window)
+    assert ("goal" in texts, "beach" in texts) == (True, False)
+
+
 def test_backspace_in_the_results_grid_leaves_the_results_shown(qtbot, tmp_path):
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     Library.open(drive).enter(folder / "IMG_1.png", "beach")

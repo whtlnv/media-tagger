@@ -290,6 +290,7 @@ class Window(QWidget):
 
     def _return_to(self, grid):
         self.stack.setCurrentWidget(grid)
+        self._show_current_tags()
         grid.setFocus()
 
     def _may_write_state(self):
