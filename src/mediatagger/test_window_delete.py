@@ -11,6 +11,7 @@ from mediatagger.test_viewer import SILENT, show_exposed
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image
 from mediatagger.test_viewer_open import make_folders
 from mediatagger.test_window import shown_status_bar_texts
+from mediatagger.test_window_search import search_for
 from mediatagger.window import Window
 
 
@@ -164,3 +165,15 @@ def test_del_on_a_folder_tile_asks_nothing_and_leaves_the_folder_and_its_files(q
 
     assert questions == []
     assert sorted(path.name for path in folder.iterdir()) == ["IMG_1.png", "IMG_2.png"]
+
+
+def test_del_on_a_file_in_search_results_asks_nothing_and_leaves_the_file_on_the_drive(qtbot, tmp_path):
+    questions = []
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: questions.append(question) or True)
+    search_for(qtbot, window, stack, "beach")
+    assert stack.currentWidget().currentIndex().data(TILE_ROLE).path == folder / "IMG_1.png"
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    assert questions == []
+    assert (folder / "IMG_1.png").exists()
