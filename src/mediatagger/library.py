@@ -128,11 +128,11 @@ def _is_gone(path):
     """Whether the path is surely no longer on the drive; one that can't be looked at may still be there."""
     try:
         path.lstat()
+        return False
     except (FileNotFoundError, NotADirectoryError):
         return True
     except OSError:
         return False
-    return False
 
 
 def _forget_items(connection, keys):
