@@ -287,6 +287,7 @@ class Window(QWidget):
         path = index.data(TILE_ROLE).path
         if self.session.ask_to_delete(DELETE_QUESTION.format(path.name)):
             path.unlink()
+            self.session.library.forget(path)
 
     def _rename_tag(self, text):
         names = text.lower().split()

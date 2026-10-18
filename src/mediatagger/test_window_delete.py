@@ -47,3 +47,11 @@ def test_del_on_an_image_tile_in_a_folder_grid_answered_no_keeps_the_file_and_it
 
     assert (folder / "IMG_1.png").exists()
     assert window.session.library.tags(folder / "IMG_1.png") == ["beach"]
+
+
+def test_deleting_an_image_tagged_beach_from_a_folder_grid_removes_its_tags_from_the_drives_library(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: True)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    assert Library.open(folder.parent).all_tags() == []
