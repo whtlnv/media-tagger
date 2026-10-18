@@ -9,7 +9,7 @@
 - [x] Pressing `Del` in a folder grid on an image tile, answering no, keeps the file and its tags
 - [x] Deleting a tagged image from a folder grid removes its tags from the drive's library
 - [x] After deleting a tile from a folder grid, the grid shows the folder without it, the cursor on the tile that took its place
-- [ ] After deleting the last tile of a folder grid, the cursor is on the tile before it
+- [x] After deleting the last tile of a folder grid, the cursor is on the tile before it
 - [ ] After deleting a tile from a folder grid, the status bar shows the tags of the tile now under the cursor
 - [ ] Pressing `Del` in the grid of an empty folder asks nothing and raises nothing
 - [ ] Pressing `Del` in the viewer asks nothing and leaves the file on the drive

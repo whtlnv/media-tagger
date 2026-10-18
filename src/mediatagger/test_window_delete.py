@@ -66,3 +66,12 @@ def test_after_deleting_the_first_of_two_images_the_folder_grid_shows_only_the_s
     grid = stack.currentWidget()
     assert [tile.path for tile in grid.model().tiles] == [folder / "IMG_2.png"]
     assert grid.currentIndex().data(TILE_ROLE).path == folder / "IMG_2.png"
+
+
+def test_after_deleting_the_last_of_two_images_the_folder_grids_cursor_is_on_the_first(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: True)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    assert stack.currentWidget().currentIndex().data(TILE_ROLE).path == folder / "IMG_1.png"

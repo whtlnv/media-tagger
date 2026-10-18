@@ -289,7 +289,7 @@ class Window(QWidget):
             path.unlink()
             self.session.library.forget(path)
             grid = self._grid_of(path.parent)
-            grid.setCurrentIndex(grid.model().index(index.row(), 0))
+            grid.setCurrentIndex(grid.model().index(min(index.row(), grid.model().rowCount() - 1), 0))  # the last one's place is the one before
             self._show(grid)
 
     def _rename_tag(self, text):
