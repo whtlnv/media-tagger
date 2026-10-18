@@ -11,7 +11,7 @@
 - [x] After deleting a tile from a folder grid, the grid shows the folder without it, the cursor on the tile that took its place
 - [x] After deleting the last tile of a folder grid, the cursor is on the tile before it
 - [x] After deleting a tile from a folder grid, the status bar shows the tags of the tile now under the cursor
-- [ ] Pressing `Del` in the grid of an empty folder asks nothing and raises nothing
+- [x] Pressing `Del` in the grid of an empty folder asks nothing and raises nothing
 - [ ] Pressing `Del` in the viewer asks nothing and leaves the file on the drive
 - [ ] Pressing `Del` in a folder grid where tags can't be saved asks nothing, keeps the file and flashes `Can't delete here`
 - [ ] Pressing `Del` on a file the drive refuses to delete shows `Couldn't delete — is the drive still connected?` and leaves its tags in the library

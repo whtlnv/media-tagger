@@ -1,10 +1,14 @@
+from pathlib import Path
+
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QStackedWidget
 
 from mediatagger.grid import TILE_ROLE
 from mediatagger.library import Library
+from mediatagger.state import remember, state_file
 from mediatagger.test_viewer import SILENT, show_exposed
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image
+from mediatagger.test_viewer_open import make_folders
 from mediatagger.test_window import shown_status_bar_texts
 from mediatagger.window import Window
 
@@ -86,3 +90,19 @@ def test_after_deleting_an_image_the_status_bar_shows_the_tags_of_the_image_now_
 
     assert "family" in shown_status_bar_texts(window)
     assert "beach" not in shown_status_bar_texts(window)
+
+
+def test_del_in_the_grid_of_an_empty_folder_asks_nothing_and_raises_nothing(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    [empty] = make_folders(drive, "Empty")
+    remember(state_file(Path.home()), empty, drive)
+    questions = []
+    window = Window(player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False,
+        ask_to_delete=lambda question: questions.append(question))
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    grid = window.findChild(QStackedWidget).currentWidget()
+
+    qtbot.keyClick(grid, Qt.Key.Key_Delete)
+
+    assert (questions, grid.folder) == ([], empty)
