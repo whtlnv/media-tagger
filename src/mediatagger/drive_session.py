@@ -188,9 +188,10 @@ class DriveSession:
         return QMessageBox(QMessageBox.Icon.Question, "", question, buttons, self.window).exec() == QMessageBox.StandardButton.Yes
 
     def _ask_to_delete(self, question):
-        """Enter deletes, Esc keeps: Delete is the default button, and has the focus."""
+        """Enter deletes, Esc keeps: the default button, which has the focus, is named by the question's first word
+        (Delete, or Forget for what is only left in the library)."""
         box = QMessageBox(QMessageBox.Icon.Question, "", question, QMessageBox.StandardButton.NoButton, self.window)
-        delete = box.addButton("Delete", QMessageBox.ButtonRole.DestructiveRole)
+        delete = box.addButton(question.split()[0], QMessageBox.ButtonRole.DestructiveRole)
         box.setEscapeButton(box.addButton("Keep", QMessageBox.ButtonRole.RejectRole))
         box.setDefaultButton(delete)
         box.exec()

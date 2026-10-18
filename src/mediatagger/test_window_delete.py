@@ -447,8 +447,9 @@ def test_without_a_fake_answer_esc_in_the_windows_delete_question_keeps_the_file
     assert (folder / "IMG_1.png").exists()
 
 
-def test_the_windows_delete_question_has_its_delete_button_focused_and_default_and_a_keep_button(qtbot, tmp_path):
-    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=None)
+def buttons_of_the_question_del_opens(qtbot, grid):
+    """Del on the grid; the question's default button's text, whether it has the focus, and every button's text. The
+    question is always closed with Keep, or the test would wait on the modal for ever."""
     buttons = []
 
     def read_and_keep():
@@ -459,13 +460,26 @@ def test_the_windows_delete_question_has_its_delete_button_focused_and_default_a
         default = question.defaultButton()
         buttons.append((default and default.text(), default is not None and question.focusWidget() is default,
             sorted(button.text() for button in question.buttons())))
-        question.reject()  # always, or the test would wait on the modal for ever
+        question.reject()
 
     QTimer.singleShot(200, read_and_keep)
-    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+    qtbot.keyClick(grid, Qt.Key.Key_Delete)
     qtbot.waitUntil(lambda: len(buttons) == 1)
+    return buttons[0]
 
-    assert buttons == [("Delete", True, ["Delete", "Keep"])]
+
+def test_the_windows_delete_question_has_its_delete_button_focused_and_default_and_a_keep_button(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=None)
+
+    assert buttons_of_the_question_del_opens(qtbot, stack.currentWidget()) == ("Delete", True, ["Delete", "Keep"])
+
+
+def test_the_windows_question_for_a_missing_search_result_has_its_forget_button_focused_and_default_and_a_keep_button(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=None)
+    results_of_beach_with_the_cursor_on_a_missing_image(qtbot, window, stack, folder)
+
+    assert buttons_of_the_question_del_opens(qtbot, stack.currentWidget()) == ("Forget", True, ["Forget", "Keep"])
+    assert window.session.library.tags(folder / "IMG_2.png") == ["beach", "sand"]
 
 
 def test_deleting_an_image_whose_library_rows_cant_be_removed_still_shows_the_folder_without_it_and_says_tags_couldnt_be_saved(qtbot, tmp_path, monkeypatch):
