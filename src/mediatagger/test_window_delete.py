@@ -307,6 +307,17 @@ def test_after_deleting_a_file_from_search_results_the_same_search_shows_without
     assert "beach family" in shown_status_bar_texts(window)
 
 
+def test_after_deleting_the_last_search_result_the_cursor_is_on_the_result_before_it(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: True)
+    results_of_beach_holding_both_images(qtbot, window, stack, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    assert [tile.path for tile in stack.currentWidget().model().tiles] == [folder / "IMG_1.png"]
+    assert stack.currentWidget().currentIndex().data(TILE_ROLE).path == folder / "IMG_1.png"
+
+
 def answer_the_delete_question_with(qtbot, grid, key):
     """Del on the grid, then the key pressed in whatever modal the window opens; the modal it was, or None."""
     modals = []
