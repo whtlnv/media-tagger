@@ -84,3 +84,21 @@ def test_forgetting_what_is_gone_of_a_folder_keeps_the_rows_of_what_is_still_on_
     library.forget_gone(holidays)
 
     assert set(_rows(tmp_path, "SELECT rel_path FROM items")) == {("Holidays",), ("Holidays/Stuck/IMG_2.jpg",)}
+
+
+def test_forgetting_what_is_gone_of_a_removed_folder_takes_its_tags_and_chapters_and_the_tag_names_nobody_uses_any_more(tmp_path):
+    library = Library.create(tmp_path)
+    holidays = tmp_path / "Holidays"
+    holidays.mkdir()
+    (holidays / "match.mp4").touch()
+    (tmp_path / "garden.jpg").touch()
+    library.enter(holidays, "summer family")
+    library.add_chapter(holidays / "match.mp4", "goal", 12.3)
+    library.enter(tmp_path / "garden.jpg", "family")
+    shutil.rmtree(holidays)
+
+    library.forget_gone(holidays)
+
+    assert _rows(tmp_path, "SELECT * FROM moments") == []
+    assert _rows(tmp_path, "SELECT COUNT(*) FROM item_tags") == [(1,)]
+    assert _rows(tmp_path, "SELECT name FROM tags") == [("family",)]

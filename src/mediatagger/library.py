@@ -124,6 +124,14 @@ class Moment(NamedTuple):
     tags: list
 
 
+def _forget_items(connection, keys):
+    """The items' rows go: their tags, their moments, and the tag names nobody else uses. keys: (rel_path,) rows."""
+    for table in ("item_tags", "moments"):
+        connection.executemany(f"DELETE FROM {table} WHERE item_id = (SELECT id FROM items WHERE rel_path = ?)", keys)
+    connection.executemany("DELETE FROM items WHERE rel_path = ?", keys)
+    connection.execute("DELETE FROM tags WHERE id NOT IN (SELECT tag_id FROM item_tags)")
+
+
 class Library:
     schema_version = 3  # the version this code writes; an opened library reports the version its tags.db records
 
@@ -236,13 +244,9 @@ class Library:
 
     def forget(self, path):
         """The item's rows go: its tags, its moments, and the tag names nobody else uses."""
-        key = self._key(path)
         connection = sqlite3.connect(self._tags_db)
         with connection:
-            for table in ("item_tags", "moments"):
-                connection.execute(f"DELETE FROM {table} WHERE item_id = (SELECT id FROM items WHERE rel_path = ?)", (key,))
-            connection.execute("DELETE FROM items WHERE rel_path = ?", (key,))
-            connection.execute("DELETE FROM tags WHERE id NOT IN (SELECT tag_id FROM item_tags)")
+            _forget_items(connection, [(self._key(path),)])
         connection.close()
 
     def forget_gone(self, folder):
@@ -252,8 +256,7 @@ class Library:
         connection = sqlite3.connect(self._tags_db)
         with connection:
             rows = connection.execute("SELECT rel_path FROM items WHERE rel_path = ? OR substr(rel_path, 1, ?) = ?", (key, len(prefix), prefix))
-            gone = [(rel_path,) for (rel_path,) in rows.fetchall() if not (self.root / rel_path).exists()]
-            connection.executemany("DELETE FROM items WHERE rel_path = ?", gone)
+            _forget_items(connection, [(rel_path,) for (rel_path,) in rows.fetchall() if not (self.root / rel_path).exists()])
         connection.close()
 
     def moments(self, video):
