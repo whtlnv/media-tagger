@@ -1,15 +1,17 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QStackedWidget
 
+from mediatagger.library import Library
 from mediatagger.test_viewer import SILENT, show_exposed
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image
 from mediatagger.window import Window
 
 
 def grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete):
-    """The window's grid of Photos (IMG_1.png, IMG_2.png) on a drive with a library, its cursor on IMG_1.png."""
+    """The window's grid of Photos (IMG_1.png tagged beach, IMG_2.png) on a drive with a library, its cursor on IMG_1.png."""
     drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
     (folder / "IMG_2.png").write_bytes((folder / "IMG_1.png").read_bytes())
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
     window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False,
         ask_to_delete=ask_to_delete)
     qtbot.addWidget(window)
@@ -36,3 +38,12 @@ def test_del_on_an_image_tile_in_a_folder_grid_asks_whether_to_delete_it_naming_
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
 
     assert questions == ['Delete "IMG_1.png"? It can\'t be undone.']
+
+
+def test_del_on_an_image_tile_in_a_folder_grid_answered_no_keeps_the_file_and_its_tags(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: False)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    assert (folder / "IMG_1.png").exists()
+    assert window.session.library.tags(folder / "IMG_1.png") == ["beach"]
