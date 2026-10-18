@@ -5,7 +5,7 @@ from PySide6.QtCore import QRect, Qt
 from PySide6.QtWidgets import QApplication, QStackedWidget, QStyle, QVBoxLayout, QWidget
 
 from mediatagger.cheat_sheet import GRID_KEYS, LAUNCH_KEYS, VIEWER_KEYS, CheatSheet
-from mediatagger.drive_session import DELETE_QUESTION, DriveSession
+from mediatagger.drive_session import DELETE_FOLDER_QUESTION, DELETE_QUESTION, DriveSession
 from mediatagger.folder_thumbnails import GENERATING_THUMBNAILS_TEXT, progress_text
 from mediatagger.grid import TILE_ROLE, Grid
 from mediatagger.grid_filter import GridFilter
@@ -283,10 +283,14 @@ class Window(QWidget):
 
     def _delete(self, index):
         path = index.data(TILE_ROLE).path if index.isValid() else None
-        if path is None or path.is_dir():  # nothing under the cursor; folders: not yet
+        if path is None:  # nothing under the cursor
             return
         if not self.session.tags_can_be_saved():
             self.status_bar.flash_cant_save(CANT_DELETE_HERE_TEXT)
+            return
+        if path.is_dir():
+            files = sum(1 for file in path.rglob("*") if file.is_file())
+            self.session.ask_to_delete(DELETE_FOLDER_QUESTION.format(path.name, files))
             return
         if not self.session.ask_to_delete(DELETE_QUESTION.format(path.name)):
             return

@@ -19,6 +19,7 @@ DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT = "{} has no tag library — viewing only
 LIBRARY_CANT_BE_OPENED_TEXT = "Library on {} can't be opened — viewing only"
 CREATE_LIBRARY_QUESTION = "Create a tag library on {}?"
 DELETE_QUESTION = 'Delete "{}"? It can\'t be undone.'
+DELETE_FOLDER_QUESTION = 'Delete folder "{}" and the {} files in it? It can\'t be undone.'
 RESTORE_LIBRARY_QUESTION = "The tag library on {} is missing or damaged. Restore the backup from {:%Y-%m-%d %H:%M}?"
 BACKING_UP_TEXT = "⟳ Backing up database…"
 BACKED_UP_TEXT = "✓ Backed up"

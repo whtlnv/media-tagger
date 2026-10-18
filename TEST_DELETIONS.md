@@ -84,3 +84,8 @@ Append-only record of tests removed because a delivered change retired the behav
 - Asserted: `5` on a 64 s clip seeks to 0:32 (50 %) and shows the bar.
 - Retired by: Phase 25 item "In the viewer on a 90 s video, `2` jumps to 0:10" — digits now jump in ninths.
 - Migrated in place: a 90 s clip, `5` shows the bar at `0:40 / 1:30` (four ninths); the bar-shows-on-a-digit coverage is kept.
+
+## 2026-10-17 · migrated · `src/mediatagger/test_window_delete.py::test_del_on_a_folder_tile_asks_nothing_and_leaves_the_folder_and_its_files`
+- Asserted: `Del` on a folder tile asks nothing and leaves the folder and its files.
+- Retired by: Phase 30 item "Pressing `Del` on a folder tile with two files in it asks `Delete folder "Photos" and the 2 files in it? It can't be undone.`"
+- Migrated in place: same setup (now a shared `cursor_on_the_folder_tile` step), asserts the folder question; "answered no keeps the folder" is pinned by its own Phase 30 test.

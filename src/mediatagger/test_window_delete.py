@@ -157,16 +157,20 @@ def test_del_on_an_image_its_folder_wont_let_go_of_says_couldnt_delete_and_leave
     assert Library.open(folder.parent).tags(folder / "IMG_1.png") == ["beach"]
 
 
-def test_del_on_a_folder_tile_asks_nothing_and_leaves_the_folder_and_its_files(qtbot, tmp_path):
-    questions = []
-    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: questions.append(question) or True)
+def cursor_on_the_folder_tile(qtbot, stack, folder):
+    """Backspace from the folder's grid to its parent's, whose cursor lands on the folder's tile."""
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Backspace)
     assert stack.currentWidget().currentIndex().data(TILE_ROLE).path == folder
 
+
+def test_del_on_a_folder_tile_with_two_files_asks_whether_to_delete_the_folder_and_the_2_files_in_it(qtbot, tmp_path):
+    questions = []
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: questions.append(question))
+    cursor_on_the_folder_tile(qtbot, stack, folder)
+
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
 
-    assert questions == []
-    assert sorted(path.name for path in folder.iterdir()) == ["IMG_1.png", "IMG_2.png"]
+    assert questions == [f'Delete folder "{folder.name}" and the 2 files in it? It can\'t be undone.']
 
 
 def test_del_on_a_file_in_search_results_asks_nothing_and_leaves_the_file_on_the_drive(qtbot, tmp_path):
