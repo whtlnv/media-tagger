@@ -151,20 +151,24 @@ class Window(QWidget):
             required_roots=self.session.required_roots, grid_filter=self.grid_filter)
 
     def _show(self, grid):
+        for old in self.findChildren(Grid):
+            self._stop_thumbnails_of(old)
+            old.deleteLater()
+        self._connect_folder_grid(grid)
+        self.stack.setCurrentWidget(grid)
+        self.status_bar.raise_()
+        self._record_state(grid.folder)
+
+    def _connect_folder_grid(self, grid):
+        """A folder's grid, wired and placed in the stack."""
         grid.activated.connect(self._open_tile)
         grid.up.connect(lambda: self._leave(grid.folder))
         grid.escaped.connect(self.close)
         grid.dropped.connect(self._open)
         grid.delete.connect(lambda: self._delete(grid.currentIndex()))
         self._connect_tags_search_and_progress_of(grid)
-        for old in self.findChildren(Grid):
-            self._stop_thumbnails_of(old)
-            old.deleteLater()
         grid.keep_clear_at_the_bottom(self.status_bar.sizeHint().height())
         self.stack.addWidget(grid)
-        self.stack.setCurrentWidget(grid)
-        self.status_bar.raise_()
-        self._record_state(grid.folder)
 
     def _connect_tags_search_and_progress_of(self, grid):
         """What a folder's grid and a results grid both do: tag the cursor's item, rename a tag, search again, pick a
@@ -219,7 +223,7 @@ class Window(QWidget):
         shown = self.stack.currentWidget()
         searched_from = getattr(shown, "searched_from", shown)  # searching again from results still returns to the folder
         if shown is not searched_from:
-            self._drop_results(shown)
+            self._drop_grid(shown)
         grid = self._show_results_of(search(self.session.library, query), searched_from)
         self.breadcrumb.setText(f"Search: {query}")
         self.breadcrumb.show()
@@ -241,23 +245,38 @@ class Window(QWidget):
 
     def _show_results_again(self, results, paths, gone, row):
         """The same search's results without what was deleted, the cursor as in a folder's grid shown again."""
-        self._drop_results(results)
-        grid = self._show_results_of([path for path in paths if not path.is_relative_to(gone)], results.searched_from)
+        self._drop_grid(results)
+        searched_from = results.searched_from
+        if gone.is_relative_to(searched_from.folder):  # the folder under the results showed it
+            searched_from = self._folder_grid_again(searched_from)
+        grid = self._show_results_of([path for path in paths if not path.is_relative_to(gone)], searched_from)
         grid.setCurrentIndex(grid.model().index(min(row, grid.model().rowCount() - 1), 0))
         self._show_current_tags()
         grid.setFocus()
+
+    def _folder_grid_again(self, old):
+        """The old grid's folder read afresh, in its place under the results, the cursor kept on its tile, or else on
+        the tile that took its place."""
+        current = old.currentIndex()
+        kept = current.data(TILE_ROLE).path if current.isValid() else None
+        grid = self._grid_of(old.folder, at=kept if kept is not None and kept.exists() else None)
+        if not grid.currentIndex().isValid():
+            grid.setCurrentIndex(grid.model().index(min(current.row(), grid.model().rowCount() - 1), 0))
+        self._connect_folder_grid(grid)
+        self._drop_grid(old)
+        return grid
 
     def _end_search(self, searched_from):
         self.breadcrumb.hide()
         self._results = None
         results = self.stack.currentWidget()
         self._return_to(searched_from)
-        self._drop_results(results)
+        self._drop_grid(results)
 
-    def _drop_results(self, results):
-        self._stop_thumbnails_of(results)
-        self.stack.removeWidget(results)
-        results.deleteLater()
+    def _drop_grid(self, grid):
+        self._stop_thumbnails_of(grid)
+        self.stack.removeWidget(grid)
+        grid.deleteLater()
 
     def _return_to(self, grid):
         self.stack.setCurrentWidget(grid)

@@ -318,6 +318,17 @@ def test_after_deleting_the_last_search_result_the_cursor_is_on_the_result_befor
     assert stack.currentWidget().currentIndex().data(TILE_ROLE).path == folder / "IMG_1.png"
 
 
+def test_esc_from_search_results_after_deleting_a_result_from_the_folder_searched_from_shows_that_folder_without_it(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: True)
+    results_of_beach_holding_both_images(qtbot, window, stack, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    grid = stack.currentWidget()
+    assert (grid.folder, [tile.path for tile in grid.model().tiles]) == (folder, [folder / "IMG_2.png", folder / "IMG_3.png"])
+
+
 def answer_the_delete_question_with(qtbot, grid, key):
     """Del on the grid, then the key pressed in whatever modal the window opens; the modal it was, or None."""
     modals = []
