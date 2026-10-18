@@ -285,12 +285,14 @@ class Window(QWidget):
         if not index.isValid():
             return
         path = index.data(TILE_ROLE).path
-        if self.session.ask_to_delete(DELETE_QUESTION.format(path.name)):
-            path.unlink()
-            self.session.library.forget(path)
-            grid = self._grid_of(path.parent)
-            grid.setCurrentIndex(grid.model().index(min(index.row(), grid.model().rowCount() - 1), 0))  # the last one's place is the one before
-            self._show(grid)
+        if not self.session.ask_to_delete(DELETE_QUESTION.format(path.name)):
+            return
+        path.unlink()
+        self.session.library.forget(path)
+        grid = self._grid_of(path.parent)
+        grid.setCurrentIndex(grid.model().index(min(index.row(), grid.model().rowCount() - 1), 0))  # the last one's place is the one before
+        self._show(grid)
+        self._show_current_tags()
 
     def _rename_tag(self, text):
         names = text.lower().split()

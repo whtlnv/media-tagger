@@ -5,6 +5,7 @@ from mediatagger.grid import TILE_ROLE
 from mediatagger.library import Library
 from mediatagger.test_viewer import SILENT, show_exposed
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image
+from mediatagger.test_window import shown_status_bar_texts
 from mediatagger.window import Window
 
 
@@ -75,3 +76,13 @@ def test_after_deleting_the_last_of_two_images_the_folder_grids_cursor_is_on_the
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
 
     assert stack.currentWidget().currentIndex().data(TILE_ROLE).path == folder / "IMG_1.png"
+
+
+def test_after_deleting_an_image_the_status_bar_shows_the_tags_of_the_image_now_under_the_cursor(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: True)
+    window.session.library.enter(folder / "IMG_2.png", "family")
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    assert "family" in shown_status_bar_texts(window)
+    assert "beach" not in shown_status_bar_texts(window)
