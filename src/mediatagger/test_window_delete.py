@@ -203,3 +203,12 @@ def test_without_a_fake_answer_enter_in_the_windows_delete_question_deletes_the_
 
     assert question is not None
     assert not (folder / "IMG_1.png").exists()
+
+
+def test_without_a_fake_answer_esc_in_the_windows_delete_question_keeps_the_file(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=None)
+
+    question = answer_the_delete_question_with(qtbot, stack.currentWidget(), Qt.Key.Key_Escape)
+
+    assert question is not None
+    assert (folder / "IMG_1.png").exists()
