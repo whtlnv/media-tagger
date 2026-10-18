@@ -10,6 +10,6 @@
 - [x] Coming back to the results from a slideshow opened after a delete puts the cursor on the slideshow's current file
 - [x] `Del` on a folder in search results, answered yes, deletes the folder and the rows under it, and it leaves the results
 - [x] `Esc` from the results after deleting the folder the search started in (or one above it) shows the nearest folder left, without it
-- [ ] `Del` on a missing (`?`) result asks `Forget "IMG_2.png"? Its tags are removed.`
+- [x] `Del` on a missing (`?`) result asks `Forget "IMG_2.png"? Its tags are removed.`
 - [ ] A missing result answered yes loses its library rows and leaves the results
 - [ ] The real question for a missing result has a **Forget** button (default) and **Keep**

@@ -382,6 +382,25 @@ def test_esc_from_search_results_after_deleting_the_folder_searched_from_shows_i
     assert grid.currentIndex().data(TILE_ROLE).path == videos
 
 
+def results_of_beach_with_the_cursor_on_a_missing_image(qtbot, window, stack, folder):
+    """Search results for beach: IMG_1.png and IMG_2.png, gone from the drive since it was tagged; the cursor on IMG_2.png."""
+    window.session.library.enter(folder / "IMG_2.png", "beach sand")
+    (folder / "IMG_2.png").unlink()
+    search_for(qtbot, window, stack, "beach")
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Right)
+    assert stack.currentWidget().currentIndex().data(TILE_ROLE).path == folder / "IMG_2.png"
+
+
+def test_del_on_a_missing_search_result_asks_whether_to_forget_it_saying_its_tags_are_removed(qtbot, tmp_path):
+    questions = []
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: questions.append(question))
+    results_of_beach_with_the_cursor_on_a_missing_image(qtbot, window, stack, folder)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    assert questions == ['Forget "IMG_2.png"? Its tags are removed.']
+
+
 def answer_the_delete_question_with(qtbot, grid, key):
     """Del on the grid, then the key pressed in whatever modal the window opens; the modal it was, or None."""
     modals = []
