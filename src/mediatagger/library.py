@@ -234,6 +234,16 @@ class Library:
         connection.close()
         return changed
 
+    def forget(self, path):
+        """The item's rows go: its tags, and the tag names nobody else uses."""
+        key = self._key(path)
+        connection = sqlite3.connect(self._tags_db)
+        with connection:
+            connection.execute("DELETE FROM item_tags WHERE item_id = (SELECT id FROM items WHERE rel_path = ?)", (key,))
+            connection.execute("DELETE FROM items WHERE rel_path = ?", (key,))
+            connection.execute("DELETE FROM tags WHERE id NOT IN (SELECT tag_id FROM item_tags)")
+        connection.close()
+
     def moments(self, video):
         """The video's moments in time order."""
         if not self._has_moments_table:

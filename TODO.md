@@ -2,7 +2,7 @@
 
 ## Phase 29 — Del deletes a picture or video from the grid
 
-- [ ] Forgetting a tagged file in the library leaves it with no tags, and a tag name only it used is gone from the library's tags
+- [x] Forgetting a tagged file in the library leaves it with no tags, and a tag name only it used is gone from the library's tags
 - [ ] Forgetting a video in the library removes its chapter moments
 - [ ] Pressing `Del` in a folder grid on an image tile, answering yes to the question, deletes the file from the drive
 - [ ] Pressing `Del` in a folder grid on an image tile asks `Delete "IMG_1.png"? It can't be undone.`
