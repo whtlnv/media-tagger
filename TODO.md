@@ -17,4 +17,4 @@
 - [x] Deleting a folder whose subfolder won't let go of its files leaves what is left on the drive with its tags, removes the rows of what is gone, says `Couldn't delete — is the drive still connected?` and shows the grid again
 - [x] Deleting a folder whose library rows can't be removed still shows the parent without it and says tags couldn't be saved
 - [x] Pressing `Del` on a folder tile on a drive without a library asks nothing, keeps the folder and says `Can't delete here`
-- [ ] The grid's cheat sheet row for `Del` reads `delete the picture, video or folder (asks first)`
+- [x] The grid's cheat sheet row for `Del` reads `delete the picture, video or folder (asks first)`

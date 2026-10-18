@@ -172,7 +172,7 @@ Results show under a `Search: <query>` breadcrumb, shown only with the results g
 | `/` | focus search |
 | `t` | tag selected item (file or folder) |
 | `n` | rename a tag |
-| `Del` | delete the picture or video (asks first) |
+| `Del` | delete the picture, video or folder (asks first) |
 | `+` / `-` | tile size |
 | `Esc` | quit; (in search) clear search, back to the folder |
 | `f` | toggle fullscreen |

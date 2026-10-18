@@ -9,7 +9,7 @@ GRID_KEYS = [
     ("/", "search"),
     ("t", "tag"),
     ("n", "rename a tag"),
-    ("Del", "delete the picture or video (asks first)"),
+    ("Del", "delete the picture, video or folder (asks first)"),
     ("+ / -", "tile size"),
     ("Esc", "quit; in a search, back to the folder"),
     ("f", "fullscreen"),

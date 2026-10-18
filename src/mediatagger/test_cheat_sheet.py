@@ -29,7 +29,7 @@ def test_a_screens_cheat_sheet_lists_exactly_the_keys_of_designs_table_for_that_
 
 @pytest.mark.parametrize(("sheet", "screen", "key", "meaning"), [
     pytest.param(GRID_KEYS, "Grid", "n", "rename a tag", id="grid n renames a tag"),
-    pytest.param(GRID_KEYS, "Grid", "Del", "delete the picture or video (asks first)", id="grid Del deletes the file"),
+    pytest.param(GRID_KEYS, "Grid", "Del", "delete the picture, video or folder (asks first)", id="grid Del deletes the file or folder"),
     pytest.param(VIEWER_KEYS, "Viewer", "1–9", "jump through in ninths (1 = start)", id="viewer 1-9 jumps in ninths"),
     pytest.param(VIEWER_KEYS, "Viewer", "0", "back to normal: zoom, turn, speed, forwards", id="viewer 0 is back to normal"),
     pytest.param(VIEWER_KEYS, "Viewer", "b", "play backwards / forwards", id="viewer b plays backwards or forwards"),
