@@ -6,8 +6,9 @@ from PySide6.QtWidgets import QStackedWidget
 from mediatagger.grid import TILE_ROLE
 from mediatagger.library import Library
 from mediatagger.state import remember, state_file
+from mediatagger.status_bar import CANT_DELETE_HERE_TEXT
 from mediatagger.test_viewer import SILENT, show_exposed
-from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image
+from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image
 from mediatagger.test_viewer_open import make_folders
 from mediatagger.test_window import shown_status_bar_texts
 from mediatagger.window import Window
@@ -121,3 +122,20 @@ def test_del_in_the_viewer_asks_nothing_and_leaves_the_file_on_the_drive(qtbot, 
 
     assert questions == []
     assert (folder / "IMG_1.png").exists()
+
+
+def test_del_in_a_folder_grid_on_a_drive_without_a_library_asks_nothing_keeps_the_file_and_says_cant_delete_here(qtbot, tmp_path):
+    drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
+    questions = []
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False,
+        ask_to_delete=lambda question: questions.append(question) or True)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    assert questions == []
+    assert (folder / "IMG_1.png").exists()
+    assert CANT_DELETE_HERE_TEXT in shown_status_bar_texts(window)

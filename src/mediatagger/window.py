@@ -16,7 +16,7 @@ from mediatagger.search_bar import SearchBar
 from mediatagger.slideshow import Slideshow
 from mediatagger.state import (remember, remember_cheat_sheet, remember_geometry, remember_search, remembered_cheat_sheet, remembered_folder,
     remembered_geometry, state_file)
-from mediatagger.status_bar import NO_SUCH_TAG_TEXT, RENAME_LEADING_DASH_TEXT, RENAME_NEEDS_TWO_TAGS_TEXT, RENAME_TO_SAME_TAG_TEXT, StatusBar, overlay_label, renamed_tag_text
+from mediatagger.status_bar import CANT_DELETE_HERE_TEXT, NO_SUCH_TAG_TEXT, RENAME_LEADING_DASH_TEXT, RENAME_NEEDS_TWO_TAGS_TEXT, RENAME_TO_SAME_TAG_TEXT, StatusBar, overlay_label, renamed_tag_text
 from mediatagger.tag_prompt import TagPrompt
 from mediatagger.viewer import Viewer
 
@@ -283,6 +283,9 @@ class Window(QWidget):
 
     def _delete(self, index):
         if not index.isValid():
+            return
+        if not self.session.tags_can_be_saved():
+            self.status_bar.flash_cant_save(CANT_DELETE_HERE_TEXT)
             return
         path = index.data(TILE_ROLE).path
         if not self.session.ask_to_delete(DELETE_QUESTION.format(path.name)):
