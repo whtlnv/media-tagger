@@ -1,17 +1,2 @@
 # TODO
 
-## Phase 31 — Del in search results
-
-- [x] `Del` on a file in search results, answered yes, deletes the file from the drive and its rows from the library
-  - predicted-contradiction: test_window_delete.py::test_del_on_a_file_in_search_results_asks_nothing_and_leaves_the_file_on_the_drive — retired by "Del on a file in search results … deletes the file"
-- [x] After deleting a file from search results, the results of the same search are shown without it (breadcrumb kept), the cursor on the result that took its place, its tags in the status bar
-- [x] After deleting the last result, the cursor is on the result before it
-- [x] `Esc` from the results after deleting a result that was in the folder searched from shows that folder without it
-- [x] Coming back to the results from a slideshow opened after a delete puts the cursor on the slideshow's current file
-- [x] `Del` on a folder in search results, answered yes, deletes the folder and the rows under it, and it leaves the results
-- [x] `Esc` from the results after deleting the folder the search started in (or one above it) shows the nearest folder left, without it
-- [x] `Del` on a missing (`?`) result asks `Forget "IMG_2.png"? Its tags are removed.`
-- [x] A missing result answered yes loses its library rows and leaves the results
-- [x] The real question for a missing result has a **Forget** button (default) and **Keep**
-- [x] `Esc` from the results after deleting a folder above the folder the search started in shows the nearest folder left
-- [x] A folder picked with `o` from search results after a delete goes back to its own grid on `Esc`
