@@ -1,7 +1,8 @@
 from pathlib import Path
 
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QStackedWidget
+from PySide6.QtCore import Qt, QTimer
+from PySide6.QtTest import QTest
+from PySide6.QtWidgets import QApplication, QStackedWidget
 
 from mediatagger.grid import TILE_ROLE
 from mediatagger.library import Library
@@ -177,3 +178,28 @@ def test_del_on_a_file_in_search_results_asks_nothing_and_leaves_the_file_on_the
 
     assert questions == []
     assert (folder / "IMG_1.png").exists()
+
+
+def answer_the_delete_question_with(qtbot, grid, key):
+    """Del on the grid, then the key pressed in whatever modal the window opens; the modal it was, or None."""
+    modals = []
+
+    def press_in_whatever_is_open():
+        modal = QApplication.activeModalWidget()
+        modals.append(modal)
+        if modal is not None:  # a key sent to no widget would abort Python
+            QTest.keyClick(modal, key)
+
+    QTimer.singleShot(200, press_in_whatever_is_open)
+    qtbot.keyClick(grid, Qt.Key.Key_Delete)
+    qtbot.waitUntil(lambda: len(modals) == 1)
+    return modals[0]
+
+
+def test_without_a_fake_answer_enter_in_the_windows_delete_question_deletes_the_file(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=None)
+
+    question = answer_the_delete_question_with(qtbot, stack.currentWidget(), Qt.Key.Key_Return)
+
+    assert question is not None
+    assert not (folder / "IMG_1.png").exists()
