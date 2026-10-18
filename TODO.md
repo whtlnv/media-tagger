@@ -1,3 +1,20 @@
 # TODO
 
-No phase in progress. Phases 1–28 are delivered (items archived in DONE.md); PLAN.md holds no undelivered phase.
+## Phase 29 — Del deletes a picture or video from the grid
+
+- [ ] Forgetting a tagged file in the library leaves it with no tags, and a tag name only it used is gone from the library's tags
+- [ ] Forgetting a video in the library removes its chapter moments
+- [ ] Pressing `Del` in a folder grid on an image tile, answering yes to the question, deletes the file from the drive
+- [ ] Pressing `Del` in a folder grid on an image tile asks `Delete "IMG_1.png"? It can't be undone.`
+- [ ] Pressing `Del` in a folder grid on an image tile, answering no, keeps the file and its tags
+- [ ] Deleting a tagged image from a folder grid removes its tags from the drive's library
+- [ ] After deleting a tile from a folder grid, the grid shows the folder without it, the cursor on the tile that took its place
+- [ ] After deleting the last tile of a folder grid, the cursor is on the tile before it
+- [ ] After deleting a tile from a folder grid, the status bar shows the tags of the tile now under the cursor
+- [ ] Pressing `Del` in the grid of an empty folder asks nothing and raises nothing
+- [ ] Pressing `Del` in the viewer asks nothing and leaves the file on the drive
+- [ ] Pressing `Del` in a folder grid where tags can't be saved asks nothing, keeps the file and flashes `Can't delete here`
+- [ ] Pressing `Del` on a file the drive refuses to delete shows `Couldn't delete — is the drive still connected?` and leaves its tags in the library
+- [ ] Pressing `Del` on a folder tile, or in search results, asks nothing and deletes nothing (Phases 30–31)
+- [ ] Without a fake answer, the window's delete question is a modal whose Enter deletes the file and whose Esc keeps it
+- [ ] The grid's cheat sheet lists `Del` as deleting the file
