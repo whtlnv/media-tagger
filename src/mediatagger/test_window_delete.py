@@ -173,6 +173,17 @@ def test_del_on_a_folder_tile_with_two_files_asks_whether_to_delete_the_folder_a
     assert questions == [f'Delete folder "{folder.name}" and the 2 files in it? It can\'t be undone.']
 
 
+def test_del_on_a_folder_tile_with_one_file_asks_whether_to_delete_the_folder_and_the_1_file_in_it(qtbot, tmp_path):
+    questions = []
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: questions.append(question))
+    (folder / "IMG_2.png").unlink()
+    cursor_on_the_folder_tile(qtbot, stack, folder)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    assert questions == [f'Delete folder "{folder.name}" and the 1 file in it? It can\'t be undone.']
+
+
 def test_del_on_a_file_in_search_results_asks_nothing_and_leaves_the_file_on_the_drive(qtbot, tmp_path):
     questions = []
     window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: questions.append(question) or True)

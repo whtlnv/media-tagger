@@ -7,7 +7,7 @@
 - [x] Forgetting what is gone of a folder keeps the rows of a file under it that is still on the drive (and the folder's own row while the folder is still there)
 - [x] Forgetting what is gone of a removed folder removes its videos' chapter moments and the tag names nobody uses any more
 - [x] Pressing `Del` on a folder tile with two files in it asks `Delete folder "Photos" and the 2 files in it? It can't be undone.` (predicted-contradiction: test_window_delete.py::test_del_on_a_folder_tile_asks_nothing_and_leaves_the_folder_and_its_files — folder tiles now ask)
-- [ ] Pressing `Del` on a folder tile with one file in it asks `… and the 1 file in it? …`
+- [x] Pressing `Del` on a folder tile with one file in it asks `… and the 1 file in it? …`
 - [ ] Pressing `Del` on a folder tile with no files in it (only empty subfolders) asks `Delete empty folder "Photos"?`
 - [ ] The folder question's count includes files in subfolders at any depth, and leaves out hidden files (`.DS_Store`, exFAT's `._*`)
 - [ ] Pressing `Del` on a folder tile answered no keeps the folder, its files and their tags

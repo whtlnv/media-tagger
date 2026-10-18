@@ -19,7 +19,6 @@ DRIVE_HAS_NO_LIBRARY_VIEWING_ONLY_TEXT = "{} has no tag library — viewing only
 LIBRARY_CANT_BE_OPENED_TEXT = "Library on {} can't be opened — viewing only"
 CREATE_LIBRARY_QUESTION = "Create a tag library on {}?"
 DELETE_QUESTION = 'Delete "{}"? It can\'t be undone.'
-DELETE_FOLDER_QUESTION = 'Delete folder "{}" and the {} files in it? It can\'t be undone.'
 RESTORE_LIBRARY_QUESTION = "The tag library on {} is missing or damaged. Restore the backup from {:%Y-%m-%d %H:%M}?"
 BACKING_UP_TEXT = "⟳ Backing up database…"
 BACKED_UP_TEXT = "✓ Backed up"
@@ -27,6 +26,11 @@ BACKUP_FAILED_TEXT = "✗ Backup failed: {}"
 RESTORED_BACKUP_TEXT = "✓ Restored backup from {:%Y-%m-%d %H:%M}"
 RESTORE_FAILED_TEXT = "✗ Restore failed: {}"
 CANT_RESTORE_TO_READ_ONLY_DRIVE_TEXT = "{} is read-only — its backup can't be restored"
+
+
+def delete_folder_question(name, files):
+    """What Del asks of a folder holding that many files."""
+    return f'Delete folder "{name}" and the {files} {"file" if files == 1 else "files"} in it? It can\'t be undone.'
 
 
 class DriveSession:
