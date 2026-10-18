@@ -152,3 +152,15 @@ def test_del_on_an_image_its_folder_wont_let_go_of_says_couldnt_delete_and_leave
     assert (folder / "IMG_1.png").exists()
     assert COULDNT_DELETE_TEXT in shown_status_bar_texts(window)
     assert Library.open(folder.parent).tags(folder / "IMG_1.png") == ["beach"]
+
+
+def test_del_on_a_folder_tile_asks_nothing_and_leaves_the_folder_and_its_files(qtbot, tmp_path):
+    questions = []
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: questions.append(question) or True)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Backspace)
+    assert stack.currentWidget().currentIndex().data(TILE_ROLE).path == folder
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    assert questions == []
+    assert sorted(path.name for path in folder.iterdir()) == ["IMG_1.png", "IMG_2.png"]

@@ -282,7 +282,7 @@ class Window(QWidget):
         self.tag_prompt.open(self.session.library, index.data(TILE_ROLE).path)
 
     def _delete(self, index):
-        if not index.isValid():
+        if not index.isValid() or index.data(TILE_ROLE).path.is_dir():  # folders: not yet
             return
         if not self.session.tags_can_be_saved():
             self.status_bar.flash_cant_save(CANT_DELETE_HERE_TEXT)
