@@ -37,6 +37,7 @@ State of the project and how it has been run, for the next session. Read `DESIGN
 | 27 Painted badge icons | done, validated on the Mac (`f7ce45f`, 1097 tests); Pi run pending |
 | 28 `b` plays backwards | done, validated on the Mac (`db3bf4a`, 1112 tests); Pi run pending |
 | 29 `Del` deletes a file | done, validated on the Mac (`322e7f9`, 1132 tests); Pi run pending |
+| 30 `Del` deletes a folder | done, validated on the Mac (`7d179cb`, 1148 tests); Pi run pending |
 
 Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), `grid.py`, `grid_filter.py` (the grids' shared filter and its button), `viewer.py`, `tag_prompt.py` (the `t` prompt, shared by grid and viewer), `rename_prompt.py` (the grid's `n` prompt), `status_bar.py`, `drive_session.py` (library open/create/restore/backup), `drive_config.py` (the drive's `mediatagger_config.json`: required tag roots), `library.py` (SQLite, schema v3: tags and chapter moments), `backup.py`, `state.py` (last folder, geometry, recent searches and renames; `$XDG_CONFIG_HOME`), `search.py` (query matching), `search_bar.py` (the `/` box and its `↑`/`↓` history), `folder.py`, `slideshow.py`, `thumbnails.py` (image/video/folder thumbnails, `ffmpeg`/`ffprobe`), `thumbnail_cache.py`, `thumbnail_scheduler.py` (3 workers + prefetch), `folder_thumbnails.py` (a folder's thumbnails for its grid), `video.py` + `mpv_surface.py` (libmpv render API), `video_controls.py` (video progress bar), `chapters.py` + `chapter_list.py` (the viewer's `c`, `.`/`,` and `l` chapters), `zoom.py` (mouse-wheel zoom for images and mpv), `gui_thread_gc.py`. Tests are co-located (`test_*.py`). Open structural debt is in `BACKLOG.md`.
 
@@ -50,6 +51,12 @@ Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), 
   - send the agent back with a numbered fix list if anything is off.
 - Progress is relayed to the user in chat from a `Monitor` that polls `git log`, `TODO.md` checkbox counts, `~/Library/Logs/DiagnosticReports/Python-*.ips` and `/Volumes/MEDIATAGGER`. Monitors expire every 30 min; re-arm.
 - The user asked for progress to be printed in the conversation and for questions only when a decision is genuinely theirs.
+
+## Phase 30 — done
+
+`Window._delete` → `_delete_file` / `_delete_folder` (same `Can't delete here` check first). Folder question `drive_session.delete_folder_question(name, folder.file_count_under(path))`: every file at any depth **of any kind** (a `.txt` counts — it goes too), names starting with `.` (`._*`, `.DS_Store`) left out; zero → `Delete empty folder "X"?`; no thousands separator; counted synchronously before asking. `shutil.rmtree(onexc=…)` keeps going past failures; then `Library.forget_gone(folder)` removes rows of the folder and everything under it that is really gone (`substr` prefix match, not LIKE; a path that can't be stat'ed for a reason other than not-found keeps its rows); grid rebuilt as in Phase 29; any failure → `Couldn't delete…`. Drive pulled while asking → only `Couldn't delete…`, no rebuild. Still no backup before deleting. Orchestrator check: suite twice (2 known load flakes at load ~11–14, then 1148), native on MTFAKE: `Trip_2024` with nested `Day 1/`, `Day 2/`, a `.txt` and `._*` files → `Delete folder "Trip_2024" and the 4 files in it? It can't be undone.`; Esc keeps; Enter removes the tree, its rows (folder's own tag and a nested file's), the tag name only they used; the look-alike sibling `Trip-2024x` keeps its file and tag; cursor on the next tile.
+
+- **Pi to check:** a big folder (thousands of files): the count before the question and the delete itself both block the window — how long on the USB drive?
 
 ## Phase 29 — done
 
