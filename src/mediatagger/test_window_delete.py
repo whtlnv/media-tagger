@@ -346,6 +346,30 @@ def test_back_from_a_slideshow_opened_from_search_results_after_a_delete_the_cur
     assert results.currentIndex().data(TILE_ROLE).path == folder / "IMG_3.png"
 
 
+def results_of_holidays_holding_two_folders(qtbot, window, stack, folder):
+    """Search results for holidays: the image folder and a Videos folder beside it, both tagged holidays, the cursor on
+    the image folder."""
+    [videos] = make_folders(folder.parent, "Videos")
+    window.session.library.enter(folder, "holidays")
+    window.session.library.enter(videos, "holidays")
+    search_for(qtbot, window, stack, "holidays")
+    assert [tile.path for tile in stack.currentWidget().model().tiles] == [folder, videos]
+    return videos
+
+
+def test_del_on_a_folder_in_search_results_answered_yes_deletes_it_and_its_tags_and_it_leaves_the_results(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: True)
+    videos = results_of_holidays_holding_two_folders(qtbot, window, stack, folder)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    assert not folder.exists()
+    assert Library.open(folder.parent).all_tags() == ["holidays"]
+    results = stack.currentWidget()
+    assert [tile.path for tile in results.model().tiles] == [videos]
+    assert results.currentIndex().data(TILE_ROLE).path == videos
+
+
 def answer_the_delete_question_with(qtbot, grid, key):
     """Del on the grid, then the key pressed in whatever modal the window opens; the modal it was, or None."""
     modals = []

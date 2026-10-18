@@ -249,19 +249,23 @@ class Window(QWidget):
         searched_from = results.searched_from
         if gone.is_relative_to(searched_from.folder):  # the folder under the results showed it
             searched_from = self._folder_grid_again(searched_from)
-        grid = self._show_results_of([path for path in paths if not path.is_relative_to(gone)], searched_from)
+        left = [path for path in paths if not (path.is_relative_to(gone) and not path.exists())]  # what wouldn't go stays
+        grid = self._show_results_of(left, searched_from)
         grid.setCurrentIndex(grid.model().index(min(row, grid.model().rowCount() - 1), 0))
         self._show_current_tags()
         grid.setFocus()
 
     def _folder_grid_again(self, old):
         """The old grid's folder read afresh, in its place under the results, the cursor kept on its tile, or else on
-        the tile that took its place."""
+        the tile that took its place. A folder deleted with one of its ancestors gives way to the nearest one left, the
+        cursor on its first tile."""
         current = old.currentIndex()
         kept = current.data(TILE_ROLE).path if current.isValid() else None
-        grid = self._grid_of(old.folder, at=kept if kept is not None and kept.exists() else None)
+        folder = next(folder for folder in (old.folder, *old.folder.parents) if folder.is_dir())
+        grid = self._grid_of(folder, at=kept if kept is not None and kept.exists() else None)
         if not grid.currentIndex().isValid():
-            grid.setCurrentIndex(grid.model().index(min(current.row(), grid.model().rowCount() - 1), 0))
+            row = current.row() if folder == old.folder else 0
+            grid.setCurrentIndex(grid.model().index(min(row, grid.model().rowCount() - 1), 0))
         self._connect_folder_grid(grid)
         self._drop_grid(old)
         return grid
