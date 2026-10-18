@@ -4,7 +4,7 @@
 
 - [x] Forgetting what is gone of a folder removed from the drive takes the folder's row and the rows of the files and folders under it, at any depth, out of the library
 - [x] Forgetting what is gone of a removed folder `Holidays` keeps the rows of a sibling whose name starts the same (`Holidays 2`) or matches it as a LIKE pattern (`Holidays_` vs `HolidaysX`)
-- [ ] Forgetting what is gone of a folder keeps the rows of a file under it that is still on the drive (and the folder's own row while the folder is still there)
+- [x] Forgetting what is gone of a folder keeps the rows of a file under it that is still on the drive (and the folder's own row while the folder is still there)
 - [ ] Forgetting what is gone of a removed folder removes its videos' chapter moments and the tag names nobody uses any more
 - [ ] Pressing `Del` on a folder tile with two files in it asks `Delete folder "Photos" and the 2 files in it? It can't be undone.` (predicted-contradiction: test_window_delete.py::test_del_on_a_folder_tile_asks_nothing_and_leaves_the_folder_and_its_files — folder tiles now ask)
 - [ ] Pressing `Del` on a folder tile with one file in it asks `… and the 1 file in it? …`

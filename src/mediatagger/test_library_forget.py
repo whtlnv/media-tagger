@@ -67,3 +67,20 @@ def test_forgetting_what_is_gone_of_a_removed_folder_keeps_the_rows_of_siblings_
     library.forget_gone(tmp_path / "Holi_days")
 
     assert set(_rows(tmp_path, "SELECT rel_path FROM items")) == {("Holi_days 2/IMG_1.jpg",), ("HoliXdays/IMG_1.jpg",)}
+
+
+def test_forgetting_what_is_gone_of_a_folder_keeps_the_rows_of_what_is_still_on_the_drive(tmp_path):
+    library = Library.create(tmp_path)
+    holidays = tmp_path / "Holidays"
+    stuck = holidays / "Stuck"
+    stuck.mkdir(parents=True)
+    (holidays / "IMG_1.jpg").touch()
+    (stuck / "IMG_2.jpg").touch()
+    library.enter(holidays, "summer")
+    library.enter(holidays / "IMG_1.jpg", "family")
+    library.enter(stuck / "IMG_2.jpg", "sand")
+    (holidays / "IMG_1.jpg").unlink()
+
+    library.forget_gone(holidays)
+
+    assert set(_rows(tmp_path, "SELECT rel_path FROM items")) == {("Holidays",), ("Holidays/Stuck/IMG_2.jpg",)}

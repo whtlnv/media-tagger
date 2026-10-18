@@ -246,12 +246,14 @@ class Library:
         connection.close()
 
     def forget_gone(self, folder):
-        """The rows of the folder and of everything under it go."""
+        """The rows of the folder and of everything under it that is no longer on the drive go."""
         key = self._key(folder)
         prefix = f"{key}/"
         connection = sqlite3.connect(self._tags_db)
         with connection:
-            connection.execute("DELETE FROM items WHERE rel_path = ? OR substr(rel_path, 1, ?) = ?", (key, len(prefix), prefix))
+            rows = connection.execute("SELECT rel_path FROM items WHERE rel_path = ? OR substr(rel_path, 1, ?) = ?", (key, len(prefix), prefix))
+            gone = [(rel_path,) for (rel_path,) in rows.fetchall() if not (self.root / rel_path).exists()]
+            connection.executemany("DELETE FROM items WHERE rel_path = ?", gone)
         connection.close()
 
     def moments(self, video):
