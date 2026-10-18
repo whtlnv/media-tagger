@@ -2,6 +2,9 @@
 
 ## Out of Scope
 
+- **[src/mediatagger/window.py:_show_results] A folder picked with `o` (or dropped) during or after a results slideshow raises on `Esc`** (added: 2026-10-17)
+  Found during Phase 31, not fixed (pre-existing): `_open_result` remembers `self._results = (grid, paths)`, and only opening a folder result or `Esc` from the results clears it. Results → `Enter` on a file → `Esc` → `o` (picking a folder) → `Esc` reaches `_show_results`, whose `paths.index(slideshow.current)` raises `ValueError` for the picked folder's file. Phase 31 clears it when a delete rebuilds the results; clearing it in `_pick_folder` and on drops would close the rest.
+
 - **[src/mediatagger/chapters.py:_previous] Backwards jumps: `,` keeps the forwards margins, and test_viewer_backwards repeats its turn-round staging** (added: 2026-10-17)
   Left LOW by the Phase 28 loops (stopped after 2 refactor passes, 1 test-quality pass): `_previous` takes a `backwards` flag it never reads, so `,` played backwards still skips a moment less than 1 s ahead where `.` forwards skips one less than 0.5 s ahead (mirroring it would be a behaviour change, untested); in `test_viewer_backwards.py` the seek-to-15 / `b` / wait-below-14 staging is written out twice, and the `b`-again/`0` and `u`/`e` tests are near-identical pairs.
 
