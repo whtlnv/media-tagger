@@ -1,3 +1,4 @@
+import shutil
 import sqlite3
 
 from mediatagger.library import Library, tags_db_path
@@ -35,3 +36,21 @@ def test_forgetting_a_video_with_a_goal_chapter_leaves_no_moment_row_in_tags_db(
     library.forget(match)
 
     assert _rows(tmp_path, "SELECT * FROM moments") == []
+
+
+def test_forgetting_what_is_gone_of_a_removed_folder_takes_its_row_and_the_rows_of_everything_under_it_at_any_depth(tmp_path):
+    library = Library.create(tmp_path)
+    holidays = tmp_path / "Holidays"
+    beach = holidays / "Beach"
+    beach.mkdir(parents=True)
+    (holidays / "IMG_1.jpg").touch()
+    (beach / "IMG_2.jpg").touch()
+    library.enter(holidays, "summer")
+    library.enter(holidays / "IMG_1.jpg", "family")
+    library.enter(beach, "sea")
+    library.enter(beach / "IMG_2.jpg", "sand")
+    shutil.rmtree(holidays)
+
+    library.forget_gone(holidays)
+
+    assert _rows(tmp_path, "SELECT rel_path FROM items") == []

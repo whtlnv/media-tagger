@@ -245,6 +245,14 @@ class Library:
             connection.execute("DELETE FROM tags WHERE id NOT IN (SELECT tag_id FROM item_tags)")
         connection.close()
 
+    def forget_gone(self, folder):
+        """The rows of the folder and of everything under it go."""
+        key = self._key(folder)
+        connection = sqlite3.connect(self._tags_db)
+        with connection:
+            connection.execute("DELETE FROM items WHERE rel_path = ? OR rel_path LIKE ?", (key, f"{key}/%"))
+        connection.close()
+
     def moments(self, video):
         """The video's moments in time order."""
         if not self._has_moments_table:

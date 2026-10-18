@@ -2,7 +2,7 @@
 
 ## Phase 30 — Del deletes a folder with everything in it
 
-- [ ] Forgetting what is gone of a folder removed from the drive takes the folder's row and the rows of the files and folders under it, at any depth, out of the library
+- [x] Forgetting what is gone of a folder removed from the drive takes the folder's row and the rows of the files and folders under it, at any depth, out of the library
 - [ ] Forgetting what is gone of a removed folder `Holidays` keeps the rows of a sibling whose name starts the same (`Holidays 2`) or matches it as a LIKE pattern (`Holidays_` vs `HolidaysX`)
 - [ ] Forgetting what is gone of a folder keeps the rows of a file under it that is still on the drive (and the folder's own row while the folder is still there)
 - [ ] Forgetting what is gone of a removed folder removes its videos' chapter moments and the tag names nobody uses any more
