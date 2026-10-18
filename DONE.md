@@ -1,3 +1,21 @@
+- [x] 2026-10-17 · Forgetting a tagged file in the library leaves it with no tags, and a tag name only it used is gone from the library's tags
+- [x] 2026-10-17 · Forgetting a video in the library removes its chapter moments
+- [x] 2026-10-17 · Pressing `Del` in a folder grid on an image tile, answering yes to the question, deletes the file from the drive
+- [x] 2026-10-17 · Pressing `Del` in a folder grid on an image tile asks `Delete "IMG_1.png"? It can't be undone.`
+- [x] 2026-10-17 · Pressing `Del` in a folder grid on an image tile, answering no, keeps the file and its tags
+- [x] 2026-10-17 · Deleting a tagged image from a folder grid removes its tags from the drive's library
+- [x] 2026-10-17 · After deleting a tile from a folder grid, the grid shows the folder without it, the cursor on the tile that took its place
+- [x] 2026-10-17 · After deleting the last tile of a folder grid, the cursor is on the tile before it
+- [x] 2026-10-17 · After deleting a tile from a folder grid, the status bar shows the tags of the tile now under the cursor
+- [x] 2026-10-17 · Pressing `Del` in the grid of an empty folder asks nothing and raises nothing
+- [x] 2026-10-17 · Pressing `Del` in the viewer asks nothing and leaves the file on the drive
+- [x] 2026-10-17 · Pressing `Del` in a folder grid where tags can't be saved asks nothing, keeps the file and flashes `Can't delete here`
+- [x] 2026-10-17 · Pressing `Del` on a file the drive refuses to delete shows `Couldn't delete — is the drive still connected?` and leaves its tags in the library
+- [x] 2026-10-17 · Pressing `Del` on a folder tile, or in search results, asks nothing and deletes nothing (Phases 30–31)
+- [x] 2026-10-17 · Without a fake answer, the window's delete question is a modal whose Enter deletes the file and whose Esc keeps it
+- [x] 2026-10-17 · The window's delete question's focused default button reads Delete, and its other button Keep
+- [x] 2026-10-17 · The grid's cheat sheet lists `Del` as deleting the file
+- [x] 2026-10-17 · A file deleted whose library rows can't be removed (drive pulled mid-way) is gone from the grid, and the status bar says tags couldn't be saved
 - [x] 2026-10-17 · Pressing `b` in the viewer on a playing video makes it play backwards: its position goes down as time passes
 - [x] 2026-10-17 · Pressing `b` again in the viewer on a video playing backwards makes it play forwards again: its position goes up as time passes
 - [x] 2026-10-17 · Pressing `b` in the viewer on an image changes nothing, raises nothing and leaves the idle player playing forwards
