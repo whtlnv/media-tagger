@@ -54,3 +54,16 @@ def test_forgetting_what_is_gone_of_a_removed_folder_takes_its_row_and_the_rows_
     library.forget_gone(holidays)
 
     assert _rows(tmp_path, "SELECT rel_path FROM items") == []
+
+
+def test_forgetting_what_is_gone_of_a_removed_folder_keeps_the_rows_of_siblings_whose_names_its_name_would_match_as_a_pattern(tmp_path):
+    library = Library.create(tmp_path)
+    for name in ("Holi_days", "HoliXdays", "Holi_days 2"):
+        (tmp_path / name).mkdir()
+        (tmp_path / name / "IMG_1.jpg").touch()
+        library.enter(tmp_path / name / "IMG_1.jpg", "summer")
+    shutil.rmtree(tmp_path / "Holi_days")
+
+    library.forget_gone(tmp_path / "Holi_days")
+
+    assert set(_rows(tmp_path, "SELECT rel_path FROM items")) == {("Holi_days 2/IMG_1.jpg",), ("HoliXdays/IMG_1.jpg",)}
