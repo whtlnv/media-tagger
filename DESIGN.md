@@ -186,6 +186,13 @@ Results show under a `Search: <query>` breadcrumb, shown only with the results g
 - Selected item's own tags shown in the status bar, followed by its inherited tags dimmed.
 - Filter (mouse only): a round button with a funnel in the bottom-right corner of the tiles pops up a menu — **With tags** (own tags), **No tags** (no own tags), and **Missing tags** (files with a `✗` mark; offered only when the drive has required roots and a library is open, or while it is on). One filter at a time, for every folder grid and search results, until the app quits; choosing the active one again turns it off. While one is on the button is in the highlight colour and its tooltip names it. Non-matching files are hidden at once (also when tagging makes a file stop matching); folder tiles and missing results always stay. A hidden tile never holds the cursor: it moves to the next shown tile, else the nearest before it.
 
+### Deleting
+
+- `Del` in a folder grid on a picture or video asks `Delete "IMG_0001.jpg"? It can't be undone.` in a modal with **Delete** (the default, focused button: `Enter`) and **Keep** (`Esc`). Deleting is for good: no trash, no hidden folder.
+- Deleting removes the file from the drive, then its rows from the drive's library in one transaction (its tags, its chapter moments, and tag names nobody uses any more). The folder's grid is shown again without it, the cursor on the tile that took its place (the one before if it was last), its tags in the status bar. Its thumbnail cache row stays; it is never matched again (lookups check size and mtime).
+- Needs a library that can be saved, like `t`; otherwise `Can't delete here` flashes and nothing is asked. A file that can't be deleted (drive gone, permissions) shows `Couldn't delete — is the drive still connected?` and keeps its tags; a deleted file whose rows can't be removed shows `Couldn't save tags — is the drive still connected?`.
+- `Del` in the viewer, or on an empty grid, does nothing. Not yet: `Del` on a folder tile or in search results does nothing.
+
 ### Status bar (always visible)
 
 It says when there is no library (viewing only), says `Library on <drive> can't be opened — viewing only` when the drive's `tags.db` can't be opened, and on a read-only drive adds `Read-only — tags can't be saved`.
