@@ -197,6 +197,19 @@ def test_del_on_a_folder_tile_holding_only_an_empty_subfolder_asks_whether_to_de
     assert questions == [f'Delete empty folder "{folder.name}"?']
 
 
+def test_the_folder_delete_question_counts_every_file_at_any_depth_leaving_out_hidden_ones_the_drive_adds(qtbot, tmp_path):
+    questions = []
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: questions.append(question))
+    (folder / "Beach" / "Day 2").mkdir(parents=True)
+    for name in ("Beach/clip.mp4", "Beach/Day 2/notes.txt", ".DS_Store", "._IMG_1.png", "Beach/._clip.mp4"):
+        (folder / name).write_bytes(b"")
+    cursor_on_the_folder_tile(qtbot, stack, folder)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    assert questions == [f'Delete folder "{folder.name}" and the 4 files in it? It can\'t be undone.']
+
+
 def test_del_on_a_file_in_search_results_asks_nothing_and_leaves_the_file_on_the_drive(qtbot, tmp_path):
     questions = []
     window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: questions.append(question) or True)

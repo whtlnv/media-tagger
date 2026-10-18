@@ -9,7 +9,7 @@
 - [x] Pressing `Del` on a folder tile with two files in it asks `Delete folder "Photos" and the 2 files in it? It can't be undone.` (predicted-contradiction: test_window_delete.py::test_del_on_a_folder_tile_asks_nothing_and_leaves_the_folder_and_its_files — folder tiles now ask)
 - [x] Pressing `Del` on a folder tile with one file in it asks `… and the 1 file in it? …`
 - [x] Pressing `Del` on a folder tile with no files in it (only empty subfolders) asks `Delete empty folder "Photos"?`
-- [ ] The folder question's count includes files in subfolders at any depth, and leaves out hidden files (`.DS_Store`, exFAT's `._*`)
+- [x] The folder question's count includes files in subfolders at any depth, and leaves out hidden files (`.DS_Store`, exFAT's `._*`)
 - [ ] Pressing `Del` on a folder tile answered no keeps the folder, its files and their tags
 - [ ] Pressing `Del` on a folder tile answered yes deletes the folder and everything in it from the drive
 - [ ] Deleting a folder from a folder grid removes the folder's own tags and its files' tags from the drive's library
