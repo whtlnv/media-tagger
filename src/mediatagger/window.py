@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QApplication, QStackedWidget, QStyle, QVBoxLayout,
 
 from mediatagger.cheat_sheet import GRID_KEYS, LAUNCH_KEYS, VIEWER_KEYS, CheatSheet
 from mediatagger.drive_session import DELETE_QUESTION, DriveSession, delete_folder_question
-from mediatagger.folder import files_under
+from mediatagger.folder import file_count_under
 from mediatagger.folder_thumbnails import GENERATING_THUMBNAILS_TEXT, progress_text
 from mediatagger.grid import TILE_ROLE, Grid
 from mediatagger.grid_filter import GridFilter
@@ -291,7 +291,7 @@ class Window(QWidget):
             self.status_bar.flash_cant_save(CANT_DELETE_HERE_TEXT)
             return
         if path.is_dir():
-            if self.session.ask_to_delete(delete_folder_question(path.name, files_under(path))):
+            if self.session.ask_to_delete(delete_folder_question(path.name, file_count_under(path))):
                 self._delete_folder(path, index.row())
         elif self.session.ask_to_delete(DELETE_QUESTION.format(path.name)):
             self._delete_file(path, index.row())

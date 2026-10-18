@@ -56,7 +56,7 @@ def folder_entries(folder):
     return [folder / name for name in subfolders + media]
 
 
-def files_under(folder):
+def file_count_under(folder):
     """How many files the folder holds at any depth, leaving out hidden ones (`.DS_Store`, exFAT's `._*`)."""
     return sum(1 for _folder, _subfolders, names in os.walk(folder) for name in names if not name.startswith("."))
 
