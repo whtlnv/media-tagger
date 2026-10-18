@@ -36,6 +36,7 @@ State of the project and how it has been run, for the next session. Read `DESIGN
 | 26 `0` back to normal | done, validated on the Mac (`351d7fc`, 1093 tests); Pi run pending |
 | 27 Painted badge icons | done, validated on the Mac (`f7ce45f`, 1097 tests); Pi run pending |
 | 28 `b` plays backwards | done, validated on the Mac (`db3bf4a`, 1112 tests); Pi run pending |
+| 29 `Del` deletes a file | done, validated on the Mac (`322e7f9`, 1132 tests); Pi run pending |
 
 Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), `grid.py`, `grid_filter.py` (the grids' shared filter and its button), `viewer.py`, `tag_prompt.py` (the `t` prompt, shared by grid and viewer), `rename_prompt.py` (the grid's `n` prompt), `status_bar.py`, `drive_session.py` (library open/create/restore/backup), `drive_config.py` (the drive's `mediatagger_config.json`: required tag roots), `library.py` (SQLite, schema v3: tags and chapter moments), `backup.py`, `state.py` (last folder, geometry, recent searches and renames; `$XDG_CONFIG_HOME`), `search.py` (query matching), `search_bar.py` (the `/` box and its `↑`/`↓` history), `folder.py`, `slideshow.py`, `thumbnails.py` (image/video/folder thumbnails, `ffmpeg`/`ffprobe`), `thumbnail_cache.py`, `thumbnail_scheduler.py` (3 workers + prefetch), `folder_thumbnails.py` (a folder's thumbnails for its grid), `video.py` + `mpv_surface.py` (libmpv render API), `video_controls.py` (video progress bar), `chapters.py` + `chapter_list.py` (the viewer's `c`, `.`/`,` and `l` chapters), `zoom.py` (mouse-wheel zoom for images and mpv), `gui_thread_gc.py`. Tests are co-located (`test_*.py`). Open structural debt is in `BACKLOG.md`.
 
@@ -49,6 +50,12 @@ Code: `src/mediatagger/` — `window.py` (top-level, switches grid ⇄ viewer), 
   - send the agent back with a numbered fix list if anything is off.
 - Progress is relayed to the user in chat from a `Monitor` that polls `git log`, `TODO.md` checkbox counts, `~/Library/Logs/DiagnosticReports/Python-*.ips` and `/Volumes/MEDIATAGGER`. Monitors expire every 30 min; re-arm.
 - The user asked for progress to be printed in the conversation and for questions only when a decision is genuinely theirs.
+
+## Phase 29 — done
+
+From the user (2026-10-17): Del deletes from the grid with a confirmation; the user chose **for good** (no trash) and folders with their contents (Phase 30). `Grid.delete` (Key_Delete) is connected only for folder grids (`Window._show`); `Window._delete`: no tile / folder tile → nothing (folders are Phase 30, results Phase 31); `tags_can_be_saved()` false → `Can't delete here` flash (`flash_cant_save(text)`); asks via `DriveSession.ask_to_delete` (seam; real one a QMessageBox with **Delete** = DestructiveRole default and **Keep** = escape button); `unlink`; `OSError` → `Couldn't delete — is the drive still connected?` (stays in the background slot), library untouched; then `Library.forget(path)` (item_tags, moments, items row, unused tag names, one transaction; sqlite/OS error → `Couldn't save tags…`, grid still refreshed); `_show_folder_again` rebuilds the folder grid, cursor at `min(row, last)`. No library backup before a delete. Cycles hand-driven. Orchestrator check: suite twice (1132; then 2 load flakes — `drive/test_run.py` and the 3 s quit test — which fail the same 2/4 on `527d49e` at load ~10), native on MTFAKE: Del → `Delete "IMG_3.png"? It can't be undone.` Keep/Delete, Esc keeps file and tags, Enter deletes, cursor on IMG_4, status shows its tags, the file's only-used tag gone from `tags.db`, a shared tag kept; Del on a folder asks nothing.
+
+- **Pi to check:** the question box is small (macOS default size) — readable on the TV? Enter really presses Delete under Wayland; delete on the USB exFAT drive.
 
 ## Phase 28 — done
 
