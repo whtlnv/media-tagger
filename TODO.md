@@ -19,3 +19,4 @@
 - [x] Without a fake answer, the window's delete question is a modal whose Enter deletes the file and whose Esc keeps it
 - [x] The window's delete question's focused default button reads Delete, and its other button Keep
 - [x] The grid's cheat sheet lists `Del` as deleting the file
+- [x] A file deleted whose library rows can't be removed (drive pulled mid-way) is gone from the grid, and the status bar says tags couldn't be saved

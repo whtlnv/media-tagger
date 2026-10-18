@@ -284,10 +284,10 @@ class Window(QWidget):
     def _delete(self, index):
         if not index.isValid() or index.data(TILE_ROLE).path.is_dir():  # folders: not yet
             return
+        path = index.data(TILE_ROLE).path
         if not self.session.tags_can_be_saved():
             self.status_bar.flash_cant_save(CANT_DELETE_HERE_TEXT)
             return
-        path = index.data(TILE_ROLE).path
         if not self.session.ask_to_delete(DELETE_QUESTION.format(path.name)):
             return
         try:
@@ -295,9 +295,17 @@ class Window(QWidget):
         except OSError:  # the drive gone, or the file not ours to delete: its rows stay with it
             self.status_bar.show_background(COULDNT_DELETE_TEXT)
             return
-        self.session.library.forget(path)
-        grid = self._grid_of(path.parent)
-        grid.setCurrentIndex(grid.model().index(min(index.row(), grid.model().rowCount() - 1), 0))  # the last one's place is the one before
+        try:
+            self.session.library.forget(path)
+        except (sqlite3.Error, OSError):  # the file is gone all the same; its rows only linger
+            self.status_bar.show_couldnt_save(True)
+        self._show_folder_again(path.parent, index.row())
+
+    def _show_folder_again(self, folder, row):
+        """The folder's grid, read afresh, with the cursor at row: on the tile that took a deleted one's place, or the
+        one before when it was the last."""
+        grid = self._grid_of(folder)
+        grid.setCurrentIndex(grid.model().index(min(row, grid.model().rowCount() - 1), 0))
         self._show(grid)
         self._show_current_tags()
 

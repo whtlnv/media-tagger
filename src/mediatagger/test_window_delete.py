@@ -1,3 +1,4 @@
+import sqlite3
 from pathlib import Path
 
 from PySide6.QtCore import Qt, QTimer
@@ -233,3 +234,17 @@ def test_the_windows_delete_question_has_its_delete_button_focused_and_default_a
     qtbot.waitUntil(lambda: len(buttons) == 1)
 
     assert buttons == [("Delete", True, ["Delete", "Keep"])]
+
+
+def test_deleting_an_image_whose_library_rows_cant_be_removed_still_shows_the_folder_without_it_and_says_tags_couldnt_be_saved(qtbot, tmp_path, monkeypatch):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: True)
+
+    def drive_pulled(library, path):
+        raise sqlite3.OperationalError("disk I/O error")
+
+    monkeypatch.setattr(Library, "forget", drive_pulled)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    assert [tile.path for tile in stack.currentWidget().model().tiles] == [folder / "IMG_2.png"]
+    assert "Couldn't save tags — is the drive still connected?" in shown_status_bar_texts(window)
