@@ -235,11 +235,12 @@ class Library:
         return changed
 
     def forget(self, path):
-        """The item's rows go: its tags, and the tag names nobody else uses."""
+        """The item's rows go: its tags, its moments, and the tag names nobody else uses."""
         key = self._key(path)
         connection = sqlite3.connect(self._tags_db)
         with connection:
-            connection.execute("DELETE FROM item_tags WHERE item_id = (SELECT id FROM items WHERE rel_path = ?)", (key,))
+            for table in ("item_tags", "moments"):
+                connection.execute(f"DELETE FROM {table} WHERE item_id = (SELECT id FROM items WHERE rel_path = ?)", (key,))
             connection.execute("DELETE FROM items WHERE rel_path = ?", (key,))
             connection.execute("DELETE FROM tags WHERE id NOT IN (SELECT tag_id FROM item_tags)")
         connection.close()
