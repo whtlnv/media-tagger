@@ -329,6 +329,23 @@ def test_esc_from_search_results_after_deleting_a_result_from_the_folder_searche
     assert (grid.folder, [tile.path for tile in grid.model().tiles]) == (folder, [folder / "IMG_2.png", folder / "IMG_3.png"])
 
 
+def test_back_from_a_slideshow_opened_from_search_results_after_a_delete_the_cursor_is_on_the_slideshows_file(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: True)
+    (folder / "IMG_3.png").write_bytes((folder / "IMG_1.png").read_bytes())
+    window.session.library.enter(folder / "IMG_2.png", "beach")
+    window.session.library.enter(folder / "IMG_3.png", "beach")
+    search_for(qtbot, window, stack, "beach")
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Space)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    results = stack.currentWidget()
+    assert [tile.path for tile in results.model().tiles] == [folder / "IMG_2.png", folder / "IMG_3.png"]
+    assert results.currentIndex().data(TILE_ROLE).path == folder / "IMG_3.png"
+
+
 def answer_the_delete_question_with(qtbot, grid, key):
     """Del on the grid, then the key pressed in whatever modal the window opens; the modal it was, or None."""
     modals = []

@@ -7,7 +7,7 @@
 - [x] After deleting a file from search results, the results of the same search are shown without it (breadcrumb kept), the cursor on the result that took its place, its tags in the status bar
 - [x] After deleting the last result, the cursor is on the result before it
 - [x] `Esc` from the results after deleting a result that was in the folder searched from shows that folder without it
-- [ ] Coming back to the results from a slideshow opened after a delete puts the cursor on the slideshow's current file
+- [x] Coming back to the results from a slideshow opened after a delete puts the cursor on the slideshow's current file
 - [ ] `Del` on a folder in search results, answered yes, deletes the folder and the rows under it, and it leaves the results
 - [ ] `Del` on a missing (`?`) result asks `Forget "IMG_2.png"? Its tags are removed.`
 - [ ] A missing result answered yes loses its library rows and leaves the results
