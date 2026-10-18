@@ -30,6 +30,8 @@ CANT_RESTORE_TO_READ_ONLY_DRIVE_TEXT = "{} is read-only — its backup can't be 
 
 def delete_folder_question(name, files):
     """What Del asks of a folder holding that many files."""
+    if files == 0:
+        return f'Delete empty folder "{name}"?'
     return f'Delete folder "{name}" and the {files} {"file" if files == 1 else "files"} in it? It can\'t be undone.'
 
 
