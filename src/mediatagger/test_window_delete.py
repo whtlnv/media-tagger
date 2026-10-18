@@ -413,6 +413,22 @@ def test_a_missing_search_result_answered_yes_loses_its_tags_and_leaves_the_resu
     assert results.currentIndex().data(TILE_ROLE).path == folder / "IMG_1.png"
 
 
+def test_esc_from_search_results_after_deleting_a_folder_above_the_one_searched_from_shows_the_nearest_folder_left(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: True)
+    [beach] = make_folders(folder, "Beach")
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Backspace)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)  # into the image folder, its cursor on Beach
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)  # into Beach
+    assert stack.currentWidget().folder == beach
+    videos = results_of_holidays_holding_two_folders(qtbot, window, stack, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    grid = stack.currentWidget()
+    assert (grid.folder, [tile.path for tile in grid.model().tiles]) == (folder.parent, [videos])
+
+
 def answer_the_delete_question_with(qtbot, grid, key):
     """Del on the grid, then the key pressed in whatever modal the window opens; the modal it was, or None."""
     modals = []

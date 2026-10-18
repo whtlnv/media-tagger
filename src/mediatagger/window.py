@@ -247,7 +247,7 @@ class Window(QWidget):
         """The same search's results without what was deleted, the cursor as in a folder's grid shown again."""
         self._drop_grid(results)
         searched_from = results.searched_from
-        if gone.is_relative_to(searched_from.folder):  # the folder under the results showed it
+        if gone.is_relative_to(searched_from.folder) or searched_from.folder.is_relative_to(gone):  # it showed it, or went with it
             searched_from = self._folder_grid_again(searched_from)
         left = [path for path in paths if not (path.is_relative_to(gone) and not path.exists())]  # what wouldn't go stays
         grid = self._show_results_of(left, searched_from)

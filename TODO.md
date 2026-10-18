@@ -13,3 +13,4 @@
 - [x] `Del` on a missing (`?`) result asks `Forget "IMG_2.png"? Its tags are removed.`
 - [x] A missing result answered yes loses its library rows and leaves the results
 - [x] The real question for a missing result has a **Forget** button (default) and **Keep**
+- [x] `Esc` from the results after deleting a folder above the folder the search started in shows the nearest folder left
