@@ -31,6 +31,11 @@ def _rect_of(geometry):
     return QRect(geometry["x"], geometry["y"], geometry["width"], geometry["height"])
 
 
+def _put_the_cursor_at(grid, row):
+    """On the tile at row, or on the last one when the grid has fewer."""
+    grid.setCurrentIndex(grid.model().index(min(row, grid.model().rowCount() - 1), 0))
+
+
 class Window(QWidget):
     """The app's one window: the folder grid and the viewer in a stack, over which lies the one status bar they share,
     reporting the one drive session they share."""
@@ -252,7 +257,7 @@ class Window(QWidget):
             searched_from = self._folder_grid_again(searched_from)
         left = [path for path in paths if not (path.is_relative_to(gone) and not path.exists())]  # what wouldn't go stays
         grid = self._show_results_of(left, searched_from)
-        grid.setCurrentIndex(grid.model().index(min(row, grid.model().rowCount() - 1), 0))
+        _put_the_cursor_at(grid, row)
         self._show_current_tags()
         grid.setFocus()
 
@@ -266,7 +271,7 @@ class Window(QWidget):
         grid = self._grid_of(folder, at=kept if kept is not None and kept.exists() else None)
         if not grid.currentIndex().isValid():
             row = current.row() if folder == old.folder else 0
-            grid.setCurrentIndex(grid.model().index(min(row, grid.model().rowCount() - 1), 0))
+            _put_the_cursor_at(grid, row)
         self._connect_folder_grid(grid)
         self._drop_grid(old)
         return grid
@@ -370,7 +375,7 @@ class Window(QWidget):
         """The folder's grid, read afresh, with the cursor at row: on the tile that took a deleted one's place, or the
         one before when it was the last."""
         grid = self._grid_of(folder)
-        grid.setCurrentIndex(grid.model().index(min(row, grid.model().rowCount() - 1), 0))
+        _put_the_cursor_at(grid, row)
         self._show(grid)
         self._show_current_tags()
 
