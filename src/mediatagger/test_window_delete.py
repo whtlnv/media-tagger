@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QStackedWidget
 from mediatagger.grid import TILE_ROLE
 from mediatagger.library import Library
 from mediatagger.state import remember, state_file
-from mediatagger.status_bar import CANT_DELETE_HERE_TEXT
+from mediatagger.status_bar import CANT_DELETE_HERE_TEXT, COULDNT_DELETE_TEXT
 from mediatagger.test_viewer import SILENT, show_exposed
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image, drive_without_a_tag_library_holding_one_image
 from mediatagger.test_viewer_open import make_folders
@@ -139,3 +139,16 @@ def test_del_in_a_folder_grid_on_a_drive_without_a_library_asks_nothing_keeps_th
     assert questions == []
     assert (folder / "IMG_1.png").exists()
     assert CANT_DELETE_HERE_TEXT in shown_status_bar_texts(window)
+
+
+def test_del_on_an_image_its_folder_wont_let_go_of_says_couldnt_delete_and_leaves_its_tags_in_the_library(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: True)
+    folder.chmod(0o555)
+    try:
+        qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+    finally:
+        folder.chmod(0o755)
+
+    assert (folder / "IMG_1.png").exists()
+    assert COULDNT_DELETE_TEXT in shown_status_bar_texts(window)
+    assert Library.open(folder.parent).tags(folder / "IMG_1.png") == ["beach"]

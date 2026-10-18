@@ -9,6 +9,7 @@ NO_LIBRARY_TEXT = "No library open"
 READ_ONLY_STATUS_TEXT = "Read-only — tags can't be saved"
 TAGS_CANT_BE_SAVED_HERE_TEXT = "Tags can't be saved here"
 CANT_DELETE_HERE_TEXT = "Can't delete here"
+COULDNT_DELETE_TEXT = "Couldn't delete — is the drive still connected?"
 NO_SUCH_TAG_TEXT = 'No tag "{}"'
 RENAME_NEEDS_TWO_TAGS_TEXT = "A rename needs two tags: old new"
 RENAME_TO_SAME_TAG_TEXT = "The old and new tags are the same"

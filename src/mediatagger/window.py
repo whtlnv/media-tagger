@@ -16,7 +16,7 @@ from mediatagger.search_bar import SearchBar
 from mediatagger.slideshow import Slideshow
 from mediatagger.state import (remember, remember_cheat_sheet, remember_geometry, remember_search, remembered_cheat_sheet, remembered_folder,
     remembered_geometry, state_file)
-from mediatagger.status_bar import CANT_DELETE_HERE_TEXT, NO_SUCH_TAG_TEXT, RENAME_LEADING_DASH_TEXT, RENAME_NEEDS_TWO_TAGS_TEXT, RENAME_TO_SAME_TAG_TEXT, StatusBar, overlay_label, renamed_tag_text
+from mediatagger.status_bar import CANT_DELETE_HERE_TEXT, COULDNT_DELETE_TEXT, NO_SUCH_TAG_TEXT, RENAME_LEADING_DASH_TEXT, RENAME_NEEDS_TWO_TAGS_TEXT, RENAME_TO_SAME_TAG_TEXT, StatusBar, overlay_label, renamed_tag_text
 from mediatagger.tag_prompt import TagPrompt
 from mediatagger.viewer import Viewer
 
@@ -290,7 +290,11 @@ class Window(QWidget):
         path = index.data(TILE_ROLE).path
         if not self.session.ask_to_delete(DELETE_QUESTION.format(path.name)):
             return
-        path.unlink()
+        try:
+            path.unlink()
+        except OSError:  # the drive gone, or the file not ours to delete: its rows stay with it
+            self.status_bar.show_background(COULDNT_DELETE_TEXT)
+            return
         self.session.library.forget(path)
         grid = self._grid_of(path.parent)
         grid.setCurrentIndex(grid.model().index(min(index.row(), grid.model().rowCount() - 1), 0))  # the last one's place is the one before

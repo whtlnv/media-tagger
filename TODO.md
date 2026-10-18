@@ -14,7 +14,7 @@
 - [x] Pressing `Del` in the grid of an empty folder asks nothing and raises nothing
 - [x] Pressing `Del` in the viewer asks nothing and leaves the file on the drive
 - [x] Pressing `Del` in a folder grid where tags can't be saved asks nothing, keeps the file and flashes `Can't delete here`
-- [ ] Pressing `Del` on a file the drive refuses to delete shows `Couldn't delete — is the drive still connected?` and leaves its tags in the library
+- [x] Pressing `Del` on a file the drive refuses to delete shows `Couldn't delete — is the drive still connected?` and leaves its tags in the library
 - [ ] Pressing `Del` on a folder tile, or in search results, asks nothing and deletes nothing (Phases 30–31)
 - [ ] Without a fake answer, the window's delete question is a modal whose Enter deletes the file and whose Esc keeps it
 - [ ] The grid's cheat sheet lists `Del` as deleting the file
