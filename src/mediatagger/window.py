@@ -153,6 +153,7 @@ class Window(QWidget):
         grid.up.connect(lambda: self._leave(grid.folder))
         grid.escaped.connect(self.close)
         grid.dropped.connect(self._open)
+        grid.delete.connect(lambda: self._delete(grid.currentIndex()))
         self._connect_tags_search_and_progress_of(grid)
         for old in self.findChildren(Grid):
             self._stop_thumbnails_of(old)
@@ -279,6 +280,13 @@ class Window(QWidget):
             self.status_bar.flash_cant_save()
             return
         self.tag_prompt.open(self.session.library, index.data(TILE_ROLE).path)
+
+    def _delete(self, index):
+        if not index.isValid():
+            return
+        path = index.data(TILE_ROLE).path
+        if self.session.ask_to_delete(""):
+            path.unlink()
 
     def _rename_tag(self, text):
         names = text.lower().split()

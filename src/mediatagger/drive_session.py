@@ -32,7 +32,7 @@ class DriveSession:
     so in the status bar. One per window, shared by everything that shows that drive's media."""
 
     def __init__(self, status_bar, window, is_mount_point=os.path.ismount, ask_to_create_library=None, app_location=APP_PACKAGE,
-        backup_root=None, backup_clock=lambda: datetime.now(timezone.utc), ask_to_restore_library=None, home=None,
+        backup_root=None, backup_clock=lambda: datetime.now(timezone.utc), ask_to_restore_library=None, home=None, ask_to_delete=None,
     ):
         self.status_bar = status_bar
         self.window = window  # questions are asked over it
@@ -42,6 +42,7 @@ class DriveSession:
         self.backup_clock = backup_clock
         self.ask_to_create_library = ask_to_create_library or self._ask_yes_or_no
         self.ask_to_restore_library = ask_to_restore_library or self._ask_yes_or_no
+        self.ask_to_delete = ask_to_delete or self._ask_yes_or_no
         self.declined_create_drives = set()
         self.declined_restore_drives = set()
         self.library = None  # the open Library of the current drive, if it has one
