@@ -224,11 +224,12 @@ def test_del_on_a_folder_tile_answered_yes_deletes_the_folder_and_everything_in_
     window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: True)
     (folder / "Beach").mkdir()
     (folder / "Beach" / "._clip.mp4").write_bytes(b"")
+    make_folders(folder.parent, "Videos")
     cursor_on_the_folder_tile(qtbot, stack, folder)
 
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
 
-    assert not folder.exists()
+    assert sorted(path.name for path in folder.parent.iterdir()) == [".mediatagger", "Videos"]
 
 
 def test_deleting_a_folder_from_a_folder_grid_removes_its_own_tags_and_its_files_tags_from_the_drives_library(qtbot, tmp_path):
