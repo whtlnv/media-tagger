@@ -14,3 +14,4 @@
 - [x] A missing result answered yes loses its library rows and leaves the results
 - [x] The real question for a missing result has a **Forget** button (default) and **Keep**
 - [x] `Esc` from the results after deleting a folder above the folder the search started in shows the nearest folder left
+- [x] A folder picked with `o` from search results after a delete goes back to its own grid on `Esc`

@@ -246,6 +246,7 @@ class Window(QWidget):
     def _show_results_again(self, results, paths, gone, row):
         """The same search's results without what was deleted, the cursor as in a folder's grid shown again."""
         self._drop_grid(results)
+        self._results = None  # the dropped grid, should a slideshow from it have been left
         searched_from = results.searched_from
         if gone.is_relative_to(searched_from.folder) or searched_from.folder.is_relative_to(gone):  # it showed it, or went with it
             searched_from = self._folder_grid_again(searched_from)

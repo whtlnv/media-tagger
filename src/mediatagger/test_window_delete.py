@@ -429,6 +429,22 @@ def test_esc_from_search_results_after_deleting_a_folder_above_the_one_searched_
     assert (grid.folder, [tile.path for tile in grid.model().tiles]) == (folder.parent, [videos])
 
 
+def test_a_folder_picked_from_search_results_after_a_delete_goes_back_to_its_own_grid_on_esc(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: True)
+    results_of_beach_holding_both_images(qtbot, window, stack, folder)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)  # back to the results, from a slideshow over them
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+    [picked] = make_folders(folder.parent, "Picked")
+    (picked / "IMG_9.png").write_bytes((folder / "IMG_2.png").read_bytes())
+    window.viewer.folder_picker = lambda: picked
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_O)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    assert stack.currentWidget().folder == picked
+
+
 def answer_the_delete_question_with(qtbot, grid, key):
     """Del on the grid, then the key pressed in whatever modal the window opens; the modal it was, or None."""
     modals = []
