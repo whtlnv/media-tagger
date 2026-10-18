@@ -15,6 +15,6 @@
 - [x] Deleting a folder from a folder grid removes the folder's own tags and its files' tags from the drive's library
 - [x] After deleting a folder tile, the grid shows the parent folder without it, the cursor on the tile that took its place (the one before if it was last) and its tags in the status bar
 - [x] Deleting a folder whose subfolder won't let go of its files leaves what is left on the drive with its tags, removes the rows of what is gone, says `Couldn't delete — is the drive still connected?` and shows the grid again
-- [ ] Deleting a folder whose library rows can't be removed still shows the parent without it and says tags couldn't be saved
+- [x] Deleting a folder whose library rows can't be removed still shows the parent without it and says tags couldn't be saved
 - [ ] Pressing `Del` on a folder tile on a drive without a library asks nothing, keeps the folder and says `Can't delete here`
 - [ ] The grid's cheat sheet row for `Del` reads `delete the picture, video or folder (asks first)`

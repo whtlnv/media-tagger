@@ -291,27 +291,34 @@ class Window(QWidget):
             self.status_bar.flash_cant_save(CANT_DELETE_HERE_TEXT)
             return
         if path.is_dir():
-            if not self.session.ask_to_delete(delete_folder_question(path.name, files_under(path))):
-                return
-            failures = []
-            shutil.rmtree(path, onexc=lambda *failure: failures.append(failure))  # on past what won't go
-            self.session.library.forget_gone(path)
-            self._show_folder_again(path.parent, index.row())
-            if failures:
-                self.status_bar.show_background(COULDNT_DELETE_TEXT)
-            return
-        if not self.session.ask_to_delete(DELETE_QUESTION.format(path.name)):
-            return
+            if self.session.ask_to_delete(delete_folder_question(path.name, files_under(path))):
+                self._delete_folder(path, index.row())
+        elif self.session.ask_to_delete(DELETE_QUESTION.format(path.name)):
+            self._delete_file(path, index.row())
+
+    def _delete_file(self, path, row):
         try:
             path.unlink()
         except OSError:  # the drive gone, or the file not ours to delete: its rows stay with it
             self.status_bar.show_background(COULDNT_DELETE_TEXT)
             return
+        self._forget(self.session.library.forget, path)
+        self._show_folder_again(path.parent, row)
+
+    def _delete_folder(self, folder, row):
+        """As much of the folder as will go; what is left stays on the drive with its rows."""
+        failures = []
+        shutil.rmtree(folder, onexc=lambda *failure: failures.append(failure))  # on past what won't go
+        self._forget(self.session.library.forget_gone, folder)
+        self._show_folder_again(folder.parent, row)
+        if failures:
+            self.status_bar.show_background(COULDNT_DELETE_TEXT)
+
+    def _forget(self, forget, path):
         try:
-            self.session.library.forget(path)
-        except (sqlite3.Error, OSError):  # the file is gone all the same; its rows only linger
+            forget(path)
+        except (sqlite3.Error, OSError):  # what is gone from the drive is gone all the same; its rows only linger
             self.status_bar.show_couldnt_save(True)
-        self._show_folder_again(path.parent, index.row())
 
     def _show_folder_again(self, folder, row):
         """The folder's grid, read afresh, with the cursor at row: on the tile that took a deleted one's place, or the
