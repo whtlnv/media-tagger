@@ -231,6 +231,16 @@ def test_del_on_a_folder_tile_answered_yes_deletes_the_folder_and_everything_in_
     assert not folder.exists()
 
 
+def test_deleting_a_folder_from_a_folder_grid_removes_its_own_tags_and_its_files_tags_from_the_drives_library(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: True)
+    window.session.library.enter(folder, "holidays")
+    cursor_on_the_folder_tile(qtbot, stack, folder)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    assert Library.open(folder.parent).all_tags() == []
+
+
 def test_del_on_a_file_in_search_results_asks_nothing_and_leaves_the_file_on_the_drive(qtbot, tmp_path):
     questions = []
     window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: questions.append(question) or True)
