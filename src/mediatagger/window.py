@@ -82,7 +82,7 @@ class Window(QWidget):
             self.session.open_library(remembered)
             grid = self._grid_of(remembered)
             self._show(grid)
-            grid.setCurrentIndex(grid.model().index(0, 0))
+            _put_the_cursor_at(grid, 0)
 
     def _centre_on_the_screen(self):
         available = self.screen().availableGeometry()
@@ -232,7 +232,7 @@ class Window(QWidget):
         grid = self._show_results_of(search(self.session.library, query), searched_from)
         self.breadcrumb.setText(f"Search: {query}")
         self.breadcrumb.show()
-        grid.setCurrentIndex(grid.model().index(0, 0))
+        _put_the_cursor_at(grid, 0)
         self._show_current_tags()  # no results: no cursor, so the last item's tags go
         grid.setFocus()
 
@@ -429,7 +429,7 @@ class Window(QWidget):
         path = index.data(TILE_ROLE).path
         if path.is_dir():
             grid = self._grid_of(path)
-            grid.setCurrentIndex(grid.model().index(0, 0))
+            _put_the_cursor_at(grid, 0)
             self._show(grid)
             self._show_current_tags()
             return
