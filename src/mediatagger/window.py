@@ -1,3 +1,4 @@
+import shutil
 import sqlite3
 from pathlib import Path
 
@@ -290,7 +291,12 @@ class Window(QWidget):
             self.status_bar.flash_cant_save(CANT_DELETE_HERE_TEXT)
             return
         if path.is_dir():
-            self.session.ask_to_delete(delete_folder_question(path.name, files_under(path)))
+            if not self.session.ask_to_delete(delete_folder_question(path.name, files_under(path))):
+                return
+            try:
+                shutil.rmtree(path)
+            except OSError:
+                self.status_bar.show_background(COULDNT_DELETE_TEXT)
             return
         if not self.session.ask_to_delete(DELETE_QUESTION.format(path.name)):
             return

@@ -11,7 +11,7 @@
 - [x] Pressing `Del` on a folder tile with no files in it (only empty subfolders) asks `Delete empty folder "Photos"?`
 - [x] The folder question's count includes files in subfolders at any depth, and leaves out hidden files (`.DS_Store`, exFAT's `._*`)
 - [x] Pressing `Del` on a folder tile answered no keeps the folder, its files and their tags
-- [ ] Pressing `Del` on a folder tile answered yes deletes the folder and everything in it from the drive
+- [x] Pressing `Del` on a folder tile answered yes deletes the folder and everything in it from the drive
 - [ ] Deleting a folder from a folder grid removes the folder's own tags and its files' tags from the drive's library
 - [ ] After deleting a folder tile, the grid shows the parent folder without it, the cursor on the tile that took its place (the one before if it was last) and its tags in the status bar
 - [ ] Deleting a folder whose subfolder won't let go of its files leaves what is left on the drive with its tags, removes the rows of what is gone, says `Couldn't delete — is the drive still connected?` and shows the grid again

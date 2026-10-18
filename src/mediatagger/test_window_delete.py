@@ -220,6 +220,17 @@ def test_del_on_a_folder_tile_answered_no_keeps_the_folder_its_files_and_their_t
     assert window.session.library.tags(folder / "IMG_1.png") == ["beach"]
 
 
+def test_del_on_a_folder_tile_answered_yes_deletes_the_folder_and_everything_in_it_from_the_drive(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: True)
+    (folder / "Beach").mkdir()
+    (folder / "Beach" / "._clip.mp4").write_bytes(b"")
+    cursor_on_the_folder_tile(qtbot, stack, folder)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    assert not folder.exists()
+
+
 def test_del_on_a_file_in_search_results_asks_nothing_and_leaves_the_file_on_the_drive(qtbot, tmp_path):
     questions = []
     window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: questions.append(question) or True)
