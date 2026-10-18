@@ -134,13 +134,13 @@ class Window(QWidget):
         if self.viewer.slideshow is None:
             self.close()
             return
-        if self._results is not None:
+        if self._results is not None and self._results[2] is self.viewer.slideshow:  # still the slideshow opened from them
             self._show_results()
             return
         self._show_grid()
 
     def _show_results(self):
-        grid, paths = self._results
+        grid, paths, _ = self._results
         self.viewer.stop_video()
         grid.setCurrentIndex(grid.model().index(paths.index(self.viewer.slideshow.current), 0))
         grid.show_new_tags(self.session.library)  # files tagged in the slideshow
@@ -447,10 +447,10 @@ class Window(QWidget):
             self._results = None
             self._open_tile(index)
             return
-        self._results = (grid, paths)
         files = grid.shown_files()
         self._open_tile(index)
         self.viewer.slideshow = Slideshow(files, files.index(index.data(TILE_ROLE).path))
+        self._results = (grid, paths, self.viewer.slideshow)
 
     def _pick_folder(self):
         folder = self.viewer.folder_picker()

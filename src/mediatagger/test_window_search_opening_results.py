@@ -1,13 +1,16 @@
 from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QStackedWidget
 
 from mediatagger.grid import TILE_ROLE
 from mediatagger.library import Library
 from mediatagger.test_grid import tile_names
-from mediatagger.test_viewer import make_image, shown_texts
+from mediatagger.test_viewer import SILENT, make_image, shown_texts
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image
+from mediatagger.test_viewer_open import drag_and_drop_onto, make_folders
 from mediatagger.test_window import window_showing_the_grid_with_its_cursor_on_its_first_tile
 from mediatagger.test_window_search import drive_with_a_missing_image_tagged, search_for
 from mediatagger.viewer import Viewer
+from mediatagger.window import Window
 
 
 def test_enter_on_a_result_file_opens_a_slideshow_at_that_file(qtbot, tmp_path):
@@ -181,3 +184,58 @@ def test_enter_on_a_search_with_no_results_does_nothing_and_keeps_the_search_lab
     qtbot.keyClick(results, Qt.Key.Key_Return)
 
     assert (stack.currentWidget() is results, window.breadcrumb.isVisible(), window.breadcrumb.text()) == (True, True, "Search: mountain")
+
+
+def test_esc_in_a_slideshow_of_a_folder_picked_from_the_results_grid_after_a_results_slideshow_shows_that_folders_grid(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    [chosen] = make_folders(drive, "Chosen")
+    make_image(chosen / "x.jpg", "green")
+    window = Window(folder, player_options=SILENT, folder_picker=lambda: chosen, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    search_for(qtbot, window, stack, "beach")
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_O)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    shown = stack.currentWidget()
+    assert (shown.folder, tile_names(shown)) == (chosen, ["x.jpg"])
+
+
+def test_esc_in_a_slideshow_of_a_folder_picked_during_a_results_slideshow_shows_that_folders_grid(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    [chosen] = make_folders(drive, "Chosen")
+    make_image(chosen / "x.jpg", "green")
+    window = Window(folder, player_options=SILENT, folder_picker=lambda: chosen, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False)
+    qtbot.addWidget(window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    search_for(qtbot, window, stack, "beach")
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_O)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    shown = stack.currentWidget()
+    assert (shown.folder, tile_names(shown)) == (chosen, ["x.jpg"])
+
+
+def test_esc_in_a_slideshow_of_a_folder_dropped_during_a_results_slideshow_shows_that_folders_grid(qtbot, tmp_path):
+    drive, folder = drive_with_a_tag_library_holding_one_image(tmp_path)
+    Library.open(drive).enter(folder / "IMG_1.png", "beach")
+    [dropped] = make_folders(drive, "Dropped")
+    make_image(dropped / "x.jpg", "green")
+    window, stack = window_showing_the_grid_with_its_cursor_on_its_first_tile(qtbot, drive, folder)
+    search_for(qtbot, window, stack, "beach")
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Return)
+    drag_and_drop_onto(stack.currentWidget(), dropped)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+
+    shown = stack.currentWidget()
+    assert (shown.folder, tile_names(shown)) == (dropped, ["x.jpg"])
