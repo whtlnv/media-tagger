@@ -293,13 +293,12 @@ class Window(QWidget):
         if path.is_dir():
             if not self.session.ask_to_delete(delete_folder_question(path.name, files_under(path))):
                 return
-            try:
-                shutil.rmtree(path)
-            except OSError:
-                self.status_bar.show_background(COULDNT_DELETE_TEXT)
-                return
+            failures = []
+            shutil.rmtree(path, onexc=lambda *failure: failures.append(failure))  # on past what won't go
             self.session.library.forget_gone(path)
             self._show_folder_again(path.parent, index.row())
+            if failures:
+                self.status_bar.show_background(COULDNT_DELETE_TEXT)
             return
         if not self.session.ask_to_delete(DELETE_QUESTION.format(path.name)):
             return

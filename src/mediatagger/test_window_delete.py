@@ -255,6 +255,24 @@ def test_after_deleting_a_folder_tile_the_grid_shows_its_parent_without_it_the_c
     assert "family" in shown_status_bar_texts(window)
 
 
+def test_deleting_a_folder_whose_subfolder_wont_let_go_of_a_file_deletes_the_rest_and_keeps_what_is_left_with_its_tags(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: True)
+    [stuck] = make_folders(folder, "Stuck")
+    (stuck / "IMG_3.png").write_bytes((folder / "IMG_1.png").read_bytes())
+    window.session.library.enter(stuck / "IMG_3.png", "sand")
+    cursor_on_the_folder_tile(qtbot, stack, folder)
+    stuck.chmod(0o555)
+    try:
+        qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+    finally:
+        stuck.chmod(0o755)
+
+    assert sorted(str(path.relative_to(folder)) for path in folder.rglob("*")) == ["Stuck", "Stuck/IMG_3.png"]
+    assert Library.open(folder.parent).all_tags() == ["sand"]
+    assert COULDNT_DELETE_TEXT in shown_status_bar_texts(window)
+    assert stack.currentWidget().currentIndex().data(TILE_ROLE).path == folder
+
+
 def test_del_on_a_file_in_search_results_asks_nothing_and_leaves_the_file_on_the_drive(qtbot, tmp_path):
     questions = []
     window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: questions.append(question) or True)
