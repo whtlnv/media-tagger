@@ -1,6 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QStackedWidget
 
+from mediatagger.grid import TILE_ROLE
 from mediatagger.library import Library
 from mediatagger.test_viewer import SILENT, show_exposed
 from mediatagger.test_viewer_library import drive_with_a_tag_library_holding_one_image
@@ -55,3 +56,13 @@ def test_deleting_an_image_tagged_beach_from_a_folder_grid_removes_its_tags_from
     qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
 
     assert Library.open(folder.parent).all_tags() == []
+
+
+def test_after_deleting_the_first_of_two_images_the_folder_grid_shows_only_the_second_with_the_cursor_on_it(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=lambda question: True)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    grid = stack.currentWidget()
+    assert [tile.path for tile in grid.model().tiles] == [folder / "IMG_2.png"]
+    assert grid.currentIndex().data(TILE_ROLE).path == folder / "IMG_2.png"

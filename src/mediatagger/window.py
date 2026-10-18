@@ -288,6 +288,9 @@ class Window(QWidget):
         if self.session.ask_to_delete(DELETE_QUESTION.format(path.name)):
             path.unlink()
             self.session.library.forget(path)
+            grid = self._grid_of(path.parent)
+            grid.setCurrentIndex(grid.model().index(index.row(), 0))
+            self._show(grid)
 
     def _rename_tag(self, text):
         names = text.lower().split()
