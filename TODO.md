@@ -18,4 +18,4 @@
 - [x] Pressing `Del` on a folder tile, or in search results, asks nothing and deletes nothing (Phases 30–31)
 - [x] Without a fake answer, the window's delete question is a modal whose Enter deletes the file and whose Esc keeps it
 - [x] The window's delete question's focused default button reads Delete, and its other button Keep
-- [ ] The grid's cheat sheet lists `Del` as deleting the file
+- [x] The grid's cheat sheet lists `Del` as deleting the file
