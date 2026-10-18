@@ -368,3 +368,21 @@ def test_deleting_a_folder_whose_library_rows_cant_be_removed_still_shows_its_pa
 
     assert [tile.path for tile in stack.currentWidget().model().tiles] == [videos]
     assert "Couldn't save tags — is the drive still connected?" in shown_status_bar_texts(window)
+
+
+def test_del_on_a_folder_tile_on_a_drive_without_a_library_asks_nothing_keeps_the_folder_and_says_cant_delete_here(qtbot, tmp_path):
+    drive, folder = drive_without_a_tag_library_holding_one_image(tmp_path)
+    questions = []
+    window = Window(folder, player_options=SILENT, is_mount_point=lambda path: path == drive, ask_to_create_library=lambda question: False,
+        ask_to_delete=lambda question: questions.append(question) or True)
+    qtbot.addWidget(window)
+    show_exposed(qtbot, window)
+    stack = window.findChild(QStackedWidget)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Escape)
+    cursor_on_the_folder_tile(qtbot, stack, folder)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    assert questions == []
+    assert (folder / "IMG_1.png").exists()
+    assert CANT_DELETE_HERE_TEXT in shown_status_bar_texts(window)
