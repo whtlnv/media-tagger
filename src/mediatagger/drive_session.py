@@ -43,7 +43,7 @@ class DriveSession:
         self.backup_clock = backup_clock
         self.ask_to_create_library = ask_to_create_library or self._ask_yes_or_no
         self.ask_to_restore_library = ask_to_restore_library or self._ask_yes_or_no
-        self.ask_to_delete = ask_to_delete or self._ask_yes_or_no
+        self.ask_to_delete = ask_to_delete or self._ask_to_delete
         self.declined_create_drives = set()
         self.declined_restore_drives = set()
         self.library = None  # the open Library of the current drive, if it has one
@@ -177,6 +177,15 @@ class DriveSession:
             self._show_and_settle()
         buttons = QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         return QMessageBox(QMessageBox.Icon.Question, "", question, buttons, self.window).exec() == QMessageBox.StandardButton.Yes
+
+    def _ask_to_delete(self, question):
+        """Enter deletes, Esc keeps: Delete is the default button, and has the focus."""
+        box = QMessageBox(QMessageBox.Icon.Question, "", question, QMessageBox.StandardButton.NoButton, self.window)
+        delete = box.addButton("Delete", QMessageBox.ButtonRole.DestructiveRole)
+        box.setEscapeButton(box.addButton("Keep", QMessageBox.ButtonRole.RejectRole))
+        box.setDefaultButton(delete)
+        box.exec()
+        return box.clickedButton() is delete
 
     def _show_and_settle(self):
         """macOS animates the switch to fullscreen; a modal opened mid-animation leaves the window at 100x30."""

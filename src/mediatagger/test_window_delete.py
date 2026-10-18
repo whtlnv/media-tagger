@@ -212,3 +212,24 @@ def test_without_a_fake_answer_esc_in_the_windows_delete_question_keeps_the_file
 
     assert question is not None
     assert (folder / "IMG_1.png").exists()
+
+
+def test_the_windows_delete_question_has_its_delete_button_focused_and_default_and_a_keep_button(qtbot, tmp_path):
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=None)
+    buttons = []
+
+    def read_and_keep():
+        question = QApplication.activeModalWidget()
+        if question is None:
+            buttons.append(None)
+            return
+        default = question.defaultButton()
+        buttons.append((default and default.text(), default is not None and question.focusWidget() is default,
+            sorted(button.text() for button in question.buttons())))
+        question.reject()  # always, or the test would wait on the modal for ever
+
+    QTimer.singleShot(200, read_and_keep)
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+    qtbot.waitUntil(lambda: len(buttons) == 1)
+
+    assert buttons == [("Delete", True, ["Delete", "Keep"])]
