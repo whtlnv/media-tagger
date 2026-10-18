@@ -386,3 +386,17 @@ def test_del_on_a_folder_tile_on_a_drive_without_a_library_asks_nothing_keeps_th
     assert questions == []
     assert (folder / "IMG_1.png").exists()
     assert CANT_DELETE_HERE_TEXT in shown_status_bar_texts(window)
+
+
+def test_deleting_a_folder_whose_drive_is_pulled_while_the_question_is_open_says_couldnt_delete(qtbot, tmp_path):
+    def pull_the_drive_and_say_yes(question):
+        drive.rename(tmp_path / "pulled")
+        return True
+
+    window, stack, folder = grid_of_a_folder_with_two_images(qtbot, tmp_path, ask_to_delete=pull_the_drive_and_say_yes)
+    drive = folder.parent
+    cursor_on_the_folder_tile(qtbot, stack, folder)
+
+    qtbot.keyClick(stack.currentWidget(), Qt.Key.Key_Delete)
+
+    assert COULDNT_DELETE_TEXT in shown_status_bar_texts(window)

@@ -309,8 +309,9 @@ class Window(QWidget):
         """As much of the folder as will go; what is left stays on the drive with its rows."""
         failures = []
         shutil.rmtree(folder, onexc=lambda *failure: failures.append(failure))  # on past what won't go
-        self._forget(self.session.library.forget_gone, folder)
-        self._show_folder_again(folder.parent, row)
+        if folder.parent.is_dir():  # else the drive is gone: nothing to forget or show again
+            self._forget(self.session.library.forget_gone, folder)
+            self._show_folder_again(folder.parent, row)
         if failures:
             self.status_bar.show_background(COULDNT_DELETE_TEXT)
 
